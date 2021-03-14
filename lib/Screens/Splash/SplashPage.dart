@@ -34,12 +34,19 @@ class _SplashPageState extends State<SplashPage> {
     });
     Firestore.instance.collection('books').getDocuments().then((value) {
       FirebaseAuth.instance.onAuthStateChanged.listen((userData) {
-        if (userData == null) {
-          Navigator.pushReplacementNamed(context, '/signin', arguments: value);
-          return;
-        }
-        Navigator.pushReplacementNamed(context, '/home',
-            arguments: {'user': userData, 'books': value});
+        //false면 이메일 인증이 안된 상태
+        // if (!userData.isEmailVerified) {
+        //   userData.sendEmailVerification();
+        // }
+
+        Navigator.pushReplacementNamed(context, '/signin', arguments: value);
+
+        // if (userData == null) {
+        //   Navigator.pushReplacementNamed(context, '/signin', arguments: value);
+        //   return;
+        // }
+        // Navigator.pushReplacementNamed(context, '/home',
+        //     arguments: {'user': userData, 'books': value});
       });
     });
   }

@@ -17,6 +17,22 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   // login type check
   bool _loading = false;
+  TextEditingController emailController;
+  TextEditingController pwController;
+
+  @override
+  void initState() {
+    super.initState();
+    emailController = TextEditingController();
+    pwController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    pwController.dispose();
+    super.dispose();
+  }
 
   _googleSignIn() async {
     // account check
@@ -77,23 +93,60 @@ class _LoginPageState extends State<LoginPage> {
               _loading ? Text('Logging in...') : Text('Click to Login'),
               _loading
                   ? CircularProgressIndicator()
-                  : SignInButton(
-                      Buttons.Google,
-                      onPressed: () async {
-                        try {
-                          setState(() {
-                            _loading = true;
-                          });
-                          await _googleSignIn();
-                          FirebaseAuth.instance.onAuthStateChanged.listen((fu) {
-                            Navigator.pushReplacementNamed(context, '/home',
-                                arguments: {'user': fu, 'books': widget.books});
-                          });
-                          _loading = false;
-                        } catch (e) {
-                          print(e);
-                        }
-                      },
+                  : Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: TextField(
+                            controller: emailController,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: TextField(
+                            controller: pwController,
+                          ),
+                        ),
+                        SignInButton(
+                          Buttons.Email,
+                          onPressed: () {
+                            var email = emailController.text..trim();
+                            var pw = pwController.text..trim();
+                            print("email  = ${email}  & pw = ${pw}");
+
+                            //파이어베이스 이메일 회원가입
+                            // FirebaseAuth.instance
+                            //     .createUserWithEmailAndPassword(
+                            //         email: email, password: pw);
+
+                            //파이어베이스 이메일 로그인
+                            FirebaseAuth.instance.signInWithEmailAndPassword(
+                                email: email, password: pw);
+                          },
+                        ),
+                        SignInButton(
+                          Buttons.Google,
+                          onPressed: () async {
+                            try {
+                              setState(() {
+                                _loading = true;
+                              });
+                              await _googleSignIn();
+                              FirebaseAuth.instance.onAuthStateChanged
+                                  .listen((fu) {
+                                Navigator.pushReplacementNamed(context, '/home',
+                                    arguments: {
+                                      'user': fu,
+                                      'books': widget.books
+                                    });
+                              });
+                              _loading = false;
+                            } catch (e) {
+                              print(e);
+                            }
+                          },
+                        ),
+                      ],
                     )
             ],
           ),
