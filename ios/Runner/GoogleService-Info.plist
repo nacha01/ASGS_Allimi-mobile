@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>707768728455-2soceb5l24sd9g1c0ccpps97u40cktbn.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.707768728455-2soceb5l24sd9g1c0ccpps97u40cktbn</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>707768728455-kpgsaogom98tkhjqvs2afik48rlr393v.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBX0em3wcO_hWFxnp-L0VqBntBQlNxxohA</string>
+	<key>GCM_SENDER_ID</key>
+	<string>707768728455</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.android.asgshighschool</string>
+	<key>PROJECT_ID</key>
+	<string>asgshighschool-9ce36</string>
+	<key>STORAGE_BUCKET</key>
+	<string>asgshighschool-9ce36.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:707768728455:ios:e3c244c02bb5595eaf3122</string>
+	<key>DATABASE_URL</key>
+	<string>https://asgshighschool-9ce36.firebaseio.com</string>
+</dict>
+</plist>

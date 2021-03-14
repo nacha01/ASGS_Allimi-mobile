@@ -1,0 +1,64 @@
+{
+  "project_info": {
+    "project_number": "215812690526",
+    "firebase_url": "https://asgsapp2.firebaseio.com",
+    "project_id": "asgsapp2",
+    "storage_bucket": "asgsapp2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:215812690526:android:404e143184478f74",
+        "android_client_info": {
+          "package_name": "asgs.arlimi_2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "215812690526-rh3rcbthnpepd8h8mpsfk5e6c0fm9r4l.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "asgs.arlimi_2",
+            "certificate_hash": "342f2e6ed4bcdae788bceb4df2ac96b5b2437527"
+          }
+        },
+        {
+          "client_id": "215812690526-spt60icmmromvu0r28qur8kfmqlt2gap.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "asgs.arlimi_2",
+            "certificate_hash": "5403811fea34d3b09b145fa72186e4b56e5ce721"
+          }
+        },
+        {
+          "client_id": "215812690526-ubs6q8pen9qbenn7b9hc8vk3i0qtadvv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "asgs.arlimi_2",
+            "certificate_hash": "2b85d74d72bb6d43f783619933abad7608fd88b2"
+          }
+        },
+        {
+          "client_id": "215812690526-gg195e2jedbanmiue3l6ukkpovuhmvnd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBpByHQfjoEgpgNj7z-cGHQ2LCOvyhtHFo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "215812690526-gg195e2jedbanmiue3l6ukkpovuhmvnd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
