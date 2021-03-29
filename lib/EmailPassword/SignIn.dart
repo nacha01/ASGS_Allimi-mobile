@@ -86,6 +86,7 @@ class _SignInPageState extends State<SignInPage> {
                       )
                       .then(
                         //is success
+                        //sdfgh
                         (firebaseUsers) =>
                             //Navigator.pushNamed(context, '/SignOut'),
                             Navigator.pushReplacementNamed(context, '/home',
