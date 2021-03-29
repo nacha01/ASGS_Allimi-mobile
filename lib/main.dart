@@ -7,6 +7,7 @@ import 'dart:async';
 import 'package:asgshighschool/LocalNotifyManager.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'EmailPassword/Home.dart';
 import 'ScreenSecond.dart';
 import 'Screens/Splash/LoginPage.dart';
 import 'Screens/Splash/SplashPage.dart';
@@ -145,6 +146,13 @@ void main() {
             {
               return MaterialPageRoute(
                   builder: (context) => LoginPage(books: settings.arguments));
+            }
+            break;
+          case EmailPasswordAuth.routeName:
+            print('call EmailPasswordAuth');
+            {
+              return MaterialPageRoute(
+                  builder: (context) => EmailPasswordAuth());
             }
             break;
           default:

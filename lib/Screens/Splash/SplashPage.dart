@@ -34,7 +34,8 @@ class _SplashPageState extends State<SplashPage> {
     });
     Firestore.instance.collection('books').getDocuments().then((value) {
       FirebaseAuth.instance.onAuthStateChanged.listen((userData) {
-        //false면 이메일 인증이 안된 상태
+        //깃 공부
+        ///false면 이메일 인증이 안된 상태
         // if (!userData.isEmailVerified) {
         //   userData.sendEmailVerification();
         // }

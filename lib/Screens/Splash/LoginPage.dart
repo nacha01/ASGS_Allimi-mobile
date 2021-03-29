@@ -1,3 +1,4 @@
+import 'package:asgshighschool/EmailPassword/Home.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -49,18 +50,18 @@ class _LoginPageState extends State<LoginPage> {
 
     // google Auth data
     final GoogleSignInAuthentication googleAuth =
-        await googleUser.authentication;
+        await googleUser.authentication; //token
 
     // Trust information
     final AuthCredential credential = GoogleAuthProvider.getCredential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
+      accessToken: googleAuth.accessToken, //접근 권한
+      idToken: googleAuth.idToken, // 현재 아이디
     );
 
     // data save(real login code)
     final FirebaseUser user =
         (await FirebaseAuth.instance.signInWithCredential(credential)).user;
-    print("signed in " + user.displayName);
+    print("signed in " + user.displayName); //firebase 인증 시작
 
     // new data create(firestore)
     Firestore.instance
@@ -107,22 +108,53 @@ class _LoginPageState extends State<LoginPage> {
                             controller: pwController,
                           ),
                         ),
-                        SignInButton(
-                          Buttons.Email,
+                        RaisedButton(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20.0)),
                           onPressed: () {
-                            var email = emailController.text..trim();
-                            var pw = pwController.text..trim();
-                            print("email  = ${email}  & pw = ${pw}");
-
-                            //파이어베이스 이메일 회원가입
-                            // FirebaseAuth.instance
-                            //     .createUserWithEmailAndPassword(
-                            //         email: email, password: pw);
-
-                            //파이어베이스 이메일 로그인
-                            FirebaseAuth.instance.signInWithEmailAndPassword(
-                                email: email, password: pw);
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (ctx) {
+                              return EmailPasswordAuth();
+                            }));
                           },
+                          child: Text(
+                            '이메일으로 로그인 하기',
+                            style: TextStyle(fontSize: 16.0),
+                          ),
+                        ),
+                        SizedBox(height: 20.0),
+                        RaisedButton(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20.0)),
+                          onPressed: () =>
+                              Navigator.pushNamed(context, '/google'),
+                          child: Text(
+                            'Continue with Google',
+                            style: TextStyle(fontSize: 16.0),
+                          ),
+                        ),
+                        SizedBox(height: 20.0),
+                        RaisedButton(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20.0)),
+                          onPressed: () =>
+                              Navigator.pushNamed(context, '/phone'),
+                          child: Text(
+                            'Continue with Phone',
+                            style: TextStyle(fontSize: 16.0),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: TextField(
+                            controller: emailController,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: TextField(
+                            controller: pwController,
+                          ),
                         ),
                         SignInButton(
                           Buttons.Google,
@@ -137,7 +169,7 @@ class _LoginPageState extends State<LoginPage> {
                                 Navigator.pushReplacementNamed(context, '/home',
                                     arguments: {
                                       'user': fu,
-                                      'books': widget.books
+                                      'books': widget.books // empty
                                     });
                               });
                               _loading = false;
