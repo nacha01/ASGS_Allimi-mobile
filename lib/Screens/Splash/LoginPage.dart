@@ -80,6 +80,37 @@ class _LoginPageState extends State<LoginPage> {
     return user;
   }
 
+  Future<FirebaseUser> _emailSignIn() async {
+    var email = emailController.text ?? "";
+    var pw = pwController.text ?? "";
+    AuthResult result;
+    try {
+      result = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: pw);
+    } catch (e) {
+      print(e);
+      //에러 Dialog 추가 필요
+      return null;
+    }
+    print("signed in " + result.user.displayName); //firebase 로그인 완료
+
+    Firestore.instance
+        .collection("users")
+        .document(result.user.uid)
+        .get()
+        .then((value) async {
+      if (value.data == null) {
+        await Firestore.instance
+            .collection('users')
+            .document(result.user.uid)
+            .setData({'email': result.user.email, 'create': DateTime.now()});
+        print('Create data');
+      }
+    });
+
+    return result.user;
+  }
+
   @override
   Widget build(BuildContext context) {
     print('SignInPage');
