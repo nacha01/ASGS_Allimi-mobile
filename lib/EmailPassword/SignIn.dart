@@ -1,9 +1,12 @@
+import 'package:asgshighschool/Screens/HomePage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 ////////////////// Login PAGE ////////////////////////////
 
 class SignInPage extends StatefulWidget {
+  SignInPage({Key key, this.books}) : super(key: key);
+  var books;
   @override
   _SignInPageState createState() => _SignInPageState();
 }
@@ -11,6 +14,15 @@ class SignInPage extends StatefulWidget {
 class _SignInPageState extends State<SignInPage> {
   String email = '';
   String password = '';
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    _emailController.text = 'pipi3425@naver.com';
+    _passwordController.text = '12345678';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,6 +44,7 @@ class _SignInPageState extends State<SignInPage> {
                 padding: EdgeInsets.all(10.0),
                 child: TextFormField(
                   cursorColor: Colors.black,
+                  controller: _emailController,
                   style: TextStyle(fontSize: 18.0, color: Colors.black),
                   decoration: InputDecoration(
                     fillColor: Colors.orange.withOpacity(0.1),
@@ -55,6 +68,7 @@ class _SignInPageState extends State<SignInPage> {
               Padding(
                 padding: EdgeInsets.all(10.0),
                 child: TextFormField(
+                  controller: _passwordController,
                   obscureText: true,
                   cursorColor: Colors.black,
                   style: TextStyle(fontSize: 18.0, color: Colors.black),
@@ -81,18 +95,22 @@ class _SignInPageState extends State<SignInPage> {
                 onPressed: () {
                   FirebaseAuth.instance
                       .signInWithEmailAndPassword(
-                        email: email,
-                        password: password,
+                        email: _emailController.text.toString(),
+                        password: _passwordController.text.toString(),
                       )
                       .then(
                         //is success
-                        (firebaseUsers) =>
-                            //Navigator.pushNamed(context, '/SignOut'),
-                            Navigator.pushReplacementNamed(context, '/home',
-                                arguments: {
-                              'user': firebaseUsers,
-                              'books': {}
-                            }),
+                        (firebaseUsers) => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (ctx) => HomePage(
+                                      books: widget.books,
+                                    ))),
+                        // Navigator.pushReplacementNamed(context, '/home',
+                        // arguments: {
+                        // 'user': firebaseUsers,
+                        // 'books': {}
+                        // }),
                       )
                       .catchError(
                         (e) => print(e),
@@ -109,7 +127,8 @@ class _SignInPageState extends State<SignInPage> {
               SizedBox(height: 20.0),
               RaisedButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, '/SignUp');
+                  Navigator.pushNamed(context, '/SignUp',
+                      arguments: widget.books);
                 },
                 color: Colors.orangeAccent,
                 child: Text('Sign Up ', style: TextStyle(fontSize: 17.0)),

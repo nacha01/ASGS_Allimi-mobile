@@ -47,6 +47,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   void initState() {
     // TODO: implement initState
     super.initState();
+    print(widget.books);
     _numberOfTabs = 3;
     _tabController = TabController(vsync: this, length: _numberOfTabs);
     _scrollViewController = ScrollController();
@@ -316,7 +317,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             ],
           ),
         ),
-        Expanded(
+        /*Expanded(
           child: ListView.builder(
               padding: EdgeInsets.all(10),
               itemCount: widget.books.documents.length,
@@ -372,6 +373,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 );
               }),
         ),
+        */
       ],
     );
 
@@ -399,11 +401,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           fontWeight: FontWeight.bold),
                     ),
                   ])),
+
               Spacer(),
               //Icon(Icons.arrow_forward_ios)
             ],
           ),
         ),
+        /*
         Expanded(
           child: ListView.builder(
               padding: EdgeInsets.all(10),
@@ -460,6 +464,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 );
               }),
         ),
+        */
       ],
     );
 
@@ -557,11 +562,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           shape: BoxShape.circle,
                           image: DecorationImage(
                             fit: BoxFit.fill,
-                            image: NetworkImage(widget.user.photoUrl),
+                            image: NetworkImage(
+                              'http://www.asgs.hs.kr/design/html/images/img_010800_01.gif',
+/*widget.user.photoUrl*/
+                            ),
                           )),
                     ),
-                    title: Text(widget.user.displayName),
-                    subtitle: Text(widget.user.email),
+                    title: Text(' ' /*widget.user.displayName*/),
+                    subtitle: Text('' /*widget.user.email*/),
                     trailing: Icon(
                       Icons.arrow_forward_ios,
                     ),

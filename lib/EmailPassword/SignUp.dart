@@ -1,3 +1,4 @@
+import 'package:asgshighschool/Screens/HomePage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -5,6 +6,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 ////////////////// SIGN UP PAGE ////////////////////////////
 
 class SignUpPage extends StatefulWidget {
+  SignUpPage({Key key, this.books}) : super(key: key);
+  var books;
   @override
   _SignUpPageState createState() => _SignUpPageState();
 }
@@ -12,8 +15,26 @@ class SignUpPage extends StatefulWidget {
 class _SignUpPageState extends State<SignUpPage> {
   String email;
   String password;
+  TextEditingController _nameController = TextEditingController();
+  TextEditingController _gradeController = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
+
   final _auth = FirebaseAuth.instance;
   final _fireStore = Firestore.instance;
+  final statusList = ['학생', '학부모', '교사', '졸업생', '기타'];
+  var _selectedValue = '학생';
+  bool isTwoRow() {
+    if (_selectedValue == '학생' || _selectedValue == '학부모') {
+      return true;
+    } else if (_selectedValue == '교사' ||
+        _selectedValue == '졸업생' ||
+        _selectedValue == '기타') {
+      return false;
+    }
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,7 +47,74 @@ class _SignUpPageState extends State<SignUpPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Container(
+              child: DropdownButton(
+                isExpanded: true,
+                iconSize: 50,
+                value: _selectedValue,
+                items: statusList.map((value) {
+                  return DropdownMenuItem(
+                    child: Text(value),
+                    value: value,
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _selectedValue = value;
+                  });
+                },
+              ),
+            ),
+            SizedBox(height: 20.0),
             TextFormField(
+              controller: _nameController,
+              cursorColor: Colors.black,
+              style: TextStyle(fontSize: 18.0, color: Colors.black),
+              decoration: InputDecoration(
+                fillColor: Colors.orange.withOpacity(0.1),
+                filled: true,
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(20.0))),
+                prefixIcon: Icon(Icons.account_circle),
+                labelText: '이름',
+                labelStyle: TextStyle(
+                  fontSize: 16.0,
+                ),
+              ),
+              onChanged: (value) {
+                setState(() {
+                  email = value;
+                });
+              },
+            ),
+            SizedBox(height: 20.0),
+            Opacity(
+              opacity: isTwoRow() ? 1.0 : 0.0,
+              child: TextFormField(
+                controller: _gradeController,
+                cursorColor: Colors.black,
+                style: TextStyle(fontSize: 18.0, color: Colors.black),
+                decoration: InputDecoration(
+                  fillColor: Colors.orange.withOpacity(0.1),
+                  filled: true,
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(20.0))),
+                  prefixIcon: Icon(Icons.account_circle),
+                  labelText: '학번',
+                  labelStyle: TextStyle(
+                    fontSize: 16.0,
+                  ),
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    email = value;
+                  });
+                },
+              ),
+            ),
+            SizedBox(height: 20.0),
+            TextFormField(
+              controller: _emailController,
               cursorColor: Colors.black,
               style: TextStyle(fontSize: 18.0, color: Colors.black),
               decoration: InputDecoration(
@@ -48,6 +136,7 @@ class _SignUpPageState extends State<SignUpPage> {
             ),
             SizedBox(height: 20.0),
             TextFormField(
+              controller: _passwordController,
               obscureText: true,
               cursorColor: Colors.black,
               style: TextStyle(fontSize: 18.0, color: Colors.black),
@@ -73,14 +162,23 @@ class _SignUpPageState extends State<SignUpPage> {
               onPressed: () async {
                 _auth
                     .createUserWithEmailAndPassword(
-                  email: email,
-                  password: password,
+                  email: _emailController.text.toString(),
+                  password: _passwordController.text.toString(),
                 )
                     .then((signedInUser) {
-                  _fireStore.collection('users').add(
-                      {'email': email, 'password': password}).then((value) {
+                  _fireStore.collection('users').add({
+                    'identity': _selectedValue,
+                    'name': _nameController.text.toString(),
+                    'student_id': _gradeController.text.toString(),
+                    'email': _emailController.text.toString(),
+                  }).then((value) {
                     if (signedInUser != null) {
-                      Navigator.pushNamed(context, '/SignOut');
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (ctx) => HomePage(
+                                    books: widget.books,
+                                  )));
                     }
                   }).catchError((e) {
                     print(e);

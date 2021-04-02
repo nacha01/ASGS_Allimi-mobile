@@ -26,6 +26,8 @@ class _LoginPageState extends State<LoginPage> {
     super.initState();
     emailController = TextEditingController();
     pwController = TextEditingController();
+    emailController.text = 'pipi3425@naver.com';
+    pwController.text = '12345678';
   }
 
   @override
@@ -85,14 +87,19 @@ class _LoginPageState extends State<LoginPage> {
     var pw = pwController.text ?? "";
     AuthResult result;
     try {
+      print('eeeee');
       result = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: pw);
+      print(result?.toString());
+      print('ffff');
     } catch (e) {
       print(e);
+      print('hhhhh');
       //에러 Dialog 추가 필요
       return null;
     }
-    print("signed in " + result.user.displayName); //firebase 로그인 완료
+    print('rrrrr');
+    print("signed in "); //firebase 로그인 완료
 
     Firestore.instance
         .collection("users")
@@ -118,100 +125,133 @@ class _LoginPageState extends State<LoginPage> {
         appBar: AppBar(
           title: Text('Login Page'),
         ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _loading ? Text('Logging in...') : Text('Click to Login'),
-              _loading
-                  ? CircularProgressIndicator()
-                  : Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: TextField(
-                            controller: emailController,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: TextField(
-                            controller: pwController,
-                          ),
-                        ),
-                        RaisedButton(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20.0)),
-                          onPressed: () {
-                            Navigator.push(context,
-                                MaterialPageRoute(builder: (ctx) {
-                              return EmailPasswordAuth();
-                            }));
-                          },
-                          child: Text(
-                            '이메일으로 로그인 하기',
-                            style: TextStyle(fontSize: 16.0),
-                          ),
-                        ),
-                        SizedBox(height: 20.0),
-                        RaisedButton(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20.0)),
-                          onPressed: () =>
-                              Navigator.pushNamed(context, '/google'),
-                          child: Text(
-                            'Continue with Google',
-                            style: TextStyle(fontSize: 16.0),
-                          ),
-                        ),
-                        SizedBox(height: 20.0),
-                        RaisedButton(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20.0)),
-                          onPressed: () =>
-                              Navigator.pushNamed(context, '/phone'),
-                          child: Text(
-                            'Continue with Phone',
-                            style: TextStyle(fontSize: 16.0),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: TextField(
-                            controller: emailController,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: TextField(
-                            controller: pwController,
-                          ),
-                        ),
-                        SignInButton(
-                          Buttons.Google,
-                          onPressed: () async {
-                            try {
-                              setState(() {
-                                _loading = true;
-                              });
-                              await _googleSignIn();
-                              FirebaseAuth.instance.onAuthStateChanged
-                                  .listen((fu) {
-                                Navigator.pushReplacementNamed(context, '/home',
-                                    arguments: {
-                                      'user': fu,
-                                      'books': widget.books // empty
-                                    });
-                              });
-                              _loading = false;
-                            } catch (e) {
-                              print(e);
-                            }
-                          },
-                        ),
-                      ],
-                    )
-            ],
+        body: SingleChildScrollView(
+          child: Center(
+            child: GestureDetector(
+              onTap: () {
+                FocusScope.of(context).unfocus();
+              },
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _loading ? Text('Logging in...') : Text('Click to Login'),
+                  _loading
+                      ? CircularProgressIndicator()
+                      : Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: TextField(
+                                controller: emailController,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: TextField(
+                                controller: pwController,
+                              ),
+                            ),
+                            RaisedButton(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20.0)),
+                              onPressed: () {
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (ctx) {
+                                  return EmailPasswordAuth(
+                                    books: widget.books,
+                                  );
+                                }));
+                              },
+                              child: Text(
+                                '이메일으로 로그인 하기',
+                                style: TextStyle(fontSize: 16.0),
+                              ),
+                            ),
+                            SizedBox(height: 20.0),
+                            RaisedButton(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20.0)),
+                              onPressed: () =>
+                                  Navigator.pushNamed(context, '/google'),
+                              child: Text(
+                                'Continue with Google',
+                                style: TextStyle(fontSize: 16.0),
+                              ),
+                            ),
+                            SizedBox(height: 20.0),
+                            RaisedButton(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20.0)),
+                              onPressed: () =>
+                                  Navigator.pushNamed(context, '/phone'),
+                              child: Text(
+                                'Continue with Phone',
+                                style: TextStyle(fontSize: 16.0),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: TextField(
+                                controller: emailController,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: TextField(
+                                controller: pwController,
+                              ),
+                            ),
+                            SignInButton(
+                              Buttons.Google,
+                              onPressed: () async {
+                                try {
+                                  setState(() {
+                                    _loading = true;
+                                  });
+                                  await _googleSignIn();
+                                  FirebaseAuth.instance.onAuthStateChanged
+                                      .listen((fu) {
+                                    Navigator.pushReplacementNamed(
+                                        context, '/home',
+                                        arguments: {
+                                          'user': fu,
+                                          'books': widget.books // empty
+                                        });
+                                  });
+                                  _loading = false;
+                                } catch (e) {
+                                  print(e);
+                                }
+                              },
+                            ),
+                            SignInButton(
+                              Buttons.Email,
+                              onPressed: () async {
+                                try {
+                                  setState(() {
+                                    _loading = true;
+                                  });
+                                  await _emailSignIn();
+                                  FirebaseAuth.instance.onAuthStateChanged
+                                      .listen((fu) {
+                                    Navigator.pushReplacementNamed(
+                                        context, '/home',
+                                        arguments: {
+                                          'user': fu,
+                                          'books': widget.books // empty
+                                        });
+                                  });
+                                  _loading = false;
+                                } catch (e) {
+                                  print(e);
+                                }
+                              },
+                            ),
+                          ],
+                        )
+                ],
+              ),
+            ),
           ),
         ));
   }
