@@ -407,7 +407,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             ],
           ),
         ),
-        /*
         Expanded(
           child: ListView.builder(
               padding: EdgeInsets.all(10),
@@ -464,7 +463,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 );
               }),
         ),
-        */
       ],
     );
 

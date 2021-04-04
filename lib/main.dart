@@ -7,7 +7,7 @@ import 'dart:async';
 import 'package:asgshighschool/LocalNotifyManager.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'EmailPassword/Home.dart';
+import 'Home.dart';
 import 'ScreenSecond.dart';
 import 'Screens/Splash/LoginPage.dart';
 import 'Screens/Splash/SplashPage.dart';

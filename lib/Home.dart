@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'SignIn.dart';
-import 'SignOut.dart';
-import 'SignUp.dart';
+import 'EmailPassword/../SignIn.dart';
+import 'EmailPassword/../SignOut.dart';
+import 'EmailPassword/../SignUp.dart';
 
 class EmailPasswordAuth extends StatelessWidget {
   EmailPasswordAuth({Key key, this.books}) : super(key: key);
