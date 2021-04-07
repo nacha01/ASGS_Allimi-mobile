@@ -1,4 +1,5 @@
 import 'package:asgshighschool/Screens/HomePage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -12,6 +13,7 @@ class SignInPage extends StatefulWidget {
 }
 
 class _SignInPageState extends State<SignInPage> {
+  bool _loading = false;
   String email = '';
   String password = '';
   TextEditingController _emailController = TextEditingController();
@@ -23,9 +25,48 @@ class _SignInPageState extends State<SignInPage> {
     _passwordController.text = '12345678';
   }
 
+  Future<FirebaseUser> _emailSignIn() async {
+    var email = _emailController.text ?? "";
+    var pw = _passwordController.text ?? "";
+    AuthResult result;
+    try {
+      print('eeeee');
+      print(email);
+      print(pw);
+      result = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: pw);
+      print(result?.toString());
+      print('ffff');
+    } catch (e) {
+      print(e);
+      print('hhhhh');
+      //에러 Dialog 추가 필요
+      return null;
+    }
+    print('rrrrr');
+    print("signed in "); //firebase 로그인 완료
+
+    Firestore.instance
+        .collection("users")
+        .document(result.user.uid)
+        .get()
+        .then((value) async {
+      if (value.data == null) {
+        await Firestore.instance
+            .collection('users')
+            .document(result.user.uid)
+            .setData({'email': result.user.email, 'create': DateTime.now()});
+        print('Create data');
+      }
+    });
+
+    return result.user;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
         // resizeToAvoidBottomPadding: false,
         appBar: AppBar(
           centerTitle: true,
@@ -92,32 +133,27 @@ class _SignInPageState extends State<SignInPage> {
               ),
               SizedBox(height: 10.0),
               RaisedButton(
-                onPressed: () {
-                  FirebaseAuth.instance
-                      .signInWithEmailAndPassword(
-                        email: _emailController.text.toString(),
-                        password: _passwordController.text.toString(),
-                      )
-                      .then(
-                        //is success
-                        (firebaseUsers) => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (ctx) => HomePage(
-                                      books: widget.books,
-                                    ))),
-                        // Navigator.pushReplacementNamed(context, '/home',
-                        // arguments: {
-                        // 'user': firebaseUsers,
-                        // 'books': {}
-                        // }),
-                      )
-                      .catchError(
-                        (e) => print(e),
-                      );
-
-                  FirebaseAuth.instance.currentUser();
-                  // empty = not login, not empty = loging
+                /////////
+                onPressed: () async {
+                  try {
+                    setState(() {
+                      _loading = true;
+                    });
+                    print('ttt');
+                    await _emailSignIn();
+                    print('xxxx');
+                    FirebaseAuth.instance.onAuthStateChanged.listen((fu) {
+                      Navigator.pushReplacementNamed(context, '/home',
+                          arguments: {
+                            'user': fu,
+                            'books': widget.books // empty
+                          });
+                    });
+                    print('ppppp');
+                    _loading = false;
+                  } catch (e) {
+                    print(e);
+                  }
                 },
                 color: Colors.orangeAccent,
                 child: Text('Login', style: TextStyle(fontSize: 17.0)),
@@ -127,7 +163,7 @@ class _SignInPageState extends State<SignInPage> {
               SizedBox(height: 20.0),
               RaisedButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, '/SignUp',
+                  Navigator.pushReplacementNamed(context, '/SignUp',
                       arguments: widget.books);
                 },
                 color: Colors.orangeAccent,

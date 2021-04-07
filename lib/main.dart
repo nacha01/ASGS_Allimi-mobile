@@ -70,14 +70,14 @@ class _PushMessagingExampleState extends State<PushMessagingExample> {
     //
     Timer.run(() {
       print("timer call");
-      Navigator.of(context).pushNamed("/SplashPage");
+      Navigator.of(context).pushReplacementNamed("/SplashPage");
       //Navigator.of(context).pushNamed("/MyApp");
     });
   }
 
   onNotificationClick(String payload) {
     print('Payload $payload');
-    Navigator.push(context, MaterialPageRoute(builder: (context) {
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
       return ScreenSecond(payload: payload);
     }));
   }

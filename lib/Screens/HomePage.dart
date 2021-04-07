@@ -57,6 +57,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   void dispose() {
     _scrollViewController.dispose();
     _tabController.dispose();
+    super.dispose();
   }
 
   Future<List> gets() async {
@@ -317,7 +318,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             ],
           ),
         ),
-        /*Expanded(
+        Expanded(
           child: ListView.builder(
               padding: EdgeInsets.all(10),
               itemCount: widget.books.documents.length,
@@ -373,7 +374,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 );
               }),
         ),
-        */
       ],
     );
 
@@ -466,56 +466,79 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       ],
     );
 
-    return Scaffold(
-        resizeToAvoidBottomInset: false, // keyboard not slide
-        drawer: slidePage(),
-        key: _scaffoldKey,
-        body: NestedScrollView(
-          controller: _scrollViewController,
-          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-            return <Widget>[
-              SliverAppBar(
-                backgroundColor: Colors.white, // app bar color
-                flexibleSpace: FlexibleSpaceBar(
-                  collapseMode: CollapseMode.pin,
-                  centerTitle: true,
-                  background: Column(
-                    children: <Widget>[
-                      appBarAbove(),
-                      appBarBelow(),
+    return WillPopScope(
+      onWillPop: _onBackPressed,
+      child: Scaffold(
+          resizeToAvoidBottomInset: false, // keyboard not slide
+          drawer: slidePage(),
+          key: _scaffoldKey,
+          body: NestedScrollView(
+            controller: _scrollViewController,
+            headerSliverBuilder:
+                (BuildContext context, bool innerBoxIsScrolled) {
+              return <Widget>[
+                SliverAppBar(
+                  backgroundColor: Colors.white, // app bar color
+                  flexibleSpace: FlexibleSpaceBar(
+                    collapseMode: CollapseMode.pin,
+                    centerTitle: true,
+                    background: Column(
+                      children: <Widget>[
+                        appBarAbove(),
+                        appBarBelow(),
+                      ],
+                    ),
+                  ),
+                  leading: Container(), // hambuger menu hide
+                  expandedHeight: 140, // 탭바의 높이
+                  pinned: true,
+                  floating: true,
+                  forceElevated: innerBoxIsScrolled,
+                  bottom: TabBar(
+                    labelColor: Colors.black,
+                    indicatorColor: Colors.blueAccent, // 현재 보고 있는 탭을 가리키는 지시자
+                    indicatorWeight: 6.0,
+                    tabs: <Tab>[
+                      Tab(text: "Home"),
+                      Tab(text: "면접 후기"),
+                      Tab(text: "영상 모음"),
                     ],
+                    controller: _tabController,
                   ),
                 ),
-                leading: Container(), // hambuger menu hide
-                expandedHeight: 140, // 탭바의 높이
-                pinned: true,
-                floating: true,
-                forceElevated: innerBoxIsScrolled,
-                bottom: TabBar(
-                  labelColor: Colors.black,
-                  indicatorColor: Colors.blueAccent, // 현재 보고 있는 탭을 가리키는 지시자
-                  indicatorWeight: 6.0,
-                  tabs: <Tab>[
-                    Tab(text: "Home"),
-                    Tab(text: "면접 후기"),
-                    Tab(text: "영상 모음"),
-                  ],
-                  controller: _tabController,
-                ),
-              ),
-            ];
-          },
-          body: TabBarView(
-            controller: _tabController,
-            children: [
-              homeTab,
-              interviewTab,
-              asgsMovieTab,
+              ];
+            },
+            body: TabBarView(
+              controller: _tabController,
+              children: [
+                homeTab,
+                interviewTab,
+                asgsMovieTab,
 
-              //asgs_movieTab(),
-            ],
-          ),
-        ));
+                //asgs_movieTab(),
+              ],
+            ),
+          )),
+    );
+  }
+
+  Future<bool> _onBackPressed() {
+    return showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: Text('정말로 종료하시겠습니까?'),
+              actions: [
+                FlatButton(
+                    onPressed: () {
+                      Navigator.pop(context, true);
+                      FirebaseAuth.instance.signOut();
+                    },
+                    child: Text('예')),
+                FlatButton(
+                    onPressed: () => Navigator.pop(context, false),
+                    child: Text('아니오'))
+              ],
+            ));
   }
 
   Widget slidePage() {
@@ -542,7 +565,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           onPressed: () async {
                             await FirebaseAuth.instance.signOut();
                             Navigator.pushNamedAndRemoveUntil(
-                                context, '/signin', (route) => false);
+                                context, '/signin', (route) => false,
+                                arguments: widget.books);
                           },
                         )
                       ],

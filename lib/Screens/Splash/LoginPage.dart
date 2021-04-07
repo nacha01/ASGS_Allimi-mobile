@@ -76,7 +76,6 @@ class _LoginPageState extends State<LoginPage> {
             .collection('users')
             .document(user.uid)
             .setData({'email': user.email, 'create': DateTime.now()});
-        print('Create data');
       }
     });
     return user;
