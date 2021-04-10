@@ -143,11 +143,13 @@ class _SignInPageState extends State<SignInPage> {
                     await _emailSignIn();
                     print('xxxx');
                     FirebaseAuth.instance.onAuthStateChanged.listen((fu) {
-                      Navigator.pushReplacementNamed(context, '/home',
-                          arguments: {
-                            'user': fu,
-                            'books': widget.books // empty
-                          });
+                      Navigator.pushReplacement(context,
+                          MaterialPageRoute(builder: (context) {
+                        return HomePage(
+                          user: fu,
+                          books: widget.books,
+                        );
+                      }));
                     });
                     print('ppppp');
                     _loading = false;

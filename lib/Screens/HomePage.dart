@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:asgshighschool/Screens/Splash/LoginPage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -564,9 +565,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           icon: Icon(Icons.power_settings_new),
                           onPressed: () async {
                             await FirebaseAuth.instance.signOut();
-                            Navigator.pushNamedAndRemoveUntil(
-                                context, '/signin', (route) => false,
-                                arguments: widget.books);
+                            Navigator.pushReplacement(context,
+                                MaterialPageRoute(builder: (context) {
+                              return LoginPage(
+                                books: widget.books,
+                              );
+                            }));
                           },
                         )
                       ],
