@@ -170,14 +170,36 @@ class _LoginPageState extends State<LoginPage> {
                             RaisedButton(
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(20.0)),
-                              onPressed: () =>
-                                  Navigator.pushNamed(context, '/google'),
+                              onPressed: () async {
+                                try {
+                                  setState(() {
+                                    _loading = true;
+                                  });
+                                  await _googleSignIn();
+                                  FirebaseAuth.instance.onAuthStateChanged
+                                      .listen((fu) {
+                                    Navigator.pushReplacementNamed(
+                                        context, '/home',
+                                        arguments: {
+                                          'user': fu,
+                                          'books': widget.books // empty
+                                        });
+                                  });
+                                  _loading = false;
+                                } catch (e) {
+                                  print(e);
+                                }
+                              },
+
+                              // onPressed: () =>
+                              //     Navigator.pushNamed(context, '/google'),
                               child: Text(
                                 'Continue with Google',
                                 style: TextStyle(fontSize: 16.0),
                               ),
                             ),
                             SizedBox(height: 20.0),
+/*
                             RaisedButton(
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(20.0)),
@@ -188,6 +210,7 @@ class _LoginPageState extends State<LoginPage> {
                                 style: TextStyle(fontSize: 16.0),
                               ),
                             ),
+
                             Padding(
                               padding: const EdgeInsets.all(10.0),
                               child: TextField(
@@ -200,6 +223,7 @@ class _LoginPageState extends State<LoginPage> {
                                 controller: pwController,
                               ),
                             ),
+                            
                             SignInButton(
                               Buttons.Google,
                               onPressed: () async {
@@ -223,6 +247,7 @@ class _LoginPageState extends State<LoginPage> {
                                 }
                               },
                             ),
+                            
                             SignInButton(
                               Buttons.Email,
                               onPressed: () async {
@@ -246,6 +271,7 @@ class _LoginPageState extends State<LoginPage> {
                                 }
                               },
                             ),
+                            */
                           ],
                         )
                 ],

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:asgshighschool/Screens/Splash/LoginPage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -12,11 +13,14 @@ import '../WebView.dart';
 // ignore: unused_import
 import 'Insert/BookPage.dart';
 
-final List<String> imgList = [
-  'http://www.asgs.hs.kr/design/html/images/img_010800_01.gif',
-  'http://www.asgs.hs.kr/design/html/images/img_010300_01.gif',
-  'http://www.asgs.hs.kr/design/html/images/20200420_YK_001.png'
-];
+//final List<String> imgList = [
+//  'http://www.asgs.hs.kr/design/html/images/img_010800_01.gif',
+//  'http://www.asgs.hs.kr/design/html/images/img_010300_01.gif',
+//  'http://www.asgs.hs.kr/design/html/images/20200420_YK_001.png'
+//];
+
+//bool _load_url =false;
+//      _load_url ? Text('Logging in...') : Text('Click to Login'),
 
 // ignore: must_be_immutable
 class HomePage extends StatefulWidget {
@@ -37,7 +41,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   ScrollController _scrollViewController;
   TabController _tabController;
   int _numberOfTabs;
-
+  var main_img;
+  List<String> imgList = [];
   final nameHolder = TextEditingController();
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -49,7 +54,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   void initState() {
     // TODO: implement initState
     super.initState();
-    print(widget.books);
+    getMainImage();
+    print('여기 ${widget.books}');
+    print('${widget.books.documents[0]['img_url']} 강서고 컴퓨터에서 만들어진 ');
+    print(imgList.length);
     _numberOfTabs = 3;
     _tabController = TabController(vsync: this, length: _numberOfTabs);
     _scrollViewController = ScrollController();
@@ -60,6 +68,25 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     _scrollViewController.dispose();
     _tabController.dispose();
     super.dispose();
+  }
+
+  void getMainImage() async {
+    await Firestore.instance
+        .collection('main_img')
+        .getDocuments()
+        .then((value) {
+      main_img = value;
+      print(main_img.documents[0]['img_url']);
+      print(main_img.documents[0]['img_url2']);
+      print(main_img.documents[0]['img_url3']);
+
+      for (int i = 0; i < 3; ++i) {
+        imgList
+            .add(main_img.documents[0][i == 0 ? 'img_url' : 'img_url${i + 1}']);
+      }
+      print(imgList.length);
+    });
+    //setState(() {});
   }
 
   Future<List> gets() async {
@@ -213,6 +240,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 pagination: SwiperPagination(alignment: Alignment.bottomRight),
                 itemCount: imgList.length,
                 itemBuilder: (BuildContext context, int index) {
+                  print(imgList.length);
                   return Image.network(imgList[index]);
                 }),
           ),
@@ -290,6 +318,16 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         ],
       ),
     );
+    // String titleTestss(int index) {
+    //   if (index == 0) {
+    //     return 'index 0; test1';
+    //   } else if (index == 1) {
+    //     return 'index 1; test2';
+    //   } else if (index == 2) {
+    //     return 'index 2; test3';
+    //   }
+    //   return '';
+    // }
 
     Widget asgsMovieTab = Column(
       children: [
@@ -351,7 +389,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                '강서고 컴퓨터에서 만들어진 영상을 모아 디지털 역사관을 만들고 있습니다.',
+                                // titleTestss(index),
+                                '${widget.books.documents[index]['author']} 강서고 컴퓨터에서 만들어진 ',
                                 //widget.books.documents[index]['name'],
                                 style: TextStyle(fontSize: 15),
                               ),
@@ -379,8 +418,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       ],
     );
 
-    Widget
-    interviewTab = Column(
+    Widget interviewTab = Column(
       children: [
         Container(
           padding: EdgeInsets.symmetric(horizontal: 16),
@@ -488,12 +526,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     background: Column(
                       children: <Widget>[
                         appBarAbove(),
-                        appBarBelow(),
+                        //appBarBelow(),
                       ],
                     ),
                   ),
                   leading: Container(), // hambuger menu hide
-                  expandedHeight: 140, // 탭바의 높이
+                  expandedHeight: 100, // space area between appbar and tabbar
                   pinned: true,
                   floating: true,
                   forceElevated: innerBoxIsScrolled,
@@ -515,8 +553,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               controller: _tabController,
               children: [
                 homeTab,
-                // interviewTab,
-                webViewTest('http://www.asgs.hs.kr/bbs/formList.do?menugrp=030100&searchMasterSid=3'),
+                //interviewTab,
+                webViewTest(
+                    'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030100&searchMasterSid=3'),
+                //WebViewPage(
+                //   title: 'title',
+                //  baseUrl:
+                //     'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030100&searchMasterSid=3'),
                 asgsMovieTab,
 
                 //asgs_movieTab(),
@@ -525,12 +568,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           )),
     );
   }
-  Widget webViewTest( String url){
+
+  Widget webViewTest(String url) {
     return WebView(
       initialUrl: url,
       javascriptMode: JavascriptMode.unrestricted,
     );
   }
+
   Future<bool> _onBackPressed() {
     return showDialog(
         context: context,
