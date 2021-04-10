@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 import '../WebView.dart';
 // ignore: unused_import
 import 'Insert/BookPage.dart';
@@ -378,7 +379,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       ],
     );
 
-    Widget interviewTab = Column(
+    Widget
+    interviewTab = Column(
       children: [
         Container(
           padding: EdgeInsets.symmetric(horizontal: 16),
@@ -513,7 +515,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               controller: _tabController,
               children: [
                 homeTab,
-                interviewTab,
+                // interviewTab,
+                webViewTest('http://www.asgs.hs.kr/bbs/formList.do?menugrp=030100&searchMasterSid=3'),
                 asgsMovieTab,
 
                 //asgs_movieTab(),
@@ -522,7 +525,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           )),
     );
   }
-
+  Widget webViewTest( String url){
+    return WebView(
+      initialUrl: url,
+      javascriptMode: JavascriptMode.unrestricted,
+    );
+  }
   Future<bool> _onBackPressed() {
     return showDialog(
         context: context,
