@@ -112,6 +112,7 @@ class _PushMessagingExampleState extends State<PushMessagingExample> {
 void main() {
   runApp(
     MaterialApp(
+      debugShowCheckedModeBanner: false,
       // page or widget
       //     domain/pageName <= route
       //     HTML  <= widget

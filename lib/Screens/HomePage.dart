@@ -44,7 +44,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   var main_img;
   List<String> imgList = [];
   final nameHolder = TextEditingController();
-
+  bool _loading = false;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   // ignore: unused_field
@@ -85,6 +85,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             .add(main_img.documents[0][i == 0 ? 'img_url' : 'img_url${i + 1}']);
       }
       print(imgList.length);
+      setState(() {
+        _loading = true;
+      });
     });
     //setState(() {});
   }
@@ -233,16 +236,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         children: <Widget>[
           Container(
             height: 210,
-            child: Swiper(
+            child: _loading ? Swiper(
                 autoplay: true,
                 viewportFraction: 0.8,
                 control: SwiperControl(),
                 pagination: SwiperPagination(alignment: Alignment.bottomRight),
                 itemCount: imgList.length,
                 itemBuilder: (BuildContext context, int index) {
-                  print(imgList.length);
                   return Image.network(imgList[index]);
-                }),
+                }) : CircularProgressIndicator(),
           ),
           Padding(
             padding: EdgeInsets.all(6),
