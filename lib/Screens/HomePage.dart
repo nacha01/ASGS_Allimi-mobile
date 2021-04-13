@@ -48,7 +48,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   final nameHolder = TextEditingController();
   bool _loading = false;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
+  bool web_loading = true;
   // ignore: unused_field
   String _keyword = '';
 
@@ -116,6 +116,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final Size size = MediaQuery.of(context).size;
     var cur_loading = Provider.of<LoadingData>(context);
     FutureBuilder asgs_movieTab() {
       return FutureBuilder(
@@ -242,7 +243,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             child: _loading
                 ? Swiper(
                     autoplay: true,
-                    viewportFraction: 0.8,
+                    viewportFraction: 1.0,
                     control: SwiperControl(),
                     pagination:
                         SwiperPagination(alignment: Alignment.bottomCenter),
@@ -250,10 +251,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     itemBuilder: (BuildContext context, int index) {
                       return Image.network(
                         imgList[index],
-                        fit: BoxFit.fitWidth,
+                        fit: BoxFit.fill,
                       );
                     })
-                : CircularProgressIndicator(),
+                : Center(child: CircularProgressIndicator()),
           ),
           Padding(
             padding: EdgeInsets.all(6),
@@ -564,16 +565,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             body: TabBarView(
               controller: _tabController,
               children: [
-                cur_loading.loading ? homeTab : CircularProgressIndicator(),
+                homeTab,
                 //interviewTab,
                 webViewTest(
                     'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030200&searchMasterSid=4'),
-                //WebViewPage(
-                //   title: 'title',
-                //  baseUrl:
-                //     'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030100&searchMasterSid=3'),
                 asgsMovieTab,
-
                 //asgs_movieTab(),
               ],
             ),
@@ -582,9 +578,22 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   Widget webViewTest(String url) {
-    return WebView(
-      initialUrl: url,
-      javascriptMode: JavascriptMode.unrestricted,
+    return Stack(
+      children: [
+        WebView(
+        initialUrl: url,
+        javascriptMode: JavascriptMode.unrestricted,
+        onPageStarted: (start){
+          setState(() {
+            web_loading = true;
+          });
+        },
+        onPageFinished: (finish){
+          setState(() {
+            web_loading = false;
+          });
+        },
+      ), web_loading ? Center(child: CircularProgressIndicator(),) : Stack()],
     );
   }
 
@@ -642,12 +651,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           image: DecorationImage(
                             fit: BoxFit.fill,
                             image: NetworkImage(
-                                //'http://www.asgs.hs.kr/design/html/images/img_010800_01.gif',
-                                widget.user.photoUrl),
+                                'http://www.asgs.hs.kr/design/html/images/img_010800_01.gif',
+                                /*widget.user.photoUrl*/),
                           )),
                     ),
-                    title: Text(widget.user.displayName),
-                    subtitle: Text(widget.user.email),
+                    title: Text(''/*widget.user.displayName*/),
+                    subtitle: Text(''/*widget.user.email*/),
                     trailing: IconButton(
                       icon: Icon(
                         Icons.power_settings_new,

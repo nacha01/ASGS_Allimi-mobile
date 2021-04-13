@@ -16,15 +16,11 @@ class WebViewPage extends StatefulWidget {
 class _WebViewPageState extends State<WebViewPage> {
   @override
   Widget build(BuildContext context) {
-    var cur_loading = Provider.of<LoadingData>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
       ),
       body: WebView(
-        onPageFinished: (finish) {
-          cur_loading.toggle();
-        },
         initialUrl: widget.baseUrl,
         javascriptMode: JavascriptMode.unrestricted,
       ),
