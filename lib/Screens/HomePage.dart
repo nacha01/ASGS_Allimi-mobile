@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:asgshighschool/Screens/Splash/LoginPage.dart';
+import 'package:asgshighschool/web_loading.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -10,6 +11,7 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import '../WebView.dart';
+import 'package:provider/provider.dart';
 // ignore: unused_import
 import 'Insert/BookPage.dart';
 
@@ -114,6 +116,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    var cur_loading = Provider.of<LoadingData>(context);
     FutureBuilder asgs_movieTab() {
       return FutureBuilder(
           //future: gets(),
@@ -236,15 +239,21 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         children: <Widget>[
           Container(
             height: 210,
-            child: _loading ? Swiper(
-                autoplay: true,
-                viewportFraction: 0.8,
-                control: SwiperControl(),
-                pagination: SwiperPagination(alignment: Alignment.bottomRight),
-                itemCount: imgList.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return Image.network(imgList[index]);
-                }) : CircularProgressIndicator(),
+            child: _loading
+                ? Swiper(
+                    autoplay: true,
+                    viewportFraction: 0.8,
+                    control: SwiperControl(),
+                    pagination:
+                        SwiperPagination(alignment: Alignment.bottomCenter),
+                    itemCount: imgList.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return Image.network(
+                        imgList[index],
+                        fit: BoxFit.fitWidth,
+                      );
+                    })
+                : CircularProgressIndicator(),
           ),
           Padding(
             padding: EdgeInsets.all(6),
@@ -300,7 +309,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       '이 달의 일정',
                       '이 달의 일정',
                       true,
-                      'assets/images/we_make_book1.JPG',
+                      'assets/images/haengsa.jpg',
                       'http://www.asgs.hs.kr/diary/formList.do?menugrp=030500&searchMasterSid=1',
                       57,
                       false),
@@ -309,7 +318,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       '오늘의 급식 메뉴',
                       '오늘의 급식 메뉴',
                       false,
-                      'assets/images/we_make_book2.JPG',
+                      'assets/images/geubsig.jpg',
                       'http://www.asgs.hs.kr/meal/formList.do?menugrp=040801',
                       100,
                       true)
@@ -341,14 +350,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   textAlign: TextAlign.start,
                   text: TextSpan(children: <TextSpan>[
                     TextSpan(
-                      text: '강서 디지털 영상 모음 ',
+                      text: '여기는 학교가 아닌 강서 알리미 알림방입니다.',
                       style: TextStyle(
                           fontSize: 15,
                           color: Colors.black,
                           fontWeight: FontWeight.bold),
                     ),
                     TextSpan(
-                      text: '(교내용입니다.)',
+                      // text: '(교내용입니다.)',
                       style: TextStyle(
                           fontSize: 15,
                           color: Colors.blue,
@@ -392,7 +401,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             children: [
                               Text(
                                 // titleTestss(index),
-                                '${widget.books.documents[index]['author']} 강서고 컴퓨터에서 만들어진 ',
+                                //'${widget.books.documents[index]['author']}
+                                '강서고 컴퓨터 동아리(테라바이트)가 만들어가는 알리미입니다. 많은 기대와 관심 부탁드립니다.',
                                 //widget.books.documents[index]['name'],
                                 style: TextStyle(fontSize: 15),
                               ),
@@ -543,8 +553,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     indicatorWeight: 6.0,
                     tabs: <Tab>[
                       Tab(text: "Home"),
-                      Tab(text: "면접 후기"),
-                      Tab(text: "영상 모음"),
+                      Tab(text: "학교 행사"),
+                      Tab(text: "알리미 공지사항"),
                     ],
                     controller: _tabController,
                   ),
@@ -554,10 +564,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             body: TabBarView(
               controller: _tabController,
               children: [
-                homeTab,
+                cur_loading.loading ? homeTab : CircularProgressIndicator(),
                 //interviewTab,
                 webViewTest(
-                    'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030100&searchMasterSid=3'),
+                    'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030200&searchMasterSid=4'),
                 //WebViewPage(
                 //   title: 'title',
                 //  baseUrl:
@@ -616,18 +626,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         SizedBox(
                           width: 15,
                         ),
-                        IconButton(
-                          icon: Icon(Icons.power_settings_new),
-                          onPressed: () async {
-                            await FirebaseAuth.instance.signOut();
-                            Navigator.pushReplacement(context,
-                                MaterialPageRoute(builder: (context) {
-                              return LoginPage(
-                                books: widget.books,
-                              );
-                            }));
-                          },
-                        )
                       ],
                     ),
                   ),
@@ -644,15 +642,26 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           image: DecorationImage(
                             fit: BoxFit.fill,
                             image: NetworkImage(
-                              'http://www.asgs.hs.kr/design/html/images/img_010800_01.gif',
-/*widget.user.photoUrl*/
-                            ),
+                                //'http://www.asgs.hs.kr/design/html/images/img_010800_01.gif',
+                                widget.user.photoUrl),
                           )),
                     ),
-                    title: Text(' ' /*widget.user.displayName*/),
-                    subtitle: Text('' /*widget.user.email*/),
-                    trailing: Icon(
-                      Icons.arrow_forward_ios,
+                    title: Text(widget.user.displayName),
+                    subtitle: Text(widget.user.email),
+                    trailing: IconButton(
+                      icon: Icon(
+                        Icons.power_settings_new,
+                        size: 30,
+                      ),
+                      onPressed: () async {
+                        await FirebaseAuth.instance.signOut();
+                        Navigator.pushReplacement(context,
+                            MaterialPageRoute(builder: (context) {
+                          return LoginPage(
+                            books: widget.books,
+                          );
+                        }));
+                      },
                     ),
                   )),
                 ),
@@ -663,17 +672,22 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           alignment: Alignment.centerLeft,
                           color: Color(0xFFF2F2F2),
                           width: MediaQuery.of(context).size.width,
-                          height: 35,
+                          height: 45,
                           child: Padding(
                             padding: EdgeInsets.only(left: 10),
                             child: Text(
                               '안산강서고',
                               style: TextStyle(
-                                  fontSize: 17, fontWeight: FontWeight.bold),
+                                  fontSize: 20, fontWeight: FontWeight.bold),
                             ),
                           )),
                       ListTile(
-                        title: Text('학교행사 ham'),
+                        title: Text(
+                          '학교행사',
+                          style: TextStyle(
+                            fontSize: 18,
+                          ),
+                        ),
                         trailing: Icon(Icons.arrow_forward_ios),
                         onTap: () {
                           Navigator.push(
@@ -687,7 +701,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         },
                       ),
                       ListTile(
-                        title: Text('학습자료실'),
+                        title: Text('학습자료실',
+                            style: TextStyle(
+                              fontSize: 18,
+                            )),
                         trailing: Icon(Icons.arrow_forward_ios),
                         onTap: () {
                           Navigator.push(
@@ -701,7 +718,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         },
                       ),
                       ListTile(
-                        title: Text('급식 메뉴'),
+                        title: Text('급식 메뉴',
+                            style: TextStyle(
+                              fontSize: 18,
+                            )),
                         trailing: Icon(Icons.arrow_forward_ios),
                         onTap: () {
                           Navigator.push(
@@ -722,8 +742,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => WebViewPage(
-                                        title: '인프런 보안 프로젝트',
-                                        baseUrl: 'http://nacha01.dotname.co.kr',
+                                        title: '강서 설문조사',
+                                        baseUrl:
+                                            'https://docs.google.com/forms/d/1Ql4kIHZduTRZ4pExAoImEQr6IaVDI0mQ8dm-nuMtQU8/edit',
                                       )));
                         },
                       ),
@@ -739,11 +760,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             Divider(),
                             ListTile(
                                 leading: Icon(Icons.settings),
-                                title: Text('Settings')),
-                            ListTile(
-                                onTap: () {},
-                                leading: Icon(Icons.help),
-                                title: Text('Developer Blog'))
+                                title: Text('제작 : 컴퓨터동아리(테라바이트)')),
+                            // ListTile(
+                            //     onTap: () {},
+                            //     leading: Icon(Icons.help),
+                            //     title: Text('Developer Blog'))
                           ],
                         ))))
               ],
@@ -773,8 +794,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 padding: EdgeInsets.only(top: 8),
                 width: 100,
                 child: Image(
-                  image: AssetImage('assets/images/bp.png'),
-                  fit: BoxFit.fitWidth,
+                  image: AssetImage('assets/images/asgs_mark.png'),
+                  fit: BoxFit.fitHeight,
                 ),
               ),
             ),

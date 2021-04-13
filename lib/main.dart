@@ -5,8 +5,10 @@
 import 'dart:async';
 
 import 'package:asgshighschool/LocalNotifyManager.dart';
+import 'package:asgshighschool/web_loading.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'Home.dart';
 import 'ScreenSecond.dart';
 import 'Screens/Splash/LoginPage.dart';
@@ -110,8 +112,9 @@ class _PushMessagingExampleState extends State<PushMessagingExample> {
 }
 
 void main() {
-  runApp(
-    MaterialApp(
+  runApp(ChangeNotifierProvider<LoadingData>(
+    create: (_) => LoadingData(),
+    child: MaterialApp(
       debugShowCheckedModeBanner: false,
       // page or widget
       //     domain/pageName <= route
@@ -166,5 +169,5 @@ void main() {
         }
       },
     ),
-  );
+  ));
 }

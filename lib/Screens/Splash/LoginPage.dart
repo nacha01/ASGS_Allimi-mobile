@@ -133,11 +133,13 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _loading ? Text('Logging in...') : Text('Click to Login'),
+                  SizedBox(height: 120.0),
+                  _loading ? Text('로그인 중입니다....') : Text('버튼을 눌러 로그인해 주세요'),
                   _loading
                       ? CircularProgressIndicator()
                       : Column(
                           children: [
+                            /*
                             Padding(
                               padding: const EdgeInsets.all(10.0),
                               child: TextField(
@@ -150,6 +152,8 @@ class _LoginPageState extends State<LoginPage> {
                                 controller: pwController,
                               ),
                             ),
+                            */
+                            SizedBox(height: 50.0),
                             RaisedButton(
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(20.0)),
@@ -162,11 +166,11 @@ class _LoginPageState extends State<LoginPage> {
                                 }));
                               },
                               child: Text(
-                                '이메일으로 로그인 하기',
+                                '본인 이메일으로 로그인 하기',
                                 style: TextStyle(fontSize: 16.0),
                               ),
                             ),
-                            SizedBox(height: 20.0),
+                            SizedBox(height: 50.0),
                             RaisedButton(
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(20.0)),
@@ -194,7 +198,7 @@ class _LoginPageState extends State<LoginPage> {
                               // onPressed: () =>
                               //     Navigator.pushNamed(context, '/google'),
                               child: Text(
-                                'Continue with Google',
+                                '구글 이메일로 로그인하기',
                                 style: TextStyle(fontSize: 16.0),
                               ),
                             ),
