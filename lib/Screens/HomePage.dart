@@ -302,27 +302,55 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           Container(
             child: Padding(
               padding: EdgeInsets.all(10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: <Widget>[
-                  metting(
-                      context,
-                      '이 달의 일정',
-                      '이 달의 일정',
-                      true,
-                      'assets/images/haengsa.jpg',
-                      'http://www.asgs.hs.kr/diary/formList.do?menugrp=030500&searchMasterSid=1',
-                      57,
-                      false),
-                  metting(
-                      context,
-                      '오늘의 급식 메뉴',
-                      '오늘의 급식 메뉴',
-                      false,
-                      'assets/images/geubsig.jpg',
-                      'http://www.asgs.hs.kr/meal/formList.do?menugrp=040801',
-                      100,
-                      true)
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: <Widget>[
+                      metting(
+                          context,
+                          '이 달의 일정',
+                          '이 달의 일정',
+                          true,
+                          'assets/images/haengsa.jpg',
+                          'http://www.asgs.hs.kr/diary/formList.do?menugrp=030500&searchMasterSid=1',
+                          57,
+                          false),
+                      metting(
+                          context,
+                          '오늘의 급식 메뉴',
+                          '오늘의 급식 메뉴',
+                          false,
+                          'assets/images/geubsig.jpg',
+                          'http://www.asgs.hs.kr/meal/formList.do?menugrp=040801',
+                          100,
+                          true)
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: <Widget>[
+                      metting(
+                          context,
+                          '이 달의 일정',
+                          '이 달의 일정',
+                          true,
+                          'assets/images/haengsa.jpg',
+                          'http://www.asgs.hs.kr/diary/formList.do?menugrp=030500&searchMasterSid=1',
+                          57,
+                          false),
+                      metting(
+                          context,
+                          '오늘의 급식 메뉴',
+                          '오늘의 급식 메뉴',
+                          false,
+                          'assets/images/geubsig.jpg',
+                          'http://www.asgs.hs.kr/meal/formList.do?menugrp=040801',
+                          100,
+                          true)
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -581,19 +609,25 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     return Stack(
       children: [
         WebView(
-        initialUrl: url,
-        javascriptMode: JavascriptMode.unrestricted,
-        onPageStarted: (start){
-          setState(() {
-            web_loading = true;
-          });
-        },
-        onPageFinished: (finish){
-          setState(() {
-            web_loading = false;
-          });
-        },
-      ), web_loading ? Center(child: CircularProgressIndicator(),) : Stack()],
+          initialUrl: url,
+          javascriptMode: JavascriptMode.unrestricted,
+          onPageStarted: (start) {
+            setState(() {
+              web_loading = true;
+            });
+          },
+          onPageFinished: (finish) {
+            setState(() {
+              web_loading = false;
+            });
+          },
+        ),
+        web_loading
+            ? Center(
+                child: CircularProgressIndicator(),
+              )
+            : Stack()
+      ],
     );
   }
 
@@ -651,12 +685,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           image: DecorationImage(
                             fit: BoxFit.fill,
                             image: NetworkImage(
-                                'http://www.asgs.hs.kr/design/html/images/img_010800_01.gif',
-                                /*widget.user.photoUrl*/),
+                              'http://www.asgs.hs.kr/design/html/images/img_010800_01.gif',
+                              /*widget.user.photoUrl*/
+                            ),
                           )),
                     ),
-                    title: Text(''/*widget.user.displayName*/),
-                    subtitle: Text(''/*widget.user.email*/),
+                    title: Text('' /*widget.user.displayName*/),
+                    subtitle: Text('' /*widget.user.email*/),
                     trailing: IconButton(
                       icon: Icon(
                         Icons.power_settings_new,
@@ -865,7 +900,7 @@ Widget metting(
     bool participation) {
   double percentBar = 166 * percent / 100;
   return Container(
-    height: 210,
+    height: 150,
     width: 170,
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,

@@ -198,12 +198,11 @@ class _LoginPageState extends State<LoginPage> {
                               // onPressed: () =>
                               //     Navigator.pushNamed(context, '/google'),
                               child: Text(
-                                '구글 이메일로 로그인하기',
+                                '구글 이메일로 로그인하기_',
                                 style: TextStyle(fontSize: 16.0),
                               ),
                             ),
                             SizedBox(height: 20.0),
-/*
                             RaisedButton(
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(20.0)),
@@ -214,7 +213,6 @@ class _LoginPageState extends State<LoginPage> {
                                 style: TextStyle(fontSize: 16.0),
                               ),
                             ),
-
                             Padding(
                               padding: const EdgeInsets.all(10.0),
                               child: TextField(
@@ -227,7 +225,6 @@ class _LoginPageState extends State<LoginPage> {
                                 controller: pwController,
                               ),
                             ),
-                            
                             SignInButton(
                               Buttons.Google,
                               onPressed: () async {
@@ -251,7 +248,6 @@ class _LoginPageState extends State<LoginPage> {
                                 }
                               },
                             ),
-                            
                             SignInButton(
                               Buttons.Email,
                               onPressed: () async {
@@ -275,7 +271,6 @@ class _LoginPageState extends State<LoginPage> {
                                 }
                               },
                             ),
-                            */
                           ],
                         )
                 ],

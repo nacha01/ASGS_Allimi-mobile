@@ -64,7 +64,7 @@ class _PushMessagingExampleState extends State<PushMessagingExample> {
       setState(() {
         _homeScreenText = "Push Messaging token: $token";
       });
-      print(_homeScreenText);
+      // print(_homeScreenText);
     });
 
     localNotifyManager.setOnNotificationClick(onNotificationClick);
@@ -98,7 +98,7 @@ class _PushMessagingExampleState extends State<PushMessagingExample> {
           child: Column(
             children: <Widget>[
               Center(
-                child: Text(_homeScreenText),
+                child: Text(''/*_homeScreenText*/),
               ),
               Row(children: <Widget>[
                 Expanded(
