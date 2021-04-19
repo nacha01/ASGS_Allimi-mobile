@@ -63,7 +63,7 @@ class _SplashPageState extends State<SplashPage> {
           children: <Widget>[
             SizedBox(),
             Text(
-              '안산강서고 알리',
+              '안산강서고 알리미',
               style: Theme.of(context)
                   .textTheme
                   .headline6
@@ -77,7 +77,7 @@ class _SplashPageState extends State<SplashPage> {
                   .copyWith(color: Colors.white),
             ),
             Text(
-              'Copyright 테라바이.',
+              'Copyright 테라바이트',
               style: Theme.of(context)
                   .textTheme
                   .caption

@@ -21,8 +21,8 @@ class _SignInPageState extends State<SignInPage> {
   @override
   void initState() {
     super.initState();
-    _emailController.text = 'pipi3425@naver.com';
-    _passwordController.text = '12345678';
+    // _emailController.text = 'pipi3425@naver.com';
+    // _passwordController.text = '12345678';
   }
 
   Future<FirebaseUser> _emailSignIn() async {
@@ -77,7 +77,7 @@ class _SignInPageState extends State<SignInPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                '이메일과 Password\n Authentication',
+                '이메일 방식으로 로그인하기',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
               ),
               SizedBox(height: 50.0),
@@ -158,7 +158,7 @@ class _SignInPageState extends State<SignInPage> {
                   }
                 },
                 color: Colors.orangeAccent,
-                child: Text('Login', style: TextStyle(fontSize: 17.0)),
+                child: Text('로그인 하기', style: TextStyle(fontSize: 17.0)),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20.0)),
               ),
@@ -169,7 +169,7 @@ class _SignInPageState extends State<SignInPage> {
                       arguments: widget.books);
                 },
                 color: Colors.orangeAccent,
-                child: Text('Sign Up ', style: TextStyle(fontSize: 17.0)),
+                child: Text('이메일 방식으로 가입하기 ', style: TextStyle(fontSize: 17.0)),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20.0)),
               ),

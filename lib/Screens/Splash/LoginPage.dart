@@ -166,7 +166,7 @@ class _LoginPageState extends State<LoginPage> {
                                 }));
                               },
                               child: Text(
-                                '본인 이메일으로 로그인 하기',
+                                '일반 이메일으로 로그인 하기',
                                 style: TextStyle(fontSize: 16.0),
                               ),
                             ),
@@ -198,11 +198,12 @@ class _LoginPageState extends State<LoginPage> {
                               // onPressed: () =>
                               //     Navigator.pushNamed(context, '/google'),
                               child: Text(
-                                '구글 이메일로 로그인하기_',
+                                '구글 이메일으로 로그인 하기',
                                 style: TextStyle(fontSize: 16.0),
                               ),
                             ),
                             SizedBox(height: 20.0),
+                            /*
                             RaisedButton(
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(20.0)),
@@ -271,6 +272,7 @@ class _LoginPageState extends State<LoginPage> {
                                 }
                               },
                             ),
+                            */
                           ],
                         )
                 ],

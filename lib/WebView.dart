@@ -14,16 +14,34 @@ class WebViewPage extends StatefulWidget {
 }
 
 class _WebViewPageState extends State<WebViewPage> {
+  bool _web_loading = true;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: WebView(
-        initialUrl: widget.baseUrl,
-        javascriptMode: JavascriptMode.unrestricted,
-      ),
+      body: Stack(children: [
+        WebView(
+          onPageStarted: (start) {
+            setState(() {
+              _web_loading = true;
+            });
+          },
+          onPageFinished: (finish) {
+            setState(() {
+              _web_loading = false;
+            });
+          },
+          initialUrl: widget.baseUrl,
+          javascriptMode: JavascriptMode.unrestricted,
+        ),
+        _web_loading
+            ? Center(
+                child: CircularProgressIndicator(),
+              )
+            : Stack()
+      ]),
     );
   }
 }

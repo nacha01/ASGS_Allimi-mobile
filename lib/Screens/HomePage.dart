@@ -262,7 +262,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                ink(context, '공지사항_', Icons.search,
+                ink(context, '공지사항', Icons.search,
                     'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030100&searchMasterSid=3'),
                 ink(context, '학교 행사', Icons.text_fields,
                     'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030200&searchMasterSid=4'),
@@ -310,22 +310,24 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     children: <Widget>[
                       metting(
                           context,
-                          '이 달의 일정',
-                          '이 달의 일정',
-                          true,
-                          'assets/images/haengsa.jpg',
-                          'http://www.asgs.hs.kr/diary/formList.do?menugrp=030500&searchMasterSid=1',
-                          57,
-                          false),
-                      metting(
-                          context,
                           '오늘의 급식 메뉴',
                           '오늘의 급식 메뉴',
                           false,
                           'assets/images/geubsig.jpg',
                           'http://www.asgs.hs.kr/meal/formList.do?menugrp=040801',
                           100,
-                          true)
+                          true,
+                          upTitle: '오늘의 식단'),
+                      metting(
+                          context,
+                          '이 달의 일정',
+                          '이 달의 일정',
+                          true,
+                          'assets/images/haengsa.jpg',
+                          'http://www.asgs.hs.kr/diary/formList.do?menugrp=030500&searchMasterSid=1',
+                          57,
+                          false,
+                          upTitle: '이달의 일정'),
                     ],
                   ),
                   Row(
@@ -333,22 +335,24 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     children: <Widget>[
                       metting(
                           context,
-                          '이 달의 일정',
-                          '이 달의 일정',
+                          '가정 통신문',
+                          '가정 통신문',
                           true,
-                          'assets/images/haengsa.jpg',
-                          'http://www.asgs.hs.kr/diary/formList.do?menugrp=030500&searchMasterSid=1',
+                          'assets/images/gajungtongsinmun.jpg',
+                          'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030400&searchMasterSid=49',
                           57,
-                          false),
+                          false,
+                          upTitle: '가정 통신문'),
                       metting(
                           context,
-                          '오늘의 급식 메뉴',
-                          '오늘의 급식 메뉴',
+                          '강서 도서 검색',
+                          '강서 도서 검색',
                           false,
-                          'assets/images/geubsig.jpg',
-                          'http://www.asgs.hs.kr/meal/formList.do?menugrp=040801',
+                          'assets/images/doseosil.jpg',
+                          'https://reading.gglec.go.kr/r/newReading/search/schoolListForm.jsp',
                           100,
-                          true)
+                          true,
+                          upTitle: '도서 검색')
                     ],
                   ),
                 ],
@@ -379,7 +383,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   textAlign: TextAlign.start,
                   text: TextSpan(children: <TextSpan>[
                     TextSpan(
-                      text: '여기는 학교가 아닌 강서 알리미 알림방입니다.',
+                      text: ' 안산강서고 알림방입니다.',
                       style: TextStyle(
                           fontSize: 15,
                           color: Colors.black,
@@ -685,7 +689,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           image: DecorationImage(
                             fit: BoxFit.fill,
                             image: NetworkImage(
-                              'http://www.asgs.hs.kr/design/html/images/img_010800_01.gif',
+                              'http://www.asgs.hs.kr/bbs/execDownload.do?sid=5433',
                               /*widget.user.photoUrl*/
                             ),
                           )),
@@ -718,7 +722,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           width: MediaQuery.of(context).size.width,
                           height: 45,
                           child: Padding(
-                            padding: EdgeInsets.only(left: 10),
+                            padding: EdgeInsets.only(left: 60),
                             child: Text(
                               '안산강서고',
                               style: TextStyle(
@@ -897,7 +901,8 @@ Widget metting(
     String imageUrl,
     String siteUrl,
     int percent,
-    bool participation) {
+    bool participation,
+    {@required String upTitle}) {
   double percentBar = 166 * percent / 100;
   return Container(
     height: 150,
@@ -926,26 +931,18 @@ Widget metting(
                 ),
               ),
               Container(
-                  height: 30,
-                  width: 80,
-                  color: Color(0xFF646464),
-                  child: Center(
-                    child: status
-                        ? Text(
-                            '이 달 일정',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          )
-                        : Text(
-                            '오늘의 식단',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                  )),
+                height: 30,
+                width: 80,
+                color: Color(0xFF646464),
+                child: Center(
+                    child: Text(
+                  upTitle,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                )),
+              ),
             ],
           ),
         ),
