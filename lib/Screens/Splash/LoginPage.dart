@@ -39,9 +39,10 @@ class _LoginPageState extends State<LoginPage> {
 
   _googleSignIn() async {
     // account check
+    print('a');
     final bool isSignedIn =
         await GoogleSignIn().isSignedIn(); // already account check
-
+    print(isSignedIn);
     // user data
     GoogleSignInAccount googleUser;
 
@@ -49,21 +50,23 @@ class _LoginPageState extends State<LoginPage> {
       googleUser = await GoogleSignIn().signInSilently(); // not ui
     else
       googleUser = await GoogleSignIn().signIn(); // select google account
-
+    print('b');
     // google Auth data
     final GoogleSignInAuthentication googleAuth =
         await googleUser.authentication; //token
-
+    print('c');
     // Trust information
     final AuthCredential credential = GoogleAuthProvider.getCredential(
       accessToken: googleAuth.accessToken, //접근 권한
       idToken: googleAuth.idToken, // 현재 아이디
     );
-
+    print('d');
     // data save(real login code)
     final FirebaseUser user =
         (await FirebaseAuth.instance.signInWithCredential(credential)).user;
     print("signed in " + user.displayName); //firebase 인증 시작
+
+    print('e');
 
     // new data create(firestore)
     Firestore.instance

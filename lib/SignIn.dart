@@ -135,6 +135,22 @@ class _SignInPageState extends State<SignInPage> {
               RaisedButton(
                 /////////
                 onPressed: () async {
+                  if (_emailController.text.isEmpty ||
+                      _passwordController.text.isEmpty) {
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            content: Text('내용을 입력하세요'),
+                            actions: [
+                              FlatButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: Text('확인'))
+                            ],
+                          );
+                        });
+                    return;
+                  }
                   try {
                     setState(() {
                       _loading = true;
