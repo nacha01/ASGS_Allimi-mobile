@@ -1,4 +1,5 @@
 import 'package:asgshighschool/Home.dart';
+import 'package:asgshighschool/SignIn.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -46,10 +47,15 @@ class _LoginPageState extends State<LoginPage> {
     // user data
     GoogleSignInAccount googleUser;
 
-    if (isSignedIn)
+    if (isSignedIn) {
       googleUser = await GoogleSignIn().signInSilently(); // not ui
-    else
+      print("error in01");
+    }
+    else {
+      print("error in02");
       googleUser = await GoogleSignIn().signIn(); // select google account
+      print("error in03");
+    }
     print('b');
     // google Auth data
     final GoogleSignInAuthentication googleAuth =
@@ -163,7 +169,7 @@ class _LoginPageState extends State<LoginPage> {
                               onPressed: () {
                                 Navigator.push(context,
                                     MaterialPageRoute(builder: (ctx) {
-                                  return EmailPasswordAuth(
+                                  return SignInPage(
                                     books: widget.books,
                                   );
                                 }));
@@ -182,7 +188,9 @@ class _LoginPageState extends State<LoginPage> {
                                   setState(() {
                                     _loading = true;
                                   });
+                                  print("error1");
                                   await _googleSignIn();
+                                  print("error2");
                                   FirebaseAuth.instance.onAuthStateChanged
                                       .listen((fu) {
                                     Navigator.pushReplacementNamed(
@@ -206,7 +214,7 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ),
                             SizedBox(height: 20.0),
-                            /*
+
                             RaisedButton(
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(20.0)),
@@ -275,7 +283,7 @@ class _LoginPageState extends State<LoginPage> {
                                 }
                               },
                             ),
-                            */
+
                           ],
                         )
                 ],

@@ -57,8 +57,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     // TODO: implement initState
     super.initState();
     getMainImage();
-    print('여기 ${widget.books}');
-    print('${widget.books.documents[0]['img_url']} 강서고 컴퓨터에서 만들어진 ');
+    //print('여기 ${widget.books}');
+    //print('${widget.books.documents[0]['img_url']} 강서고 컴퓨터에서 만들어진 ');
     print(imgList.length);
     _numberOfTabs = 3;
     _tabController = TabController(vsync: this, length: _numberOfTabs);

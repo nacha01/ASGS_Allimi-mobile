@@ -112,62 +112,68 @@ class _PushMessagingExampleState extends State<PushMessagingExample> {
 }
 
 void main() {
-  runApp(ChangeNotifierProvider<LoadingData>(
-    create: (_) => LoadingData(),
-    child: MaterialApp(
-      debugShowCheckedModeBanner: false,
-      // page or widget
-      //     domain/pageName <= route
-      //     HTML  <= widget
-      // home: PushMessagingExample(), // single page
-      // multi page
-      initialRoute: PushMessagingExample.routeName,
-      onGenerateRoute: (settings) {
-        print('redirect page name : $settings');
-        switch (settings.name) {
-          case MyApp.routeName:
-            print('call myapp');
-            {
-              return MaterialPageRoute(builder: (context) => MyApp());
-            }
-            break;
-          case SplashPage.routeName:
-            print('call SplashPage');
-            {
-              return MaterialPageRoute(builder: (context) => SplashPage());
-            }
-            break;
-          case HomePage.routeName:
-            {
-              return MaterialPageRoute(
-                  builder: (context) => HomePage(
-                        user: (settings.arguments as Map)['user'],
-                        books: (settings.arguments as Map)['books'],
-                      ));
-            }
-            break;
-          case LoginPage.routeName:
-            {
-              return MaterialPageRoute(
-                  builder: (context) => LoginPage(books: settings.arguments));
-            }
-            break;
-          case EmailPasswordAuth.routeName:
-            print('call EmailPasswordAuth');
-            {
-              return MaterialPageRoute(
-                  builder: (context) => EmailPasswordAuth());
-            }
-            break;
-          default:
-            print('call default');
-            {
-              return MaterialPageRoute(
-                  builder: (context) => PushMessagingExample());
-            }
-            break;
-        }
-      },
-    ),
-  ));
+  runZoned(() {
+    runApp(ChangeNotifierProvider<LoadingData>(
+      create: (_) => LoadingData(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        // page or widget
+        //     domain/pageName <= route
+        //     HTML  <= widget
+        // home: PushMessagingExample(), // single page
+        // multi page
+        initialRoute: PushMessagingExample.routeName,
+        onGenerateRoute: (settings) {
+          print('redirect page name : $settings');
+          switch (settings.name) {
+            case MyApp.routeName:
+              print('call myapp');
+              {
+                return MaterialPageRoute(builder: (context) => MyApp());
+              }
+              break;
+            case SplashPage.routeName:
+              print('call SplashPage');
+              {
+                return MaterialPageRoute(builder: (context) => SplashPage());
+              }
+              break;
+            case HomePage.routeName:
+              {
+                return MaterialPageRoute(
+                    builder: (context) =>
+                        HomePage(
+                          user: (settings.arguments as Map)['user'],
+                          books: (settings.arguments as Map)['books'],
+                        ));
+              }
+              break;
+            case LoginPage.routeName:
+              {
+                return MaterialPageRoute(
+                    builder: (context) => LoginPage(books: settings.arguments));
+              }
+              break;
+            case EmailPasswordAuth.routeName:
+              print('call EmailPasswordAuth');
+              {
+                return MaterialPageRoute(
+                    builder: (context) => EmailPasswordAuth());
+              }
+              break;
+            default:
+              print('call default');
+              {
+                return MaterialPageRoute(
+                    builder: (context) => PushMessagingExample());
+              }
+              break;
+          }
+        },
+      ),
+    ));
+  },onError: (e){
+    print('lalal');
+    print(e.toString());
+  });
 }

@@ -1,4 +1,5 @@
 import 'package:asgshighschool/Screens/HomePage.dart';
+import 'package:asgshighschool/SignUp.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -21,6 +22,9 @@ class _SignInPageState extends State<SignInPage> {
   @override
   void initState() {
     super.initState();
+    if(widget.books == null){
+      print('it it null in signin page');
+    }
     // _emailController.text = 'pipi3425@naver.com';
     // _passwordController.text = '12345678';
   }
@@ -181,8 +185,8 @@ class _SignInPageState extends State<SignInPage> {
               SizedBox(height: 20.0),
               RaisedButton(
                 onPressed: () {
-                  Navigator.pushReplacementNamed(context, '/SignUp',
-                      arguments: widget.books);
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SignUpPage(books: widget.books,)),
+                      );
                 },
                 color: Colors.orangeAccent,
                 child: Text('이메일 방식으로 가입하기 ', style: TextStyle(fontSize: 17.0)),

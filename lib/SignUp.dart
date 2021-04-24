@@ -34,7 +34,13 @@ class _SignUpPageState extends State<SignUpPage> {
     }
     return true;
   }
-
+  @override
+  void initState() {
+    super.initState();
+    if(widget.books == null){
+      print('it is null');
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -185,34 +191,10 @@ class _SignUpPageState extends State<SignUpPage> {
                                 child: Text('아니오')),
                             FlatButton(
                                 onPressed: () async {
-                                  _auth
-                                      .createUserWithEmailAndPassword(
-                                    email: _emailController.text.toString(),
-                                    password:
-                                        _passwordController.text.toString(),
-                                  )
-                                      .then((signedInUser) {
-                                    _fireStore.collection('users').add({
-                                      'identity': _selectedValue,
-                                      'name': _nameController.text.toString(),
-                                      'student_id':
-                                          _gradeController.text.toString(),
-                                      'email': _emailController.text.toString(),
-                                    }).then((value) {
-                                      if (signedInUser != null) {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (ctx) => HomePage(
-                                                      books: widget.books,
-                                                    )));
-                                      }
-                                    }).catchError((e) {
-                                      print(e);
-                                    });
-                                  }).catchError((e) {
-                                    print(e);
-                                  });
+
+                                  print('yy');
+                                  await createAccount();
+                                  Navigator.pop(context);
                                 },
                                 child: Text('예'))
                           ],
@@ -229,6 +211,40 @@ class _SignUpPageState extends State<SignUpPage> {
         ),
       ),
     );
+  }
+
+  Future<void> createAccount() async {
+    await _auth
+        .createUserWithEmailAndPassword(
+      email: _emailController.text.toString(),
+      password:
+          _passwordController.text.toString(),
+    )
+        .then((signedInUser) {
+          print('ss');
+      _fireStore.collection('users').add({
+        'identity': _selectedValue,
+        'name': _nameController.text.toString(),
+        'student_id':
+            _gradeController.text.toString(),
+        'email': _emailController.text.toString(),
+      }).then((value) {
+        print('rr');
+        if (signedInUser != null) {
+          print('ttt');
+          Navigator.push(
+              this.context,
+              MaterialPageRoute(
+                  builder: (ctx) => HomePage(
+                    books: widget.books,
+                  )));
+        }
+      }).catchError((e) {
+        print(e.toString());
+      });
+    }).catchError((e) {
+      print(e.toString());
+    });
   }
 }
 
