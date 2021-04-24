@@ -34,13 +34,15 @@ class _SignUpPageState extends State<SignUpPage> {
     }
     return true;
   }
+
   @override
   void initState() {
     super.initState();
-    if(widget.books == null){
+    if (widget.books == null) {
       print('it is null');
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -167,39 +169,88 @@ class _SignUpPageState extends State<SignUpPage> {
               SizedBox(height: 20.0),
               RaisedButton(
                 onPressed: () async {
-                  showDialog(
-                      context: context,
-                      builder: (context) {
-                        return AlertDialog(
-                          content: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text('입력하신 내용이 맞습니까?'),
-                              Text('그룹명: $_selectedValue'),
-                              Text('이 름: ${_nameController.text}'),
-                              isTwoRow()
-                                  ? Text('"학번: ${_gradeController.text}')
-                                  : Text(''),
-                              Text('이메일: ${_emailController.text}')
+                  if (_passwordController.text.toString().length < 6) {
+                    showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                              content: Text('비밀번호를 6자리 이상 입력하세요!'),
+                            ));
+                    return;
+                  }
+                  if (!_emailController.text.toString().contains('@') ||
+                      !_emailController.text.toString().contains('.')) {
+                    showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                              content: Text('이메일 입력을 확인하세요!'),
+                            ));
+                    return;
+                  } else {
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text('입력하신 내용이 맞습니까?'),
+                                Text('그룹명: $_selectedValue'),
+                                Text('이 름: ${_nameController.text}'),
+                                isTwoRow()
+                                    ? Text('"학번: ${_gradeController.text}')
+                                    : Text(''),
+                                Text('이메일: ${_emailController.text}')
+                              ],
+                            ),
+                            actions: [
+                              FlatButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text('아니오')),
+                              FlatButton(
+                                  onPressed: () async {
+                                    print('yy');
+                                    // await createAccount();
+                                    await _auth
+                                        .createUserWithEmailAndPassword(
+                                      email: _emailController.text.toString(),
+                                      password:
+                                          _passwordController.text.toString(),
+                                    )
+                                        .then((signedInUser) {
+                                      print('ss');
+                                      _fireStore.collection('users').add({
+                                        'identity': _selectedValue,
+                                        'name': _nameController.text.toString(),
+                                        'student_id':
+                                            _gradeController.text.toString(),
+                                        'email':
+                                            _emailController.text.toString(),
+                                      }).then((value) {
+                                        print('rr');
+                                        if (signedInUser != null) {
+                                          print('ttt');
+                                          Navigator.push(
+                                              this.context,
+                                              MaterialPageRoute(
+                                                  builder: (ctx) => HomePage(
+                                                        books: widget.books,
+                                                      )));
+                                        }
+                                      }).catchError((e) {
+                                        print(e.toString());
+                                      });
+                                    }).catchError((e) {
+                                      print(e.toString());
+                                    });
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text('예'))
                             ],
-                          ),
-                          actions: [
-                            FlatButton(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                child: Text('아니오')),
-                            FlatButton(
-                                onPressed: () async {
-
-                                  print('yy');
-                                  await createAccount();
-                                  Navigator.pop(context);
-                                },
-                                child: Text('예'))
-                          ],
-                        );
-                      });
+                          );
+                        });
+                  }
                 },
                 color: Colors.orangeAccent,
                 child: Text('Sign Up ', style: TextStyle(fontSize: 17.0)),
@@ -211,40 +262,6 @@ class _SignUpPageState extends State<SignUpPage> {
         ),
       ),
     );
-  }
-
-  Future<void> createAccount() async {
-    await _auth
-        .createUserWithEmailAndPassword(
-      email: _emailController.text.toString(),
-      password:
-          _passwordController.text.toString(),
-    )
-        .then((signedInUser) {
-          print('ss');
-      _fireStore.collection('users').add({
-        'identity': _selectedValue,
-        'name': _nameController.text.toString(),
-        'student_id':
-            _gradeController.text.toString(),
-        'email': _emailController.text.toString(),
-      }).then((value) {
-        print('rr');
-        if (signedInUser != null) {
-          print('ttt');
-          Navigator.push(
-              this.context,
-              MaterialPageRoute(
-                  builder: (ctx) => HomePage(
-                    books: widget.books,
-                  )));
-        }
-      }).catchError((e) {
-        print(e.toString());
-      });
-    }).catchError((e) {
-      print(e.toString());
-    });
   }
 }
 
