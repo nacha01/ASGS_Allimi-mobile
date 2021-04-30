@@ -24,6 +24,8 @@ dependencies:
   flutter:
     sdk: flutter
 
+  shared_preferences: ^0.5.12
+
   # Local Notification
   flutter_local_notifications: ^3.0.3
   rxdart : ^0.25.0
