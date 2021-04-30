@@ -23,18 +23,23 @@
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
+			<key>CFBundleIdentifier</key>
+			<string></string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.707768728455-2soceb5l24sd9g1c0ccpps97u40cktbn</string>
+				<string>com.googleusercontent.apps.215812690526-ite0vvf8rjb081dmh7nnbl5kksev59q9</string>
 			</array>
 		</dict>
+
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<false/>
+	<key>LSApplicationCategoryType</key>
+	<string></string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>

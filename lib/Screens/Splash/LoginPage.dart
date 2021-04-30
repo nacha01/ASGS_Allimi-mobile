@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+import '../HomePage.dart';
+
 // ignore: must_be_immutable
 class LoginPage extends StatefulWidget {
   LoginPage({Key key, this.books}) : super(key: key);
@@ -21,6 +23,24 @@ class _LoginPageState extends State<LoginPage> {
   bool _loading = false;
   TextEditingController emailController;
   TextEditingController pwController;
+  TextEditingController _nameController = TextEditingController();
+  TextEditingController _gradeController = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
+  final _auth = FirebaseAuth.instance;
+  final _fireStore = Firestore.instance;
+  final statusList = ['학생', '학부모', '교사', '졸업생', '기타'];
+  var _selectedValue = '학생';
+  bool isTwoRow() {
+    if (_selectedValue == '학생' || _selectedValue == '학부모') {
+      return true;
+    } else if (_selectedValue == '교사' ||
+        _selectedValue == '졸업생' ||
+        _selectedValue == '기타') {
+      return false;
+    }
+    return true;
+  }
 
   @override
   void initState() {
@@ -50,8 +70,7 @@ class _LoginPageState extends State<LoginPage> {
     if (isSignedIn) {
       googleUser = await GoogleSignIn().signInSilently(); // not ui
       print("error in01");
-    }
-    else {
+    } else {
       print("error in02");
       googleUser = await GoogleSignIn().signIn(); // select google account
       print("error in03");
@@ -81,10 +100,14 @@ class _LoginPageState extends State<LoginPage> {
         .get()
         .then((value) async {
       if (value.data == null) {
-        await Firestore.instance
-            .collection('users')
-            .document(user.uid)
-            .setData({'email': user.email, 'create': DateTime.now()});
+        // await Firestore.instance
+        //     .collection('users')
+        //     .document(user.uid)
+        //     .setData({'email': user.email, 'create': DateTime.now()});
+
+        // 개인 정보 입력 시작
+
+        // 개인정보 입력 창 끝.
       }
     });
     return user;
@@ -214,7 +237,7 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ),
                             SizedBox(height: 20.0),
-
+/*
                             RaisedButton(
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(20.0)),
@@ -283,7 +306,7 @@ class _LoginPageState extends State<LoginPage> {
                                 }
                               },
                             ),
-
+*/
                           ],
                         )
                 ],

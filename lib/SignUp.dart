@@ -186,6 +186,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             ));
                     return;
                   } else {
+                    //개인정보 입력 시작
                     showDialog(
                         context: context,
                         builder: (context) {
@@ -250,7 +251,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             ],
                           );
                         });
-                  }
+                  } // 개인정보 입력 창 끝.
                 },
                 color: Colors.orangeAccent,
                 child: Text('Sign Up ', style: TextStyle(fontSize: 17.0)),
