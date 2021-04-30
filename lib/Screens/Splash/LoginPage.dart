@@ -1,4 +1,5 @@
 import 'package:asgshighschool/Home.dart';
+import 'package:asgshighschool/InformationInputPage.dart';
 import 'package:asgshighschool/SignIn.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -106,6 +107,7 @@ class _LoginPageState extends State<LoginPage> {
         //     .setData({'email': user.email, 'create': DateTime.now()});
 
         // 개인 정보 입력 시작
+        Navigator.push(context, MaterialPageRoute(builder: (context) => InputPage(user: user)));
 
         // 개인정보 입력 창 끝.
       }
