@@ -198,7 +198,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                 Text('그룹명: $_selectedValue'),
                                 Text('이 름: ${_nameController.text}'),
                                 isTwoRow()
-                                    ? Text('"학번: ${_gradeController.text}')
+                                    ? Text('학번: ${_gradeController.text}')
                                     : Text(''),
                                 Text('이메일: ${_emailController.text}')
                               ],
