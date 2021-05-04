@@ -349,7 +349,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           '강서 도서 검색',
                           false,
                           'assets/images/doseosil.jpg',
-                          'https://reading.gglec.go.kr/r/newReading/search/schoolListForm.jsp',
+                          'https://reading.gglec.go.kr/r/newReading/search/schoolCodeSetting.jsp?schoolCode=895&returnUrl=',
                           100,
                           true,
                           upTitle: '도서 검색')
