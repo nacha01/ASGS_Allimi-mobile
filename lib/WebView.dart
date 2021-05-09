@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:asgshighschool/web_loading.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -15,6 +17,17 @@ class WebViewPage extends StatefulWidget {
 
 class _WebViewPageState extends State<WebViewPage> {
   bool _web_loading = true;
+  Timer _timer;
+  int _loading = 1;
+  bool _isFinished = false;
+  double _opacity = 1.0;
+  bool _isExceed = false;
+  bool _oneTurn = false;
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,26 +35,85 @@ class _WebViewPageState extends State<WebViewPage> {
         title: Text(widget.title),
       ),
       body: Stack(children: [
-        WebView(
-          onPageStarted: (start) {
-            setState(() {
-              _web_loading = true;
-            });
-          },
-          onPageFinished: (finish) {
-            setState(() {
-              _web_loading = false;
-            });
-          },
-          initialUrl: widget.baseUrl,
-          javascriptMode: JavascriptMode.unrestricted,
+        Opacity(
+          opacity: _opacity,
+          child: WebView(
+            onPageStarted: (start) {
+              print('page start!');
+              _isFinished = false;
+              if(!_oneTurn) {
+                int limit = 3;
+                const oneSec = const Duration(seconds: 1);
+                _timer = Timer.periodic(oneSec, (timer) {
+                  if (limit == 0 && _isFinished) {
+                    print('time safe');
+                    setState(() {
+                      timer.cancel();
+                      _loading = 2;
+                      _isExceed = false;
+                      _oneTurn = true;
+                      return;
+                    });
+                  }
+                  else if (limit == 0 && !_isFinished) {
+                    print('time exceed');
+                    setState(() {
+                      timer.cancel();
+                      _loading = 1;
+                      _isExceed = true;
+                      _opacity = 0.0;
+                      _oneTurn = true;
+                      return;
+                    });
+                  }
+                  else {
+                    print('counting!');
+                    setState(() {
+                      limit--;
+                    });
+                  }
+                });
+              }
+              // setState(() {
+              //   _web_loading = true;
+              //   print('ll');
+              //   _loading = 1;
+              // });
+            },
+            onPageFinished: (finish) {
+              print('page finish!');
+              setState(() {
+                _web_loading = false;
+                _isFinished = true;
+                if(!_isExceed) {
+                  _loading = 2;
+                }
+              });
+            },
+            initialUrl: widget.baseUrl,
+            javascriptMode: JavascriptMode.unrestricted,
+          ),
         ),
-        _web_loading
-            ? Center(
-                child: CircularProgressIndicator(),
-              )
-            : Stack()
+        getWebState()
+        // _web_loading
+        //     ? Center(
+        //         child: CircularProgressIndicator(),
+        //       )
+        //     : Stack()
+
+        //_loading == 1 ? Center(child: CircularProgressIndicator(),) : _loading == 0 ? Center(child: Text('에러 발생 재시도 바람'),) : Stack()
       ]),
     );
+  }
+  Widget getWebState(){
+    if(_loading == 1 && !_isExceed){
+      return Center(child: CircularProgressIndicator(),);
+    }
+    else if(_loading == 2){
+      return Stack();
+    }
+    else if(_loading == 1 && _isExceed){
+      return Center(child: Text('에러 발생 재시도 바람'),);
+    }
   }
 }
