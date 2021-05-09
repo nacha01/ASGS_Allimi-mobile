@@ -249,10 +249,23 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         SwiperPagination(alignment: Alignment.bottomCenter),
                     itemCount: imgList.length,
                     itemBuilder: (BuildContext context, int index) {
-                      return Image.network(
-                        imgList[index],
-                        fit: BoxFit.fill,
-                      );
+                      return imgList[index] == null
+                          ? Text('Error Image')
+                          : Image.network(
+                              imgList[index],
+                              fit: BoxFit.fill,
+                              errorBuilder: (context, exception, stackTrace) {
+                                print('ddd');
+                                return Text('Image Error');
+                              },
+                              loadingBuilder:
+                                  (context, widget, loadingProgress) {
+                                if (loadingProgress == null) return widget;
+                                return Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              },
+                            );
                     })
                 : Center(child: CircularProgressIndicator()),
           ),

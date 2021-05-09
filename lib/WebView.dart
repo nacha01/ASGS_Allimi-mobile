@@ -10,6 +10,7 @@ class WebViewPage extends StatefulWidget {
   String baseUrl;
   String title;
   WebViewPage({Key key, this.baseUrl, this.title}) : super(key: key);
+  static const routeName = '/webpage';
 
   @override
   _WebViewPageState createState() => _WebViewPageState();
@@ -28,6 +29,7 @@ class _WebViewPageState extends State<WebViewPage> {
     _timer.cancel();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,13 +40,13 @@ class _WebViewPageState extends State<WebViewPage> {
         Opacity(
           opacity: _opacity,
           child: WebView(
-            onPageStarted: (start) {
+            onPageStarted: (start) async {
               print('page start!');
               _isFinished = false;
-              if(!_oneTurn) {
-                int limit = 3;
+              if (!_oneTurn) {
+                int limit = 1;
                 const oneSec = const Duration(seconds: 1);
-                _timer = Timer.periodic(oneSec, (timer) {
+                _timer = Timer.periodic(oneSec, (timer) async {
                   if (limit == 0 && _isFinished) {
                     print('time safe');
                     setState(() {
@@ -54,23 +56,21 @@ class _WebViewPageState extends State<WebViewPage> {
                       _oneTurn = true;
                       return;
                     });
-                  }
-                  else if (limit == 0 && !_isFinished) {
+                  } else if (limit == 0 && !_isFinished) {
                     print('time exceed');
                     setState(() {
                       timer.cancel();
                       _loading = 1;
                       _isExceed = true;
-                      _opacity = 0.0;
+                      //_opacity = 0.0;
                       _oneTurn = true;
                       return;
                     });
-                  }
-                  else {
+                  } else {
                     print('counting!');
-                    setState(() {
-                      limit--;
-                    });
+                    //setState(() {
+                    limit--;
+                    //});
                   }
                 });
               }
@@ -85,7 +85,7 @@ class _WebViewPageState extends State<WebViewPage> {
               setState(() {
                 _web_loading = false;
                 _isFinished = true;
-                if(!_isExceed) {
+                if (!_isExceed) {
                   _loading = 2;
                 }
               });
@@ -105,15 +105,46 @@ class _WebViewPageState extends State<WebViewPage> {
       ]),
     );
   }
-  Widget getWebState(){
-    if(_loading == 1 && !_isExceed){
-      return Center(child: CircularProgressIndicator(),);
-    }
-    else if(_loading == 2){
+
+  Widget getWebState() {
+    if (_loading == 1 && !_isExceed) {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    } else if (_loading == 2) {
       return Stack();
-    }
-    else if(_loading == 1 && _isExceed){
-      return Center(child: Text('에러 발생 재시도 바람'),);
+    } else if (_loading == 1 && _isExceed) {
+      return Center(
+          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+        Text(
+          '에러 발생 재시도 바람',
+          style: TextStyle(fontSize: 30),
+        ),
+        Container(
+          child: RaisedButton(
+              child: Text(
+                'retry',
+                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+              ),
+              onPressed: () {
+                setState(() {
+                  _loading = 1;
+                  _isFinished = false;
+                  _opacity = 1.0;
+                  _isExceed = false;
+                  _oneTurn = false;
+                  Navigator.pop(context);
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => WebViewPage(
+                                title: widget.title,
+                                baseUrl: widget.baseUrl,
+                              )));
+                });
+              }),
+        )
+      ]));
     }
   }
 }
