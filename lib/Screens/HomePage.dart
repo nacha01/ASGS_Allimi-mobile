@@ -5,6 +5,8 @@ import 'package:asgshighschool/web_loading.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:http/http.dart' as http;
@@ -51,6 +53,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   bool web_loading = true;
   // ignore: unused_field
   String _keyword = '';
+
+  var webview_height = 0.0;
 
   @override
   void initState() {
@@ -628,6 +632,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         WebView(
           initialUrl: url,
           javascriptMode: JavascriptMode.unrestricted,
+          gestureRecognizers: Set()
+            ..add(
+              Factory<VerticalDragGestureRecognizer>(
+                () => VerticalDragGestureRecognizer(),
+              ), // or null
+            ),
+          key: Key("webview1"),
           onPageStarted: (start) {
             setState(() {
               web_loading = true;
