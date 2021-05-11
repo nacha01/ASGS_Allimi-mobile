@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:asgshighschool/Screens/Splash/LoginPage.dart';
@@ -53,6 +54,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   bool web_loading = true;
   // ignore: unused_field
   String _keyword = '';
+  int _loadings = 1;
+  bool _isFinished = false;
+  double _opacity = 1.0;
+  bool _isExceed = false;
+  bool _oneTurn = false;
+  Timer _timer;
 
   var webview_height = 0.0;
 
@@ -627,6 +634,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   Widget webViewTest(String url) {
+
     return Stack(
       children: [
         WebView(
@@ -639,24 +647,81 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               ), // or null
             ),
           key: Key("webview1"),
-          onPageStarted: (start) {
-            setState(() {
-              web_loading = true;
-            });
+          onPageStarted: (start) async {
+            print('page start!');
+            _isFinished = false;
+            if (!_oneTurn) {
+              int limit = 1;
+              const oneSec = const Duration(seconds: 2);
+              _timer = Timer.periodic(oneSec, (timer) async {
+                if (limit == 0 && _isFinished) {
+                  print('time safe');
+
+                  setState(() {
+                    timer.cancel();
+                    _loadings = 2;
+                    _isExceed = false;
+                    _oneTurn = true;
+                    return;
+                  });
+                } else if (limit == 0 && !_isFinished) {
+
+                  print('time exceed');
+                  setState(() {
+                    timer.cancel();
+                    _loadings = 1;
+                    _isExceed = true;
+                    _oneTurn = true;
+                    return;
+                  });
+                } else {
+                  print('counting!');
+                  // setState(() {
+                    limit--;
+                  // });
+                }
+              });
+            }
+            // setState(() {
+            //   web_loading = true;
+            // });
           },
           onPageFinished: (finish) {
+            print('page finish!');
             setState(() {
               web_loading = false;
+              _isFinished = true;
+              if (!_isExceed) {
+                _loadings = 2;
+              }
             });
           },
         ),
-        web_loading
-            ? Center(
-                child: CircularProgressIndicator(),
-              )
-            : Stack()
+        // web_loading
+        //     ? Center(
+        //         child: CircularProgressIndicator(),
+        //       )
+        //     : Stack()
+        getWebState()
       ],
     );
+  }
+
+  Widget getWebState() {
+    if (_loadings == 1 && !_isExceed) {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    } else if (_loadings == 2) {
+      return Stack();
+    } else if (_loadings == 1 && _isExceed) {
+      return Center(
+          child:
+          Text(
+            '에러 발생, 재접속 하시길 바랍니다',
+            style: TextStyle(fontSize: 30),
+          ));
+    }
   }
 
   Future<bool> _onBackPressed() {
