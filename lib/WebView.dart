@@ -13,7 +13,8 @@ class WebViewPage extends StatefulWidget {
   String title;
   var books;
   final FirebaseUser user;
-  WebViewPage({Key key, this.baseUrl, this.title, this.books, this.user}) : super(key: key);
+  bool isTab;
+  WebViewPage({Key key, this.baseUrl, this.title, this.books, this.user, this.isTab = false}) : super(key: key);
   static const routeName = '/webpage';
 
   @override
@@ -30,7 +31,7 @@ class _WebViewPageState extends State<WebViewPage> {
   bool _oneTurn = false;
   @override
   void dispose() {
-    _timer.cancel();
+    _timer?.cancel();
     super.dispose();
   }
 
@@ -41,8 +42,7 @@ class _WebViewPageState extends State<WebViewPage> {
         title: Text(widget.title),
         leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: (){
           Navigator.pop(context);
-          Navigator.push(context, MaterialPageRoute(builder: (context)
-          => HomePage(books: widget.books,user:  widget.user,)));
+          HomePageState.tabController.index = 0;
         }),
       ),
       body: Stack(children: [

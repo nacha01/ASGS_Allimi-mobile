@@ -39,12 +39,12 @@ class HomePage extends StatefulWidget {
   var books;
 
   @override
-  _HomePageState createState() => _HomePageState();
+  HomePageState createState() => HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
+class HomePageState extends State<HomePage> with TickerProviderStateMixin {
   ScrollController _scrollViewController;
-  TabController _tabController;
+  static TabController tabController;
   int _numberOfTabs;
   var main_img;
   List<String> imgList = [];
@@ -72,14 +72,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     //print('${widget.books.documents[0]['img_url']} 강서고 컴퓨터에서 만들어진 ');
     print(imgList.length);
     _numberOfTabs = 3;
-    _tabController = TabController(vsync: this, length: _numberOfTabs);
+    tabController = TabController(vsync: this, length: _numberOfTabs);
     _scrollViewController = ScrollController();
   }
 
   @override
   void dispose() {
     _scrollViewController.dispose();
-    _tabController.dispose();
+    tabController.dispose();
     super.dispose();
   }
 
@@ -606,8 +606,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   forceElevated: innerBoxIsScrolled,
                   bottom: TabBar(onTap: (index){
                     if(index == 1) {
-                      print('ddddadw');
-                      Navigator.pushReplacement(
+                      Navigator.push(
                           context, MaterialPageRoute(builder: (context) =>
                           WebViewPage(baseUrl: 'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030200&searchMasterSid=4',
                             title: "학교 행사",
@@ -623,13 +622,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       Tab(text: "학교 행사"),
                       Tab(text: "알리미 공지사항"),
                     ],
-                    controller: _tabController,
+                    controller: tabController,
                   ),
                 ),
               ];
             },
             body: TabBarView(
-              controller: _tabController,
+              controller: tabController,
               children: [
                 homeTab,
                 //interviewTab,
