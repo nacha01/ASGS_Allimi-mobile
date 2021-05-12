@@ -38,6 +38,16 @@ class _SignInPageState extends State<SignInPage> {
             _pref.getString('email') ?? '';
         _passwordController.text =
             _pref.getString('password') ?? '';
+        _emailSignIn();
+        FirebaseAuth.instance.onAuthStateChanged.listen((fu) {
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) {
+                return HomePage(
+                  user: fu,
+                  books: widget.books,
+                );
+              }));
+        });
       }
     });
   }

@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:asgshighschool/Screens/HomePage.dart';
 import 'package:asgshighschool/web_loading.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:provider/provider.dart';
@@ -9,7 +11,9 @@ import 'package:provider/provider.dart';
 class WebViewPage extends StatefulWidget {
   String baseUrl;
   String title;
-  WebViewPage({Key key, this.baseUrl, this.title}) : super(key: key);
+  var books;
+  final FirebaseUser user;
+  WebViewPage({Key key, this.baseUrl, this.title, this.books, this.user}) : super(key: key);
   static const routeName = '/webpage';
 
   @override
@@ -35,6 +39,11 @@ class _WebViewPageState extends State<WebViewPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: (){
+          Navigator.pop(context);
+          Navigator.push(context, MaterialPageRoute(builder: (context)
+          => HomePage(books: widget.books,user:  widget.user,)));
+        }),
       ),
       body: Stack(children: [
         Opacity(
@@ -44,7 +53,7 @@ class _WebViewPageState extends State<WebViewPage> {
               print('page start!');
               _isFinished = false;
               if (!_oneTurn) {
-                int limit = 1;
+                int limit = 2;
                 const oneSec = const Duration(seconds: 1);
                 _timer = Timer.periodic(oneSec, (timer) async {
                   if (limit == 0 && _isFinished) {

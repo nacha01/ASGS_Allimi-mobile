@@ -604,7 +604,17 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   pinned: true,
                   floating: true,
                   forceElevated: innerBoxIsScrolled,
-                  bottom: TabBar(
+                  bottom: TabBar(onTap: (index){
+                    if(index == 1) {
+                      print('ddddadw');
+                      Navigator.pushReplacement(
+                          context, MaterialPageRoute(builder: (context) =>
+                          WebViewPage(baseUrl: 'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030200&searchMasterSid=4',
+                            title: "학교 행사",
+                            user: widget.user,
+                            books: widget.books,)));
+                    }
+                  },
                     labelColor: Colors.black,
                     indicatorColor: Colors.blueAccent, // 현재 보고 있는 탭을 가리키는 지시자
                     indicatorWeight: 6.0,
@@ -623,8 +633,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               children: [
                 homeTab,
                 //interviewTab,
-                webViewTest(
-                    'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030200&searchMasterSid=4'),
+                // webViewTest(
+                //     'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030200&searchMasterSid=4'),
+                moveTabToWidget('http://www.asgs.hs.kr/bbs/formList.do?menugrp=030200&searchMasterSid=4'),
                 asgsMovieTab,
                 //asgs_movieTab(),
               ],
@@ -632,7 +643,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           )),
     );
   }
+  Widget moveTabToWidget(String url){
 
+    return Stack();
+  }
   Widget webViewTest(String url) {
 
     return Stack(
