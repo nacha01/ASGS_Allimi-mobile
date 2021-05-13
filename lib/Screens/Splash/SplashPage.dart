@@ -1,6 +1,7 @@
 // Script
 import 'dart:async';
 // import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:asgshighschool/SignIn.dart';
 import 'package:flutter/material.dart';
 
 // Plugins
@@ -40,8 +41,9 @@ class _SplashPageState extends State<SplashPage> {
         //   userData.sendEmailVerification();
         // }
 
-        Navigator.pushReplacementNamed(context, '/signin', arguments: value);
-
+        // Navigator.pushReplacementNamed(context, '/signin', arguments: value);
+        Navigator.pushReplacement(context,MaterialPageRoute(builder: (context)
+        => SignInPage(books: value,)));
         // if (userData == null) {
         //   Navigator.pushReplacementNamed(context, '/signin', arguments: value);
         //   return;

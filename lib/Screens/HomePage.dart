@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:asgshighschool/Screens/Splash/LoginPage.dart';
 import 'package:asgshighschool/web_loading.dart';
@@ -9,6 +10,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -78,8 +80,8 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   @override
   void dispose() {
-    _scrollViewController.dispose();
-    tabController.dispose();
+    // _scrollViewController.dispose();
+    // tabController.dispose();
     super.dispose();
   }
 
@@ -804,13 +806,37 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         size: 30,
                       ),
                       onPressed: () async {
-                        await FirebaseAuth.instance.signOut();
-                        Navigator.pushReplacement(context,
-                            MaterialPageRoute(builder: (context) {
-                          return LoginPage(
-                            books: widget.books,
-                          );
-                        }));
+                        //await FirebaseAuth.instance.signOut();
+                        showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: Text('정말로 종료하시겠습니까?'),
+                              actions: [
+                                FlatButton(
+                                    onPressed: () {
+                                      // Navigator.pop(context, true);
+                                      FirebaseAuth.instance.signOut();
+                                      // exit(0);
+                                      _scrollViewController.dispose();
+                                      tabController.dispose();
+                                      SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+
+                                    },
+                                    child: Text('예')),
+                                FlatButton(
+                                    onPressed: () => Navigator.pop(context, false),
+                                    child: Text('아니오'))
+                              ],
+                            ));
+                        // Navigator.pushReplacement(context,
+                        //     MaterialPageRoute(builder: (context) {
+                        //   return LoginPage(
+                        //     books: widget.books,
+                        //   );
+                        // }));
+                        // Navigator.pop(context);
+                        // Navigator.pop(context);
+                        //exit(0);
                       },
                     ),
                   )),
