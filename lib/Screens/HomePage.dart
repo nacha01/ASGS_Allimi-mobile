@@ -25,7 +25,11 @@ import 'Insert/BookPage.dart';
 //  'http://www.asgs.hs.kr/design/html/images/img_010300_01.gif',
 //  'http://www.asgs.hs.kr/design/html/images/20200420_YK_001.png'
 //];
-
+final List<String> imgList = [
+  'main_img_1.jpg',
+  'main_img_2.jpg',
+  'main_img_3.jpg'
+];
 //bool _load_url =false;
 //      _load_url ? Text('Logging in...') : Text('Click to Login'),
 
@@ -49,7 +53,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
   static TabController tabController;
   int _numberOfTabs;
   var main_img;
-  List<String> imgList = [];
+  //List<String> imgList = [];
   final nameHolder = TextEditingController();
   bool _loading = false;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -69,7 +73,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
   void initState() {
     // TODO: implement initState
     super.initState();
-    getMainImage();
+    //getMainImage();
     //print('여기 ${widget.books}');
     //print('${widget.books.documents[0]['img_url']} 강서고 컴퓨터에서 만들어진 ');
     print(imgList.length);
@@ -253,6 +257,22 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
         children: <Widget>[
           Container(
             height: 210,
+            child: Swiper(
+                autoplay: true,
+                pagination: SwiperPagination(alignment: Alignment.bottomCenter),
+                itemCount: imgList.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return GestureDetector(
+                    onTap: () {},
+                    child: Image(
+                      image: AssetImage('assets/images/' + imgList[index]),
+                      fit: BoxFit.fill,
+                      //image: AssetImage('assets/images/we_make_book2.JPG'),
+                    ),
+                  );
+                }),
+
+            /*
             child: _loading
                 ? Swiper(
                     autoplay: true,
@@ -281,6 +301,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             );
                     })
                 : Center(child: CircularProgressIndicator()),
+                */
           ),
           Padding(
             padding: EdgeInsets.all(6),

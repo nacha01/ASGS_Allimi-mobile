@@ -14,7 +14,14 @@ class WebViewPage extends StatefulWidget {
   var books;
   final FirebaseUser user;
   bool isTab;
-  WebViewPage({Key key, this.baseUrl, this.title, this.books, this.user, this.isTab = false}) : super(key: key);
+  WebViewPage(
+      {Key key,
+      this.baseUrl,
+      this.title,
+      this.books,
+      this.user,
+      this.isTab = false})
+      : super(key: key);
   static const routeName = '/webpage';
 
   @override
@@ -40,10 +47,12 @@ class _WebViewPageState extends State<WebViewPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
-        leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: (){
-          Navigator.pop(context);
-          HomePageState.tabController.index = 0;
-        }),
+        leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pop(context);
+              HomePageState.tabController.index = 0;
+            }),
       ),
       body: Stack(children: [
         Opacity(
@@ -53,7 +62,7 @@ class _WebViewPageState extends State<WebViewPage> {
               print('page start!');
               _isFinished = false;
               if (!_oneTurn) {
-                int limit = 2;
+                int limit = 30;
                 const oneSec = const Duration(seconds: 1);
                 _timer = Timer.periodic(oneSec, (timer) async {
                   if (limit == 0 && _isFinished) {
