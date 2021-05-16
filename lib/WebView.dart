@@ -127,7 +127,12 @@ class _WebViewPageState extends State<WebViewPage> {
   Widget getWebState() {
     if (_loading == 1 && !_isExceed) {
       return Center(
-        child: CircularProgressIndicator(),
+        child: Column(mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(),
+            Text('네트워크 연결 중입니다. 잠시만 기다려 주세요.')
+          ],
+        ),
       );
     } else if (_loading == 2) {
       return Stack();

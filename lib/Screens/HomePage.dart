@@ -258,6 +258,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
           Container(
             height: 210,
             child: Swiper(
+                control: SwiperControl(),
                 autoplay: true,
                 pagination: SwiperPagination(alignment: Alignment.bottomCenter),
                 itemCount: imgList.length,
@@ -630,6 +631,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   bottom: TabBar(
                     onTap: (index) {
                       if (index == 1) {
+                        tabController.index = 0;
                         Navigator.push(
                             context,
                             MaterialPageRoute(

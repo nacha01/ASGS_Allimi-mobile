@@ -41,16 +41,25 @@ class _SignInPageState extends State<SignInPage> {
       }
     });
     if(_isChecked){
-      await _emailSignIn();
-      FirebaseAuth.instance.onAuthStateChanged.listen((fu) {
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) {
-              return HomePage(
-                user: fu,
-                books: widget.books,
-              );
-            }));
-      });
+        var result = await _emailSignIn();
+        if(result == null){
+          showDialog(context: context, builder: (context) => AlertDialog(
+            title: Text('로그인 에러'),
+            content: Text('입력한 정보가 맞지 않습니다!'),
+          ));
+          return;
+        }
+        else {
+          FirebaseAuth.instance.onAuthStateChanged.listen((fu) {
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (context) {
+                  return HomePage(
+                    user: fu,
+                    books: widget.books,
+                  );
+                }));
+          });
+        }
     }
   }
 
@@ -66,7 +75,12 @@ class _SignInPageState extends State<SignInPage> {
       result = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: pw);
     } catch (e) {
-      print(e);
+      print(e.toString);
+      print('틀렸어!');
+      setState(() {
+        _logging = false;
+        _opacity = 1.0;
+      });
       return null;
     }
     print("signed in "); //firebase 로그인 완료
@@ -220,17 +234,26 @@ class _SignInPageState extends State<SignInPage> {
                               setState(() {
                                 _loading = true;
                               });
-                              await _emailSignIn();
-                              FirebaseAuth.instance.onAuthStateChanged
-                                  .listen((fu) {
-                                Navigator.pushReplacement(context,
-                                    MaterialPageRoute(builder: (context) {
-                                  return HomePage(
-                                    user: fu,
-                                    books: widget.books,
-                                  );
-                                }));
-                              });
+                              var result = await _emailSignIn();
+                              if(result == null){
+                                showDialog(context: context, builder: (context) => AlertDialog(
+                                  title: Text('로그인 에러'),
+                                  content: Text('입력한 정보가 맞지 않습니다!'),
+                                ));
+                                return;
+                              }
+                              else {
+                                FirebaseAuth.instance.onAuthStateChanged
+                                    .listen((fu) {
+                                  Navigator.pushReplacement(context,
+                                      MaterialPageRoute(builder: (context) {
+                                        return HomePage(
+                                          user: fu,
+                                          books: widget.books,
+                                        );
+                                      }));
+                                });
+                              }
                               _loading = false;
                             } catch (e) {
                               print(e.toString());
