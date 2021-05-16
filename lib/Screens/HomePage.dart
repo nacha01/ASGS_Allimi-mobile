@@ -606,16 +606,21 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   pinned: true,
                   floating: true,
                   forceElevated: innerBoxIsScrolled,
-                  bottom: TabBar(onTap: (index){
-                    if(index == 1) {
-                      Navigator.push(
-                          context, MaterialPageRoute(builder: (context) =>
-                          WebViewPage(baseUrl: 'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030200&searchMasterSid=4',
-                            title: "학교 행사",
-                            user: widget.user,
-                            books: widget.books,)));
-                    }
-                  },
+                  bottom: TabBar(
+                    onTap: (index) {
+                      if (index == 1) {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => WebViewPage(
+                                      baseUrl:
+                                          'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030200&searchMasterSid=4',
+                                      title: "학교 행사",
+                                      user: widget.user,
+                                      books: widget.books,
+                                    )));
+                      }
+                    },
                     labelColor: Colors.black,
                     indicatorColor: Colors.blueAccent, // 현재 보고 있는 탭을 가리키는 지시자
                     indicatorWeight: 6.0,
@@ -636,7 +641,8 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 //interviewTab,
                 // webViewTest(
                 //     'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030200&searchMasterSid=4'),
-                moveTabToWidget('http://www.asgs.hs.kr/bbs/formList.do?menugrp=030200&searchMasterSid=4'),
+                moveTabToWidget(
+                    'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030200&searchMasterSid=4'),
                 asgsMovieTab,
                 //asgs_movieTab(),
               ],
@@ -644,12 +650,12 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
           )),
     );
   }
-  Widget moveTabToWidget(String url){
 
+  Widget moveTabToWidget(String url) {
     return Stack();
   }
-  Widget webViewTest(String url) {
 
+  Widget webViewTest(String url) {
     return Stack(
       children: [
         WebView(
@@ -680,7 +686,6 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     return;
                   });
                 } else if (limit == 0 && !_isFinished) {
-
                   print('time exceed');
                   setState(() {
                     timer.cancel();
@@ -692,7 +697,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 } else {
                   print('counting!');
                   // setState(() {
-                    limit--;
+                  limit--;
                   // });
                 }
               });
@@ -731,11 +736,10 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
       return Stack();
     } else if (_loadings == 1 && _isExceed) {
       return Center(
-          child:
-          Text(
-            '에러 발생, 재접속 하시길 바랍니다',
-            style: TextStyle(fontSize: 30),
-          ));
+          child: Text(
+        '에러 발생, 재접속 하시길 바랍니다',
+        style: TextStyle(fontSize: 30),
+      ));
     }
   }
 
@@ -810,24 +814,26 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         showDialog(
                             context: context,
                             builder: (context) => AlertDialog(
-                              title: Text('정말로 종료하시겠습니까?'),
-                              actions: [
-                                FlatButton(
-                                    onPressed: () {
-                                      // Navigator.pop(context, true);
-                                      FirebaseAuth.instance.signOut();
-                                      // exit(0);
-                                      _scrollViewController.dispose();
-                                      tabController.dispose();
-                                      SystemChannels.platform.invokeMethod('SystemNavigator.pop');
-
-                                    },
-                                    child: Text('예')),
-                                FlatButton(
-                                    onPressed: () => Navigator.pop(context, false),
-                                    child: Text('아니오'))
-                              ],
-                            ));
+                                  title: Text('정말로 종료하시겠습니까?'),
+                                  actions: [
+                                    FlatButton(
+                                        onPressed: () async {
+                                          // Navigator.pop(context, true);
+                                          await FirebaseAuth.instance.signOut();
+                                          // exit(0);
+                                          //_scrollViewController.dispose();
+                                          //tabController.dispose();
+                                          //SystemChannels.platform.invokeMethod(
+                                          //    'SystemNavigator.pop');
+                                          exit(0);
+                                        },
+                                        child: Text('예')),
+                                    FlatButton(
+                                        onPressed: () =>
+                                            Navigator.pop(context, false),
+                                        child: Text('아니오'))
+                                  ],
+                                ));
                         // Navigator.pushReplacement(context,
                         //     MaterialPageRoute(builder: (context) {
                         //   return LoginPage(
@@ -910,20 +916,20 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                       )));
                         },
                       ),
-                      ElevatedButton(
-                        child: Text("설문조사 바로가기"),
-                        // color: Colors.white,
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => WebViewPage(
-                                        title: '강서 설문조사',
-                                        baseUrl:
-                                            'https://docs.google.com/forms/d/1Ql4kIHZduTRZ4pExAoImEQr6IaVDI0mQ8dm-nuMtQU8/edit',
-                                      )));
-                        },
-                      ),
+                      // ElevatedButton(
+                      //   child: Text("설문조사 바로가기"),
+                      //   // color: Colors.white,
+                      //   onPressed: () {
+                      //     Navigator.push(
+                      //         context,
+                      //         MaterialPageRoute(
+                      //             builder: (context) => WebViewPage(
+                      //                   title: '강서 설문조사',
+                      //                   baseUrl:
+                      //                       'https://docs.google.com/forms/d/1Ql4kIHZduTRZ4pExAoImEQr6IaVDI0mQ8dm-nuMtQU8/edit',
+                      //                 )));
+                      //   },
+                      // ),
                     ],
                   ),
                 ),
