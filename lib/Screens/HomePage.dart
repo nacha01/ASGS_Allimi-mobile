@@ -307,15 +307,15 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
           Padding(
             padding: EdgeInsets.all(6),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 ink(context, '공지사항', Icons.search,
                     'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030100&searchMasterSid=3'),
                 ink(context, '학교 행사', Icons.text_fields,
                     'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030200&searchMasterSid=4'),
-                ink(context, '가정 통신문', Icons.share,
-                    'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030400&searchMasterSid=49'),
+                // ink(context, '가정 통신문', Icons.share,
+                //     'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030400&searchMasterSid=49'),
                 ink(context, '학습 자료실', Icons.question_answer,
                     'http://www.asgs.hs.kr/home/formError.do?code=NONE_LEVEL&menugrp=040300&gm=http%3A%2F%2Fgm7.goeia.go.kr&siteKey=QzlWVUd0ZVZHdFR1R3I3QXlpeHgzNDI1YVRkQk5sT09LbWhZSWlnbjA5bz0%3D'),
                 ink(context, '학교 앨범', Icons.book,
@@ -819,10 +819,12 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           shape: BoxShape.circle,
                           image: DecorationImage(
                             fit: BoxFit.fill,
-                            image: NetworkImage(
-                              'http://www.asgs.hs.kr/bbs/execDownload.do?sid=5433',
-                              /*widget.user.photoUrl*/
-                            ),
+                            // image: NetworkImage(
+                            //   'http://www.asgs.hs.kr/bbs/execDownload.do?sid=5433',
+                            //   /*widget.user.photoUrl*/
+                            // ),
+                            image:
+                                AssetImage('assets/images/asgs_mark_sqare.png'),
                           )),
                     ),
                     title: Text('' /*widget.user.displayName*/),

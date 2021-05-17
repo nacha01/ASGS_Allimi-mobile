@@ -61,7 +61,11 @@ class _WebViewPageState extends State<WebViewPage> {
             onPageStarted: (start) async {
               print('page start!');
               _isFinished = false;
-              if (!_oneTurn) {
+              print('page start!');
+              _isFinished = false;
+              _loading = 1;
+              _isExceed = false;
+              /* if (!_oneTurn) {
                 int limit = 30;
                 const oneSec = const Duration(seconds: 1);
                 _timer = Timer.periodic(oneSec, (timer) async {
@@ -92,6 +96,7 @@ class _WebViewPageState extends State<WebViewPage> {
                   }
                 });
               }
+              */
               // setState(() {
               //   _web_loading = true;
               //   print('ll');
@@ -99,13 +104,21 @@ class _WebViewPageState extends State<WebViewPage> {
               // });
             },
             onPageFinished: (finish) {
+              // print('page finish!');
+              // setState(() {
+              //   _web_loading = false;
+              //   _isFinished = true;
+              //   if (!_isExceed) {
+              //     _loading = 2;
+              //   }
+              // });
+
               print('page finish!');
               setState(() {
                 _web_loading = false;
                 _isFinished = true;
-                if (!_isExceed) {
-                  _loading = 2;
-                }
+                _loading = 2;
+                _isExceed = true;
               });
             },
             initialUrl: widget.baseUrl,
@@ -127,7 +140,8 @@ class _WebViewPageState extends State<WebViewPage> {
   Widget getWebState() {
     if (_loading == 1 && !_isExceed) {
       return Center(
-        child: Column(mainAxisAlignment: MainAxisAlignment.center,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             CircularProgressIndicator(),
             Text('네트워크 연결 중입니다. 잠시만 기다려 주세요.')
