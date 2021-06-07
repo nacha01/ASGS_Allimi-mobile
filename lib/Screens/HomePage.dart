@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:asgshighschool/Screens/Splash/LoginPage.dart';
+import 'package:asgshighschool/setting_page.dart';
 import 'package:asgshighschool/web_loading.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -966,7 +967,11 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           children: <Widget>[
                             Divider(),
                             ListTile(
-                                leading: Icon(Icons.settings),
+                                leading: IconButton(icon : Icon(Icons.settings),
+                                onPressed: (){
+                                    Navigator.push(context, MaterialPageRoute(builder: (context)
+                                    => SettingPage()));
+                                },),
                                 title: Text('제작 : 컴퓨터동아리(테라바이트)')),
                             // ListTile(
                             //     onTap: () {},
