@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:asgshighschool/Screens/Splash/LoginPage.dart';
+import 'package:asgshighschool/parsing_test.dart';
 import 'package:asgshighschool/setting_page.dart';
 import 'package:asgshighschool/web_loading.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -967,11 +968,16 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           children: <Widget>[
                             Divider(),
                             ListTile(
-                                leading: IconButton(icon : Icon(Icons.settings),
-                                onPressed: (){
-                                    Navigator.push(context, MaterialPageRoute(builder: (context)
-                                    => SettingPage()));
-                                },),
+                                leading: IconButton(
+                                  icon: Icon(Icons.settings),
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                SettingPage()));
+                                  },
+                                ),
                                 title: Text('제작 : 컴퓨터동아리(테라바이트)')),
                             // ListTile(
                             //     onTap: () {},
@@ -1047,13 +1053,18 @@ Widget ink(BuildContext context, String title, IconData icon, String url) {
         ],
       ),
       onTap: () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => WebViewPage(
-                      title: title,
-                      baseUrl: url,
-                    )));
+        if (title == '공지사항') {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => ParsingTest()));
+        } else {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => WebViewPage(
+                        title: title,
+                        baseUrl: url,
+                      )));
+        }
       });
 }
 
