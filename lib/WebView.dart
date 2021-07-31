@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:asgshighschool/Screens/HomePage.dart';
+import 'package:asgshighschool/user_data.dart';
 import 'package:asgshighschool/web_loading.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -11,14 +12,12 @@ import 'package:provider/provider.dart';
 class WebViewPage extends StatefulWidget {
   String baseUrl;
   String title;
-  var books;
-  final FirebaseUser user;
+  final User user;
   bool isTab;
   WebViewPage(
       {Key key,
       this.baseUrl,
       this.title,
-      this.books,
       this.user,
       this.isTab = false})
       : super(key: key);

@@ -1,29 +1,28 @@
+import 'dart:convert';
 import 'package:asgshighschool/Screens/HomePage.dart';
+import 'package:asgshighschool/user_data.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-
+import 'package:http/http.dart' as http;
 ////////////////// SIGN UP PAGE ////////////////////////////
 
 class SignUpPage extends StatefulWidget {
-  SignUpPage({Key key, this.books}) : super(key: key);
-  var books;
+  SignUpPage({this.token});
+  final token;
   @override
   _SignUpPageState createState() => _SignUpPageState();
 }
 
 class _SignUpPageState extends State<SignUpPage> {
-  String email;
-  String password;
   TextEditingController _nameController = TextEditingController();
   TextEditingController _gradeController = TextEditingController();
-  TextEditingController _emailController = TextEditingController();
+  TextEditingController _idController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
-
-  final _auth = FirebaseAuth.instance;
-  final _fireStore = Firestore.instance;
+  TextEditingController _nickNameController = TextEditingController();
+  TextEditingController _telController = TextEditingController();
   final statusList = ['학생', '학부모', '교사', '졸업생', '기타'];
+  final statusMap = {'학생': 1, '학부모': 2, '교사': 3, '졸업생': 4, '기타': 5};
   var _selectedValue = '학생';
+
   bool isTwoRow() {
     if (_selectedValue == '학생' || _selectedValue == '학부모') {
       return true;
@@ -35,20 +34,67 @@ class _SignUpPageState extends State<SignUpPage> {
     return true;
   }
 
-  @override
-  void initState() {
-    super.initState();
-    if (widget.books == null) {
-      print('it is null');
+  Future<void> _postRegisterRequest() async {
+    Navigator.pop(context);
+    String uri = 'http://nacha01.dothome.co.kr/sin/arlimi_register.php';
+    http.Response response = await http.post(uri, headers: <String, String>{
+      'Content-Type': 'application/x-www-form-urlencoded',
+    }, body: <String, String>{
+      'uid': _idController.text.toString(),
+      'pw': _passwordController.text.toString(),
+      'token': widget.token,
+      'name': _nameController.text.toString(),
+      'nickname': _nickNameController.text.toString(),
+      'identity': statusMap[_selectedValue].toString(),
+      'tel': _telController.text.toString(),
+      'student_id': isTwoRow() ? _gradeController.text.toString() : 'NULL'
+    });
+
+    if (response.statusCode == 200) {
+      String result = utf8.decode(response.bodyBytes);
+      if (result.contains('PRIMARY') && result.contains('Duplicate entry')) {
+        showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text('회원 가입 실패'),
+              content: Text('이미 사용중인 아이디입니다!'),
+            ));
+      } else {
+        showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text('회원 가입 성공'),
+              content: Text('성공적으로 회원가입이 되었습니다. \n메인 화면으로 이동합니다.'),
+              actions: [
+                FlatButton(onPressed: _getUserData, child: Text('확인'))
+              ],
+            ));
+        //_getUserData();
+      }
+    } else {
+      print('전송 실패');
     }
   }
-
+  Future<void> _getUserData() async{
+      String uri = 'http://nacha01.dothome.co.kr/sin/arlimi_login.php?uid=${_idController.text}&pw=${_passwordController.text}';
+      final response= await http.get(uri, headers: <String,String>{
+        'Content-Type' : 'application/x-www-form-urlencoded'
+      });
+      if(response.statusCode == 200){
+        String result = utf8.decode(response.bodyBytes).replaceAll('<meta http-equiv="Content-Type" content="text/html; charset=utf-8">', '').trim();
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) =>
+        HomePage(user: User.fromJson(json.decode(result)),)));
+      }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text('Sign Up Page'),
+        title: Text('회원가입'),
+        leading: IconButton(icon: Icon(Icons.arrow_back),onPressed: (){
+            Navigator.pop(context);
+        },),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -57,6 +103,7 @@ class _SignUpPageState extends State<SignUpPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
+                margin: EdgeInsets.all(5.0),
                 child: DropdownButton(
                   isExpanded: true,
                   iconSize: 50,
@@ -70,31 +117,12 @@ class _SignUpPageState extends State<SignUpPage> {
                   onChanged: (value) {
                     setState(() {
                       _selectedValue = value;
+                      if(statusMap[_selectedValue] > 1){
+                        _gradeController.text = '';
+                      }
                     });
                   },
                 ),
-              ),
-              SizedBox(height: 20.0),
-              TextFormField(
-                controller: _nameController,
-                cursorColor: Colors.black,
-                style: TextStyle(fontSize: 18.0, color: Colors.black),
-                decoration: InputDecoration(
-                  fillColor: Colors.orange.withOpacity(0.1),
-                  filled: true,
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(20.0))),
-                  prefixIcon: Icon(Icons.account_circle),
-                  labelText: '이름',
-                  labelStyle: TextStyle(
-                    fontSize: 16.0,
-                  ),
-                ),
-                onChanged: (value) {
-                  setState(() {
-                    email = value;
-                  });
-                },
               ),
               SizedBox(height: 20.0),
               Opacity(
@@ -108,22 +136,20 @@ class _SignUpPageState extends State<SignUpPage> {
                     filled: true,
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(20.0))),
-                    prefixIcon: Icon(Icons.account_circle),
+                    prefixIcon: Icon(Icons.school),
                     labelText: '학번',
                     labelStyle: TextStyle(
                       fontSize: 16.0,
                     ),
                   ),
                   onChanged: (value) {
-                    setState(() {
-                      email = value;
-                    });
+
                   },
                 ),
               ),
               SizedBox(height: 20.0),
               TextFormField(
-                controller: _emailController,
+                controller: _idController,
                 cursorColor: Colors.black,
                 style: TextStyle(fontSize: 18.0, color: Colors.black),
                 decoration: InputDecoration(
@@ -132,15 +158,13 @@ class _SignUpPageState extends State<SignUpPage> {
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(20.0))),
                   prefixIcon: Icon(Icons.account_circle),
-                  labelText: 'Email',
+                  labelText: 'ID',
                   labelStyle: TextStyle(
                     fontSize: 16.0,
                   ),
                 ),
                 onChanged: (value) {
-                  setState(() {
-                    email = value;
-                  });
+
                 },
               ),
               SizedBox(height: 20.0),
@@ -155,15 +179,73 @@ class _SignUpPageState extends State<SignUpPage> {
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(20.0))),
                   prefixIcon: Icon(Icons.vpn_key),
-                  labelText: 'Password',
+                  labelText: '비밀번호',
                   labelStyle: TextStyle(
                     fontSize: 16.0,
                   ),
                 ),
                 onChanged: (value) {
-                  setState(() {
-                    password = value;
-                  });
+
+                },
+              ),
+              SizedBox(height: 20.0),
+              TextFormField(
+                controller: _nameController,
+                cursorColor: Colors.black,
+                style: TextStyle(fontSize: 18.0, color: Colors.black),
+                decoration: InputDecoration(
+                  fillColor: Colors.orange.withOpacity(0.1),
+                  filled: true,
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(20.0))),
+                  prefixIcon: Icon(Icons.account_box),
+                  labelText: '이름',
+                  labelStyle: TextStyle(
+                    fontSize: 16.0,
+                  ),
+                ),
+                onChanged: (value) {
+
+                },
+              ),
+              SizedBox(height: 20.0),
+              TextFormField(
+                controller: _telController,
+                cursorColor: Colors.black,
+                style: TextStyle(fontSize: 18.0, color: Colors.black),
+                decoration: InputDecoration(
+                  fillColor: Colors.orange.withOpacity(0.1),
+                  filled: true,
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(20.0))),
+                  prefixIcon: Icon(Icons.contact_phone_rounded),
+                  labelText: '전화번호',
+                  labelStyle: TextStyle(
+                    fontSize: 16.0,
+                  ),
+                ),
+                onChanged: (value) {
+
+                },
+              ),
+              SizedBox(height: 20.0),
+              TextFormField(
+                controller: _nickNameController,
+                cursorColor: Colors.black,
+                style: TextStyle(fontSize: 18.0, color: Colors.black),
+                decoration: InputDecoration(
+                  fillColor: Colors.orange.withOpacity(0.1),
+                  filled: true,
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(20.0))),
+                  prefixIcon: Icon(Icons.person),
+                  labelText: '닉네임',
+                  labelStyle: TextStyle(
+                    fontSize: 16.0,
+                  ),
+                ),
+                onChanged: (value) {
+
                 },
               ),
               SizedBox(height: 20.0),
@@ -177,12 +259,11 @@ class _SignUpPageState extends State<SignUpPage> {
                             ));
                     return;
                   }
-                  if (!_emailController.text.toString().contains('@') ||
-                      !_emailController.text.toString().contains('.')) {
+                  if (_idController.text.toString().length < 1) {
                     showDialog(
                         context: context,
                         builder: (context) => AlertDialog(
-                              content: Text('이메일 입력을 확인하세요!'),
+                              content: Text('ID를 4자리 이상 입력하세요!'),
                             ));
                     return;
                   } else {
@@ -199,8 +280,10 @@ class _SignUpPageState extends State<SignUpPage> {
                                 Text('이 름: ${_nameController.text}'),
                                 isTwoRow()
                                     ? Text('학번: ${_gradeController.text}')
-                                    : Text(''),
-                                Text('이메일: ${_emailController.text}')
+                                    : SizedBox(height: 0.0,),
+                                Text('ID: ${_idController.text}'),
+                                Text('닉네임: ${_nickNameController.text}'),
+                                Text('전화번호: ${_telController.text}'),
                               ],
                             ),
                             actions: [
@@ -211,41 +294,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                   child: Text('아니오')),
                               FlatButton(
                                   onPressed: () async {
-                                    print('yy');
-                                    // await createAccount();
-                                    await _auth
-                                        .createUserWithEmailAndPassword(
-                                      email: _emailController.text.toString(),
-                                      password:
-                                          _passwordController.text.toString(),
-                                    )
-                                        .then((signedInUser) {
-                                      print('ss');
-                                      _fireStore.collection('users').add({
-                                        'identity': _selectedValue,
-                                        'name': _nameController.text.toString(),
-                                        'student_id':
-                                            _gradeController.text.toString(),
-                                        'email':
-                                            _emailController.text.toString(),
-                                      }).then((value) {
-                                        print('rr');
-                                        if (signedInUser != null) {
-                                          print('ttt');
-                                          Navigator.push(
-                                              this.context,
-                                              MaterialPageRoute(
-                                                  builder: (ctx) => HomePage(
-                                                        books: widget.books,
-                                                      )));
-                                        }
-                                      }).catchError((e) {
-                                        print(e.toString());
-                                      });
-                                    }).catchError((e) {
-                                      print(e.toString());
-                                    });
-                                    Navigator.pop(context);
+                                    _postRegisterRequest();
                                   },
                                   child: Text('예'))
                             ],
@@ -254,7 +303,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   } // 개인정보 입력 창 끝.
                 },
                 color: Colors.orangeAccent,
-                child: Text('Sign Up ', style: TextStyle(fontSize: 17.0)),
+                child: Text('회원가입 하기', style: TextStyle(fontSize: 17.0)),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20.0)),
               ),
@@ -265,23 +314,3 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 }
-
-/*RaisedButton(
-            onPressed: () async {
-              try {
-                final newUser = await _auth.createUserWithEmailAndPassword(
-                  email: email,
-                  password: password,
-                );
-                if (newUser != null) {
-                  Navigator.pushNamed(context, '/SignIn');
-                }
-              } catch (e) {
-                print(e);
-              }
-            },
-            color: Colors.orangeAccent,
-            child: Text('Sign Up ', style: TextStyle(fontSize: 17.0)),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20.0)),
-          ),*/

@@ -3,6 +3,7 @@ import 'dart:async';
 // import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:asgshighschool/SignIn.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 // Plugins
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -12,9 +13,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 
 class SplashPage extends StatefulWidget {
-  SplashPage({Key key}) : super(key: key);
+  SplashPage({Key key, this.token}) : super(key: key);
   static const routeName = '/SplashPage';
-
+  var token;
   @override
   _SplashPageState createState() => _SplashPageState();
 }
@@ -33,25 +34,8 @@ class _SplashPageState extends State<SplashPage> {
     setState(() {
       _message = 'Network Connect...';
     });
-    Firestore.instance.collection('books').getDocuments().then((value) {
-      FirebaseAuth.instance.onAuthStateChanged.listen((userData) {
-        //깃 공부
-        ///false면 이메일 인증이 안된 상태
-        // if (!userData.isEmailVerified) {
-        //   userData.sendEmailVerification();
-        // }
-
-        // Navigator.pushReplacementNamed(context, '/signin', arguments: value);
-        Navigator.pushReplacement(context,MaterialPageRoute(builder: (context)
-        => SignInPage(books: value,)));
-        // if (userData == null) {
-        //   Navigator.pushReplacementNamed(context, '/signin', arguments: value);
-        //   return;
-        // }
-        // Navigator.pushReplacementNamed(context, '/home',
-        //     arguments: {'user': userData, 'books': value});
-      });
-    });
+    Navigator.pushReplacement(context,MaterialPageRoute(builder: (context)
+    => SignInPage(token: widget.token,)));
   }
 
   @override

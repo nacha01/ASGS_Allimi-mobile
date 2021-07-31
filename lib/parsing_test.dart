@@ -46,13 +46,15 @@ class _ParsingTestState extends State<ParsingTest> {
               : ListTile(
                   onTap: () {
                     print(contentList[index]['content']);
-                    // print(contentList[index]['fileList'][0]['fileLink']);
                     // launch(contentList[index]['fileList'][0]['fileLink']);
                   },
                   title: Text(contentList[index]['title']),
                   subtitle: Text(
-                      '작성자 :${contentList[index]['name']}, 조회수 : ${contentList[index]['viewCount']} \n${contentList[index]['regdate']}'),
-                isThreeLine: true,);
+                      '작성자 :${contentList[index]['name']}, '
+                          '조회수 : ${contentList[index]['viewCount']} '
+                          '\n${contentList[index]['regdate']}'),
+                  isThreeLine: true,
+                );
         },
         itemCount: contentList.length,
         separatorBuilder: (context, index) => const Divider(),

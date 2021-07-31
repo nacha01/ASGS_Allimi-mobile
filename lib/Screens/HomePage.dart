@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:asgshighschool/Screens/Splash/LoginPage.dart';
 import 'package:asgshighschool/parsing_test.dart';
 import 'package:asgshighschool/setting_page.dart';
+import 'package:asgshighschool/user_data.dart';
 import 'package:asgshighschool/web_loading.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -40,11 +41,9 @@ class HomePage extends StatefulWidget {
   HomePage({
     Key key,
     this.user,
-    this.books,
   }) : super(key: key);
   static const routeName = '/home';
-  final FirebaseUser user;
-  var books;
+  final User user;
 
   @override
   HomePageState createState() => HomePageState();
@@ -452,6 +451,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
             ],
           ),
         ),
+        /*
         Expanded(
           child: ListView.builder(
               padding: EdgeInsets.all(10),
@@ -510,6 +510,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 );
               }),
         ),
+        */
       ],
     );
 
@@ -543,6 +544,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
             ],
           ),
         ),
+        /*
         Expanded(
           child: ListView.builder(
               padding: EdgeInsets.all(10),
@@ -599,6 +601,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 );
               }),
         ),
+        */
       ],
     );
 
@@ -641,8 +644,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                       baseUrl:
                                           'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030200&searchMasterSid=4',
                                       title: "학교 행사",
-                                      user: widget.user,
-                                      books: widget.books,
+                                      //user: widget.user,
                                     )));
                       }
                     },

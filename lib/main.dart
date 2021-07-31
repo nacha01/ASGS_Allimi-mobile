@@ -15,6 +15,7 @@ import 'Screens/Splash/LoginPage.dart';
 import 'Screens/Splash/SplashPage.dart';
 import 'Screens/HomePage.dart';
 import 'first.dart';
+import 'package:http/http.dart' as http;
 
 class PushMessagingExample extends StatefulWidget {
   static const routeName = '/';
@@ -25,12 +26,14 @@ class PushMessagingExample extends StatefulWidget {
 class _PushMessagingExampleState extends State<PushMessagingExample> {
   String _homeScreenText = "Waiting for token...";
   String _messageText = "Waiting for message...";
-
+  String tokennn;
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
-
   @override
   void initState() {
+    print('start');
+
     super.initState();
+    /*
     _firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) async {
         setState(() {
@@ -38,7 +41,7 @@ class _PushMessagingExampleState extends State<PushMessagingExample> {
         });
         print("onMessage: $message");
         localNotifyManager.showNotification(
-            'gangseo', message["notification"]["body"].toString());
+            message['notification']["title"], message["notification"]["body"].toString());
       },
       onLaunch: (Map<String, dynamic> message) async {
         setState(() {
@@ -55,38 +58,51 @@ class _PushMessagingExampleState extends State<PushMessagingExample> {
     );
     _firebaseMessaging.requestNotificationPermissions(
         const IosNotificationSettings(sound: true, badge: true, alert: true));
+
+
     _firebaseMessaging.onIosSettingsRegistered
         .listen((IosNotificationSettings settings) {
       print("Settings registered: $settings");
     });
-    _firebaseMessaging.getToken().then((String token) {
-      assert(token != null);
-      setState(() {
-        _homeScreenText = "Push Messaging token: $token";
-      });
-      // print(_homeScreenText);
-    });
 
     localNotifyManager.setOnNotificationClick(onNotificationClick);
     localNotifyManager.setOnNotificationReceive(onNotificationReceive);
-    //
+  */
+    _firebaseMessaging.getToken().then((String token) {
+      assert(token != null);
+      setState(() {
+        tokennn = token;
+        _homeScreenText = "Push Messaging token: $token";
+        print("Token : $token");
+
+
+      });
+
+    });
+
     Timer.run(() {
       print("timer call");
-      Navigator.of(context).pushReplacementNamed("/SplashPage");
-      //Navigator.of(context).pushNamed("/MyApp");
+      // Navigator.of(context).pushReplacementNamed("/SplashPage",arguments: token);
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) =>
+          SplashPage(token: tokennn,)));
     });
+
+
   }
 
-  onNotificationClick(String payload) {
-    print('Payload $payload');
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-      return ScreenSecond(payload: payload);
-    }));
-  }
 
-  onNotificationReceive(ReceiveNotification notification) {
-    print('notification Receive : ${notification.id}');
-  }
+
+  // onNotificationClick(String payload) {
+  //   print('에에에에엥?');
+  //   print('Payload $payload');
+  //   Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+  //     return ScreenSecond(payload: payload);
+  //   }));
+  // }
+  //
+  // onNotificationReceive(ReceiveNotification notification) {
+  //   print('notification Receive : ${notification.id}');
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -143,8 +159,7 @@ void main() {
                 return MaterialPageRoute(
                     builder: (context) =>
                         HomePage(
-                          user: (settings.arguments as Map)['user'],
-                          books: (settings.arguments as Map)['books'],
+                         // user: (settings.arguments as Map)['user'],
                         ));
               }
               break;
@@ -174,6 +189,7 @@ void main() {
     ));
   },onError: (e){
     print('lalal');
-    print(e.toString());
+    print('dwd ${e.toString()}');
+
   });
 }

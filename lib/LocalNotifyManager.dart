@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'dart:io' show Platform;
@@ -52,7 +54,7 @@ class LocalNotifyManager {
     });
   }
 
-  Future<void> showNotification(String head, String body) async {
+  Future<void> showNotification(String head, String body, Map<String, dynamic> data) async {
     var androidChannel = AndroidNotificationDetails(
         'CHANNEL_ID', 'CHENNEL_NAME', 'CHANNEL_DESCRIPTION',
         importance: Importance.max,
@@ -63,18 +65,17 @@ class LocalNotifyManager {
         // icon: '@mipmap/ic_launcher',
         //영상 13분
         //largeIcon: DrawableResourceAndroidBitmap('icon_large_notification')
-        timeoutAfter: 5000,
         enableLights: true);
     var iosChannel =
         IOSNotificationDetails(/* sound: 'notification_sound.mp3' */);
     var platformChannel =
         NotificationDetails(android: androidChannel, iOS: iosChannel);
     await flutterLocalNotificationsPlugin.show(0, head, body, platformChannel,
-        payload: 'New Firebase message');
+        payload: json.encode(data));
   }
 
   Future<void> scheduleNotification() async {
-    var scheduleNotificationDataTime = DateTime.now().add(Duration(seconds: 5));
+    var scheduleNotificationDataTime = DateTime.now().add(Duration(seconds: 10));
 
     var androidChannel = AndroidNotificationDetails(
         'CHANNEL_ID', 'CHENNEL_NAME', 'CHANNEL_DESCRIPTION',
