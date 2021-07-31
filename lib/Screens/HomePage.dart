@@ -72,7 +72,6 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     //getMainImage();
     //print('여기 ${widget.books}');
@@ -85,8 +84,8 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   @override
   void dispose() {
-    // _scrollViewController.dispose();
-    // tabController.dispose();
+    _scrollViewController.dispose();
+    tabController.dispose();
     super.dispose();
   }
 

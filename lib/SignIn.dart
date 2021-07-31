@@ -39,29 +39,113 @@ class _SignInPageState extends State<SignInPage> {
           _messageText = "Push Messaging message: $message Messageeeeeeeeeee";
         });
         print("onMessage: $message");
+
         localNotifyManager.showNotification(message['notification']["title"],
             message["notification"]["body"].toString(), message);
-        if (message['data']['screen'] == '공지사항') {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => WebViewPage(
-                        title: '공지사항',
-                        baseUrl:
-                            'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030200&searchMasterSid=4',
-                      )));
+
+        String screenLoc = message['data']['screen'];
+
+        switch (screenLoc) {
+          case '공지사항':
+            _moveScreenAccordingToPush(
+                title: '공지사항',
+                url:
+                    'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030100&searchMasterSid=3');
+            break;
+          case '학교 행사':
+            _moveScreenAccordingToPush(
+                title: '학교 행사',
+                url:
+                    'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030200&searchMasterSid=4');
+            break;
+          case '학습 자료실':
+            _moveScreenAccordingToPush(
+                title: '학습 자료실',
+                url:
+                    'http://www.asgs.hs.kr/home/formError.do?code=NONE_LEVEL&menugrp=040300&gm=http%3A%2F%2Fgm7.goeia.go.kr&siteKey=QzlWVUd0ZVZHdFR1R3I3QXlpeHgzNDI1YVRkQk5sT09LbWhZSWlnbjA5bz0%3D');
+            break;
+          case '학교 앨범':
+            _moveScreenAccordingToPush(
+                title: '학교 앨범',
+                url:
+                    'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030600&searchMasterSid=6');
+            break;
+          case '오늘의 식단':
+            _moveScreenAccordingToPush(
+                title: '오늘의 식단',
+                url: 'http://www.asgs.hs.kr/meal/formList.do?menugrp=040801');
+            break;
+          case '이 달의 일정':
+            _moveScreenAccordingToPush(
+                title: '이 달의 일정',
+                url:
+                    'http://www.asgs.hs.kr/diary/formList.do?menugrp=030500&searchMasterSid=1');
+            break;
+          case '가정 통신문':
+            _moveScreenAccordingToPush(
+                title: '가정 통신문',
+                url:
+                    'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030400&searchMasterSid=49');
+            break;
+          case '도서 검색':
+            _moveScreenAccordingToPush(
+                title: '도서 검색',
+                url:
+                    'https://reading.gglec.go.kr/r/newReading/search/schoolCodeSetting.jsp?schoolCode=895&returnUrl=');
+            break;
         }
       },
       onLaunch: (Map<String, dynamic> message) async {
-        if (message['data']['screen'] == '공지사항') {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => WebViewPage(
-                        title: 'dw',
-                        baseUrl:
-                            'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030200&searchMasterSid=4',
-                      )));
+        String screenLoc = message['data']['screen'];
+
+        switch (screenLoc) {
+          case '공지사항':
+            _moveScreenAccordingToPush(
+                title: '공지사항',
+                url:
+                    'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030100&searchMasterSid=3');
+            break;
+          case '학교 행사':
+            _moveScreenAccordingToPush(
+                title: '학교 행사',
+                url:
+                    'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030200&searchMasterSid=4');
+            break;
+          case '학습 자료실':
+            _moveScreenAccordingToPush(
+                title: '학습 자료실',
+                url:
+                    'http://www.asgs.hs.kr/home/formError.do?code=NONE_LEVEL&menugrp=040300&gm=http%3A%2F%2Fgm7.goeia.go.kr&siteKey=QzlWVUd0ZVZHdFR1R3I3QXlpeHgzNDI1YVRkQk5sT09LbWhZSWlnbjA5bz0%3D');
+            break;
+          case '학교 앨범':
+            _moveScreenAccordingToPush(
+                title: '학교 앨범',
+                url:
+                    'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030600&searchMasterSid=6');
+            break;
+          case '오늘의 식단':
+            _moveScreenAccordingToPush(
+                title: '오늘의 식단',
+                url: 'http://www.asgs.hs.kr/meal/formList.do?menugrp=040801');
+            break;
+          case '이 달의 일정':
+            _moveScreenAccordingToPush(
+                title: '이 달의 일정',
+                url:
+                    'http://www.asgs.hs.kr/diary/formList.do?menugrp=030500&searchMasterSid=1');
+            break;
+          case '가정 통신문':
+            _moveScreenAccordingToPush(
+                title: '가정 통신문',
+                url:
+                    'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030400&searchMasterSid=49');
+            break;
+          case '도서 검색':
+            _moveScreenAccordingToPush(
+                title: '도서 검색',
+                url:
+                    'https://reading.gglec.go.kr/r/newReading/search/schoolCodeSetting.jsp?schoolCode=895&returnUrl=');
+            break;
         }
         setState(() {
           _messageText = "Push Messaging message: $message Launchhhhhhhhh";
@@ -69,15 +153,56 @@ class _SignInPageState extends State<SignInPage> {
         print("onLaunch: $message");
       },
       onResume: (Map<String, dynamic> message) async {
-        if (message['data']['screen'] == '공지사항') {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => WebViewPage(
-                        title: 'dw',
-                        baseUrl:
-                            'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030200&searchMasterSid=4',
-                      )));
+        String screenLoc = message['data']['screen'];
+
+        switch (screenLoc) {
+          case '공지사항':
+            _moveScreenAccordingToPush(
+                title: '공지사항',
+                url:
+                    'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030100&searchMasterSid=3');
+            break;
+          case '학교 행사':
+            _moveScreenAccordingToPush(
+                title: '학교 행사',
+                url:
+                    'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030200&searchMasterSid=4');
+            break;
+          case '학습 자료실':
+            _moveScreenAccordingToPush(
+                title: '학습 자료실',
+                url:
+                    'http://www.asgs.hs.kr/home/formError.do?code=NONE_LEVEL&menugrp=040300&gm=http%3A%2F%2Fgm7.goeia.go.kr&siteKey=QzlWVUd0ZVZHdFR1R3I3QXlpeHgzNDI1YVRkQk5sT09LbWhZSWlnbjA5bz0%3D');
+            break;
+          case '학교 앨범':
+            _moveScreenAccordingToPush(
+                title: '학교 앨범',
+                url:
+                    'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030600&searchMasterSid=6');
+            break;
+          case '오늘의 식단':
+            _moveScreenAccordingToPush(
+                title: '오늘의 식단',
+                url: 'http://www.asgs.hs.kr/meal/formList.do?menugrp=040801');
+            break;
+          case '이 달의 일정':
+            _moveScreenAccordingToPush(
+                title: '이 달의 일정',
+                url:
+                    'http://www.asgs.hs.kr/diary/formList.do?menugrp=030500&searchMasterSid=1');
+            break;
+          case '가정 통신문':
+            _moveScreenAccordingToPush(
+                title: '가정 통신문',
+                url:
+                    'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030400&searchMasterSid=49');
+            break;
+          case '도서 검색':
+            _moveScreenAccordingToPush(
+                title: '도서 검색',
+                url:
+                    'https://reading.gglec.go.kr/r/newReading/search/schoolCodeSetting.jsp?schoolCode=895&returnUrl=');
+            break;
         }
         setState(() {
           _messageText = "Push Messaging message: $message Resumeeeeeeeeeeeeee";
@@ -127,6 +252,17 @@ class _SignInPageState extends State<SignInPage> {
     }
   }
 
+  void _moveScreenAccordingToPush(
+      {@required String title, @required String url}) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => WebViewPage(
+                  title: title,
+                  baseUrl: url,
+                )));
+  }
+
   Future _postRequest(String token) async {
     String url = 'http://nacha01.dothome.co.kr/sin/push_send.php';
     http.Response response = await http.post(url, headers: <String, String>{
@@ -138,22 +274,6 @@ class _SignInPageState extends State<SignInPage> {
     });
     print('${response.statusCode}');
     print(response.body);
-
-    String url2 =
-        'http://nacha01.dothome.co.kr/sin/getting_data_test.php?title=제목&ms=테스트+메세지';
-
-    final response2 = await http.get(
-      url2,
-      headers: <String, String>{
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-    );
-
-    if (response2.statusCode == 200) {
-      // final userMap = json.decode(response2.body);
-      // print(userMap);
-      print(response2.body);
-    }
   }
 
   Future<User> _requestLogin() async {
@@ -180,15 +300,6 @@ class _SignInPageState extends State<SignInPage> {
 
   onNotificationClick(String payload) {
     print(payload);
-    var map = json.decode(payload);
-    print(map);
-    print(map['data']);
-    // if(map['data']['screen'] == '공지사항'){
-    //   Navigator.push(context, MaterialPageRoute(builder: (context) => WebViewPage(title : 'dw',baseUrl: 'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030200&searchMasterSid=4',)));
-    // }
-    // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-    //   return ScreenSecond(payload: payload);
-    // }));
   }
 
   onNotificationReceive(ReceiveNotification notification) {
