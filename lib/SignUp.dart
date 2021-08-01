@@ -251,6 +251,14 @@ class _SignUpPageState extends State<SignUpPage> {
               SizedBox(height: 20.0),
               RaisedButton(
                 onPressed: () async {
+                  if(_idController.text.isEmpty || _nameController.text.isEmpty || _nickNameController.text.isEmpty
+                  || _telController.text.isEmpty){
+                    showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          content: Text('입력하지 않은 정보가 있습니다!'),
+                        ));
+                  }
                   if (_passwordController.text.toString().length < 6) {
                     showDialog(
                         context: context,

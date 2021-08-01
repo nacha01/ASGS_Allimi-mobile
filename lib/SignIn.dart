@@ -211,7 +211,6 @@ class _SignInPageState extends State<SignInPage> {
     print(payload);
     Map message = json.decode(payload);
     selectLocation(message['data']['screen']);
-    print('눌렀어..');
   }
 
   onNotificationReceive(ReceiveNotification notification) {

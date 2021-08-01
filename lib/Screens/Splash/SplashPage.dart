@@ -1,32 +1,36 @@
 // Script
 import 'dart:async';
-// import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:asgshighschool/SignIn.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-
-// Plugins
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 // Flutter Default Setting
-import 'package:flutter/cupertino.dart';
 
 class SplashPage extends StatefulWidget {
-  SplashPage({Key key, this.token}) : super(key: key);
   static const routeName = '/SplashPage';
-  var token;
   @override
   _SplashPageState createState() => _SplashPageState();
 }
 
-String _message = '';
-
 class _SplashPageState extends State<SplashPage> {
+  var _token;
+  String _message = '';
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+
   @override
   void initState() {
     super.initState();
     loading();
+  }
+
+  getToken(){
+    _firebaseMessaging.getToken().then((String token) {
+      assert(token != null);
+      setState(() {
+        _token = token;
+        print("Token : $token");
+      });
+    });
   }
 
   loading() async {
@@ -34,8 +38,9 @@ class _SplashPageState extends State<SplashPage> {
     setState(() {
       _message = 'Network Connect...';
     });
+    await getToken();
     Navigator.pushReplacement(context,MaterialPageRoute(builder: (context)
-    => SignInPage(token: widget.token,)));
+    => SignInPage(token: _token,)));
   }
 
   @override

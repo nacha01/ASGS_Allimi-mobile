@@ -2,11 +2,8 @@ import 'dart:async';
 
 import 'package:asgshighschool/Screens/HomePage.dart';
 import 'package:asgshighschool/user_data.dart';
-import 'package:asgshighschool/web_loading.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
 class WebViewPage extends StatefulWidget {
