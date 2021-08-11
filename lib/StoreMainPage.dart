@@ -1,3 +1,4 @@
+import 'package:asgshighschool/storeAdmin/AddProduct.dart';
 import 'package:flutter/material.dart';
 
 class StoreMainPage extends StatefulWidget {
@@ -90,9 +91,9 @@ class _StoreMainPageState extends State<StoreMainPage>
                   '트롤리 젤리2', true)
             ],
           ),
-          Container(
-            color: Colors.black,
-          ),
+          Column(children: [
+            FlatButton(onPressed: () => Navigator.push(context,MaterialPageRoute(builder: (context) => AddingProductPage())), child: Text('ADD'))
+          ],),
           Container(
             color: Colors.blue,
           ),

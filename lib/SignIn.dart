@@ -30,9 +30,12 @@ class _SignInPageState extends State<SignInPage> {
   double _opacity = 1.0;
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   String _messageText = "default";
+
+
   @override
   void initState() {
     super.initState();
+
     _firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) async {
         setState(() {
@@ -173,7 +176,7 @@ class _SignInPageState extends State<SignInPage> {
 
   Future _postRequest(String token) async {
     String url = 'http://nacha01.dothome.co.kr/sin/push_send.php';
-    http.Response response = await http.post(url, headers: <String, String>{
+    http.Response response = await http.post(Uri.parse(url), headers: <String, String>{
       'Content-Type': 'application/x-www-form-urlencoded',
     }, body: <String, String>{
       'user_token': widget.token,
@@ -187,7 +190,7 @@ class _SignInPageState extends State<SignInPage> {
   Future<User> _requestLogin() async {
     String uri =
         'http://nacha01.dothome.co.kr/sin/arlimi_login.php?uid=${_idController.text}&pw=${_passwordController.text}';
-    final response = await http.get(uri, headers: <String, String>{
+    final response = await http.get(Uri.parse(uri), headers: <String, String>{
       'Content-Type': 'application/x-www-form-urlencoded'
     });
 
