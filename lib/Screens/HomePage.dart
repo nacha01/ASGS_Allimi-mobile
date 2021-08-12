@@ -4,7 +4,7 @@ import 'dart:io';
 
 import 'package:asgshighschool/StoreSplashPage.dart';
 import 'package:asgshighschool/setting_page.dart';
-import 'package:asgshighschool/user_data.dart';
+import '../data/user_data.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';

@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:asgshighschool/Screens/HomePage.dart';
-import 'package:asgshighschool/user_data.dart';
+import 'data/user_data.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 ////////////////// SIGN UP PAGE ////////////////////////////

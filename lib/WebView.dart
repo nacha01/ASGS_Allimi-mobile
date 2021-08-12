@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:asgshighschool/Screens/HomePage.dart';
-import 'package:asgshighschool/user_data.dart';
+import 'data/user_data.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 

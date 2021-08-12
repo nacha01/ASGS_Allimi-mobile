@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:asgshighschool/Screens/HomePage.dart';
 import 'package:asgshighschool/SignUp.dart';
 import 'package:asgshighschool/WebView.dart';
-import 'package:asgshighschool/user_data.dart';
+import 'data/user_data.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
