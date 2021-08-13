@@ -24,36 +24,82 @@ class AddingProductPage extends StatefulWidget {
 7. 재고
 8. 제품 설명
  */
+
+//나중에 실사용될 때, 상품 등록할 때 어드민 계정으로 비밀번호로 재확인
+
 class _AddingProductPageState extends State<AddingProductPage> {
   var _productNameController = TextEditingController();
   var _productPriceController = TextEditingController();
   var _productCountController = TextEditingController();
   var _productExplainController = TextEditingController();
+
+  var _mainImageNameController = TextEditingController();
+  var _subImage1NameController = TextEditingController();
+  var _subImage2NameController = TextEditingController();
+
   var _mainImage;
   var _subImage1;
   var _subImage2;
+
   var _mainImageFileName;
   var _subImage1FileName;
   var _subImage2FileName;
-  bool mainSent = false;
-  bool sub1Sent = false;
-  bool sub2Sent = false;
+
+  bool _mainSent = false;
+  bool _sub1Sent = false;
+  bool _sub2Sent = false;
+
+  bool _isBest = false;
+  bool _isNew = false;
+
+  bool _useSub1 = false;
+  bool _useSub2 = false;
+
+  int _clickCount = 0;
 
   final _categoryList = ['음식류', '간식류', '음료류', '문구류', '핸드메이드']; //드롭다운 아이템
-  final _categoryMap = {'음식류' : 0, '간식류' : 1, '음료류' : 2, '문구류' : 3, '핸드메이드' : 4};
+  final _categoryMap = {
+    '음식류': 0,
+    '간식류': 1,
+    '음료류': 2,
+    '문구류': 3,
+    '핸드메이드': 4
+  }; // 드롭다운 mapping
   var _selectedCategory = '음식류'; // 드롭다운 아이템 default
 
-  Future<void> _getImageFromGallery() async {
+  // index : {0 -> main, 1 -> sub1, 2 -> sub3}
+  Future<void> _getImageFromGallery(int index) async {
     var image = await ImagePicker().getImage(source: ImageSource.gallery);
     setState(() {
-      _mainImage = image;
+      switch (index) {
+        case 0:
+          _mainImage = image;
+          break;
+        case 1:
+          _subImage1 = image;
+          break;
+        case 2:
+          _subImage2 = image;
+          break;
+      }
     });
   }
 
-  Future<void> _getImageFromCamera() async {
+  // index : {0 -> main, 1 -> sub1, 2 -> sub3}
+  Future<void> _getImageFromCamera(int index) async {
     var image = await ImagePicker().getImage(source: ImageSource.camera);
     setState(() {
-      _mainImage = image;
+      switch (index) {
+        case 0:
+          _mainImage = image;
+          break;
+        case 1:
+          _subImage1 = image;
+          break;
+        case 2:
+          _subImage2 = image;
+          break;
+      }
     });
   }
 
@@ -77,13 +123,13 @@ class _AddingProductPageState extends State<AddingProductPage> {
     http.Response response = await http.post(url, headers: <String, String>{
       'Content-Type': 'application/x-www-form-urlencoded'
     }, body: <String, String>{
-      'prodName' : _productNameController.text,
-      'prodExp' : _productExplainController.text,
-      'category' : _categoryMap[_selectedCategory].toString(),
-      'price' : _productPriceController.text,
-      'stockCount' : _productCountController.text,
-      'isBest' : 'false',
-      'isNew' : 'false'
+      'prodName': _productNameController.text,
+      'prodExp': _productExplainController.text,
+      'category': _categoryMap[_selectedCategory].toString(),
+      'price': _productPriceController.text,
+      'stockCount': _productCountController.text,
+      'isBest': 'false',
+      'isNew': 'false'
     });
 
     if (response.statusCode == 200) {
@@ -125,11 +171,19 @@ class _AddingProductPageState extends State<AddingProductPage> {
                   ),
                   textFieldLayoutWidget(
                       width: size.width * 0.7,
-                      height: size.height * 0.15,
+                      height: size.height * 0.09,
                       controller: _productNameController,
                       maxCharNum: 100,
                       maxLine: 3)
                 ],
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Divider(
+                thickness: 2,
+                endIndent: 15,
+                indent: 15,
               ),
               SizedBox(
                 height: 10,
@@ -143,11 +197,19 @@ class _AddingProductPageState extends State<AddingProductPage> {
                   ),
                   textFieldLayoutWidget(
                       width: size.width * 0.7,
-                      height: size.height * 0.2,
+                      height: size.height * 0.15,
                       controller: _productExplainController,
                       maxCharNum: 3000,
                       maxLine: 5)
                 ],
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Divider(
+                thickness: 2,
+                endIndent: 15,
+                indent: 15,
               ),
               SizedBox(
                 height: 10,
@@ -182,6 +244,14 @@ class _AddingProductPageState extends State<AddingProductPage> {
               SizedBox(
                 height: 10,
               ),
+              Divider(
+                thickness: 2,
+                endIndent: 15,
+                indent: 15,
+              ),
+              SizedBox(
+                height: 10,
+              ),
               Row(
                 children: [
                   titleLayoutWidget(title: '가격', require: true, size: size),
@@ -196,6 +266,14 @@ class _AddingProductPageState extends State<AddingProductPage> {
                       validation: true,
                       formatType: true)
                 ],
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Divider(
+                thickness: 2,
+                endIndent: 15,
+                indent: 15,
               ),
               SizedBox(
                 height: 10,
@@ -222,6 +300,90 @@ class _AddingProductPageState extends State<AddingProductPage> {
                 endIndent: 15,
                 indent: 15,
               ),
+              SizedBox(
+                height: 10,
+              ),
+              Row(
+                children: [
+                  Container(
+                    margin: EdgeInsets.all(5),
+                    alignment: Alignment.center,
+                    width: size.width * 0.32,
+                    height: size.height * 0.06,
+                    child: Text(
+                      'Best 메뉴 여부',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    decoration: BoxDecoration(
+                        color: Color(0xFF9EE1E5),
+                        borderRadius: BorderRadius.circular(8)),
+                  ),
+                  Container(
+                    width: size.width * 0.6,
+                    child: Checkbox(
+                        value: _isBest,
+                        onChanged: (value) {
+                          setState(() {
+                            _isBest = value;
+                          });
+                        }),
+                  )
+                ],
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Divider(
+                thickness: 2,
+                endIndent: 15,
+                indent: 15,
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Row(
+                children: [
+                  Container(
+                    margin: EdgeInsets.all(5),
+                    alignment: Alignment.center,
+                    width: size.width * 0.32,
+                    height: size.height * 0.06,
+                    child: Text(
+                      'New 메뉴 여부',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    decoration: BoxDecoration(
+                        color: Color(0xFF9EE1E5),
+                        borderRadius: BorderRadius.circular(8)),
+                  ),
+                  Container(
+                    width: size.width * 0.6,
+                    child: Checkbox(
+                        value: _isNew,
+                        onChanged: (value) {
+                          setState(() {
+                            _isNew = value;
+                          });
+                        }),
+                  )
+                ],
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Divider(
+                thickness: 2,
+                endIndent: 15,
+                indent: 15,
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              /*----------------------------------------------------*/
               Column(
                 children: [
                   Container(
@@ -248,9 +410,10 @@ class _AddingProductPageState extends State<AddingProductPage> {
                         margin: EdgeInsets.all(3),
                         width: size.width * 0.2,
                         child: IconButton(
-                            onPressed: _getImageFromCamera,
+                            onPressed: () => _getImageFromCamera(0),
                             icon: Icon(Icons.camera_alt_rounded)),
                         decoration: BoxDecoration(
+                            border: Border.all(width: 1, color: Colors.teal),
                             color: Color(0xFF9EE1E5),
                             borderRadius: BorderRadius.circular(5)),
                       ),
@@ -258,9 +421,10 @@ class _AddingProductPageState extends State<AddingProductPage> {
                         margin: EdgeInsets.all(3),
                         width: size.width * 0.2,
                         child: IconButton(
-                            onPressed: _getImageFromGallery,
+                            onPressed: () => _getImageFromGallery(0),
                             icon: Icon(Icons.photo_outlined)),
                         decoration: BoxDecoration(
+                            border: Border.all(width: 1, color: Colors.teal),
                             color: Color(0xFF9EE1E5),
                             borderRadius: BorderRadius.circular(5)),
                       )
@@ -270,30 +434,329 @@ class _AddingProductPageState extends State<AddingProductPage> {
                     height: 10,
                   ),
                   _mainImage == null
-                      ? Container(
-                          width: size.width * 0.7,
-                          height: size.height * 0.35,
-                          child: Text('이미지를 불러와주세요'),
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                              border: Border.all(width: 5, color: Colors.grey)))
+                      ? imageLoadLayout(size)
                       : Image.file(
                           File((_mainImage as PickedFile).path),
                           fit: BoxFit.fill,
-                          width: size.width * 0.7,
-                          height: size.height * 0.35,
-                        )
+                          width: size.width * 0.8,
+                          height: size.height * 0.4,
+                        ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Row(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.all(5),
+                        alignment: Alignment.center,
+                        width: size.width * 0.52,
+                        height: size.height * 0.06,
+                        child: Text(
+                          '*대표 이미지 파일 이름(영어,숫자 조합)',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        decoration: BoxDecoration(
+                            color: Color(0xFF9EE1E5),
+                            borderRadius: BorderRadius.circular(8)),
+                      ),
+                      Container(
+                        child: TextField(
+                          controller: _mainImageNameController,
+                          textAlign: TextAlign.center,
+                          decoration: InputDecoration(
+                              hintText: 'abcd123.jpg',
+                              hintStyle: TextStyle(color: Colors.grey)),
+                        ),
+                        width: size.width * 0.4,
+                      )
+                    ],
+                  )
                 ],
               ),
               SizedBox(
                 height: 10,
               ),
-              Row(mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('이미지 추가하기 (최대 2개 추가 가능)'),
-                  IconButton(onPressed: () {}, icon: Icon(Icons.add_circle))
-                ],
-              )
+              /* ---------------------------------------------------- */
+              _useSub1
+                  ? Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              alignment: Alignment.center,
+                              width: size.width * 0.6,
+                              height: size.height * 0.05,
+                              child: Text(
+                                '추가 이미지 1 선택',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              decoration: BoxDecoration(
+                                  color: Color(0xFF9EE1E5),
+                                  borderRadius: BorderRadius.circular(8)),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  _clickCount--;
+                                  _useSub1 = false;
+                                  _subImage1 = null;
+                                });
+                              },
+                              icon: Icon(Icons.cancel),
+                              color: Colors.red,
+                            )
+                          ],
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              margin: EdgeInsets.all(3),
+                              width: size.width * 0.2,
+                              child: IconButton(
+                                  onPressed: () => _getImageFromCamera(1),
+                                  icon: Icon(Icons.camera_alt_rounded)),
+                              decoration: BoxDecoration(
+                                  border:
+                                      Border.all(width: 1, color: Colors.teal),
+                                  color: Color(0xFF9EE1E5),
+                                  borderRadius: BorderRadius.circular(5)),
+                            ),
+                            Container(
+                              margin: EdgeInsets.all(3),
+                              width: size.width * 0.2,
+                              child: IconButton(
+                                  onPressed: () => _getImageFromGallery(1),
+                                  icon: Icon(Icons.photo_outlined)),
+                              decoration: BoxDecoration(
+                                  border:
+                                      Border.all(width: 1, color: Colors.teal),
+                                  color: Color(0xFF9EE1E5),
+                                  borderRadius: BorderRadius.circular(5)),
+                            )
+                          ],
+                        ),
+                        _subImage1 == null
+                            ? imageLoadLayout(size)
+                            : Image.file(
+                                File((_subImage1 as PickedFile).path),
+                                fit: BoxFit.fill,
+                                width: size.width * 0.8,
+                                height: size.height * 0.4,
+                              ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Row(
+                          children: [
+                            Container(
+                              margin: EdgeInsets.all(5),
+                              alignment: Alignment.center,
+                              width: size.width * 0.52,
+                              height: size.height * 0.06,
+                              child: Text(
+                                '*이미지 파일 이름(영어,숫자 조합)',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              decoration: BoxDecoration(
+                                  color: Color(0xFF9EE1E5),
+                                  borderRadius: BorderRadius.circular(8)),
+                            ),
+                            Container(
+                              child: TextField(
+                                controller: _subImage1NameController,
+                                textAlign: TextAlign.center,
+                                decoration: InputDecoration(
+                                    hintText: 'abcd123.jpg',
+                                    hintStyle: TextStyle(color: Colors.grey)),
+                              ),
+                              width: size.width * 0.4,
+                            )
+                          ],
+                        )
+                      ],
+                    )
+                  : SizedBox(),
+              /* ---------------------------------------------------- */
+              _useSub2
+                  ? Column(
+                      children: [
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              alignment: Alignment.center,
+                              width: size.width * 0.6,
+                              height: size.height * 0.05,
+                              child: Text(
+                                '추가 이미지 2 선택',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              decoration: BoxDecoration(
+                                  color: Color(0xFF9EE1E5),
+                                  borderRadius: BorderRadius.circular(8)),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  _clickCount--;
+                                  _useSub2 = false;
+                                  _subImage2 = null;
+                                });
+                              },
+                              icon: Icon(Icons.cancel),
+                              color: Colors.red,
+                            )
+                          ],
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              margin: EdgeInsets.all(3),
+                              width: size.width * 0.2,
+                              child: IconButton(
+                                  onPressed: () => _getImageFromCamera(2),
+                                  icon: Icon(Icons.camera_alt_rounded)),
+                              decoration: BoxDecoration(
+                                  border:
+                                      Border.all(width: 1, color: Colors.teal),
+                                  color: Color(0xFF9EE1E5),
+                                  borderRadius: BorderRadius.circular(5)),
+                            ),
+                            Container(
+                              margin: EdgeInsets.all(3),
+                              width: size.width * 0.2,
+                              child: IconButton(
+                                  onPressed: () => _getImageFromGallery(2),
+                                  icon: Icon(Icons.photo_outlined)),
+                              decoration: BoxDecoration(
+                                  border:
+                                      Border.all(width: 1, color: Colors.teal),
+                                  color: Color(0xFF9EE1E5),
+                                  borderRadius: BorderRadius.circular(5)),
+                            )
+                          ],
+                        ),
+                        _subImage2 == null
+                            ? imageLoadLayout(size)
+                            : Image.file(
+                                File((_subImage2 as PickedFile).path),
+                                fit: BoxFit.fill,
+                                width: size.width * 0.8,
+                                height: size.height * 0.4,
+                              ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Row(
+                          children: [
+                            Container(
+                              margin: EdgeInsets.all(5),
+                              alignment: Alignment.center,
+                              width: size.width * 0.52,
+                              height: size.height * 0.06,
+                              child: Text(
+                                '*이미지 파일 이름(영어,숫자 조합)',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              decoration: BoxDecoration(
+                                  color: Color(0xFF9EE1E5),
+                                  borderRadius: BorderRadius.circular(8)),
+                            ),
+                            Container(
+                              child: TextField(
+                                controller: _subImage2NameController,
+                                textAlign: TextAlign.center,
+                                decoration: InputDecoration(
+                                    hintText: 'abcd123.jpg',
+                                    hintStyle: TextStyle(color: Colors.grey)),
+                              ),
+                              width: size.width * 0.4,
+                            )
+                          ],
+                        )
+                      ],
+                    )
+                  : SizedBox(),
+              SizedBox(
+                height: 10,
+              ),
+              Container(
+                decoration: BoxDecoration(
+                    color: Colors.cyan, borderRadius: BorderRadius.circular(8)),
+                width: size.width * 0.85,
+                height: size.height * 0.04,
+                alignment: Alignment.center,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      '이미지 추가하기(최대 2개)',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        print(_clickCount);
+                        if (_clickCount == 0) {
+                          ++_clickCount;
+                          setState(() {
+                            if (!_useSub1)
+                              _useSub1 = true;
+                            else if (!_useSub2) _useSub2 = true;
+                          });
+                        } else if (_clickCount == 1) {
+                          ++_clickCount;
+                          setState(() {
+                            if (!_useSub1)
+                              _useSub1 = true;
+                            else if (!_useSub2) _useSub2 = true;
+                          });
+                        }
+                      },
+                      icon: Icon(Icons.add_circle),
+                      color: Colors.white,
+                    )
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: size.height * 0.05,
+              ),
+              Container(
+                width: size.width * 0.5,
+                decoration: BoxDecoration(
+                    color: Colors.deepOrange,
+                    border: Border.all(width: 2, color: Colors.indigo),
+                    borderRadius: BorderRadius.circular(20)),
+                child: FlatButton(
+                  child: Text('최종 등록하기',style: TextStyle(fontWeight: FontWeight.bold),),
+                  onPressed: () {
+
+                  },
+                ),
+              ),
+              SizedBox(height: 15,)
             ],
           ),
         ),
@@ -316,6 +779,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
       height: height,
       width: width,
       child: TextField(
+        textAlign: TextAlign.center,
         keyboardType: formatType ? TextInputType.number : TextInputType.text,
         inputFormatters: [
           formatType
@@ -335,7 +799,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
   }
 
   Widget titleLayoutWidget(
-      {@required String title, @required bool require, Size size}) {
+      {@required String title, @required bool require, @required Size size}) {
     return Container(
       margin: EdgeInsets.all(5),
       alignment: Alignment.center,
@@ -350,5 +814,18 @@ class _AddingProductPageState extends State<AddingProductPage> {
       decoration: BoxDecoration(
           color: Color(0xFF9EE1E5), borderRadius: BorderRadius.circular(8)),
     );
+  }
+
+  Widget imageLoadLayout(Size size) {
+    return Container(
+        width: size.width * 0.8,
+        height: size.height * 0.4,
+        child: Text(
+          '이미지를 불러와주세요',
+          style: TextStyle(color: Colors.grey[400]),
+        ),
+        alignment: Alignment.center,
+        decoration:
+            BoxDecoration(border: Border.all(width: 5, color: Colors.grey)));
   }
 }
