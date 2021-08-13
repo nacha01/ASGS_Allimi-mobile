@@ -25,7 +25,15 @@ class AddingProductPage extends StatefulWidget {
 8. 제품 설명
  */
 
+/* later Additional functions*/
 //나중에 실사용될 때, 상품 등록할 때 어드민 계정으로 비밀번호로 재확인
+
+// 현재 글자수 보여주는 것
+
+// 파일 이름 확장자 통일?
+
+// 상품 등록 성공한 화면에서 다시 되돌아오기?
+
 
 class _AddingProductPageState extends State<AddingProductPage> {
   var _productNameController = TextEditingController();

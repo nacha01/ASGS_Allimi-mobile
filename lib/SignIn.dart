@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:asgshighschool/Screens/HomePage.dart';
+import 'HomePage.dart';
 import 'package:asgshighschool/SignUp.dart';
 import 'package:asgshighschool/WebView.dart';
 import 'data/user_data.dart';
