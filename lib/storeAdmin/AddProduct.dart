@@ -49,14 +49,6 @@ class _AddingProductPageState extends State<AddingProductPage> {
   var _subImage1;
   var _subImage2;
 
-  var _mainImageFileName;
-  var _subImage1FileName;
-  var _subImage2FileName;
-
-  bool _mainSent = false;
-  bool _sub1Sent = false;
-  bool _sub2Sent = false;
-
   bool _isBest = false;
   bool _isNew = false;
 
@@ -65,6 +57,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
 
   int _clickCount = 0;
   bool _isNotRegister = true;
+
   final _categoryList = ['음식류', '간식류', '음료류', '문구류', '핸드메이드']; //드롭다운 아이템
   final _categoryMap = {
     '음식류': 0,

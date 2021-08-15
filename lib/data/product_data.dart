@@ -1,4 +1,4 @@
-class Product{
+class Product {
   int _prodID;
   String _prodName;
   String _prodInfo;
@@ -9,8 +9,8 @@ class Product{
   String _imgUrl1;
   String _imgUrl2;
   String _imgUrl3;
-  String _isBest;
-  String _isNew;
+  int _isBest;
+  int _isNew;
   int _cumulBuyCount;
 
   Product(
@@ -28,6 +28,21 @@ class Product{
       this._isNew,
       this._cumulBuyCount);
 
+  Product.fromJson(Map<String, dynamic> json)
+      : _prodID = json['prodID'],
+        _prodName = json['prodName'],
+        _prodInfo = json['prodInfo'],
+        _category = json['category'] as int,
+        _price = json['price'] as int,
+        _stockCount = json['stockCount'] as int,
+        _discount = json['discount'],
+        _imgUrl1 = json['imgUrl1'],
+        _imgUrl2 = json['imgUrl2'],
+        _imgUrl3 = json['imgUrl3'],
+        _isBest = json['isBest'] as int,
+        _isNew = json['isNew'] as int,
+        _cumulBuyCount = json['cumulBuy'] as int;
+
   int get prodID => _prodID;
 
   set prodID(int value) {
@@ -42,15 +57,15 @@ class Product{
     _cumulBuyCount = value;
   }
 
-  String get isNew => _isNew;
+  int get isNew => _isNew;
 
-  set isNew(String value) {
+  set isNew(int value) {
     _isNew = value;
   }
 
-  String get isBest => _isBest;
+  int get isBest => _isBest;
 
-  set isBest(String value) {
+  set isBest(int value) {
     _isBest = value;
   }
 
