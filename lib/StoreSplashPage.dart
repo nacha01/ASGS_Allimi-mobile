@@ -38,6 +38,11 @@ class _StoreSplashPageState extends State<StoreSplashPage> {
 
     if (response.statusCode == 200) {
       print(response.body);
+      if(response.body.contains('일일 트래픽을 모두 사용하였습니다.')){
+        print('일일 트래픽 모두 사용');
+        // 임시 유저로 이동
+        return [];
+      }
       String result = utf8
           .decode(response.bodyBytes)
           .replaceAll(

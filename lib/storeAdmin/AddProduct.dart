@@ -34,7 +34,6 @@ class AddingProductPage extends StatefulWidget {
 
 // 상품 등록 성공한 화면에서 다시 되돌아오기?
 
-
 class _AddingProductPageState extends State<AddingProductPage> {
   var _productNameController = TextEditingController();
   var _productPriceController = TextEditingController();
@@ -45,9 +44,9 @@ class _AddingProductPageState extends State<AddingProductPage> {
   var _subImage1NameController = TextEditingController();
   var _subImage2NameController = TextEditingController();
 
-  var _mainImage;
-  var _subImage1;
-  var _subImage2;
+  PickedFile _mainImage;
+  PickedFile _subImage1;
+  PickedFile _subImage2;
 
   bool _isBest = false;
   bool _isNew = false;
@@ -109,7 +108,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
     var request = http.MultipartRequest('POST',
         Uri.parse('http://nacha01.dothome.co.kr/sin/arlimi_storeImage.php'));
     var picture = await http.MultipartFile.fromPath('imgFile', img.path,
-        filename: fileName);
+        filename: fileName + '.jpg');
     request.files.add(picture);
 
     var response = await request.send();
@@ -162,21 +161,22 @@ class _AddingProductPageState extends State<AddingProductPage> {
 
   Future<bool> _doRegisterProduct() async {
     if (_useSub1) {
-      var a =
+      var sub1Result =
           await _sendImageToServer(_subImage1, _subImage1NameController.text);
-      if (!a) return false;
+      if (!sub1Result) return false;
     }
     if (_useSub2) {
-      var b =
+      var sub2Result =
           await _sendImageToServer(_subImage2, _subImage2NameController.text);
-      if (!b) return false;
+      if (!sub2Result) return false;
     }
-    var c = await _sendImageToServer(_mainImage, _mainImageNameController.text);
-    if (!c) return false;
 
-    var d = await _postRequestForInsertProduct();
-    if (!d) return false;
-    await Future.delayed(Duration(milliseconds: 200));
+    var mainResult =
+        await _sendImageToServer(_mainImage, _mainImageNameController.text);
+    if (!mainResult) return false;
+
+    var registerResult = await _postRequestForInsertProduct();
+    if (!registerResult) return false;
     return true;
   }
 
@@ -184,6 +184,22 @@ class _AddingProductPageState extends State<AddingProductPage> {
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
     return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          color: Colors.black,
+          icon: Icon(
+            Icons.arrow_back,
+            color: Colors.black,
+          ),
+        ),
+        backgroundColor: Color(0xFF9EE1E5),
+        title: Text(
+          '상품 등록하기',
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: _isNotRegister
@@ -191,10 +207,6 @@ class _AddingProductPageState extends State<AddingProductPage> {
                   children: [
                     SizedBox(
                       height: 10,
-                    ),
-                    Text(
-                      '상품 등록하기',
-                      style: TextStyle(fontSize: 25),
                     ),
                     SizedBox(
                       height: 10,
@@ -204,7 +216,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                       style: TextStyle(color: Colors.grey),
                     ),
                     SizedBox(
-                      height: 10,
+                      height: 20,
                     ),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -503,7 +515,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                               width: size.width * 0.52,
                               height: size.height * 0.06,
                               child: Text(
-                                '*대표 이미지 파일 이름(영어,숫자 조합)',
+                                '*이미지 파일 이름(영어,숫자 조합)',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -517,7 +529,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                 controller: _mainImageNameController,
                                 textAlign: TextAlign.center,
                                 decoration: InputDecoration(
-                                    hintText: 'abcd123.jpg',
+                                    hintText: 'abcd123',
                                     hintStyle: TextStyle(color: Colors.grey)),
                               ),
                               width: size.width * 0.4,
@@ -629,7 +641,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                       controller: _subImage1NameController,
                                       textAlign: TextAlign.center,
                                       decoration: InputDecoration(
-                                          hintText: 'abcd123.jpg',
+                                          hintText: 'abcd123',
                                           hintStyle:
                                               TextStyle(color: Colors.grey)),
                                     ),
@@ -743,7 +755,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                       controller: _subImage2NameController,
                                       textAlign: TextAlign.center,
                                       decoration: InputDecoration(
-                                          hintText: 'abcd123.jpg',
+                                          hintText: 'abcd123',
                                           hintStyle:
                                               TextStyle(color: Colors.grey)),
                                     ),
@@ -811,6 +823,50 @@ class _AddingProductPageState extends State<AddingProductPage> {
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         onPressed: () {
+                          if (_productNameController.text.isEmpty) {
+                            showErrorDialog();
+                            return;
+                          }
+                          if (_productExplainController.text.isEmpty) {
+                            showErrorDialog();
+                            return;
+                          }
+                          if (_productCountController.text.isEmpty) {
+                            showErrorDialog();
+                            showErrorDialog();
+                            return;
+                          }
+                          if (_productPriceController.text.isEmpty) {
+                            showErrorDialog();
+                            return;
+                          }
+                          if (_mainImageNameController.text.isEmpty) {
+                            showErrorDialog();
+                            return;
+                          }
+                          if (_useSub1 &&
+                              _subImage1NameController.text.isEmpty) {
+                            showErrorDialog();
+                            return;
+                          }
+                          if (_useSub2 &&
+                              _subImage2NameController.text.isEmpty) {
+                            showErrorDialog();
+                            return;
+                          }
+                          if (_mainImage == null) {
+                            showErrorDialog();
+                            return;
+                          }
+                          if (_useSub1 && _subImage1 == null) {
+                            showErrorDialog();
+                            return;
+                          }
+                          if (_useSub2 && _subImage2 == null) {
+                            showErrorDialog();
+                            return;
+                          }
+
                           setState(() {
                             _isNotRegister = false;
                           });
@@ -1012,5 +1068,18 @@ class _AddingProductPageState extends State<AddingProductPage> {
         alignment: Alignment.center,
         decoration:
             BoxDecoration(border: Border.all(width: 5, color: Colors.grey)));
+  }
+
+  void showErrorDialog() {
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: Text('문제 발생'),
+              content: Text('입력사항을 재확인 바랍니다'),
+              actions: [
+                FlatButton(
+                    onPressed: () => Navigator.pop(context), child: Text('확인'))
+              ],
+            ));
   }
 }

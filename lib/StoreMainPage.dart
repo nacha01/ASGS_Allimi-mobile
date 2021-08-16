@@ -85,24 +85,14 @@ class _StoreMainPageState extends State<StoreMainPage>
           ];
         },
         body: TabBarView(controller: _tabController, children: [
-          GridView.count(
-              padding: EdgeInsets.all(10),
-              crossAxisSpacing: 20,
-              mainAxisSpacing: 15,
-              crossAxisCount: 2,
-              children: productLayoutList
-              //[
-
-              // itemTile('http://nacha01.dothome.co.kr/sin/snack3.jpg', 1500,
-              //     '서울 우유', false),
-              // itemTile('http://nacha01.dothome.co.kr/sin/snack3.jpg',3000,
-              //     '트롤리 젤리', true),
-              // itemTile('http://nacha01.dothome.co.kr/sin/snack3.jpg', 1500,
-              //     '서울 우유2', false),
-              // itemTile('http://nacha01.dothome.co.kr/sin/snack3.jpg',3000,
-              //     '트롤리 젤리2', true)
-              // ],
-              ),
+          productLayoutList.length == 0
+              ? Center(child: Text('상품이 없습니다.'))
+              : GridView.count(
+                  padding: EdgeInsets.all(10),
+                  crossAxisSpacing: 20,
+                  mainAxisSpacing: 15,
+                  crossAxisCount: 2,
+                  children: productLayoutList),
           Column(
             children: [
               FlatButton(
