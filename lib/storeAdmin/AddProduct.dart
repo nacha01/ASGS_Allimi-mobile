@@ -118,12 +118,13 @@ class _AddingProductPageState extends State<AddingProductPage> {
       var responseData = await response.stream.toBytes();
       var responseString = String.fromCharCodes(responseData);
       print(responseString);
-      if (responseString != 'complete0') return false;
-
       if(responseString.contains('일일 트래픽을 모두 사용하였습니다.')){
         print('일일 트래픽 모두 사용');
         return false;
       }
+      if (responseString != 'complete0') return false;
+
+
       return true;
     } else {
       return false;
@@ -165,6 +166,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
       if (replace.trim() != '1') return false;
       return true;
     } else {
+      print('실패');
       return false;
     }
   }

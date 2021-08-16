@@ -19,12 +19,12 @@ class _SignUpPageState extends State<SignUpPage> {
   TextEditingController _passwordController = TextEditingController();
   TextEditingController _nickNameController = TextEditingController();
   TextEditingController _telController = TextEditingController();
-  final statusList = ['학생', '학부모', '교사', '졸업생', '기타'];
-  final statusMap = {'학생': 1, '학부모': 2, '교사': 3, '졸업생': 4, '기타': 5};
+  final statusList = ['재학생', '학부모', '교사', '졸업생', '기타'];
+  final statusMap = {'재학생': 1, '학부모': 2, '교사': 3, '졸업생': 4, '기타': 5};
   var _selectedValue = '학생';
 
   bool isTwoRow() {
-    if (_selectedValue == '학생' || _selectedValue == '학부모') {
+    if (_selectedValue == '재학생' || _selectedValue == '학부모') {
       return true;
     } else if (_selectedValue == '교사' ||
         _selectedValue == '졸업생' ||
