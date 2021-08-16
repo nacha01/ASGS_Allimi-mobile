@@ -1,10 +1,10 @@
 import 'dart:convert';
 
-import 'package:asgshighschool/StoreMainPage.dart';
+import 'StoreMainPage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-import 'data/product_data.dart';
+import '../data/product_data.dart';
 
 class StoreSplashPage extends StatefulWidget {
   final user;

@@ -2,7 +2,7 @@
 
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'Screens/Splash/SplashPage.dart';
+import 'main/SplashPage.dart';
 
 void main() {
   runZoned(() {

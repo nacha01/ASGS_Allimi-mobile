@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:asgshighschool/StoreSplashPage.dart';
-import 'package:asgshighschool/SettingPage.dart';
-import 'data/user_data.dart';
+import '../store/StoreSplashPage.dart';
+import 'SettingPage.dart';
+import '../data/user_data.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -13,7 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'WebView.dart';
+import '../WebView.dart';
 
 final List<String> imgList = [
   'main_img_1.jpg',

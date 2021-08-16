@@ -1,14 +1,14 @@
 import 'dart:convert';
 
 import 'HomePage.dart';
-import 'package:asgshighschool/SignUp.dart';
+import 'SignUp.dart';
 import 'package:asgshighschool/WebView.dart';
-import 'data/user_data.dart';
+import '../data/user_data.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
-import 'LocalNotifyManager.dart';
+import '../LocalNotifyManager.dart';
 ////////////////// Login PAGE ////////////////////////////
 
 class SignInPage extends StatefulWidget {

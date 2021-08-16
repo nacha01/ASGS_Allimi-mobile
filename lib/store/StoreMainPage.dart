@@ -1,7 +1,7 @@
 import 'package:asgshighschool/storeAdmin/AddProduct.dart';
 import 'package:flutter/material.dart';
 
-import 'data/product_data.dart';
+import '../data/product_data.dart';
 
 class StoreMainPage extends StatefulWidget {
   StoreMainPage({this.user, this.product});
