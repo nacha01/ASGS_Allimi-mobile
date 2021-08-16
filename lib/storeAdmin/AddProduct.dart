@@ -119,6 +119,11 @@ class _AddingProductPageState extends State<AddingProductPage> {
       var responseString = String.fromCharCodes(responseData);
       print(responseString);
       if (responseString != 'complete0') return false;
+
+      if(responseString.contains('일일 트래픽을 모두 사용하였습니다.')){
+        print('일일 트래픽 모두 사용');
+        return false;
+      }
       return true;
     } else {
       return false;
@@ -148,6 +153,11 @@ class _AddingProductPageState extends State<AddingProductPage> {
 
     if (response.statusCode == 200) {
       // 전송 성공
+      if(response.body.contains('일일 트래픽을 모두 사용하였습니다.')){
+        print('일일 트래픽 모두 사용');
+        // 임시 유저로 이동
+        return false;
+      }
       print(response.body);
       var replace = response.body.replaceAll(
           '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
