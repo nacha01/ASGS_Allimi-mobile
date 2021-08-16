@@ -1,9 +1,12 @@
 import 'package:asgshighschool/storeAdmin/AddProduct.dart';
 import 'package:flutter/material.dart';
 
+import 'data/product_data.dart';
+
 class StoreMainPage extends StatefulWidget {
-  StoreMainPage({this.user});
+  StoreMainPage({this.user, this.product});
   final user;
+  List<Product> product;
   @override
   _StoreMainPageState createState() => _StoreMainPageState();
 }
@@ -14,12 +17,18 @@ class _StoreMainPageState extends State<StoreMainPage>
   ScrollController _scrollViewController;
   TextEditingController _searchController = TextEditingController();
   int currentNav = 0;
-
+  List<Widget> productLayoutList = [];
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 4, vsync: this);
     _scrollViewController = ScrollController();
+
+    for (int i = 0; i < widget.product.length; ++i) {
+      var tmp = widget.product[i];
+      productLayoutList
+          .add(itemTile(tmp.imgUrl1, tmp.price, tmp.prodName, false));
+    }
   }
 
   @override
@@ -76,24 +85,34 @@ class _StoreMainPageState extends State<StoreMainPage>
           ];
         },
         body: TabBarView(controller: _tabController, children: [
-          GridView.count(padding: EdgeInsets.all(10),
-            crossAxisSpacing: 3,
-            mainAxisSpacing: 20,
-            crossAxisCount: 2,
+          GridView.count(
+              padding: EdgeInsets.all(10),
+              crossAxisSpacing: 20,
+              mainAxisSpacing: 15,
+              crossAxisCount: 2,
+              children: productLayoutList
+              //[
+
+              // itemTile('http://nacha01.dothome.co.kr/sin/snack3.jpg', 1500,
+              //     '서울 우유', false),
+              // itemTile('http://nacha01.dothome.co.kr/sin/snack3.jpg',3000,
+              //     '트롤리 젤리', true),
+              // itemTile('http://nacha01.dothome.co.kr/sin/snack3.jpg', 1500,
+              //     '서울 우유2', false),
+              // itemTile('http://nacha01.dothome.co.kr/sin/snack3.jpg',3000,
+              //     '트롤리 젤리2', true)
+              // ],
+              ),
+          Column(
             children: [
-              itemTile('http://nacha01.dothome.co.kr/sin/snack3.jpg', '1,500',
-                  '서울 우유', false),
-              itemTile('http://nacha01.dothome.co.kr/sin/snack3.jpg', '3,000',
-                  '트롤리 젤리', true),
-              itemTile('http://nacha01.dothome.co.kr/sin/snack3.jpg', '1,500',
-                  '서울 우유2', false),
-              itemTile('http://nacha01.dothome.co.kr/sin/snack3.jpg', '3,000',
-                  '트롤리 젤리2', true)
+              FlatButton(
+                  onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => AddingProductPage())),
+                  child: Text('ADD'))
             ],
           ),
-          Column(children: [
-            FlatButton(onPressed: () => Navigator.push(context,MaterialPageRoute(builder: (context) => AddingProductPage())), child: Text('ADD'))
-          ],),
           Container(
             color: Colors.blue,
           ),
@@ -127,34 +146,43 @@ class _StoreMainPageState extends State<StoreMainPage>
     );
   }
 
-  Widget itemTile(String imgUrl, String price, String prodName, bool isWish) {
+  Widget itemTile(String imgUrl, int price, String prodName, bool isWish) {
     return GestureDetector(
-      onTap: (){
+      onTap: () {
         print('클릭함');
       },
       child: Column(
         children: [
-          Expanded( //핵심.... Stack의 높이는 정해져있지 않아서 Expanded로?..
+          Expanded(
+            //핵심.... Stack의 높이는 정해져있지 않아서 Expanded로?..
             child: Stack(
               children: [
                 ClipRRect(
                   child: Image.network(
                     imgUrl,
                     fit: BoxFit.fill,
+                    errorBuilder: (context, object, stackTrace) {
+                      return Container(
+                          alignment: Alignment.center,
+                          color: Colors.grey[400],
+                          child: Text('No Image'));
+                    },
                   ),
                   borderRadius: BorderRadius.circular(15),
                 ),
-                Positioned(bottom: 8,right: 8,
-                    child: Icon(isWish ? Icons.favorite : Icons.favorite_border))
+                Positioned(
+                    bottom: 8,
+                    right: 8,
+                    child:
+                        Icon(isWish ? Icons.favorite : Icons.favorite_border))
               ],
             ),
           ),
-          Text(price),
+          Text('$price'),
           Text(prodName)
         ],
       ),
     );
-
   }
 
   Widget aboveTap(Size size) {

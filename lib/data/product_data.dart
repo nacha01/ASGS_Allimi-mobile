@@ -29,19 +29,19 @@ class Product {
       this._cumulBuyCount);
 
   Product.fromJson(Map<String, dynamic> json)
-      : _prodID = json['prodID'],
+      : _prodID = int.parse(json['prodID']),
         _prodName = json['prodName'],
         _prodInfo = json['prodInfo'],
-        _category = json['category'] as int,
-        _price = json['price'] as int,
-        _stockCount = json['stockCount'] as int,
-        _discount = json['discount'],
+        _category = int.parse(json['category']),
+        _price = int.parse(json['price']),
+        _stockCount = int.parse(json['stockCount']),
+        _discount = double.parse(json['discount']),
         _imgUrl1 = json['imgUrl1'],
         _imgUrl2 = json['imgUrl2'],
         _imgUrl3 = json['imgUrl3'],
-        _isBest = json['isBest'] as int,
-        _isNew = json['isNew'] as int,
-        _cumulBuyCount = json['cumulBuy'] as int;
+        _isBest = int.parse(json['isBest']),
+        _isNew = int.parse(json['isNew']),
+        _cumulBuyCount = int.parse(json['cumulBuy']);
 
   int get prodID => _prodID;
 
