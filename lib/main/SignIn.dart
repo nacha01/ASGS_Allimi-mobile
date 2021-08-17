@@ -31,7 +31,6 @@ class _SignInPageState extends State<SignInPage> {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   String _messageText = "default";
 
-
   @override
   void initState() {
     super.initState();
@@ -176,7 +175,8 @@ class _SignInPageState extends State<SignInPage> {
 
   Future _postRequest(String token) async {
     String url = 'http://nacha01.dothome.co.kr/sin/push_send.php';
-    http.Response response = await http.post(Uri.parse(url), headers: <String, String>{
+    http.Response response =
+        await http.post(Uri.parse(url), headers: <String, String>{
       'Content-Type': 'application/x-www-form-urlencoded',
     }, body: <String, String>{
       'user_token': widget.token,
@@ -198,10 +198,10 @@ class _SignInPageState extends State<SignInPage> {
       if (utf8.decode(response.bodyBytes).contains('NOT EXIST ACCOUNT')) {
         return null;
       }
-      if(response.body.contains('일일 트래픽을 모두 사용하였습니다.')){
+      if (response.body.contains('일일 트래픽을 모두 사용하였습니다.')) {
         print('일일 트래픽 모두 사용 in 로그인');
         // 임시 유저로 이동
-        return User('tmp','tmp','tmp',5,'tmp','tmp','tmp','tmp',0,0);
+        return User('tmp', 'tmp', 'tmp', 5, 'tmp', 'tmp', 'tmp', 'tmp', 0, 0);
       }
       String result = utf8
           .decode(response.bodyBytes)
@@ -212,6 +212,25 @@ class _SignInPageState extends State<SignInPage> {
       return User.fromJson(json.decode(result));
     } else {
       return null;
+    }
+  }
+
+  Future<bool> _judgeIsAdminAccount() async {
+    String uri =
+        'http://nacha01.dothome.co.kr/sin/arlimi_isAdmin.php?uid=${_idController.text}&pw=${_passwordController.text}';
+    final response = await http.get(uri, headers: <String, String>{
+      'Content-Type': 'application/x-www-form-urlencoded'
+    });
+    if(response.statusCode == 200){
+      if(response.body.contains('ADMIN')){
+        return true;
+      }
+      else{
+        return false;
+      }
+    }
+    else{
+      return false;
     }
   }
 
@@ -379,6 +398,7 @@ class _SignInPageState extends State<SignInPage> {
                                         ));
                                 return;
                               } else {
+                                result.isAdmin = await _judgeIsAdminAccount();
                                 Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(

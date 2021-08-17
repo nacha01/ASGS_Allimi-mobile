@@ -47,7 +47,7 @@ class _StoreMyPageState extends State<StoreMyPage> {
                               fit: BoxFit.fill,
                             ),
                           ),
-                          title: Text(widget.user.nickName),
+                          title: Text(widget.user.isAdmin ? '관리자 ' +widget.user.nickName: widget.user.nickName),
                           subtitle: Text(
                               '${widget.user.identity} / ${widget.user.studentId}'),
                         ),

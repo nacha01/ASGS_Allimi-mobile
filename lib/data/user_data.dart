@@ -9,6 +9,7 @@ class User {
   String _rDate;
   int _buyCount;
   int _point;
+  bool _isAdmin = false;
 
   User(this._uid, this._token, this._name, this._identity, this._studentId,
       this._nickName, this._tel, this._rDate, this._buyCount, this._point);
@@ -83,5 +84,11 @@ class User {
 
   set uid(String value) {
     _uid = value;
+  }
+
+  bool get isAdmin => _isAdmin;
+
+  set isAdmin(bool value) {
+    _isAdmin = value;
   }
 }

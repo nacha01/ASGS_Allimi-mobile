@@ -1,9 +1,11 @@
 import 'dart:io';
 
+import 'package:async/async.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
+import 'dart:async';
 
 class AddingProductPage extends StatefulWidget {
   @override
@@ -56,7 +58,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
 
   int _clickCount = 0;
   bool _isNotRegister = true;
-
+  Future myFuture;
   final _categoryList = ['음식류', '간식류', '음료류', '문구류', '핸드메이드']; //드롭다운 아이템
   final _categoryMap = {
     '음식류': 0,
@@ -67,7 +69,11 @@ class _AddingProductPageState extends State<AddingProductPage> {
   }; // 드롭다운 mapping
   var _selectedCategory = '음식류'; // 드롭다운 아이템 default
   String serverImageUri =
-      'http://nacha01.dothome.co.kr/sin/alrimi_productImage/';
+      'http://nacha01.dothome.co.kr/sin/arlimi_productImage/';
+
+  AsyncMemoizer _memoizer;
+
+
   // index : {0 -> main, 1 -> sub1, 2 -> sub3}
   Future<void> _getImageFromGallery(int index) async {
     var image = await ImagePicker().getImage(source: ImageSource.gallery);
@@ -85,7 +91,6 @@ class _AddingProductPageState extends State<AddingProductPage> {
       }
     });
   }
-
   // index : {0 -> main, 1 -> sub1, 2 -> sub3}
   Future<void> _getImageFromCamera(int index) async {
     var image = await ImagePicker().getImage(source: ImageSource.camera);
@@ -114,6 +119,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
     var response = await request.send();
 
     if (response.statusCode == 200) {
+      print('이왜 여러번?..');
       // 전송 성공
       var responseData = await response.stream.toBytes();
       var responseString = String.fromCharCodes(responseData);
@@ -123,7 +129,6 @@ class _AddingProductPageState extends State<AddingProductPage> {
         return false;
       }
       if (responseString != 'complete0') return false;
-
 
       return true;
     } else {
@@ -143,12 +148,12 @@ class _AddingProductPageState extends State<AddingProductPage> {
       'stockCount': _productCountController.text,
       'isBest': _isBest ? '1' : '0',
       'isNew': _isNew ? '1' : '0',
-      'imgUrl1': serverImageUri + _mainImageNameController.text.trim(),
+      'imgUrl1': serverImageUri + _mainImageNameController.text.trim()+'.jpg',
       'imgUrl2': _useSub1
-          ? serverImageUri + _subImage1NameController.text.trim()
+          ? serverImageUri + _subImage1NameController.text.trim()+'.jpg'
           : 'None',
       'imgUrl3': _useSub2
-          ? serverImageUri + _subImage2NameController.text.trim()
+          ? serverImageUri + _subImage2NameController.text.trim()+'.jpg'
           : 'None'
     });
 
@@ -172,26 +177,42 @@ class _AddingProductPageState extends State<AddingProductPage> {
   }
 
   Future<bool> _doRegisterProduct() async {
+    print('이게 여러번?..이니?..');
     if (_useSub1) {
       var sub1Result =
           await _sendImageToServer(_subImage1, _subImage1NameController.text);
-      if (!sub1Result) return false;
+      if (!sub1Result) return _memoizer.runOnce(() async {
+        return false;
+      });
     }
     if (_useSub2) {
       var sub2Result =
           await _sendImageToServer(_subImage2, _subImage2NameController.text);
-      if (!sub2Result) return false;
+      if (!sub2Result) return _memoizer.runOnce(() async {
+        return false;
+      });
     }
 
     var mainResult =
         await _sendImageToServer(_mainImage, _mainImageNameController.text);
-    if (!mainResult) return false;
+    if (!mainResult) return _memoizer.runOnce(() async {
+      return false;
+    });
 
     var registerResult = await _postRequestForInsertProduct();
-    if (!registerResult) return false;
-    return true;
+    if (!registerResult) return _memoizer.runOnce(() async {
+      return false;
+    });
+    return _memoizer.runOnce(() async {
+      return true;
+    });
   }
-
+  @override
+  void initState() {
+    myFuture = _doRegisterProduct();
+    super.initState();
+    _memoizer = AsyncMemoizer();
+  }
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
@@ -880,6 +901,8 @@ class _AddingProductPageState extends State<AddingProductPage> {
                           }
 
                           setState(() {
+                            print(_useSub1);
+                            print(_useSub2);
                             _isNotRegister = false;
                           });
                         },
@@ -891,7 +914,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                   ],
                 )
               : FutureBuilder<bool>(
-                  future: _doRegisterProduct(),
+                  future: myFuture,
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       if (snapshot.data) {
