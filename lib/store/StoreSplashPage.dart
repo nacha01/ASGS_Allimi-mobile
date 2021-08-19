@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:asgshighschool/data/user_data.dart';
+
 import 'StoreMainPage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -7,7 +9,7 @@ import 'package:http/http.dart' as http;
 import '../data/product_data.dart';
 
 class StoreSplashPage extends StatefulWidget {
-  final user;
+  final User user;
   StoreSplashPage({this.user});
   @override
   _StoreSplashPageState createState() => _StoreSplashPageState();
@@ -67,16 +69,24 @@ class _StoreSplashPageState extends State<StoreSplashPage> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
-        body: Stack(
+        body: SafeArea(
+          child: Stack(
       children: [
-        Container(
-          width: size.width,
-          height: size.height,
-          alignment: Alignment.center,
-          color: Color(0xFF9EE1E5),
-          child: Text('텍스트 및 로고'),
-        ),
+          Container(
+            width: size.width,
+            height: size.height,
+            alignment: Alignment.center,
+            color: Color(0xFF9EE1E5),
+            child: Column(
+              children: [
+                Text('텍스트 및 로고',textScaleFactor: 1.5,),
+                SizedBox(height: size.height * 0.05,),
+                Text(widget.user.isAdmin ? '관리자 권한으로 접근합니다...' : '')
+              ],
+            ),
+          ),
       ],
-    ));
+    ),
+        ));
   }
 }

@@ -448,7 +448,7 @@ class _StoreMainPageState extends State<StoreMainPage>
             height: 10,
           ),
           Text(
-            '$price',
+            '$price원',
             style: TextStyle(fontWeight: FontWeight.bold),
             textAlign: TextAlign.start,
           ),
@@ -496,7 +496,7 @@ class _StoreMainPageState extends State<StoreMainPage>
         alignment: Alignment.center,
         padding: EdgeInsets.all(8),
         width: size.width * 0.98,
-        height: size.height * 0.06,
+        height: size.height * 0.055,
         margin: EdgeInsets.all(5),
         decoration: BoxDecoration(
           border: Border.all(width: 1, color: Colors.black26),

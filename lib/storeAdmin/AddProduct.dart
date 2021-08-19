@@ -791,43 +791,37 @@ class _AddingProductPageState extends State<AddingProductPage> {
                     SizedBox(
                       height: 10,
                     ),
-                    Container(
-                      decoration: BoxDecoration(
-                          color: Colors.cyan,
-                          borderRadius: BorderRadius.circular(8)),
-                      width: size.width * 0.85,
-                      height: size.height * 0.04,
-                      alignment: Alignment.center,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            '이미지 추가하기(최대 2개)',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          IconButton(
-                            onPressed: () {
-                              print(_clickCount);
-                              if (_clickCount == 0) {
-                                ++_clickCount;
-                                setState(() {
-                                  if (!_useSub1)
-                                    _useSub1 = true;
-                                  else if (!_useSub2) _useSub2 = true;
-                                });
-                              } else if (_clickCount == 1) {
-                                ++_clickCount;
-                                setState(() {
-                                  if (!_useSub1)
-                                    _useSub1 = true;
-                                  else if (!_useSub2) _useSub2 = true;
-                                });
-                              }
-                            },
-                            icon: Icon(Icons.add_circle),
-                            color: Colors.white,
-                          )
-                        ],
+                    GestureDetector(
+                      onTap: () {
+                        if (_clickCount == 0) {
+                          ++_clickCount;
+                          setState(() {
+                            if (!_useSub1)
+                              _useSub1 = true;
+                            else if (!_useSub2) _useSub2 = true;
+                          });
+                        } else if (_clickCount == 1) {
+                          ++_clickCount;
+                          setState(() {
+                            if (!_useSub1)
+                              _useSub1 = true;
+                            else if (!_useSub2) _useSub2 = true;
+                          });
+                        }
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: Colors.cyan,
+                            borderRadius: BorderRadius.circular(10),
+                            border:
+                                Border.all(width: 2, color: Colors.black26)),
+                        width: size.width * 0.85,
+                        height: size.height * 0.04,
+                        alignment: Alignment.center,
+                        child: Text(
+                          '이미지 추가하기(최대 2개)',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ),
                     SizedBox(
@@ -1043,7 +1037,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                             decoration: BoxDecoration(
                                 color: Colors.grey[300],
                                 border:
-                                Border.all(width: 2, color: Colors.black),
+                                    Border.all(width: 2, color: Colors.black),
                                 borderRadius: BorderRadius.circular(12)),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -1094,8 +1088,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                       child: FlatButton(
                                           onPressed: () {
                                             setState(() {
-                                              _isNotRegister =
-                                              !_isNotRegister;
+                                              _isNotRegister = !_isNotRegister;
                                             });
                                           },
                                           child: Text('다시 작성하기')),
