@@ -58,7 +58,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
 
   int _clickCount = 0;
   bool _isNotRegister = true;
-  Future myFuture;
+
   final _categoryList = ['음식류', '간식류', '음료류', '문구류', '핸드메이드']; //드롭다운 아이템
   final _categoryMap = {
     '음식류': 0,
@@ -71,9 +71,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
   String serverImageUri =
       'http://nacha01.dothome.co.kr/sin/arlimi_productImage/';
 
-  AsyncMemoizer _memoizer;
-
-
+  AsyncMemoizer<bool> _memoizer;
   // index : {0 -> main, 1 -> sub1, 2 -> sub3}
   Future<void> _getImageFromGallery(int index) async {
     var image = await ImagePicker().getImage(source: ImageSource.gallery);
@@ -91,6 +89,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
       }
     });
   }
+
   // index : {0 -> main, 1 -> sub1, 2 -> sub3}
   Future<void> _getImageFromCamera(int index) async {
     var image = await ImagePicker().getImage(source: ImageSource.camera);
@@ -119,12 +118,11 @@ class _AddingProductPageState extends State<AddingProductPage> {
     var response = await request.send();
 
     if (response.statusCode == 200) {
-      print('이왜 여러번?..');
       // 전송 성공
       var responseData = await response.stream.toBytes();
       var responseString = String.fromCharCodes(responseData);
       print(responseString);
-      if(responseString.contains('일일 트래픽을 모두 사용하였습니다.')){
+      if (responseString.contains('일일 트래픽을 모두 사용하였습니다.')) {
         print('일일 트래픽 모두 사용');
         return false;
       }
@@ -148,20 +146,19 @@ class _AddingProductPageState extends State<AddingProductPage> {
       'stockCount': _productCountController.text,
       'isBest': _isBest ? '1' : '0',
       'isNew': _isNew ? '1' : '0',
-      'imgUrl1': serverImageUri + _mainImageNameController.text.trim()+'.jpg',
+      'imgUrl1': serverImageUri + _mainImageNameController.text.trim() + '.jpg',
       'imgUrl2': _useSub1
-          ? serverImageUri + _subImage1NameController.text.trim()+'.jpg'
+          ? serverImageUri + _subImage1NameController.text.trim() + '.jpg'
           : 'None',
       'imgUrl3': _useSub2
-          ? serverImageUri + _subImage2NameController.text.trim()+'.jpg'
+          ? serverImageUri + _subImage2NameController.text.trim() + '.jpg'
           : 'None'
     });
 
     if (response.statusCode == 200) {
       // 전송 성공
-      if(response.body.contains('일일 트래픽을 모두 사용하였습니다.')){
+      if (response.body.contains('일일 트래픽을 모두 사용하였습니다.')) {
         print('일일 트래픽 모두 사용');
-        // 임시 유저로 이동
         return false;
       }
       print(response.body);
@@ -177,42 +174,34 @@ class _AddingProductPageState extends State<AddingProductPage> {
   }
 
   Future<bool> _doRegisterProduct() async {
-    print('이게 여러번?..이니?..');
-    if (_useSub1) {
-      var sub1Result =
-          await _sendImageToServer(_subImage1, _subImage1NameController.text);
-      if (!sub1Result) return _memoizer.runOnce(() async {
-        return false;
-      });
-    }
-    if (_useSub2) {
-      var sub2Result =
-          await _sendImageToServer(_subImage2, _subImage2NameController.text);
-      if (!sub2Result) return _memoizer.runOnce(() async {
-        return false;
-      });
-    }
+    return this._memoizer.runOnce(() async {
+      if (_useSub1) {
+        var sub1Result =
+            await _sendImageToServer(_subImage1, _subImage1NameController.text);
+        if (!sub1Result) return false;
+      }
+      if (_useSub2) {
+        var sub2Result =
+            await _sendImageToServer(_subImage2, _subImage2NameController.text);
+        if (!sub2Result) return false;
+      }
 
-    var mainResult =
-        await _sendImageToServer(_mainImage, _mainImageNameController.text);
-    if (!mainResult) return _memoizer.runOnce(() async {
-      return false;
-    });
+      var mainResult =
+          await _sendImageToServer(_mainImage, _mainImageNameController.text);
+      if (mainResult) return false;
 
-    var registerResult = await _postRequestForInsertProduct();
-    if (!registerResult) return _memoizer.runOnce(() async {
-      return false;
-    });
-    return _memoizer.runOnce(() async {
+      var registerResult = await _postRequestForInsertProduct();
+      if (!registerResult) return false;
       return true;
     });
   }
+
   @override
   void initState() {
-    myFuture = _doRegisterProduct();
-    super.initState();
     _memoizer = AsyncMemoizer();
+    super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
@@ -532,7 +521,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                         _mainImage == null
                             ? imageLoadLayout(size)
                             : Image.file(
-                                File((_mainImage as PickedFile).path),
+                                File(_mainImage.path),
                                 fit: BoxFit.fill,
                                 width: size.width * 0.8,
                                 height: size.height * 0.4,
@@ -644,7 +633,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                               _subImage1 == null
                                   ? imageLoadLayout(size)
                                   : Image.file(
-                                      File((_subImage1 as PickedFile).path),
+                                      File(_subImage1.path),
                                       fit: BoxFit.fill,
                                       width: size.width * 0.8,
                                       height: size.height * 0.4,
@@ -758,7 +747,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                               _subImage2 == null
                                   ? imageLoadLayout(size)
                                   : Image.file(
-                                      File((_subImage2 as PickedFile).path),
+                                      File(_subImage2.path),
                                       fit: BoxFit.fill,
                                       width: size.width * 0.8,
                                       height: size.height * 0.4,
@@ -899,10 +888,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                             showErrorDialog();
                             return;
                           }
-
                           setState(() {
-                            print(_useSub1);
-                            print(_useSub2);
                             _isNotRegister = false;
                           });
                         },
@@ -914,7 +900,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                   ],
                 )
               : FutureBuilder<bool>(
-                  future: myFuture,
+                  future: _doRegisterProduct(),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       if (snapshot.data) {
@@ -922,7 +908,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                           padding: EdgeInsets.all(15),
                           child: Container(
                             width: size.width,
-                            height: size.height,
+                            height: size.height * 0.8,
                             alignment: Alignment.center,
                             child: Container(
                               width: size.width * 0.85,
@@ -967,58 +953,157 @@ class _AddingProductPageState extends State<AddingProductPage> {
                         );
                       } else {
                         return Padding(
-                          padding: EdgeInsets.all(15),
+                          padding: EdgeInsets.all(5),
                           child: Container(
                             alignment: Alignment.center,
                             width: size.width,
-                            height: size.height,
-                            child: Column(
-                              children: [
-                                Text('상품 등록에 문제가 발생하였습니다. 재확인바랍니다.'),
-                                Row(
-                                  children: [
-                                    FlatButton(
-                                        onPressed: () => Navigator.pop(context),
-                                        child: Text('이전')),
-                                    FlatButton(
-                                        onPressed: () {
-                                          setState(() {
-                                            _isNotRegister = !_isNotRegister;
-                                          });
-                                        },
-                                        child: Text('다시 작성하기'))
-                                  ],
-                                )
-                              ],
+                            height: size.height * 0.8,
+                            child: Container(
+                              width: size.width * 0.85,
+                              height: size.height * 0.5,
+                              decoration: BoxDecoration(
+                                  color: Colors.grey[300],
+                                  border:
+                                      Border.all(width: 2, color: Colors.black),
+                                  borderRadius: BorderRadius.circular(12)),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.warning_amber_outlined,
+                                    color: Colors.red,
+                                    size: size.width * 0.2,
+                                  ),
+                                  SizedBox(
+                                    height: size.height * 0.03,
+                                  ),
+                                  Text(
+                                    '상품 등록에 문제가 발생하였습니다. \n재확인바랍니다.',
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  SizedBox(
+                                    height: size.height * 0.03,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        width: size.width * 0.2,
+                                        height: size.height * 0.06,
+                                        decoration: BoxDecoration(
+                                            color: Colors.orange,
+                                            border: Border.all(
+                                                color: Colors.black, width: 1)),
+                                        child: FlatButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context),
+                                            child: Text('이전')),
+                                      ),
+                                      SizedBox(
+                                        width: size.width * 0.15,
+                                      ),
+                                      Container(
+                                        width: size.width * 0.4,
+                                        height: size.height * 0.06,
+                                        decoration: BoxDecoration(
+                                            color: Colors.orange,
+                                            border: Border.all(
+                                                color: Colors.black, width: 1)),
+                                        child: FlatButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                _isNotRegister =
+                                                    !_isNotRegister;
+                                              });
+                                            },
+                                            child: Text('다시 작성하기')),
+                                      )
+                                    ],
+                                  )
+                                ],
+                              ),
                             ),
                           ),
                         );
                       }
                     } else if (snapshot.hasError) {
+                      print(snapshot.stackTrace);
                       return Padding(
-                        padding: EdgeInsets.all(15),
+                        padding: EdgeInsets.all(5),
                         child: Container(
                           alignment: Alignment.center,
                           width: size.width,
-                          height: size.height,
-                          child: Column(
-                            children: [
-                              Text('상품 등록에 실패하였습니다. System Error'),
-                              Row(
-                                children: [
-                                  FlatButton(
-                                      onPressed: () => Navigator.pop(context),
-                                      child: Text('이전')),
-                                  FlatButton(
-                                      onPressed: () {
-                                        setState(() {
-                                          _isNotRegister = !_isNotRegister;
-                                        });
-                                      },
-                                      child: Text('다시 작성하기'))
-                                ],
-                              )
-                            ],
+                          height: size.height * 0.8,
+                          child: Container(
+                            width: size.width * 0.85,
+                            height: size.height * 0.5,
+                            decoration: BoxDecoration(
+                                color: Colors.grey[300],
+                                border:
+                                Border.all(width: 2, color: Colors.black),
+                                borderRadius: BorderRadius.circular(12)),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.warning_amber_outlined,
+                                  color: Colors.red,
+                                  size: size.width * 0.2,
+                                ),
+                                SizedBox(
+                                  height: size.height * 0.03,
+                                ),
+                                Text(
+                                  '상품 등록에 문제가 발생하였습니다. \n[System Error]',
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold),
+                                  textAlign: TextAlign.center,
+                                ),
+                                SizedBox(
+                                  height: size.height * 0.03,
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      width: size.width * 0.2,
+                                      height: size.height * 0.06,
+                                      decoration: BoxDecoration(
+                                          color: Colors.orange,
+                                          border: Border.all(
+                                              color: Colors.black, width: 1)),
+                                      child: FlatButton(
+                                          onPressed: () =>
+                                              Navigator.pop(context),
+                                          child: Text('이전')),
+                                    ),
+                                    SizedBox(
+                                      width: size.width * 0.15,
+                                    ),
+                                    Container(
+                                      width: size.width * 0.4,
+                                      height: size.height * 0.06,
+                                      decoration: BoxDecoration(
+                                          color: Colors.orange,
+                                          border: Border.all(
+                                              color: Colors.black, width: 1)),
+                                      child: FlatButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              _isNotRegister =
+                                              !_isNotRegister;
+                                            });
+                                          },
+                                          child: Text('다시 작성하기')),
+                                    )
+                                  ],
+                                )
+                              ],
+                            ),
                           ),
                         ),
                       );
@@ -1029,7 +1114,11 @@ class _AddingProductPageState extends State<AddingProductPage> {
                           height: size.height,
                           child: Column(
                             children: [
-                              Text('상품을 등록 중입니다...'),
+                              Text(
+                                '상품을 등록 중입니다...',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 21),
+                              ),
                               CircularProgressIndicator(),
                             ],
                           ));

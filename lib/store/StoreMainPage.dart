@@ -36,7 +36,6 @@ class _StoreMainPageState extends State<StoreMainPage>
       _productLayoutList
           .add(itemTile(tmp.imgUrl1, tmp.price, tmp.prodName, false));
     }
-
   }
 
   List<Widget> bottomTapWidgets = [];
@@ -48,7 +47,7 @@ class _StoreMainPageState extends State<StoreMainPage>
 
     if (response.statusCode == 200) {
       print(response.body);
-      if(response.body.contains('일일 트래픽을 모두 사용하였습니다.')){
+      if (response.body.contains('일일 트래픽을 모두 사용하였습니다.')) {
         print('일일 트래픽 모두 사용');
         // 임시 유저로 이동
         return [];
@@ -56,8 +55,8 @@ class _StoreMainPageState extends State<StoreMainPage>
       String result = utf8
           .decode(response.bodyBytes)
           .replaceAll(
-          '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-          '')
+              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+              '')
           .trim();
       List productList = json.decode(result);
       List<Product> prodObjects = [];
@@ -70,9 +69,7 @@ class _StoreMainPageState extends State<StoreMainPage>
         var tmp = _productList[i];
         _productLayoutList
             .add(itemTile(tmp.imgUrl1, tmp.price, tmp.prodName, false));
-        setState(() {
-
-        });
+        setState(() {});
       }
       return prodObjects;
       // 디코딩의 디코딩 작업 필요 (두번의 json 디코딩)
@@ -82,6 +79,7 @@ class _StoreMainPageState extends State<StoreMainPage>
       return null;
     }
   }
+
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
@@ -115,77 +113,83 @@ class _StoreMainPageState extends State<StoreMainPage>
   Widget getWidgetAccordingIndex(int index, Size size) {
     switch (index) {
       case 0:
-        return RefreshIndicator(
-          onRefresh: () => _getProducts(),
-          child: NestedScrollView(
-            controller: _scrollViewController,
-            headerSliverBuilder: (context, innerBoxIsScrolled) {
-              return [
-                SliverAppBar(
-                  backgroundColor: Colors.white,
-                  expandedHeight: 110,
-                  forceElevated: innerBoxIsScrolled,
-                  leadingWidth: size.width * 0.18,
-                  centerTitle: true,
-                  title: aboveTap(size),
-                  leading: Container(
-                      margin: EdgeInsets.only(left: 9),
-                      alignment: Alignment.center,
-                      child: Text(
-                        '나래',
-                        style: TextStyle(
-                          color: Color(0xFF9EE1E5),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 25,
-                        ),
-                      )),
-                  bottom: TabBar(
-                    tabs: [
-                      Tab(
-                        text: 'BEST',
+        return NestedScrollView(
+          controller: _scrollViewController,
+          headerSliverBuilder: (context, innerBoxIsScrolled) {
+            return [
+              SliverAppBar(
+                backgroundColor: Colors.white,
+                expandedHeight: 110,
+                forceElevated: innerBoxIsScrolled,
+                leadingWidth: size.width * 0.18,
+                centerTitle: true,
+                title: aboveTap(size),
+                leading: Container(
+                    margin: EdgeInsets.only(left: 9),
+                    alignment: Alignment.center,
+                    child: Text(
+                      '나래',
+                      style: TextStyle(
+                        color: Color(0xFF9EE1E5),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 25,
                       ),
-                      Tab(
-                        text: 'NEW',
-                      ),
-                      Tab(
-                        text: 'EVENT',
-                      ),
-                      Tab(
-                        text: 'MENU',
-                      )
-                    ],
-                    labelColor: Colors.black,
-                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                    indicatorColor: Color(0xFF9EE1E5),
-                    indicatorWeight: 6.0,
-                    controller: _tabController,
-                    unselectedLabelColor: Colors.grey,
-                  ),
+                    )),
+                bottom: TabBar(
+                  tabs: [
+                    Tab(
+                      text: 'BEST',
+                    ),
+                    Tab(
+                      text: 'NEW',
+                    ),
+                    Tab(
+                      text: 'EVENT',
+                    ),
+                    Tab(
+                      text: 'MENU',
+                    )
+                  ],
+                  labelColor: Colors.black,
+                  labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                  indicatorColor: Color(0xFF9EE1E5),
+                  indicatorWeight: 6.0,
+                  controller: _tabController,
+                  unselectedLabelColor: Colors.grey,
                 ),
-              ];
-            },
-            body: TabBarView(controller: _tabController, children: [
-              _productLayoutList.length == 0
-                  ? Column(
-                    children: [
-                      addProductForAdmin(size),
-                      SizedBox(height: size.width * 0.02,),
-                      Center(
-                          child: Text(
+              ),
+            ];
+          },
+          body: TabBarView(controller: _tabController, children: [
+            _productLayoutList.length == 0
+                ? RefreshIndicator(
+                    onRefresh: _getProducts,
+                    child: Column(
+                      children: [
+                        addProductForAdmin(size),
+                        SizedBox(
+                          height: size.width * 0.02,
+                        ),
+                        Center(
+                            child: Text(
                           '상품이 없습니다.',
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 22),
                         )),
-                    ],
+                      ],
+                    ),
                   )
-                  : RefreshIndicator(
-                    onRefresh: () => _getProducts(),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          addProductForAdmin(size),
-                          SizedBox(height: size.width * 0.02,),
-                          Container(
-                            height: size.height,
+                : RefreshIndicator(
+                    onRefresh: _getProducts,
+                    child: Column(
+                      children: [
+                        addProductForAdmin(size),
+                        SizedBox(
+                          height: size.width * 0.02,
+                        ),
+                        Expanded(
+                          child: Container(
+                            height: size.height * 1.07,
                             child: GridView.count(
                                 padding: EdgeInsets.all(10),
                                 crossAxisSpacing: 20,
@@ -193,30 +197,39 @@ class _StoreMainPageState extends State<StoreMainPage>
                                 crossAxisCount: 2,
                                 children: _productLayoutList),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
-              Column(
+            RefreshIndicator(
+              onRefresh: _getProducts,
+              child: Column(
                 children: [
                   addProductForAdmin(size),
-                  SizedBox(height: size.width * 0.02,),
+                  SizedBox(
+                    height: size.width * 0.02,
+                  ),
                 ],
               ),
-              Container(
-                color: Colors.blue,
-              ),
-              Column(
+            ),
+            Container(
+              color: Colors.blue,
+            ),
+            RefreshIndicator(
+              onRefresh: _getProducts,
+              child: Column(
                 children: [
                   addProductForAdmin(size),
-                  SizedBox(height: size.width * 0.02,),
+                  SizedBox(
+                    height: size.width * 0.02,
+                  ),
                   Container(
                     color: Colors.green,
                   ),
                 ],
               ),
-            ]),
-          ),
+            ),
+          ]),
         );
       case 1: // 알림
         return Center();
@@ -302,22 +315,25 @@ class _StoreMainPageState extends State<StoreMainPage>
       height: size.height * 0.05,
       margin: EdgeInsets.all(5),
       decoration: BoxDecoration(
-          border: Border.all(width: 1, color: Colors.black26),
-          borderRadius: BorderRadius.circular(12),
-        color: Colors.grey[300],),
+        border: Border.all(width: 1, color: Colors.black26),
+        borderRadius: BorderRadius.circular(12),
+        color: Colors.grey[300],
+      ),
       child: GestureDetector(
         onTap: () {
           // print('누름');
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => AddingProductPage()));
         },
-        child: Text('상품 추가하기',style: TextStyle(fontWeight: FontWeight.bold),),
+        child: Text(
+          '상품 추가하기',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
       ),
     );
   }
 
-  Widget addProductForAdmin(Size size){
+  Widget addProductForAdmin(Size size) {
     return widget.user.isAdmin ? managerAddingProductLayout(size) : SizedBox();
   }
-
 }
