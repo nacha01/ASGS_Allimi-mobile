@@ -8,6 +8,8 @@ class DeletingProductPage extends StatefulWidget {
 class _DeletingProductPageState extends State<DeletingProductPage> {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold(
+      body: Center(child: Text('삭제 페이지'),),
+    );
   }
 }

@@ -3,8 +3,9 @@ import 'dart:convert';
 import 'package:asgshighschool/data/user_data.dart';
 import 'package:asgshighschool/store/StoreMyPage.dart';
 import 'package:asgshighschool/storeAdmin/AddProduct.dart';
+import 'package:asgshighschool/storeAdmin/DeleteProduct.dart';
+import 'package:asgshighschool/storeAdmin/UpdateProduct.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -40,7 +41,7 @@ class _StoreMainPageState extends State<StoreMainPage>
     for (int i = 0; i < _productList.length; ++i) {
       var tmp = _productList[i];
       _productLayoutList
-          .add(itemTile(tmp.imgUrl1, tmp.price, tmp.prodName, false));
+          .add(itemTile(tmp.imgUrl1, tmp.price, tmp.prodName, false, tmp));
     }
     _groupingProduct();
   }
@@ -64,7 +65,7 @@ class _StoreMainPageState extends State<StoreMainPage>
     for (int i = 0; i < _newProductList.length; ++i) {
       var tmp = _newProductList[i];
       _newProductLayoutList
-          .add(itemTile(tmp.imgUrl1, tmp.price, tmp.prodName, false));
+          .add(itemTile(tmp.imgUrl1, tmp.price, tmp.prodName, false, tmp));
     }
   }
 
@@ -72,7 +73,7 @@ class _StoreMainPageState extends State<StoreMainPage>
     for (int i = 0; i < _bestProductList.length; ++i) {
       var tmp = _bestProductList[i];
       _bestProductLayoutList
-          .add(itemTile(tmp.imgUrl1, tmp.price, tmp.prodName, false));
+          .add(itemTile(tmp.imgUrl1, tmp.price, tmp.prodName, false, tmp));
     }
   }
 
@@ -107,7 +108,7 @@ class _StoreMainPageState extends State<StoreMainPage>
       for (int i = 0; i < _productList.length; ++i) {
         var tmp = _productList[i];
         _productLayoutList
-            .add(itemTile(tmp.imgUrl1, tmp.price, tmp.prodName, false));
+            .add(itemTile(tmp.imgUrl1, tmp.price, tmp.prodName, false, tmp));
       }
       setState(() {
         _groupingProduct();
@@ -360,12 +361,62 @@ class _StoreMainPageState extends State<StoreMainPage>
     }
   }
 
-  Widget itemTile(String imgUrl, int price, String prodName, bool isWish) {
+  Widget itemTile(
+      String imgUrl, int price, String prodName, bool isWish, Product product) {
     return GestureDetector(
       onTap: () {
         print('클릭함');
       },
-      onLongPress: () {},
+      onLongPress: () async {
+        // 상품 수정 및 삭제 기능 -> 어드민 권한으로 동작
+        if (widget.user.isAdmin) {
+          // 메뉴에서 선택한 값(value)를 리턴함
+          var selected = await showMenu(
+            color: Colors.cyan[100],
+            shape: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: Colors.black26, width: 2)),
+            context: context,
+            position: RelativeRect.fromLTRB(120, 75, 165, 75),
+            items: [
+              PopupMenuItem(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Icon(Icons.delete),
+                    Text('삭제하기'),
+                  ],
+                ),
+                value: 'delete',
+              ),
+              PopupMenuItem(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Icon(Icons.update),
+                    Text('수정하기'),
+                  ],
+                ),
+                value: 'modify',
+              ),
+            ],
+          );
+          switch (selected) {
+            case 'delete':
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => DeletingProductPage()));
+              break;
+            case 'modify':
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => UpdatingProductPage()));
+              break;
+          }
+        }
+      },
       child: Column(
         children: [
           Expanded(
@@ -396,14 +447,17 @@ class _StoreMainPageState extends State<StoreMainPage>
           SizedBox(
             height: 10,
           ),
-          Text('$price', style: TextStyle(fontWeight: FontWeight.bold)),
+          Text(
+            '$price',
+            style: TextStyle(fontWeight: FontWeight.bold),
+            textAlign: TextAlign.start,
+          ),
           SizedBox(
             height: 6,
           ),
-          Text(
-            prodName,
-            style: TextStyle(fontWeight: FontWeight.bold),
-          )
+          Text(prodName,
+              style: TextStyle(fontWeight: FontWeight.bold),
+              textAlign: TextAlign.start)
         ],
       ),
     );
@@ -435,7 +489,6 @@ class _StoreMainPageState extends State<StoreMainPage>
   Widget managerAddingProductLayout(Size size) {
     return GestureDetector(
       onTap: () {
-        // print('누름');
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => AddingProductPage()));
       },
@@ -443,7 +496,7 @@ class _StoreMainPageState extends State<StoreMainPage>
         alignment: Alignment.center,
         padding: EdgeInsets.all(8),
         width: size.width * 0.98,
-        height: size.height * 0.05,
+        height: size.height * 0.06,
         margin: EdgeInsets.all(5),
         decoration: BoxDecoration(
           border: Border.all(width: 1, color: Colors.black26),

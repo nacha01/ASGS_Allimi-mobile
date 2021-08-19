@@ -8,8 +8,14 @@ class StoreMyPage extends StatefulWidget {
   @override
   _StoreMyPageState createState() => _StoreMyPageState();
 }
+/* 마이페이지 */
+
+// 닉네임 변경
+// 신분 변경
+// 전화번호 변경 기능?
 
 class _StoreMyPageState extends State<StoreMyPage> {
+  final statusReverseList = ['재학생','학부모','교사','졸업생','기타'];
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -47,9 +53,8 @@ class _StoreMyPageState extends State<StoreMyPage> {
                               fit: BoxFit.fill,
                             ),
                           ),
-                          title: Text(widget.user.isAdmin ? '관리자 ' +widget.user.nickName: widget.user.nickName),
-                          subtitle: Text(
-                              '${widget.user.identity} / ${widget.user.studentId}'),
+                          title: Text(statusReverseList[widget.user.identity - 1]+' '+(widget.user.isAdmin ? '[관리자] ' : '')),
+                          subtitle: Text('${widget.user.nickName} ${widget.user.studentId == null ? '' : widget.user.studentId} [${widget.user.name}]'),
                         ),
                       ),
                     )
