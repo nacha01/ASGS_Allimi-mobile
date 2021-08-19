@@ -188,7 +188,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
 
       var mainResult =
           await _sendImageToServer(_mainImage, _mainImageNameController.text);
-      if (mainResult) return false;
+      if (!mainResult) return false;
 
       var registerResult = await _postRequestForInsertProduct();
       if (!registerResult) return false;
