@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:asgshighschool/data/user_data.dart';
 import 'package:asgshighschool/store/StoreMyPage.dart';
 import 'package:asgshighschool/storeAdmin/AddProduct.dart';
-import 'package:asgshighschool/storeAdmin/DeleteProduct.dart';
 import 'package:asgshighschool/storeAdmin/UpdateProduct.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -152,6 +151,15 @@ class _StoreMainPageState extends State<StoreMainPage>
     } else {
       return false;
     }
+  }
+
+  Future<bool> showToast(String message, bool fail) {
+    return Fluttertoast.showToast(
+        msg: message,
+        toastLength: Toast.LENGTH_SHORT,
+        backgroundColor: Colors.white,
+        gravity: ToastGravity.BOTTOM,
+        textColor: fail ? Colors.deepOrange : Colors.black);
   }
 
   @override
@@ -492,46 +500,20 @@ class _StoreMainPageState extends State<StoreMainPage>
                                             FlatButton(
                                                 onPressed: () async {
                                                   var result =
-                                                      await _certifyAdminAccess();
+                                                      await _certifyAdminAccess(); // 어드민 키 인증
                                                   if (result) {
                                                     var res =
                                                         await _deleteProductRequest(
-                                                            product.prodID);
+                                                            product.prodID); // DB에서 상품 삭제
                                                     if (res) {
                                                       Navigator.pop(ctx);
-                                                      Fluttertoast.showToast(
-                                                          msg:
-                                                              '삭제가 완료되었습니다. 목록을 새로고침 바랍니다.',
-                                                          toastLength: Toast
-                                                              .LENGTH_SHORT,
-                                                          backgroundColor:
-                                                              Colors.white,
-                                                          gravity: ToastGravity
-                                                              .BOTTOM);
+                                                      showToast('삭제가 완료되었습니다. 목록을 새로고침 바랍니다.', false);
                                                     } else {
                                                       Navigator.pop(ctx);
-                                                      Fluttertoast.showToast(
-                                                          msg: '삭제가 실패되었습니다.',
-                                                          toastLength: Toast
-                                                              .LENGTH_SHORT,
-                                                          backgroundColor:
-                                                              Colors.white,
-                                                          gravity: ToastGravity
-                                                              .BOTTOM,
-                                                          textColor: Colors
-                                                              .deepOrange);
+                                                      showToast('삭제가 실패되었습니다.', true);
                                                     }
                                                   } else {
-                                                    Fluttertoast.showToast(
-                                                        msg: '인증에 실패하였습니다!',
-                                                        toastLength:
-                                                            Toast.LENGTH_SHORT,
-                                                        backgroundColor:
-                                                            Colors.white,
-                                                        gravity:
-                                                            ToastGravity.BOTTOM,
-                                                        textColor:
-                                                            Colors.deepOrange);
+                                                    showToast('인증에 실패하였습니다!',true);
                                                   }
                                                 },
                                                 child: Text('인증'))
