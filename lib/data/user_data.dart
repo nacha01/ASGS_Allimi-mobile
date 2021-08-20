@@ -10,7 +10,7 @@ class User {
   int _buyCount;
   int _point;
   bool _isAdmin = false;
-
+  String _adminKey;
   User(this._uid, this._token, this._name, this._identity, this._studentId,
       this._nickName, this._tel, this._rDate, this._buyCount, this._point);
 
@@ -90,5 +90,11 @@ class User {
 
   set isAdmin(bool value) {
     _isAdmin = value;
+  }
+
+  String get adminKey => _adminKey;
+
+  set adminKey(String value) {
+    _adminKey = value;
   }
 }

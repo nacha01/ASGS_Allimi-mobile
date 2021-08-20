@@ -7,6 +7,7 @@ import 'package:asgshighschool/storeAdmin/DeleteProduct.dart';
 import 'package:asgshighschool/storeAdmin/UpdateProduct.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
 import '../data/product_data.dart';
@@ -24,6 +25,7 @@ class _StoreMainPageState extends State<StoreMainPage>
   TabController _tabController;
   ScrollController _scrollViewController;
   TextEditingController _searchController = TextEditingController();
+  TextEditingController _adminKeyController = TextEditingController();
   int _currentNav = 0;
   List<Widget> _productLayoutList = [];
   List<Widget> _newProductLayoutList = [];
@@ -120,6 +122,35 @@ class _StoreMainPageState extends State<StoreMainPage>
       // 내부 데이터를 json으로 변환
     } else {
       return null;
+    }
+  }
+
+  Future<bool> _deleteProductRequest(int productID) async {
+    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_deleteProduct.php';
+    final response = await http.get(url + '?id=$productID');
+    if (response.statusCode == 200) {
+      if (response.body.contains('DELETED')) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    return false;
+  }
+
+  Future<bool> _certifyAdminAccess() async {
+    String uri = 'http://nacha01.dothome.co.kr/sin/arlimi_adminCertified.php';
+    final response = await http
+        .get(uri + '?uid=${widget.user.uid}&key=${_adminKeyController.text}');
+
+    if (response.statusCode == 200) {
+      if (response.body.contains('CERTIFIED')) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
     }
   }
 
@@ -403,10 +434,113 @@ class _StoreMainPageState extends State<StoreMainPage>
           );
           switch (selected) {
             case 'delete':
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => DeletingProductPage()));
+              showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                        shape: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide:
+                                BorderSide(color: Colors.black, width: 2)),
+                        title: Icon(
+                          Icons.warning_amber_outlined,
+                          color: Colors.red,
+                          size: 60,
+                        ),
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              '※이 상품을 삭제하시겠습니까?',
+                              textAlign: TextAlign.center,
+                            ),
+                            Text(
+                              '[${product.prodName}]',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 17),
+                            )
+                          ],
+                        ),
+                        actions: [
+                          FlatButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: Text('아니요')),
+                          FlatButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                                showDialog(
+                                    context: context,
+                                    builder: (ctx) => AlertDialog(
+                                          title: Text('관리자 키 Key 입력'),
+                                          content: Container(
+                                            decoration: BoxDecoration(
+                                                border: Border.all(
+                                                    width: 1,
+                                                    color: Colors.orange[200]),
+                                                color: Colors.blue[100]),
+                                            child: TextField(
+                                              decoration: InputDecoration(
+                                                  border: InputBorder.none,
+                                                  hintText: 'Admin Key'),
+                                              controller: _adminKeyController,
+                                            ),
+                                          ),
+                                          actions: [
+                                            FlatButton(
+                                                onPressed: () =>
+                                                    Navigator.pop(ctx),
+                                                child: Text('취소')),
+                                            FlatButton(
+                                                onPressed: () async {
+                                                  var result =
+                                                      await _certifyAdminAccess();
+                                                  if (result) {
+                                                    var res =
+                                                        await _deleteProductRequest(
+                                                            product.prodID);
+                                                    if (res) {
+                                                      Navigator.pop(ctx);
+                                                      Fluttertoast.showToast(
+                                                          msg:
+                                                              '삭제가 완료되었습니다. 목록을 새로고침 바랍니다.',
+                                                          toastLength: Toast
+                                                              .LENGTH_SHORT,
+                                                          backgroundColor:
+                                                              Colors.white,
+                                                          gravity: ToastGravity
+                                                              .BOTTOM);
+                                                    } else {
+                                                      Navigator.pop(ctx);
+                                                      Fluttertoast.showToast(
+                                                          msg: '삭제가 실패되었습니다.',
+                                                          toastLength: Toast
+                                                              .LENGTH_SHORT,
+                                                          backgroundColor:
+                                                              Colors.white,
+                                                          gravity: ToastGravity
+                                                              .BOTTOM,
+                                                          textColor: Colors
+                                                              .deepOrange);
+                                                    }
+                                                  } else {
+                                                    Fluttertoast.showToast(
+                                                        msg: '인증에 실패하였습니다!',
+                                                        toastLength:
+                                                            Toast.LENGTH_SHORT,
+                                                        backgroundColor:
+                                                            Colors.white,
+                                                        gravity:
+                                                            ToastGravity.BOTTOM,
+                                                        textColor:
+                                                            Colors.deepOrange);
+                                                  }
+                                                },
+                                                child: Text('인증'))
+                                          ],
+                                        ));
+                              },
+                              child: Text('예'))
+                        ],
+                      ));
               break;
             case 'modify':
               Navigator.push(
@@ -427,6 +561,10 @@ class _StoreMainPageState extends State<StoreMainPage>
                   child: CachedNetworkImage(
                     imageUrl: imgUrl,
                     fit: BoxFit.fill,
+                    progressIndicatorBuilder: (context, url, progress) =>
+                        CircularProgressIndicator(
+                      value: progress.progress,
+                    ),
                     errorWidget: (context, url, error) {
                       return Container(
                           alignment: Alignment.center,

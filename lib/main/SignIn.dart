@@ -30,7 +30,7 @@ class _SignInPageState extends State<SignInPage> {
   double _opacity = 1.0;
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   String _messageText = "default";
-
+  String _key;
   @override
   void initState() {
     super.initState();
@@ -222,7 +222,12 @@ class _SignInPageState extends State<SignInPage> {
       'Content-Type': 'application/x-www-form-urlencoded'
     });
     if(response.statusCode == 200){
+      print(response.body);
       if(response.body.contains('ADMIN')){
+        String body = response.body.replaceAll('<meta http-equiv="Content-Type" content="text/html; charset=utf-8">', '');
+        body = body.replaceAll('ADMIN', '');
+        _key = body.trim();
+        print(_key);
         return true;
       }
       else{
@@ -399,6 +404,9 @@ class _SignInPageState extends State<SignInPage> {
                                 return;
                               } else {
                                 result.isAdmin = await _judgeIsAdminAccount();
+                                if(result.isAdmin){
+                                  result.adminKey = _key;
+                                }
                                 Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
