@@ -32,7 +32,7 @@ class _StoreMainPageState extends State<StoreMainPage>
   List<Product> _productList = [];
   List<Product> _newProductList = [];
   List<Product> _bestProductList = [];
-
+  int _selectedCategory = 1;
   @override
   void initState() {
     super.initState();
@@ -336,7 +336,9 @@ class _StoreMainPageState extends State<StoreMainPage>
                     ),
               /*------------ NEW TAB ---------------*/
               Container(
-                color: Colors.blue,
+                child: Center(
+                  child: Text('이벤트 탭'),
+                ),
               ),
               /*------------ EVENT TAB ---------------*/
               _productLayoutList.length == 0
@@ -362,9 +364,109 @@ class _StoreMainPageState extends State<StoreMainPage>
                       child: Column(
                         children: [
                           addProductForAdmin(size),
-                          SizedBox(
-                            height: size.width * 0.02,
+                          SizedBox(height: size.height * 0.015,),
+                          Container(
+                            margin: EdgeInsets.all(5),
+                            height: size.height * 0.10,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Container(
+                                  width: size.width * 0.19,
+                                  child: Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      IconButton(
+                                          onPressed: () {},
+                                          padding: EdgeInsets.all(0),
+                                          icon: Icon(
+                                            Icons.fastfood_outlined,
+                                            size: size.width * 0.12,
+                                          )),
+                                      Text('음식류',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold))
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  width: size.width * 0.19,
+                                  child: Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      IconButton(
+                                          onPressed: () {},
+                                          padding: EdgeInsets.all(0),
+                                          icon: Icon(Icons.vignette_outlined,
+                                              size: size.width * 0.12)),
+                                      Text('간식류',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold))
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  width: size.width * 0.19,
+                                  child: Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      IconButton(
+                                          onPressed: () {},
+                                          padding: EdgeInsets.all(0),
+                                          icon: Icon(Icons.emoji_food_beverage_outlined,
+                                              size: size.width * 0.12)),
+                                      Text('음료류',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold))
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  width: size.width * 0.19,
+                                  child: Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      IconButton(
+                                          onPressed: () {},
+                                          padding: EdgeInsets.all(0),
+                                          icon: Icon(Icons.sticky_note_2_outlined,
+                                              size: size.width * 0.12)),
+                                      Text(
+                                        '문구류',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  width: size.width * 0.19,
+                                  child: Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      IconButton(
+                                          onPressed: () {},
+                                          padding: EdgeInsets.all(0),
+                                          icon: Icon(
+                                            Icons.volunteer_activism_outlined,
+                                            size: size.width * 0.12,
+                                          )),
+                                      Text('핸드메이드',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 13))
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
+                          SizedBox(height: size.height * 0.02,),
                           Expanded(
                             child: Container(
                               height: size.height * 1.07,
@@ -388,9 +490,13 @@ class _StoreMainPageState extends State<StoreMainPage>
           ),
         );
       case 1: // 장바구니
-        return Center(child: Text('장바구니 탭'),);
+        return Center(
+          child: Text('장바구니 탭'),
+        );
       case 2: // 알림
-        return Center(child: Text('알림 탭'),);
+        return Center(
+          child: Text('알림 탭'),
+        );
       case 3: // 마이페이지
         return StoreMyPage(
           user: widget.user,
@@ -533,7 +639,9 @@ class _StoreMainPageState extends State<StoreMainPage>
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => UpdatingProductPage(product: product,)));
+                      builder: (context) => UpdatingProductPage(
+                            product: product,
+                          )));
               break;
           }
         }
@@ -564,8 +672,10 @@ class _StoreMainPageState extends State<StoreMainPage>
                 Positioned(
                     bottom: 8,
                     right: 8,
-                    child:
-                        Icon(isWish ? Icons.favorite : Icons.favorite_border))
+                    child: Icon(
+                      isWish ? Icons.favorite : Icons.favorite_border,
+                      color: Colors.red,
+                    ))
               ],
             ),
           ),

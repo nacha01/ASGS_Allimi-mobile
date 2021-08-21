@@ -37,6 +37,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
 
   int _clickCount = 0;
   bool _imageInitial = true;
+
   final _categoryList = ['음식류', '간식류', '음료류', '문구류', '핸드메이드']; //드롭다운 아이템
   final _categoryMap = {
     '음식류': 0,
@@ -51,10 +52,10 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
     2: '음료류',
     3: '문구류',
     4: '핸드메이드'
-  };
+  }; // 드롭다운 reverse mapping
   var _selectedCategory = '음식류'; // 드롭다운 아이템 default
   String serverImageUri =
-      'http://nacha01.dothome.co.kr/sin/arlimi_productImage/';
+      'http://nacha01.dothome.co.kr/sin/arlimi_productImage/'; // 이미지 저장 서버 URI
 
   // index : {0 -> main, 1 -> sub1, 2 -> sub3}
   Future<void> _getImageFromGallery(int index) async {
@@ -104,16 +105,16 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
         filename: fileName + '.jpg');
     request.files.add(picture);
     request.fields['oriName'] =
-        originName.replaceAll(serverImageUri, '') ?? 'None';
+        originName == null ? 'None' : originName.replaceAll(serverImageUri, '');
     request.fields['newName'] = fileName + '.jpg';
+
     var response = await request.send();
+
     if (response.statusCode == 200) {
-      // 전송 성공
       var responseData = await response.stream.toBytes();
       var responseString = String.fromCharCodes(responseData);
-      print(responseString);
+
       if (responseString.contains('일일 트래픽을 모두 사용하였습니다.')) {
-        print('일일 트래픽 모두 사용');
         return false;
       }
       if (responseString != 'completeX0' && responseString != '1completeY0')
@@ -145,37 +146,39 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
           ? serverImageUri + _subImage2NameController.text.trim() + '.jpg'
           : 'None'
     });
+
     if (response.statusCode == 200) {
-      print(response.body);
       var replace = response.body.replaceAll(
           '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
           '');
-      if (replace.trim() != '1') return false;
+      if (replace.trim() != '1') {
+        return false;
+      }
       return true;
     } else {
       return false;
     }
   }
 
-  Future<bool> _doUpdateForProduct() async {
+  Future<int> _doUpdateForProduct() async {
     if (_useSub1) {
       var sub1Result = await _updateImageBeforeRequest(
           _subImage1, _subImage1NameController.text, widget.product.imgUrl2);
-      if (!sub1Result) return false;
+      if (!sub1Result) return 402;
     }
     if (_useSub2) {
       var sub2Result = await _updateImageBeforeRequest(
           _subImage2, _subImage2NameController.text, widget.product.imgUrl3);
-      if (!sub2Result) return false;
+      if (!sub2Result) return 403;
     }
 
     var mainResult = await _updateImageBeforeRequest(
         _mainImage, _mainImageNameController.text, widget.product.imgUrl1);
-    if (!mainResult) return false;
+    if (!mainResult) return 401;
 
     var registerResult = await _updateProductRequest();
-    if (!registerResult) return false;
-    return true;
+    if (!registerResult) return 500;
+    return 200; // 성공 코드
   }
 
   @override
@@ -212,7 +215,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
         ),
         backgroundColor: Color(0xFF9EE1E5),
         title: Text(
-          '상품 수정하기',
+          '상품 수정하기 [${widget.product.prodID}]',
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -956,19 +959,29 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
                     return;
                   }
                   var result = await _doUpdateForProduct();
-                  print(result);
-                  if (result) {
-                    Fluttertoast.showToast(
-                        msg: '상품 수정에 성공하였습니다! 목록을 새로고침하세요',
-                        toastLength: Toast.LENGTH_SHORT,
-                        gravity: ToastGravity.BOTTOM);
-                    Navigator.pop(context);
-                  } else {
-                    Fluttertoast.showToast(
-                        msg: '상품 수정에 실패하였습니다!',
-                        toastLength: Toast.LENGTH_SHORT,
-                        gravity: ToastGravity.BOTTOM);
+                  String message;
+                  switch (result) {
+                    case 200:
+                      message = '상품 수정에 성공하였습니다! 목록을 새로고침하세요';
+                      break;
+                    case 401:
+                      message = '대표 이미지 수정에 실패했습니다!';
+                      break;
+                    case 402:
+                      message = '추가 이미지 1 수정에 실패했습니다!';
+                      break;
+                    case 403:
+                      message = '추가 이미지 2 수정에 실패했습니다!';
+                      break;
+                    case 500:
+                      message = '최종 상품 수정에 실패하였습니다!';
+                      break;
                   }
+                  Fluttertoast.showToast(
+                      msg: message,
+                      toastLength: Toast.LENGTH_SHORT,
+                      gravity: ToastGravity.BOTTOM);
+                  Navigator.pop(context);
                 },
               ),
             ),
@@ -1037,8 +1050,8 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
 
   Widget imageLoadLayout(Size size) {
     return Container(
-        width: size.width * 0.8,
-        height: size.height * 0.4,
+        width: size.width * 0.9,
+        height: size.height * 0.45,
         child: Text(
           '이미지를 불러와주세요',
           style: TextStyle(color: Colors.grey[400]),

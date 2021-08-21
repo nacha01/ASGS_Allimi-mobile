@@ -1175,8 +1175,8 @@ class _AddingProductPageState extends State<AddingProductPage> {
 
   Widget imageLoadLayout(Size size) {
     return Container(
-        width: size.width * 0.8,
-        height: size.height * 0.4,
+        width: size.width * 0.9,
+        height: size.height * 0.45,
         child: Text(
           '이미지를 불러와주세요',
           style: TextStyle(color: Colors.grey[400]),
