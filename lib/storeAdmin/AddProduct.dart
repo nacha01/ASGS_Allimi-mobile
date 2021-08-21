@@ -12,7 +12,7 @@ class AddingProductPage extends StatefulWidget {
   _AddingProductPageState createState() => _AddingProductPageState();
 }
 
-// 어드민 전용 페이지
+/// 어드민 전용 페이지
 //상품 추가 페이지
 //저장할 때 비밀번호로 어드민 DB에서 확인
 // 직접적으로 추가하는 목록
@@ -26,7 +26,7 @@ class AddingProductPage extends StatefulWidget {
 7. 재고
 8. 제품 설명
  */
-
+///
 /* later Additional functions*/
 //나중에 실사용될 때, 상품 등록할 때 어드민 계정으로 비밀번호로 재확인
 
@@ -523,8 +523,8 @@ class _AddingProductPageState extends State<AddingProductPage> {
                             : Image.file(
                                 File(_mainImage.path),
                                 fit: BoxFit.fill,
-                                width: size.width * 0.8,
-                                height: size.height * 0.4,
+                          width: size.width * 0.9,
+                          height: size.height * 0.45,
                               ),
                         SizedBox(
                           height: 10,
@@ -635,8 +635,8 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                   : Image.file(
                                       File(_subImage1.path),
                                       fit: BoxFit.fill,
-                                      width: size.width * 0.8,
-                                      height: size.height * 0.4,
+                                width: size.width * 0.9,
+                                height: size.height * 0.45,
                                     ),
                               SizedBox(
                                 height: 10,
@@ -749,8 +749,8 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                   : Image.file(
                                       File(_subImage2.path),
                                       fit: BoxFit.fill,
-                                      width: size.width * 0.8,
-                                      height: size.height * 0.4,
+                                width: size.width * 0.9,
+                                height: size.height * 0.45,
                                     ),
                               SizedBox(
                                 height: 10,
@@ -848,7 +848,6 @@ class _AddingProductPageState extends State<AddingProductPage> {
                             return;
                           }
                           if (_productCountController.text.isEmpty) {
-                            showErrorDialog();
                             showErrorDialog();
                             return;
                           }

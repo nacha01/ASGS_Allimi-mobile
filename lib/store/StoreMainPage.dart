@@ -183,9 +183,9 @@ class _StoreMainPageState extends State<StoreMainPage>
             ),
             label: '홈',
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.alarm_rounded), label: '알림'),
           BottomNavigationBarItem(
               icon: Icon(Icons.shopping_cart), label: '장바구니'),
+          BottomNavigationBarItem(icon: Icon(Icons.alarm_rounded), label: '알림'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: '마이페이지')
         ],
       ),
@@ -387,10 +387,10 @@ class _StoreMainPageState extends State<StoreMainPage>
             ]),
           ),
         );
-      case 1: // 알림
-        return Center();
-      case 2: // 장바구니
-        return Center();
+      case 1: // 장바구니
+        return Center(child: Text('장바구니 탭'),);
+      case 2: // 알림
+        return Center(child: Text('알림 탭'),);
       case 3: // 마이페이지
         return StoreMyPage(
           user: widget.user,
@@ -504,16 +504,21 @@ class _StoreMainPageState extends State<StoreMainPage>
                                                   if (result) {
                                                     var res =
                                                         await _deleteProductRequest(
-                                                            product.prodID); // DB에서 상품 삭제
+                                                            product
+                                                                .prodID); // DB에서 상품 삭제
                                                     if (res) {
                                                       Navigator.pop(ctx);
-                                                      showToast('삭제가 완료되었습니다. 목록을 새로고침 바랍니다.', false);
+                                                      showToast(
+                                                          '삭제가 완료되었습니다. 목록을 새로고침 바랍니다.',
+                                                          false);
                                                     } else {
                                                       Navigator.pop(ctx);
-                                                      showToast('삭제가 실패되었습니다.', true);
+                                                      showToast(
+                                                          '삭제가 실패되었습니다.', true);
                                                     }
                                                   } else {
-                                                    showToast('인증에 실패하였습니다!',true);
+                                                    showToast(
+                                                        '인증에 실패하였습니다!', true);
                                                   }
                                                 },
                                                 child: Text('인증'))
@@ -528,7 +533,7 @@ class _StoreMainPageState extends State<StoreMainPage>
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => UpdatingProductPage()));
+                      builder: (context) => UpdatingProductPage(product: product,)));
               break;
           }
         }
