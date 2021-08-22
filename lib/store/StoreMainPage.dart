@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:asgshighschool/data/user_data.dart';
+import 'package:asgshighschool/store/DetailProductPage.dart';
 import 'package:asgshighschool/store/StoreMyPage.dart';
 import 'package:asgshighschool/storeAdmin/AddProduct.dart';
 import 'package:asgshighschool/storeAdmin/UpdateProduct.dart';
@@ -703,7 +704,8 @@ class _StoreMainPageState extends State<StoreMainPage>
       String imgUrl, int price, String prodName, bool isWish, Product product) {
     return GestureDetector(
       onTap: () {
-        print('클릭함');
+        Navigator.push(context, MaterialPageRoute(builder: (context)
+        => DetailProductPage(product: product,)));
       },
       onLongPress: () async {
         // 상품 수정 및 삭제 기능 -> 어드민 권한으로 동작
