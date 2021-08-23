@@ -57,8 +57,13 @@ class _DetailProductPageState extends State<DetailProductPage> {
     final Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
+        title: Text(
+          '상품 세부정보',
+          style: TextStyle(color: Colors.black, fontSize: 16),
+        ),
+        centerTitle: true,
         elevation: 0,
-        backgroundColor: Colors.white,
+        backgroundColor: Color(0xFF9EE1E5),
         leading: IconButton(
           icon: Icon(
             Icons.clear,
@@ -139,7 +144,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                   ),
                   Text(
                     '[${_categoryReverseMap[widget.product.category]}]',
-                    textScaleFactor: 2,
+                    textScaleFactor: 1.7,
                     style: TextStyle(color: Colors.grey),
                   ),
                   SizedBox(
@@ -161,7 +166,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                           ]),
                       child: Text(
                         '${widget.product.prodInfo}',
-                        textScaleFactor: 2.5,
+                        textScaleFactor: 2,
                         style: TextStyle(),
                         textAlign: TextAlign.center,
                       )),
@@ -205,6 +210,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                           Text(
                             '${_formatPrice(widget.product.price)}원',
                             style: TextStyle(
+                                fontWeight: FontWeight.bold,
                                 decoration: _isDiscountZero
                                     ? TextDecoration.none
                                     : TextDecoration.lineThrough,
@@ -230,6 +236,14 @@ class _DetailProductPageState extends State<DetailProductPage> {
                                   fontSize: 16),
                             ),
                     )),
+                  ),
+                  SizedBox(
+                    height: size.height * 0.05,
+                  ),
+                  Divider(
+                    thickness: 1,
+                    endIndent: 15,
+                    indent: 15,
                   ),
                   SizedBox(
                     height: size.height * 0.03,
@@ -261,11 +275,15 @@ class _DetailProductPageState extends State<DetailProductPage> {
                                 (context, string, progress) =>
                                     Center(child: CircularProgressIndicator()),
                           )),
+                  SizedBox(
+                    height: size.height * 0.05,
+                  ),
                 ],
               ),
             ),
           ),
           Container(
+            height: size.height * 0.06,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

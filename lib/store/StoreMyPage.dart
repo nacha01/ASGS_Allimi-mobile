@@ -186,6 +186,51 @@ class _StoreMyPageState extends State<StoreMyPage> {
                   ],
                 ),
               ),
+              widget.user.isAdmin ? Column(
+                children: [
+                  dividerForContents(),
+                  Container(
+                    margin: EdgeInsets.all(10),
+                    padding: EdgeInsets.all(5),
+                    child: Row(
+                      children: [
+                        Text(
+                          '관리자',
+                          style: TextStyle(color: Colors.redAccent, fontSize: 17),
+                        )
+                      ],
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.all(10),
+                    padding: EdgeInsets.all(5),
+                    child: Row(
+                      children: [
+                        Icon(Icons.settings,
+                            color: Colors.grey, size: size.width * 0.1),
+                        SizedBox(
+                          width: size.width * 0.03,
+                        ),
+                        Text('관리자 설정', style: TextStyle(fontSize: 19))
+                      ],
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.all(10),
+                    padding: EdgeInsets.all(5),
+                    child: Row(
+                      children: [
+                        Icon(Icons.bar_chart,
+                            color: Colors.grey, size: size.width * 0.1),
+                        SizedBox(
+                          width: size.width * 0.03,
+                        ),
+                        Text('통계', style: TextStyle(fontSize: 19))
+                      ],
+                    ),
+                  ),
+                ],
+              ) : SizedBox()
             ],
           ),
         ),
