@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:asgshighschool/data/user_data.dart';
 import 'package:asgshighschool/store/DetailProductPage.dart';
@@ -105,6 +106,29 @@ class _StoreMainPageState extends State<StoreMainPage>
     getHandmadeProdLayout();
   }
 
+  String _formatPrice(int price) {
+    String p = price.toString();
+    String newFormat = '';
+    int count = 0;
+    for (int i = p.length - 1; i >= 0; --i) {
+      if ((count + 1) % 4 == 0) {
+        newFormat += ',';
+        ++i;
+      } else
+        newFormat += p[i];
+      ++count;
+    }
+    return _reverseString(newFormat);
+  }
+
+  String _reverseString(String str) {
+    String newStr = '';
+    for (int i = str.length - 1; i >= 0; --i) {
+      newStr += str[i];
+    }
+    return newStr;
+  }
+
   void getNewProdLayout() {
     for (int i = 0; i < _newProductList.length; ++i) {
       var tmp = _newProductList[i];
@@ -179,6 +203,7 @@ class _StoreMainPageState extends State<StoreMainPage>
         return -1;
     }
   }
+
   /// product table에 있는 모든 상품 데이터를 요청
   /// @param : X
   /// @result : X [중간 과정에 상품을 분류하는 작업을 함]
@@ -230,6 +255,7 @@ class _StoreMainPageState extends State<StoreMainPage>
       });
     }
   }
+
   /// 관리자가 상품을 삭제하는 HTTP 요청
   /// @param : 상품 ID -> PK of product table
   /// @result : 삭제가 정상적으로 되었는지에 대한 bool 값
@@ -245,6 +271,7 @@ class _StoreMainPageState extends State<StoreMainPage>
     }
     return false;
   }
+
   /// 관리자임을 인증하는 HTTP 요청
   /// @param : HTTP GET : UID 값과 ADMIN KEY 값
   /// @result : 관리자 인증이 되었는지에 대한 bool 값
@@ -500,7 +527,7 @@ class _StoreMainPageState extends State<StoreMainPage>
                                           MainAxisAlignment.spaceBetween,
                                       children: [
                                         Icon(
-                                          Icons.fastfood_outlined,
+                                          Icons.lunch_dining_outlined,
                                           size: size.width * 0.12,
                                           color: _selectedCategory == 1
                                               ? Color(0xFF9EE1E5)
@@ -532,7 +559,7 @@ class _StoreMainPageState extends State<StoreMainPage>
                                           MainAxisAlignment.spaceBetween,
                                       children: [
                                         Icon(
-                                          Icons.vignette_outlined,
+                                          Icons.icecream_outlined,
                                           size: size.width * 0.12,
                                           color: _selectedCategory == 2
                                               ? Color(0xFF9EE1E5)
@@ -596,7 +623,7 @@ class _StoreMainPageState extends State<StoreMainPage>
                                           MainAxisAlignment.spaceBetween,
                                       children: [
                                         Icon(
-                                          Icons.sticky_note_2_outlined,
+                                          Icons.mode_outlined,
                                           size: size.width * 0.12,
                                           color: _selectedCategory == 4
                                               ? Color(0xFF9EE1E5)
@@ -661,7 +688,7 @@ class _StoreMainPageState extends State<StoreMainPage>
                                 ))
                               : Expanded(
                                   child: Container(
-                                    height: size.height * 1.07,
+                                    height: size.height,
                                     child: GridView.builder(
                                         itemCount: _getLengthOfCurrentCategory(
                                             _selectedCategory),
@@ -704,8 +731,12 @@ class _StoreMainPageState extends State<StoreMainPage>
       String imgUrl, int price, String prodName, bool isWish, Product product) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context)
-        => DetailProductPage(product: product,)));
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => DetailProductPage(
+                      product: product,
+                    )));
       },
       onLongPress: () async {
         // 상품 수정 및 삭제 기능 -> 어드민 권한으로 동작
@@ -877,10 +908,24 @@ class _StoreMainPageState extends State<StoreMainPage>
           SizedBox(
             height: 10,
           ),
-          Text(
-            '$price원',
-            style: TextStyle(fontWeight: FontWeight.bold),
-            textAlign: TextAlign.start,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                '${_formatPrice(price)}원',
+                style: TextStyle(
+                  color: product.discount.toString() != '0.0' ? Colors.red : Colors.black,
+                    fontWeight: FontWeight.bold,
+                    decoration: product.discount.toString() == '0.0'
+                        ? TextDecoration.none
+                        : TextDecoration.lineThrough),
+                textAlign: TextAlign.start,
+              ),
+              product.discount.toString() != '0.0'
+                  ? Text(
+                      '  ${_formatPrice((product.price * (1 - (product.discount / 100.0))).round())}원',style: TextStyle(fontWeight: FontWeight.bold),)
+                  : Text('')
+            ],
           ),
           SizedBox(
             height: 6,
