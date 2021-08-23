@@ -566,7 +566,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
                           icon: Icon(Icons.refresh_rounded)),
                       decoration: BoxDecoration(
                           border: Border.all(width: 1, color: Colors.teal),
-                          color: Color(0xFF9EE1E5),
+                          color: Colors.redAccent,
                           borderRadius: BorderRadius.circular(5)),
                     ),
                   ],
@@ -904,7 +904,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
                   borderRadius: BorderRadius.circular(20)),
               child: FlatButton(
                 child: Text(
-                  '최종 등록하기',
+                  '최종 수정하기',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 onPressed: () async {

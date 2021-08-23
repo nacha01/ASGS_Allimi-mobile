@@ -21,7 +21,7 @@ class _SignUpPageState extends State<SignUpPage> {
   TextEditingController _telController = TextEditingController();
   final statusList = ['재학생', '학부모', '교사', '졸업생', '기타'];
   final statusMap = {'재학생': 1, '학부모': 2, '교사': 3, '졸업생': 4, '기타': 5};
-  var _selectedValue = '학생';
+  var _selectedValue = '재학생';
 
   bool isTwoRow() {
     if (_selectedValue == '재학생' || _selectedValue == '학부모') {

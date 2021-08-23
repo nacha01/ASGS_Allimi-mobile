@@ -8,6 +8,7 @@ import 'package:asgshighschool/storeAdmin/AddProduct.dart';
 import 'package:asgshighschool/storeAdmin/UpdateProduct.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
@@ -818,6 +819,9 @@ class _StoreMainPageState extends State<StoreMainPage>
                                                     color: Colors.orange[200]),
                                                 color: Colors.blue[100]),
                                             child: TextField(
+                                              inputFormatters: [
+                                                UpperCaseTextFormatter()
+                                              ],
                                               decoration: InputDecoration(
                                                   border: InputBorder.none,
                                                   hintText: 'Admin Key'),
@@ -895,13 +899,6 @@ class _StoreMainPageState extends State<StoreMainPage>
                   ),
                   borderRadius: BorderRadius.circular(15),
                 ),
-                Positioned(
-                    bottom: 8,
-                    right: 8,
-                    child: Icon(
-                      isWish ? Icons.favorite : Icons.favorite_border,
-                      color: Colors.red,
-                    ))
               ],
             ),
           ),
@@ -1009,5 +1006,14 @@ class _StoreMainPageState extends State<StoreMainPage>
           child: Text('Error'),
         );
     }
+  }
+}
+class UpperCaseTextFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+    return TextEditingValue(
+      text: newValue.text.toUpperCase(),
+      selection: newValue.selection,
+    );
   }
 }
