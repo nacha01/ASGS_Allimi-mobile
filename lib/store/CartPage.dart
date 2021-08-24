@@ -181,14 +181,14 @@ class _CartPageState extends State<CartPage> {
                       ),
                     ),
                     Container(
-                      width: size.width * 0.12,
+                      width: size.width * 0.13,
                       height: size.height * 0.05,
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                           color: Colors.black38,
                           border:
                               Border.all(width: 1, color: Colors.grey[400])),
-                      child: Text('${cartItem['quantity']}'),
+                      child: Text('${cartItem['quantity']}개',style: TextStyle(fontWeight: FontWeight.bold),),
                     ),
                     Container(
                       width: size.width * 0.12,

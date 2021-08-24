@@ -1,6 +1,8 @@
 import 'dart:convert';
 
+import 'package:asgshighschool/data/exist_cart.dart';
 import 'package:asgshighschool/data/user_data.dart';
+import 'package:provider/provider.dart';
 
 import 'StoreMainPage.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +26,8 @@ class _StoreSplashPageState extends State<StoreSplashPage> {
 
   loading() async {
     List result = await _getProducts();
+    var res = await _checkExistCart();
+    print(res);
     await Future.delayed(Duration(seconds: 1));
     Navigator.pushReplacement(
         context,
@@ -31,9 +35,34 @@ class _StoreSplashPageState extends State<StoreSplashPage> {
             builder: (context) => StoreMainPage(
                   user: widget.user,
                   product: result,
+                  existCart: res,
                 )));
   }
+  Future<bool> _checkExistCart() async{
+    String uri = 'http://nacha01.dothome.co.kr/sin/arlimi_checkCart.php';
+    final response = await http.get(uri+'?uid=${widget.user.uid}');
 
+    if(response.statusCode == 200){
+      print(response.body);
+      String result = utf8
+          .decode(response.bodyBytes)
+          .replaceAll(
+          '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+          '')
+          .trim();
+      if(int.parse(result) >= 1){
+        // Provider.of<ExistCart>(this.context).setExistCart(true);
+        return true;
+      }
+      else{
+        // Provider.of<ExistCart>(this.context).setExistCart(false);
+        return false;
+      }
+    }
+    else{
+      return false;
+    }
+  }
   Future<List<Product>> _getProducts() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getProduct.php';
     final response = await http.get(url);

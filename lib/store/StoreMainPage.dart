@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:ui';
 
+import 'package:asgshighschool/data/exist_cart.dart';
 import 'package:asgshighschool/data/user_data.dart';
 import 'package:asgshighschool/store/CartPage.dart';
 import 'package:asgshighschool/store/DetailProductPage.dart';
@@ -14,13 +15,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 import '../data/product_data.dart';
 
 class StoreMainPage extends StatefulWidget {
-  StoreMainPage({this.user, this.product});
+  StoreMainPage({this.user, this.product,this.existCart});
   final User user;
   final List<Product> product;
+  final bool existCart;
   @override
   _StoreMainPageState createState() => _StoreMainPageState();
 }
@@ -307,6 +310,7 @@ class _StoreMainPageState extends State<StoreMainPage>
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
+    var data = Provider.of<ExistCart>(context);
     return Scaffold(
       body: SafeArea(child: getWidgetAccordingIndex(_currentNav, size)),
       bottomNavigationBar: BottomNavigationBar(
@@ -326,7 +330,7 @@ class _StoreMainPageState extends State<StoreMainPage>
             label: '홈',
           ),
           BottomNavigationBarItem(
-              icon: Badge(
+              icon: data.isExistCart ? Badge(
                 alignment: Alignment.topRight,
                 animationType: BadgeAnimationType.scale,
                 padding: EdgeInsets.all(6),
@@ -337,7 +341,7 @@ class _StoreMainPageState extends State<StoreMainPage>
                   '!',
                   style: TextStyle(color: Colors.white),
                 ),
-              ),
+              ) : Icon(Icons.shopping_cart),
               label: '장바구니'),
           BottomNavigationBarItem(icon: Icon(Icons.alarm_rounded), label: '알림'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: '마이페이지')

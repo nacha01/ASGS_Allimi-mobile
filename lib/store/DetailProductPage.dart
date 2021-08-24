@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'dart:ui';
 
+import 'package:asgshighschool/data/exist_cart.dart';
 import 'package:asgshighschool/data/product_data.dart';
 import 'package:asgshighschool/data/user_data.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -7,6 +9,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class DetailProductPage extends StatefulWidget {
   DetailProductPage({this.product, this.user});
@@ -69,7 +72,31 @@ class _DetailProductPageState extends State<DetailProductPage> {
       return false;
     }
   }
+  Future<bool> _checkExistCart() async{
+    String uri = 'http://nacha01.dothome.co.kr/sin/arlimi_checkCart.php';
+    final response = await http.get(uri+'?uid=${widget.user.uid}');
 
+    if(response.statusCode == 200){
+      print(response.body);
+      String result = utf8
+          .decode(response.bodyBytes)
+          .replaceAll(
+          '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+          '')
+          .trim();
+      if(int.parse(result) >= 1){
+        // Provider.of<ExistCart>(this.context).setExistCart(true);
+        return true;
+      }
+      else{
+        // Provider.of<ExistCart>(this.context).setExistCart(false);
+        return false;
+      }
+    }
+    else{
+      return false;
+    }
+  }
   @override
   void initState() {
     super.initState();
@@ -81,6 +108,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
+    var data = Provider.of<ExistCart>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -321,6 +349,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                     var result = await _addCartProductRequest();
                     print(result);
                     if (result) {
+                      data.setExistCart(true);
                       Fluttertoast.showToast(
                           msg: '장바구니에 추가되었습니다.',
                           gravity: ToastGravity.BOTTOM,
