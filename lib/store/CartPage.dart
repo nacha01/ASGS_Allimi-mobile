@@ -1,11 +1,13 @@
 import 'dart:convert';
 
+import 'package:asgshighschool/data/exist_cart.dart';
 import 'package:asgshighschool/data/product_data.dart';
 import 'package:asgshighschool/data/user_data.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 /// 장바구니 Item Field
 /// 1. cID
@@ -45,6 +47,7 @@ class _CartPageState extends State<CartPage> {
               '')
           .trim();
       List cartProduct = json.decode(result);
+      _cartProductList.clear();
       for (int i = 0; i < cartProduct.length; ++i) {
         _cartProductList.add(json.decode(cartProduct[i]));
       }
@@ -52,6 +55,28 @@ class _CartPageState extends State<CartPage> {
       print(_cartProductList.length);
       setState(() {});
       return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<bool> _deleteCartForUserRequest(int cid) async {
+    String uri = 'http://nacha01.dothome.co.kr/sin/arlimi_deleteCart.php';
+    final response = await http.get(uri + '?cid=$cid');
+
+    if (response.statusCode == 200) {
+      String result = utf8
+          .decode(response.bodyBytes)
+          .replaceAll(
+              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+              '')
+          .trim();
+      print(result);
+      if (result == 'DELETED') {
+        return true;
+      } else {
+        return false;
+      }
     } else {
       return false;
     }
@@ -96,6 +121,7 @@ class _CartPageState extends State<CartPage> {
 
   @override
   Widget build(BuildContext context) {
+    var data = Provider.of<ExistCart>(context);
     final size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
@@ -114,15 +140,19 @@ class _CartPageState extends State<CartPage> {
         ),
         centerTitle: true,
       ),
-      body: ListView.builder(
-          itemBuilder: (context, index) {
-            return _cartItemTile(_cartProductList[index], size);
-          },
-          itemCount: _cartProductList.length),
+      body: _cartProductList.length == 0
+          ? Center(
+              child: Text('장바구니에 상품이 없습니다!'),
+            )
+          : ListView.builder(
+              itemBuilder: (context, index) {
+                return _cartItemTile(_cartProductList[index], size, data);
+              },
+              itemCount: _cartProductList.length),
     );
   }
 
-  Widget _cartItemTile(Map cartItem, Size size) {
+  Widget _cartItemTile(Map cartItem, Size size, ExistCart existCart) {
     return Container(
       decoration:
           BoxDecoration(border: Border.all(width: 0.5, color: Colors.grey)),
@@ -188,7 +218,10 @@ class _CartPageState extends State<CartPage> {
                           color: Colors.black38,
                           border:
                               Border.all(width: 1, color: Colors.grey[400])),
-                      child: Text('${cartItem['quantity']}개',style: TextStyle(fontWeight: FontWeight.bold),),
+                      child: Text(
+                        '${cartItem['quantity']}개',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ),
                     Container(
                       width: size.width * 0.12,
@@ -215,7 +248,19 @@ class _CartPageState extends State<CartPage> {
                   child: Container(
                     alignment: Alignment.topRight,
                     child: IconButton(
-                      onPressed: () {},
+                      onPressed: () async {
+                        var result = await _deleteCartForUserRequest(
+                            int.parse(cartItem['cID']));
+                        if (result) {
+                          var res = await _getCartForUserRequest();
+                          if(_cartProductList.length == 0){
+                            existCart.setExistCart(false);
+                          }
+                          print('성공');
+                        } else {
+                          print('실패');
+                        }
+                      },
                       icon: Icon(Icons.clear),
                     ),
                   ),
