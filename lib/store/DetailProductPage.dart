@@ -73,31 +73,31 @@ class _DetailProductPageState extends State<DetailProductPage> {
       return false;
     }
   }
-  Future<bool> _checkExistCart() async{
-    String uri = 'http://nacha01.dothome.co.kr/sin/arlimi_checkCart.php';
-    final response = await http.get(uri+'?uid=${widget.user.uid}');
 
-    if(response.statusCode == 200){
+  Future<bool> _checkExistCart() async {
+    String uri = 'http://nacha01.dothome.co.kr/sin/arlimi_checkCart.php';
+    final response = await http.get(uri + '?uid=${widget.user.uid}');
+
+    if (response.statusCode == 200) {
       print(response.body);
       String result = utf8
           .decode(response.bodyBytes)
           .replaceAll(
-          '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-          '')
+              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+              '')
           .trim();
-      if(int.parse(result) >= 1){
+      if (int.parse(result) >= 1) {
         // Provider.of<ExistCart>(this.context).setExistCart(true);
         return true;
-      }
-      else{
+      } else {
         // Provider.of<ExistCart>(this.context).setExistCart(false);
         return false;
       }
-    }
-    else{
+    } else {
       return false;
     }
   }
+
   @override
   void initState() {
     super.initState();

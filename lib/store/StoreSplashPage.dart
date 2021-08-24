@@ -40,36 +40,36 @@ class _StoreSplashPageState extends State<StoreSplashPage> {
                   existCart: res,
                 )));
   }
-  Future<bool> _checkExistCart() async{
-    String uri = 'http://nacha01.dothome.co.kr/sin/arlimi_checkCart.php';
-    final response = await http.get(uri+'?uid=${widget.user.uid}');
 
-    if(response.statusCode == 200){
+  Future<bool> _checkExistCart() async {
+    String uri = 'http://nacha01.dothome.co.kr/sin/arlimi_checkCart.php';
+    final response = await http.get(uri + '?uid=${widget.user.uid}');
+
+    if (response.statusCode == 200) {
       print(response.body);
       String result = utf8
           .decode(response.bodyBytes)
           .replaceAll(
-          '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-          '')
+              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+              '')
           .trim();
-      if(int.parse(result) >= 1){
+      if (int.parse(result) >= 1) {
         return true;
-      }
-      else{
+      } else {
         return false;
       }
-    }
-    else{
+    } else {
       return false;
     }
   }
+
   Future<List<Product>> _getProducts() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getProduct.php';
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
       print(response.body);
-      if(response.body.contains('일일 트래픽을 모두 사용하였습니다.')){
+      if (response.body.contains('일일 트래픽을 모두 사용하였습니다.')) {
         print('일일 트래픽 모두 사용');
         // 임시 유저로 이동
         return [];
@@ -100,8 +100,8 @@ class _StoreSplashPageState extends State<StoreSplashPage> {
     var data = Provider.of<ExistCart>(context);
     return Scaffold(
         body: SafeArea(
-          child: Stack(
-      children: [
+      child: Stack(
+        children: [
           Container(
             width: size.width,
             height: size.height,
@@ -109,20 +109,25 @@ class _StoreSplashPageState extends State<StoreSplashPage> {
             color: Color(0xFF9EE1E5),
             child: Column(
               children: [
-                Text('텍스트 및 로고',textScaleFactor: 1.5,),
-                SizedBox(height: size.height * 0.05,),
+                Text(
+                  '텍스트 및 로고',
+                  textScaleFactor: 1.5,
+                ),
+                SizedBox(
+                  height: size.height * 0.05,
+                ),
                 Text(widget.user.isAdmin ? '관리자 권한으로 접근합니다...' : ''),
                 //temp(data)
               ],
             ),
           ),
-      ],
-    ),
-        ));
+        ],
+      ),
+    ));
   }
-  Widget temp(ExistCart existCart){
+
+  Widget temp(ExistCart existCart) {
     existCart.setExistCart(_isExist);
     return SizedBox();
   }
-
 }

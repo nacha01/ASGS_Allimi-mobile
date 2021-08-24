@@ -6,6 +6,7 @@ import 'package:asgshighschool/data/user_data.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
@@ -253,13 +254,18 @@ class _CartPageState extends State<CartPage> {
                             int.parse(cartItem['cID']));
                         if (result) {
                           var res = await _getCartForUserRequest();
-                          if(_cartProductList.length == 0){
+                          if (_cartProductList.length == 0) {
                             existCart.setExistCart(false);
                           }
-                          print('성공');
+                          Fluttertoast.showToast(
+                              msg: '장바구니에서 상품을 삭제하였습니다.',
+                              gravity: ToastGravity.BOTTOM,
+                              toastLength: Toast.LENGTH_SHORT);
                         } else {
-                          print('실패');
-                        }
+                          Fluttertoast.showToast(
+                              msg: '장바구니에서 상품을 삭제하는데 실패했습니다!!',
+                              gravity: ToastGravity.BOTTOM,
+                              toastLength: Toast.LENGTH_SHORT);                        }
                       },
                       icon: Icon(Icons.clear),
                     ),
