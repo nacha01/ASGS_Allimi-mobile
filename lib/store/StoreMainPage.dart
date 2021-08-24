@@ -35,7 +35,6 @@ class _StoreMainPageState extends State<StoreMainPage>
   TextEditingController _searchController = TextEditingController();
   TextEditingController _adminKeyController = TextEditingController();
   int _currentNav = 0;
-
   List<Product> _productList = [];
   List<Widget> _productLayoutList = [];
 

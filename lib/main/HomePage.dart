@@ -2,6 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:asgshighschool/data/exist_cart.dart';
+import 'package:provider/provider.dart';
+
 import '../store/StoreSplashPage.dart';
 import 'SettingPage.dart';
 import '../data/user_data.dart';
@@ -76,6 +79,30 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
     });
   }
 
+  Future<bool> _checkExistCart() async {
+    String uri = 'http://nacha01.dothome.co.kr/sin/arlimi_checkCart.php';
+    final response = await http.get(uri + '?uid=${widget.user.uid}');
+
+    if (response.statusCode == 200) {
+      print(response.body);
+      String result = utf8
+          .decode(response.bodyBytes)
+          .replaceAll(
+              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+              '')
+          .trim();
+      if (int.parse(result) >= 1) {
+        // Provider.of<ExistCart>(this.context).setExistCart(true);
+        return true;
+      } else {
+        // Provider.of<ExistCart>(this.context).setExistCart(false);
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+
   Future<List> gets() async {
     String url = 'https://www.googleapis.com/youtube/v3/search?';
     String query = 'q=플러터';
@@ -99,6 +126,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
+    var data = Provider.of<ExistCart>(context);
     Widget homeTab = SingleChildScrollView(
       child: Column(
         children: <Widget>[
@@ -428,14 +456,19 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   pinned: true,
                   floating: true,
                   forceElevated: innerBoxIsScrolled,
-                  bottom: TabBar(labelStyle: TextStyle(fontSize: 13),
-                    onTap: (index) {
+                  bottom: TabBar(
+                    labelStyle: TextStyle(fontSize: 13),
+                    onTap: (index) async {
                       if (index == 1) {
                         tabController.index = 0;
+                        var res = await _checkExistCart();
+                        data.setExistCart(res);
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => StoreSplashPage(user: widget.user,)));
+                                builder: (context) => StoreSplashPage(
+                                      user: widget.user,
+                                    )));
                       }
                     },
                     labelColor: Colors.black,

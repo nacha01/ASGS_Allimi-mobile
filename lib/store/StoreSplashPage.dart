@@ -18,6 +18,7 @@ class StoreSplashPage extends StatefulWidget {
 }
 
 class _StoreSplashPageState extends State<StoreSplashPage> {
+  bool _isExist = false;
   @override
   void initState() {
     super.initState();
@@ -27,6 +28,7 @@ class _StoreSplashPageState extends State<StoreSplashPage> {
   loading() async {
     List result = await _getProducts();
     var res = await _checkExistCart();
+    _isExist = res;
     print(res);
     await Future.delayed(Duration(seconds: 1));
     Navigator.pushReplacement(
@@ -51,11 +53,9 @@ class _StoreSplashPageState extends State<StoreSplashPage> {
           '')
           .trim();
       if(int.parse(result) >= 1){
-        // Provider.of<ExistCart>(this.context).setExistCart(true);
         return true;
       }
       else{
-        // Provider.of<ExistCart>(this.context).setExistCart(false);
         return false;
       }
     }
@@ -97,6 +97,7 @@ class _StoreSplashPageState extends State<StoreSplashPage> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    var data = Provider.of<ExistCart>(context);
     return Scaffold(
         body: SafeArea(
           child: Stack(
@@ -110,7 +111,8 @@ class _StoreSplashPageState extends State<StoreSplashPage> {
               children: [
                 Text('텍스트 및 로고',textScaleFactor: 1.5,),
                 SizedBox(height: size.height * 0.05,),
-                Text(widget.user.isAdmin ? '관리자 권한으로 접근합니다...' : '')
+                Text(widget.user.isAdmin ? '관리자 권한으로 접근합니다...' : ''),
+                //temp(data)
               ],
             ),
           ),
@@ -118,4 +120,9 @@ class _StoreSplashPageState extends State<StoreSplashPage> {
     ),
         ));
   }
+  Widget temp(ExistCart existCart){
+    existCart.setExistCart(_isExist);
+    return SizedBox();
+  }
+
 }
