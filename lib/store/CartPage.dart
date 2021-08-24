@@ -159,28 +159,35 @@ class _CartPageState extends State<CartPage> {
           BoxDecoration(border: Border.all(width: 0.5, color: Colors.grey)),
       width: size.width,
       height: size.height * 0.2,
+      padding: EdgeInsets.all(4),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           Container(
             height: size.height * 0.2 * 0.8,
             width: size.width * 0.25,
-            child: CachedNetworkImage(
-              imageUrl: cartItem['imgUrl1'],
-              fit: BoxFit.fill,
-              progressIndicatorBuilder: (context, string, progress) => Center(
-                child: CircularProgressIndicator(
-                  value: progress.progress,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: CachedNetworkImage(
+                imageUrl: cartItem['imgUrl1'],
+                fit: BoxFit.fill,
+                progressIndicatorBuilder: (context, string, progress) => Center(
+                  child: CircularProgressIndicator(
+                    value: progress.progress,
+                  ),
                 ),
               ),
             ),
           ),
           Container(
+            // width: size.width * 0.5,
+            alignment: Alignment.center,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
-              crossAxisAlignment: CrossAxisAlignment.center,
+              // crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
                       cartItem['prodName'],
@@ -195,12 +202,14 @@ class _CartPageState extends State<CartPage> {
                 ),
                 Text('· 정가 : ${_formatPrice(int.parse(cartItem['price']))}원'),
                 double.parse(cartItem['discount']).toString() != '0.0'
-                    ? Text('· 할인 : ${double.parse(cartItem['discount'])}%')
+                    ? Text('[ ${double.parse(cartItem['discount'])}% 할인 ]',
+                style: TextStyle(color: Colors.black54),)
                     : SizedBox(),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                      width: size.width * 0.12,
+                      width: size.width * 0.115,
                       height: size.height * 0.05,
                       decoration: BoxDecoration(
                           color: Colors.black38,
@@ -212,7 +221,7 @@ class _CartPageState extends State<CartPage> {
                       ),
                     ),
                     Container(
-                      width: size.width * 0.13,
+                      width: size.width * 0.12,
                       height: size.height * 0.05,
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
@@ -220,12 +229,12 @@ class _CartPageState extends State<CartPage> {
                           border:
                               Border.all(width: 1, color: Colors.grey[400])),
                       child: Text(
-                        '${cartItem['quantity']}개',
+                        '${cartItem['quantity']}',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),
                     Container(
-                      width: size.width * 0.12,
+                      width: size.width * 0.115,
                       height: size.height * 0.05,
                       decoration: BoxDecoration(
                           color: Colors.black38,
@@ -242,6 +251,7 @@ class _CartPageState extends State<CartPage> {
             ),
           ),
           Container(
+            // width: size.width * 0.2,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
@@ -267,13 +277,13 @@ class _CartPageState extends State<CartPage> {
                               gravity: ToastGravity.BOTTOM,
                               toastLength: Toast.LENGTH_SHORT);                        }
                       },
-                      icon: Icon(Icons.clear),
+                      icon: Icon(Icons.clear,size: 28,),
                     ),
                   ),
                 ),
                 Container(
                     padding: EdgeInsets.all(8),
-                    margin: EdgeInsets.only(bottom: 10),
+                    margin: EdgeInsets.only(bottom: 5),
                     child: Text(
                       '${_formatPrice(_calculTotalPrice(int.parse(cartItem['price']), double.parse(cartItem['discount']), int.parse(cartItem['quantity'])))}원',
                       style:
