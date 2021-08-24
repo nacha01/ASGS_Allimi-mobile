@@ -1,13 +1,17 @@
 import 'dart:ui';
 
 import 'package:asgshighschool/data/product_data.dart';
+import 'package:asgshighschool/data/user_data.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart' as http;
 
 class DetailProductPage extends StatefulWidget {
-  DetailProductPage({this.product});
+  DetailProductPage({this.product, this.user});
   final Product product;
+  final User user;
   @override
   _DetailProductPageState createState() => _DetailProductPageState();
 }
@@ -42,6 +46,28 @@ class _DetailProductPageState extends State<DetailProductPage> {
       newStr += str[i];
     }
     return newStr;
+  }
+
+  Future<bool> _addCartProductRequest() async {
+    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_addCart.php';
+    final response = await http.post(url, body: <String, String>{
+      'uid': widget.user.uid,
+      'pid': widget.product.prodID.toString()
+    });
+
+    if (response.statusCode == 200) {
+      // print(response.body);
+      var replace = response.body
+          .replaceAll(
+              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+              '')
+          .trim();
+      print(replace);
+      if (replace != '1' && replace != 'Already Exists1') return false;
+      return true;
+    } else {
+      return false;
+    }
   }
 
   @override
@@ -84,7 +110,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                   ),
                   Container(
                       width: size.width * 0.9,
-                      height: size.height * 0.45,
+                      height: size.height * 0.5,
                       child: CachedNetworkImage(
                         imageUrl: widget.product.imgUrl1,
                         fit: BoxFit.fill,
@@ -174,13 +200,13 @@ class _DetailProductPageState extends State<DetailProductPage> {
                     height: size.height * 0.03,
                   ),
                   Container(
-                    width: size.width * 0.8,
+                    width: size.width * 0.85,
                     child: Card(
                       child: ListTile(
                         leading: Icon(
-                          Icons.storage,
+                          Icons.production_quantity_limits,
                           size: 40,
-                          color: Colors.brown,
+                          color: Colors.grey[700],
                         ),
                         title: Center(
                           child: Text(
@@ -196,7 +222,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                     height: size.height * 0.02,
                   ),
                   Container(
-                    width: size.width * 0.8,
+                    width: size.width * 0.85,
                     child: Card(
                         child: ListTile(
                       leading: Icon(
@@ -227,13 +253,15 @@ class _DetailProductPageState extends State<DetailProductPage> {
                         ],
                       ),
                       subtitle: _isDiscountZero
-                          ? SizedBox()
-                          : Text(
-                              '${widget.product.discount}% 할인 중',
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16),
+                          ? null
+                          : Center(
+                              child: Text(
+                                '${widget.product.discount}% 할인 중',
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16),
+                              ),
                             ),
                     )),
                   ),
@@ -285,45 +313,39 @@ class _DetailProductPageState extends State<DetailProductPage> {
           Container(
             height: size.height * 0.06,
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 GestureDetector(
-                  onTap: () {
+                  onTap: () async {
                     print('장바구니 이동');
+                    var result = await _addCartProductRequest();
+                    print(result);
+                    if (result) {
+                      Fluttertoast.showToast(
+                          msg: '장바구니에 추가되었습니다.',
+                          gravity: ToastGravity.BOTTOM,
+                          toastLength: Toast.LENGTH_SHORT);
+                    } else {
+                      Fluttertoast.showToast(
+                          msg: '장바구니에 추가하는데 문제가 발생했습니다!',
+                          gravity: ToastGravity.BOTTOM,
+                          toastLength: Toast.LENGTH_SHORT);
+                    }
                   },
                   child: Container(
                     padding: EdgeInsets.all(10),
                     color: Color(0xFF9EE1E5),
                     alignment: Alignment.center,
-                    width: size.width * 0.4,
+                    width: size.width * 0.5,
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        Icon(Icons.shopping_cart),
+                        Icon(
+                          Icons.shopping_cart,
+                          size: 35,
+                        ),
                         Text('장바구니 담기',
                             style: TextStyle(fontWeight: FontWeight.bold))
-                      ],
-                    ),
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    print('예약 이동');
-                  },
-                  child: Container(
-                    padding: EdgeInsets.all(10),
-                    alignment: Alignment.center,
-                    color: Colors.cyan,
-                    width: size.width * 0.3,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Icon(Icons.assignment_turned_in,
-                            color: Colors.grey[600]),
-                        Text('예약하기',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey[600]))
                       ],
                     ),
                   ),
@@ -336,11 +358,12 @@ class _DetailProductPageState extends State<DetailProductPage> {
                     padding: EdgeInsets.all(10),
                     color: Colors.cyan[700],
                     alignment: Alignment.center,
-                    width: size.width * 0.3,
+                    width: size.width * 0.5,
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        Icon(Icons.payment_rounded, color: Colors.grey[300]),
+                        Icon(Icons.payment_rounded,
+                            color: Colors.grey[300], size: 35),
                         Text(
                           '결제하기',
                           style: TextStyle(

@@ -2,11 +2,14 @@ import 'dart:convert';
 import 'dart:ui';
 
 import 'package:asgshighschool/data/user_data.dart';
+import 'package:asgshighschool/store/CartPage.dart';
 import 'package:asgshighschool/store/DetailProductPage.dart';
 import 'package:asgshighschool/store/StoreMyPage.dart';
 import 'package:asgshighschool/storeAdmin/AddProduct.dart';
 import 'package:asgshighschool/storeAdmin/UpdateProduct.dart';
+import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -323,7 +326,19 @@ class _StoreMainPageState extends State<StoreMainPage>
             label: '홈',
           ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_cart), label: '장바구니'),
+              icon: Badge(
+                alignment: Alignment.topRight,
+                animationType: BadgeAnimationType.scale,
+                padding: EdgeInsets.all(6),
+                position: BadgePosition.topEnd(top: -15, end: -17),
+                child: Icon(Icons.shopping_cart),
+                shape: BadgeShape.circle,
+                badgeContent: Text(
+                  '!',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+              label: '장바구니'),
           BottomNavigationBarItem(icon: Icon(Icons.alarm_rounded), label: '알림'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: '마이페이지')
         ],
@@ -712,8 +727,7 @@ class _StoreMainPageState extends State<StoreMainPage>
           ),
         );
       case 1: // 장바구니
-        return Center(
-          child: Text('장바구니 탭'),
+        return CartPage(user: widget.user
         );
       case 2: // 알림
         return Center(
@@ -735,7 +749,7 @@ class _StoreMainPageState extends State<StoreMainPage>
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => DetailProductPage(
+                builder: (context) => DetailProductPage(user: widget.user,
                       product: product,
                     )));
       },
@@ -895,6 +909,7 @@ class _StoreMainPageState extends State<StoreMainPage>
                           alignment: Alignment.center,
                           color: Colors.grey[400],
                           child: Text('No Image'));
+                      //placeholder 추가하기 -> 로고로
                     },
                   ),
                   borderRadius: BorderRadius.circular(15),
@@ -911,7 +926,9 @@ class _StoreMainPageState extends State<StoreMainPage>
               Text(
                 '${_formatPrice(price)}원',
                 style: TextStyle(
-                  color: product.discount.toString() != '0.0' ? Colors.red : Colors.black,
+                    color: product.discount.toString() != '0.0'
+                        ? Colors.red
+                        : Colors.black,
                     fontWeight: FontWeight.bold,
                     decoration: product.discount.toString() == '0.0'
                         ? TextDecoration.none
@@ -920,7 +937,9 @@ class _StoreMainPageState extends State<StoreMainPage>
               ),
               product.discount.toString() != '0.0'
                   ? Text(
-                      '  ${_formatPrice((product.price * (1 - (product.discount / 100.0))).round())}원',style: TextStyle(fontWeight: FontWeight.bold),)
+                      '  ${_formatPrice((product.price * (1 - (product.discount / 100.0))).round())}원',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    )
                   : Text('')
             ],
           ),
@@ -1008,9 +1027,11 @@ class _StoreMainPageState extends State<StoreMainPage>
     }
   }
 }
+
 class UpperCaseTextFormatter extends TextInputFormatter {
   @override
-  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
     return TextEditingValue(
       text: newValue.text.toUpperCase(),
       selection: newValue.selection,
