@@ -20,7 +20,7 @@ import 'package:provider/provider.dart';
 /// 7. price[visible]
 /// 8. stockCount[visible]
 /// 9. discount[visible]
-/// 10. imgUrl1[visible]
+/// 10. imgUrl1[visible] 고민중..
 class CartPage extends StatefulWidget {
   CartPage({this.user});
   final User user;
@@ -29,7 +29,7 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
-  List<Map> _cartProductList = [];
+  List<Map> _cartProductList = []; // 원본 장바구니 데이터
   final _categoryReverseMap = {
     0: '음식류',
     1: '간식류',
@@ -37,6 +37,7 @@ class _CartPageState extends State<CartPage> {
     3: '문구류',
     4: '핸드메이드'
   };
+  List<int> _countList = [];
   Future<bool> _getCartForUserRequest() async {
     String uri = 'http://nacha01.dothome.co.kr/sin/arlimi_getAllCart.php';
     final response = await http.get(uri + '?uid=${widget.user.uid}');
@@ -83,6 +84,20 @@ class _CartPageState extends State<CartPage> {
     }
   }
 
+  Future<bool> _updateCartQuantity(
+      int cid, int currentQuantity) async {
+    String uri = 'http://nacha01.dothome.co.kr/sin/arlimi_updateCartCount.php';
+    final response = await http
+        .get(uri + '?cid=$cid&quantity=$currentQuantity');
+
+    if (response.statusCode == 200) {
+      print(response.body);
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   String _formatPrice(int price) {
     String p = price.toString();
     String newFormat = '';
@@ -106,7 +121,7 @@ class _CartPageState extends State<CartPage> {
     return newStr;
   }
 
-  int _calculTotalPrice(int price, double discount, int count) {
+  int _calculateTotalPrice(int price, double discount, int count) {
     if (discount.toString() == '0.0') {
       return price * count;
     } else {
@@ -114,26 +129,31 @@ class _CartPageState extends State<CartPage> {
     }
   }
 
+  void _renewCartCount() async{
+    for(int i=0; i<_cartProductList.length; ++i){
+      if(int.parse(_cartProductList[i]['quantity']) != _countList[i]){
+        await _updateCartQuantity(int.parse(_cartProductList[i]['cID']), _countList[i]);
+      }
+    }
+  }
   @override
   void initState() {
     super.initState();
     _getCartForUserRequest();
   }
-
+  @override
+  void dispose() {
+    print('dispose area');
+    _renewCartCount();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     var data = Provider.of<ExistCart>(context);
     final size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          onPressed: () => Navigator.pop(context),
-          color: Colors.black,
-          icon: Icon(
-            Icons.arrow_back,
-            color: Colors.black,
-          ),
-        ),
+        leading: SizedBox(),
         backgroundColor: Color(0xFF9EE1E5),
         title: Text(
           '장바구니',
@@ -147,13 +167,16 @@ class _CartPageState extends State<CartPage> {
             )
           : ListView.builder(
               itemBuilder: (context, index) {
-                return _cartItemTile(_cartProductList[index], size, data);
+                _countList.add(int.parse(_cartProductList[index]['quantity']));
+                return _cartItemTile(
+                    _cartProductList[index], size, data, index);
               },
               itemCount: _cartProductList.length),
     );
   }
 
-  Widget _cartItemTile(Map cartItem, Size size, ExistCart existCart) {
+  Widget _cartItemTile(
+      Map cartItem, Size size, ExistCart existCart, int index) {
     return Container(
       decoration:
           BoxDecoration(border: Border.all(width: 0.5, color: Colors.grey)),
@@ -202,8 +225,10 @@ class _CartPageState extends State<CartPage> {
                 ),
                 Text('· 정가 : ${_formatPrice(int.parse(cartItem['price']))}원'),
                 double.parse(cartItem['discount']).toString() != '0.0'
-                    ? Text('[ ${double.parse(cartItem['discount'])}% 할인 ]',
-                style: TextStyle(color: Colors.black54),)
+                    ? Text(
+                        '[ ${double.parse(cartItem['discount'])}% 할인 ]',
+                        style: TextStyle(color: Colors.black54),
+                      )
                     : SizedBox(),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -216,7 +241,13 @@ class _CartPageState extends State<CartPage> {
                           border:
                               Border.all(width: 1, color: Colors.grey[400])),
                       child: IconButton(
-                        onPressed: () {},
+                        onPressed: () async{
+                          if (_countList[index] > 1) {
+                            setState(() {
+                              _countList[index]--;
+                            });
+                          }
+                        },
                         icon: Icon(Icons.remove),
                       ),
                     ),
@@ -229,7 +260,7 @@ class _CartPageState extends State<CartPage> {
                           border:
                               Border.all(width: 1, color: Colors.grey[400])),
                       child: Text(
-                        '${cartItem['quantity']}',
+                        '${_countList[index]}',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),
@@ -241,7 +272,11 @@ class _CartPageState extends State<CartPage> {
                           border:
                               Border.all(width: 1, color: Colors.grey[400])),
                       child: IconButton(
-                        onPressed: () {},
+                        onPressed: () async {
+                          setState(() {
+                            _countList[index]++;
+                          });
+                        },
                         icon: Icon(Icons.add),
                       ),
                     ),
@@ -275,9 +310,13 @@ class _CartPageState extends State<CartPage> {
                           Fluttertoast.showToast(
                               msg: '장바구니에서 상품을 삭제하는데 실패했습니다!!',
                               gravity: ToastGravity.BOTTOM,
-                              toastLength: Toast.LENGTH_SHORT);                        }
+                              toastLength: Toast.LENGTH_SHORT);
+                        }
                       },
-                      icon: Icon(Icons.clear,size: 28,),
+                      icon: Icon(
+                        Icons.clear,
+                        size: 28,
+                      ),
                     ),
                   ),
                 ),
@@ -285,7 +324,7 @@ class _CartPageState extends State<CartPage> {
                     padding: EdgeInsets.all(8),
                     margin: EdgeInsets.only(bottom: 5),
                     child: Text(
-                      '${_formatPrice(_calculTotalPrice(int.parse(cartItem['price']), double.parse(cartItem['discount']), int.parse(cartItem['quantity'])))}원',
+                      '${_formatPrice(_calculateTotalPrice(int.parse(cartItem['price']), double.parse(cartItem['discount']), _countList[index]))}원',
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                     )),
