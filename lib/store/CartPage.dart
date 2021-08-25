@@ -11,9 +11,9 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 /// 장바구니 Item Field
-/// 1. cID
-/// 2. cUID
-/// 3. cPID
+/// 1. cID[hidden]
+/// 2. cUID[hidden]
+/// 3. cPID[hidden]
 /// 4. quantity[visible]
 /// 5. prodName[visible]
 /// 6. category[visible]
@@ -121,14 +121,20 @@ class _CartPageState extends State<CartPage> {
     return newStr;
   }
 
-  int _calculateTotalPrice(int price, double discount, int count) {
+  int _calculateTotalEachPrice(int price, double discount, int count) {
     if (discount.toString() == '0.0') {
       return price * count;
     } else {
       return ((price * (1 - (discount / 100))) * count).round();
     }
   }
-
+  int _totalPrice(){
+    int sum = 0;
+    for(int i=0; i<_cartProductList.length; ++i){
+      sum += _calculateTotalEachPrice(int.parse(_cartProductList[i]['price']), double.parse(_cartProductList[i]['discount']), _countList[i]);
+    }
+    return sum;
+  }
   void _renewCartCount() async{
     for(int i=0; i<_cartProductList.length; ++i){
       if(int.parse(_cartProductList[i]['quantity']) != _countList[i]){
@@ -165,13 +171,34 @@ class _CartPageState extends State<CartPage> {
           ? Center(
               child: Text('장바구니에 상품이 없습니다!'),
             )
-          : ListView.builder(
-              itemBuilder: (context, index) {
-                _countList.add(int.parse(_cartProductList[index]['quantity']));
-                return _cartItemTile(
-                    _cartProductList[index], size, data, index);
-              },
-              itemCount: _cartProductList.length),
+          : Column(
+            children: [
+              Expanded(
+                child: ListView.builder(
+                    itemBuilder: (context, index) {
+                      _countList.add(int.parse(_cartProductList[index]['quantity']));
+                      return _cartItemTile(
+                          _cartProductList[index], size, data, index);
+                    },
+                    itemCount: _cartProductList.length),
+              ),
+              Container(
+                color: Color(0xFF9EE1E5),
+                height: size.height * 0.05,
+                width: size.width,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircleAvatar(
+                      child: Text('${_cartProductList.length}'),
+                      backgroundColor: Colors.white,
+                    ),
+                    Text('${_formatPrice(_totalPrice())}원 결제하기')
+                  ],
+                ),
+              )
+            ],
+          ),
     );
   }
 
@@ -324,7 +351,7 @@ class _CartPageState extends State<CartPage> {
                     padding: EdgeInsets.all(8),
                     margin: EdgeInsets.only(bottom: 5),
                     child: Text(
-                      '${_formatPrice(_calculateTotalPrice(int.parse(cartItem['price']), double.parse(cartItem['discount']), _countList[index]))}원',
+                      '${_formatPrice(_calculateTotalEachPrice(int.parse(cartItem['price']), double.parse(cartItem['discount']), _countList[index]))}원',
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                     )),
