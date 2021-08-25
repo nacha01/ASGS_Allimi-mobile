@@ -38,6 +38,7 @@ class _CartPageState extends State<CartPage> {
     4: '핸드메이드'
   };
   List<int> _countList = [];
+
   Future<bool> _getCartForUserRequest() async {
     String uri = 'http://nacha01.dothome.co.kr/sin/arlimi_getAllCart.php';
     final response = await http.get(uri + '?uid=${widget.user.uid}');
@@ -55,6 +56,7 @@ class _CartPageState extends State<CartPage> {
       }
       print(_cartProductList);
       print(_cartProductList.length);
+      _initCartCount();
       setState(() {});
       return true;
     } else {
@@ -142,6 +144,11 @@ class _CartPageState extends State<CartPage> {
       }
     }
   }
+  void _initCartCount(){
+    for(int i=0; i<_cartProductList.length; ++i) {
+      _countList.add(int.parse(_cartProductList[i]['quantity']));
+    }
+  }
   @override
   void initState() {
     super.initState();
@@ -176,7 +183,6 @@ class _CartPageState extends State<CartPage> {
               Expanded(
                 child: ListView.builder(
                     itemBuilder: (context, index) {
-                      _countList.add(int.parse(_cartProductList[index]['quantity']));
                       return _cartItemTile(
                           _cartProductList[index], size, data, index);
                     },
