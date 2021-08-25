@@ -97,7 +97,6 @@ class _StoreSplashPageState extends State<StoreSplashPage> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    var data = Provider.of<ExistCart>(context);
     return Scaffold(
         body: SafeArea(
       child: Stack(
@@ -117,7 +116,6 @@ class _StoreSplashPageState extends State<StoreSplashPage> {
                   height: size.height * 0.05,
                 ),
                 Text(widget.user.isAdmin ? '관리자 권한으로 접근합니다...' : ''),
-                //temp(data)
               ],
             ),
           ),
@@ -126,8 +124,4 @@ class _StoreSplashPageState extends State<StoreSplashPage> {
     ));
   }
 
-  Widget temp(ExistCart existCart) {
-    existCart.setExistCart(_isExist);
-    return SizedBox();
-  }
 }
