@@ -15,7 +15,7 @@ class StoreMyPage extends StatefulWidget {
 // 전화번호 변경 기능?
 
 class _StoreMyPageState extends State<StoreMyPage> {
-  final statusReverseList = ['재학생','학부모','교사','졸업생','기타'];
+  final statusReverseList = ['재학생', '학부모', '교사', '졸업생', '기타'];
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -53,8 +53,12 @@ class _StoreMyPageState extends State<StoreMyPage> {
                               fit: BoxFit.fill,
                             ),
                           ),
-                          title: Text(statusReverseList[widget.user.identity - 1]+' '+(widget.user.isAdmin ? '[관리자] ' : '')),
-                          subtitle: Text('${widget.user.nickName} ${widget.user.studentId == null ? '' : widget.user.studentId} [${widget.user.name}]'),
+                          title: Text(
+                              statusReverseList[widget.user.identity - 1] +
+                                  ' ' +
+                                  (widget.user.isAdmin ? '[관리자] ' : '')),
+                          subtitle: Text(
+                              '${widget.user.nickName} ${widget.user.studentId == null ? '' : widget.user.studentId} [${widget.user.name}]'),
                         ),
                       ),
                     )
@@ -186,51 +190,72 @@ class _StoreMyPageState extends State<StoreMyPage> {
                   ],
                 ),
               ),
-              widget.user.isAdmin ? Column(
-                children: [
-                  dividerForContents(),
-                  Container(
-                    margin: EdgeInsets.all(10),
-                    padding: EdgeInsets.all(5),
-                    child: Row(
+              widget.user.isAdmin
+                  ? Column(
                       children: [
-                        Text(
-                          '관리자',
-                          style: TextStyle(color: Colors.redAccent, fontSize: 17),
-                        )
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.all(10),
-                    padding: EdgeInsets.all(5),
-                    child: Row(
-                      children: [
-                        Icon(Icons.settings,
-                            color: Colors.grey, size: size.width * 0.1),
-                        SizedBox(
-                          width: size.width * 0.03,
+                        dividerForContents(),
+                        Container(
+                          margin: EdgeInsets.all(10),
+                          padding: EdgeInsets.all(5),
+                          child: Row(
+                            children: [
+                              Text(
+                                '관리자',
+                                style: TextStyle(
+                                    color: Colors.redAccent, fontSize: 17),
+                              )
+                            ],
+                          ),
                         ),
-                        Text('관리자 설정', style: TextStyle(fontSize: 19))
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.all(10),
-                    padding: EdgeInsets.all(5),
-                    child: Row(
-                      children: [
-                        Icon(Icons.bar_chart,
-                            color: Colors.grey, size: size.width * 0.1),
-                        SizedBox(
-                          width: size.width * 0.03,
+                        Container(
+                          margin: EdgeInsets.all(10),
+                          padding: EdgeInsets.all(5),
+                          child: Row(
+                            children: [
+                              Icon(Icons.settings,
+                                  color: Colors.grey, size: size.width * 0.1),
+                              SizedBox(
+                                width: size.width * 0.03,
+                              ),
+                              Text('관리자 설정', style: TextStyle(fontSize: 19))
+                            ],
+                          ),
                         ),
-                        Text('통계', style: TextStyle(fontSize: 19))
+                        Container(
+                          margin: EdgeInsets.all(10),
+                          padding: EdgeInsets.all(5),
+                          child: Row(
+                            children: [
+                              Icon(Icons.bar_chart,
+                                  color: Colors.grey, size: size.width * 0.1),
+                              SizedBox(
+                                width: size.width * 0.03,
+                              ),
+                              Text('통계', style: TextStyle(fontSize: 19))
+                            ],
+                          ),
+                        ),
+                        Container(
+                          margin: EdgeInsets.all(10),
+                          padding: EdgeInsets.all(5),
+                          child: Row(
+                            children: [
+                              Container(
+
+                                  child: Image.asset(
+                                      'assets/images/log_image.jpg'),
+                              width: size.width * 0.1,
+                              height: size.height * 0.04,),
+                              SizedBox(
+                                width: size.width * 0.03,
+                              ),
+                              Text('로그 확인하기', style: TextStyle(fontSize: 19))
+                            ],
+                          ),
+                        ),
                       ],
-                    ),
-                  ),
-                ],
-              ) : SizedBox()
+                    )
+                  : SizedBox()
             ],
           ),
         ),
