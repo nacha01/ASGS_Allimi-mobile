@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:asgshighschool/data/exist_cart.dart';
 import 'package:asgshighschool/data/user_data.dart';
+import 'package:asgshighschool/store/AnnouncePage.dart';
 import 'package:asgshighschool/store/CartPage.dart';
 import 'package:asgshighschool/store/DetailProductPage.dart';
 import 'package:asgshighschool/store/StoreMyPage.dart';
@@ -686,9 +687,10 @@ class _StoreMainPageState extends State<StoreMainPage>
                                       //       : Colors.black,
                                       // ),
                                       Container(
-                                          child: Image.asset(
-                                              "assets/images/handmadeicon.jpg"),
-                                      height: size.height * 0.07,),
+                                        child: Image.asset(
+                                            "assets/images/handmadeicon.jpg"),
+                                        height: size.height * 0.07,
+                                      ),
 
                                       Text('핸드메이드',
                                           style: TextStyle(
@@ -742,8 +744,8 @@ class _StoreMainPageState extends State<StoreMainPage>
       case 1: // 장바구니
         return CartPage(user: widget.user);
       case 2: // 알림
-        return Center(
-          child: Text('알림 탭'),
+        return AnnouncePage(
+          user: widget.user,
         );
       case 3: // 마이페이지
         return StoreMyPage(

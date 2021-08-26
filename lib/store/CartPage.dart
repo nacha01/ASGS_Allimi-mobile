@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:asgshighschool/data/exist_cart.dart';
 import 'package:asgshighschool/data/product_data.dart';
@@ -39,6 +40,8 @@ class _CartPageState extends State<CartPage> {
   };
   List<int> _countList = [];
 
+  /// 특정 유저에 대해 그 유저가 갖고 있는 장바구니 상품들을 가져오는 HTTP 요청
+  /// @return : 요청 성공 여부
   Future<bool> _getCartForUserRequest() async {
     String uri = 'http://nacha01.dothome.co.kr/sin/arlimi_getAllCart.php';
     final response = await http.get(uri + '?uid=${widget.user.uid}');
@@ -54,8 +57,6 @@ class _CartPageState extends State<CartPage> {
       for (int i = 0; i < cartProduct.length; ++i) {
         _cartProductList.add(json.decode(cartProduct[i]));
       }
-      print(_cartProductList);
-      print(_cartProductList.length);
       _initCartCount();
       setState(() {});
       return true;
@@ -64,6 +65,10 @@ class _CartPageState extends State<CartPage> {
     }
   }
 
+  /// 장바구니에서 특정 상품을 삭제하는 HTTP 요청
+  /// @param : 장바구니 고유 ID[cid]
+  /// @response message : DELETED : 삭제 완료, NOT : 삭제 실패
+  /// @return : 요청 성공 여부
   Future<bool> _deleteCartForUserRequest(int cid) async {
     String uri = 'http://nacha01.dothome.co.kr/sin/arlimi_deleteCart.php';
     final response = await http.get(uri + '?cid=$cid');
@@ -86,12 +91,13 @@ class _CartPageState extends State<CartPage> {
     }
   }
 
-  Future<bool> _updateCartQuantity(
-      int cid, int currentQuantity) async {
+  /// 그 장바구니 상품에 대해 수량 업데이트 HTTP 요청을 보내는 작업
+  /// @param : 장바구니 고유 ID[cid], 현재 장바구니 수량[currentQuantity]
+  /// @return : 요청 성공 여부
+  Future<bool> _updateCartQuantity(int cid, int currentQuantity) async {
     String uri = 'http://nacha01.dothome.co.kr/sin/arlimi_updateCartCount.php';
-    final response = await http
-        .get(uri + '?cid=$cid&quantity=$currentQuantity');
-
+    final response =
+        await http.get(uri + '?cid=$cid&quantity=$currentQuantity');
     if (response.statusCode == 200) {
       print(response.body);
       return true;
@@ -100,6 +106,9 @@ class _CartPageState extends State<CartPage> {
     }
   }
 
+  /// 일반 숫자에 ,를 붙여서 직관적인 가격을 보이게 하는 작업
+  /// @param : 직관적인 가격을 보여줄 실제 int 가격[price]
+  /// @return : 직관적인 가격 문자열
   String _formatPrice(int price) {
     String p = price.toString();
     String newFormat = '';
@@ -115,6 +124,9 @@ class _CartPageState extends State<CartPage> {
     return _reverseString(newFormat);
   }
 
+  /// 문자열을 뒤집는 작업
+  /// @param : 뒤집고 싶은 문자열[str]
+  /// @return : 뒤집은 문자열
   String _reverseString(String str) {
     String newStr = '';
     for (int i = str.length - 1; i >= 0; --i) {
@@ -123,6 +135,9 @@ class _CartPageState extends State<CartPage> {
     return newStr;
   }
 
+  /// 특정 상품에 대해 할인율과 개수를 적용해 그 상품의 총 가격을 구하는 작업
+  /// @param : 가격[price], 할인율[discount], 수량[count]
+  /// @return : 상품의 총 가격
   int _calculateTotalEachPrice(int price, double discount, int count) {
     if (discount.toString() == '0.0') {
       return price * count;
@@ -130,36 +145,49 @@ class _CartPageState extends State<CartPage> {
       return ((price * (1 - (discount / 100))) * count).round();
     }
   }
-  int _totalPrice(){
+
+  /// 장바구니에 존재하는 모든 상품의 최종 가격을 구하는 작업
+  /// @return : 장바구니에 담긴 총 가격
+  int _totalPrice() {
     int sum = 0;
-    for(int i=0; i<_cartProductList.length; ++i){
-      sum += _calculateTotalEachPrice(int.parse(_cartProductList[i]['price']), double.parse(_cartProductList[i]['discount']), _countList[i]);
+    for (int i = 0; i < _cartProductList.length; ++i) {
+      sum += _calculateTotalEachPrice(int.parse(_cartProductList[i]['price']),
+          double.parse(_cartProductList[i]['discount']), _countList[i]);
     }
     return sum;
   }
-  void _renewCartCount() async{
-    for(int i=0; i<_cartProductList.length; ++i){
-      if(int.parse(_cartProductList[i]['quantity']) != _countList[i]){
-        await _updateCartQuantity(int.parse(_cartProductList[i]['cID']), _countList[i]);
+
+  /// 화면이 사라질 때, 즉, 장바구니 페이지가 종료되는 시점에 수량에 대한 변경 사항을
+  /// DB에 업데이트하는 작업
+  void _renewCartCount() async {
+    for (int i = 0; i < _cartProductList.length; ++i) {
+      if (int.parse(_cartProductList[i]['quantity']) != _countList[i]) {
+        await _updateCartQuantity(
+            int.parse(_cartProductList[i]['cID']), _countList[i]);
       }
     }
   }
-  void _initCartCount(){
-    for(int i=0; i<_cartProductList.length; ++i) {
+
+  /// 장바구니 페이지 시작 시 DB에서 가져온 정보중에서 수량에 대한 정보를
+  /// mutable한 객체에 복사해서 저장하는 작업
+  void _initCartCount() {
+    for (int i = 0; i < _cartProductList.length; ++i) {
       _countList.add(int.parse(_cartProductList[i]['quantity']));
     }
   }
+
   @override
   void initState() {
     super.initState();
     _getCartForUserRequest();
   }
+
   @override
   void dispose() {
-    print('dispose area');
     _renewCartCount();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     var data = Provider.of<ExistCart>(context);
@@ -179,35 +207,49 @@ class _CartPageState extends State<CartPage> {
               child: Text('장바구니에 상품이 없습니다!'),
             )
           : Column(
-            children: [
-              Expanded(
-                child: ListView.builder(
-                    itemBuilder: (context, index) {
-                      return _cartItemTile(
-                          _cartProductList[index], size, data, index);
-                    },
-                    itemCount: _cartProductList.length),
-              ),
-              Container(
-                color: Color(0xFF9EE1E5),
-                height: size.height * 0.05,
-                width: size.width,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircleAvatar(
-                      child: Text('${_cartProductList.length}'),
-                      backgroundColor: Colors.white,
-                    ),
-                    Text('${_formatPrice(_totalPrice())}원 결제하기')
-                  ],
+              children: [
+                Expanded(
+                  child: ListView.builder(
+                      itemBuilder: (context, index) {
+                        return _cartItemTile(
+                            _cartProductList[index], size, data, index);
+                      },
+                      itemCount: _cartProductList.length),
                 ),
-              )
-            ],
-          ),
+                Container(
+                  height: size.height * 0.05,
+                  margin: EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(9),
+                      color: Color(0xFF9EE1E5)),
+                  width: size.width,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        height: size.height * 0.05 * 0.8,
+                        child: CircleAvatar(
+                          child: Text('${_cartProductList.length}',
+                          style: TextStyle(fontWeight: FontWeight.bold),),
+                          backgroundColor: Colors.white,
+                        ),
+                      ),
+                      SizedBox(
+                        width: size.width * 0.05,
+                      ),
+                      Text(
+                        '${_formatPrice(_totalPrice())}원  결제하기',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      )
+                    ],
+                  ),
+                )
+              ],
+            ),
     );
   }
 
+  /// 장바구니 각 아이템에 대한 Layout
   Widget _cartItemTile(
       Map cartItem, Size size, ExistCart existCart, int index) {
     return Container(
@@ -274,7 +316,7 @@ class _CartPageState extends State<CartPage> {
                           border:
                               Border.all(width: 1, color: Colors.grey[400])),
                       child: IconButton(
-                        onPressed: () async{
+                        onPressed: () async {
                           if (_countList[index] > 1) {
                             setState(() {
                               _countList[index]--;
