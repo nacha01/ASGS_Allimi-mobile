@@ -217,8 +217,14 @@ class _CartPageState extends State<CartPage> {
                     ],
                   ),
                 ),
-                Divider(indent: 10, endIndent: 10,),
-                SizedBox(height: size.height * 0.01,),
+                Divider(
+                  indent: 10,
+                  endIndent: 10,
+                  thickness: 1,
+                ),
+                SizedBox(
+                  height: size.height * 0.01,
+                ),
                 Expanded(
                   child: ListView.builder(
                       itemBuilder: (context, index) {
@@ -240,8 +246,10 @@ class _CartPageState extends State<CartPage> {
                       Container(
                         height: size.height * 0.05 * 0.8,
                         child: CircleAvatar(
-                          child: Text('${_cartProductList.length}',
-                          style: TextStyle(fontWeight: FontWeight.bold),),
+                          child: Text(
+                            '${_cartProductList.length}',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
                           backgroundColor: Colors.white,
                         ),
                       ),

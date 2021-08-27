@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:asgshighschool/data/announce_data.dart';
 import 'package:asgshighschool/data/user_data.dart';
+import 'package:asgshighschool/store/DetailAnnouncePage.dart';
 import 'package:asgshighschool/storeAdmin/AddAnnouncePage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -39,11 +41,27 @@ class _AnnouncePageState extends State<AnnouncePage> {
       return false;
     }
   }
+  Future<int> _increaseViewCountRequest(int anID) async{
+    String uri = 'http://nacha01.dothome.co.kr/sin/arlimi_increaseViewCount.php';
+    final response = await http.get(uri+'?anID=$anID');
 
+    if(response.statusCode == 200){
+      print(response.body);
+      String result = utf8
+          .decode(response.bodyBytes)
+          .replaceAll(
+          '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+          '')
+          .trim();
+      return int.parse(result);
+    }
+    else{
+      return -1;
+    }
+  }
   bool _compareDateIsNew(String cmpDate) {
     int diff = int.parse(
         DateTime.now().difference(DateTime.parse(cmpDate)).inDays.toString());
-    print(diff);
     return diff < 3 ? true : false;
   }
 
@@ -140,7 +158,8 @@ class _AnnouncePageState extends State<AnnouncePage> {
                     writer: _announceList[index].writer,
                     date: _announceList[index].writeDate,
                     isNew: _compareDateIsNew(_announceList[index].writeDate),
-                    size: size),
+                    size: size,
+                    announce: _announceList[index]),
                 itemCount: _announceList.length,
               ),
             )
@@ -151,66 +170,95 @@ class _AnnouncePageState extends State<AnnouncePage> {
   }
 
   Widget _announceItemLayout(
-      {String title, String writer, String date, bool isNew, Size size}) {
-    return Container(
-      width: size.width * 0.9,
-      height: size.height * 0.12,
-      margin: EdgeInsets.all(8),
-      decoration: BoxDecoration(
-          border: Border.all(width: 1, color: Colors.black),
-          borderRadius: BorderRadius.circular(9)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            height: size.height * 0.1 * 0.4,
-            child: Row(
-              children: [
-                SizedBox(
-                  width: size.width * 0.01,
-                ),
-                isNew
-                    ? Container(
-                        alignment: Alignment.center,
-                        child: Text('신규'),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            color: Colors.yellowAccent[100],
-                            border: Border.all(
-                                width: 1, color: Colors.redAccent[200])),
-                        width: size.width * 0.1,
-                      )
-                    : SizedBox(
-                        width: size.width * 0.1,
-                      ),
-                VerticalDivider(
-                  thickness: 1,
-                  color: Colors.grey,
-                ),
-                Container(
-                  child: Text(writer),
-                  padding: EdgeInsets.symmetric(horizontal: 5),
-                ),
-                VerticalDivider(
-                  thickness: 1,
-                  color: Colors.grey,
-                ),
-                Container(
-                  child: Text('작성일 : $date'),
-                ),
-              ],
+      {String title,
+      String writer,
+      String date,
+      bool isNew,
+      Size size,
+      Announce announce}) {
+    return GestureDetector(
+      onTap: () async{
+        int renew = await _increaseViewCountRequest(announce.announceID);
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => DetailAnnouncePage(
+                      announce: announce,
+                      user: widget.user,
+                    isNew: isNew,
+                  newView: renew,
+                    )));
+      },
+      child: Container(
+        width: size.width * 0.88,
+        height: size.height * 0.12,
+        margin: EdgeInsets.all(10),
+        decoration: BoxDecoration(
+            color: Colors.grey[200],
+            border: Border.all(width: 1, color: Colors.black38),
+            borderRadius: BorderRadius.circular(9)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              height: size.height * 0.1 * 0.4,
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: size.width * 0.01,
+                  ),
+                  isNew
+                      ? Container(
+                          alignment: Alignment.center,
+                          child: Text(
+                            '신규',
+                            style: TextStyle(
+                                fontSize: 11, fontWeight: FontWeight.bold),
+                          ),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              color: Colors.yellowAccent[100],
+                              border: Border.all(
+                                  width: 1, color: Colors.redAccent[200])),
+                          width: size.width * 0.1,
+                        )
+                      : SizedBox(
+                          width: size.width * 0.1,
+                        ),
+                  VerticalDivider(
+                    thickness: 1,
+                    color: Colors.grey,
+                  ),
+                  Container(
+                    child: Text(writer,
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    padding: EdgeInsets.symmetric(horizontal: 5),
+                  ),
+                  VerticalDivider(
+                    thickness: 1,
+                    color: Colors.grey,
+                  ),
+                  Container(
+                    child: Text(
+                      '작성일 : $date',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          Divider(
-            thickness: 2,
-          ),
-          Container(
-            alignment: Alignment.center,
-            child: Text(title),
-            height: size.height * 0.1 * 0.4,
-          )
-        ],
+            Divider(
+              thickness: 2,
+            ),
+            Container(
+              alignment: Alignment.center,
+              child: Text(title,
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              height: size.height * 0.1 * 0.4,
+            )
+          ],
+        ),
       ),
     );
   }

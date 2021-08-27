@@ -55,12 +55,6 @@ class _AddAnnouncePageState extends State<AddAnnouncePage> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    print(DateTime.now().toString());
-  }
-
-  @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
     return Scaffold(
