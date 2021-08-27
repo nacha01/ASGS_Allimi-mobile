@@ -208,6 +208,17 @@ class _CartPageState extends State<CartPage> {
             )
           : Column(
               children: [
+                Container(
+                  width: size.width,
+                  height: size.height * 0.1,
+                  child: Column(
+                    children: [
+                      //brief 설명 적는 곳
+                    ],
+                  ),
+                ),
+                Divider(indent: 10, endIndent: 10,),
+                SizedBox(height: size.height * 0.01,),
                 Expanded(
                   child: ListView.builder(
                       itemBuilder: (context, index) {
@@ -258,6 +269,7 @@ class _CartPageState extends State<CartPage> {
       width: size.width,
       height: size.height * 0.2,
       padding: EdgeInsets.all(4),
+      margin: EdgeInsets.all(2),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
