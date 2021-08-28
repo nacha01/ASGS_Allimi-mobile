@@ -31,6 +31,7 @@ class _AnnouncePageState extends State<AnnouncePage> {
           .trim();
       List anList = json.decode(result);
       print(anList);
+      _announceList.clear();
       for (int i = 0; i < anList.length; ++i) {
         _announceList.add(Announce.fromJson(json.decode(anList[i])));
       }
@@ -41,24 +42,26 @@ class _AnnouncePageState extends State<AnnouncePage> {
       return false;
     }
   }
-  Future<int> _increaseViewCountRequest(int anID) async{
-    String uri = 'http://nacha01.dothome.co.kr/sin/arlimi_increaseViewCount.php';
-    final response = await http.get(uri+'?anID=$anID');
 
-    if(response.statusCode == 200){
+  Future<int> _increaseViewCountRequest(int anID) async {
+    String uri =
+        'http://nacha01.dothome.co.kr/sin/arlimi_increaseViewCount.php';
+    final response = await http.get(uri + '?anID=$anID');
+
+    if (response.statusCode == 200) {
       print(response.body);
       String result = utf8
           .decode(response.bodyBytes)
           .replaceAll(
-          '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-          '')
+              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+              '')
           .trim();
       return int.parse(result);
-    }
-    else{
+    } else {
       return -1;
     }
   }
+
   bool _compareDateIsNew(String cmpDate) {
     int diff = int.parse(
         DateTime.now().difference(DateTime.parse(cmpDate)).inDays.toString());
@@ -92,78 +95,81 @@ class _AnnouncePageState extends State<AnnouncePage> {
               ))
         ],
       ),
-      body: Center(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Container(
-              width: size.width,
-              height: size.height * 0.1,
-              child: Column(
-                children: [
-                  //brief 설명 적는 곳
-                ],
+      body: RefreshIndicator(
+        onRefresh: _getAnnounceRequest,
+        child: Center(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Container(
+                width: size.width,
+                height: size.height * 0.1,
+                child: Column(
+                  children: [
+                    //brief 설명 적는 곳
+                  ],
+                ),
               ),
-            ),
-            Divider(
-              indent: 10,
-              endIndent: 10,
-              thickness: 1,
-            ),
-            SizedBox(
-              height: size.height * 0.01,
-            ),
-            widget.user.isAdmin
-                ? Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        child: Container(
-                          height: size.height * 0.05,
-                          width: size.width * 0.28,
-                          decoration: BoxDecoration(
-                              border:
-                                  Border.all(width: 2, color: Colors.black54),
-                              borderRadius: BorderRadius.circular(8)),
-                          child: FlatButton(
-                              onPressed: () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => AddAnnouncePage(
-                                            user: widget.user,
-                                          ))),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Icon(Icons.add),
-                                  Text('글 쓰기'),
-                                ],
-                              )),
+              Divider(
+                indent: 10,
+                endIndent: 10,
+                thickness: 1,
+              ),
+              SizedBox(
+                height: size.height * 0.01,
+              ),
+              widget.user.isAdmin
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: Container(
+                            height: size.height * 0.05,
+                            width: size.width * 0.28,
+                            decoration: BoxDecoration(
+                                border:
+                                    Border.all(width: 2, color: Colors.black54),
+                                borderRadius: BorderRadius.circular(8)),
+                            child: FlatButton(
+                                onPressed: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => AddAnnouncePage(
+                                              user: widget.user,
+                                            ))),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Icon(Icons.add),
+                                    Text('글 쓰기'),
+                                  ],
+                                )),
+                          ),
                         ),
-                      ),
-                      Divider(
-                        thickness: 1,
-                        endIndent: 10,
-                        indent: 10,
-                      ),
-                    ],
-                  )
-                : SizedBox(),
-            Expanded(
-              child: ListView.builder(
-                itemBuilder: (context, index) => _announceItemLayout(
-                    title: _announceList[index].title,
-                    writer: _announceList[index].writer,
-                    date: _announceList[index].writeDate,
-                    isNew: _compareDateIsNew(_announceList[index].writeDate),
-                    size: size,
-                    announce: _announceList[index]),
-                itemCount: _announceList.length,
-              ),
-            )
-          ],
+                        Divider(
+                          thickness: 1,
+                          endIndent: 10,
+                          indent: 10,
+                        ),
+                      ],
+                    )
+                  : SizedBox(),
+              Expanded(
+                child: ListView.builder(
+                  itemBuilder: (context, index) => _announceItemLayout(
+                      title: _announceList[index].title,
+                      writer: _announceList[index].writer,
+                      date: _announceList[index].writeDate,
+                      isNew: _compareDateIsNew(_announceList[index].writeDate),
+                      size: size,
+                      announce: _announceList[index]),
+                  itemCount: _announceList.length,
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -177,7 +183,7 @@ class _AnnouncePageState extends State<AnnouncePage> {
       Size size,
       Announce announce}) {
     return GestureDetector(
-      onTap: () async{
+      onTap: () async {
         int renew = await _increaseViewCountRequest(announce.announceID);
         Navigator.push(
             context,
@@ -185,8 +191,8 @@ class _AnnouncePageState extends State<AnnouncePage> {
                 builder: (context) => DetailAnnouncePage(
                       announce: announce,
                       user: widget.user,
-                    isNew: isNew,
-                  newView: renew,
+                      isNew: isNew,
+                      newView: renew,
                     )));
       },
       child: Container(

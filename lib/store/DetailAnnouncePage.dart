@@ -1,5 +1,6 @@
 import 'package:asgshighschool/data/announce_data.dart';
 import 'package:asgshighschool/data/user_data.dart';
+import 'package:asgshighschool/storeAdmin/AddAnnouncePage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -14,6 +15,16 @@ class DetailAnnouncePage extends StatefulWidget {
 }
 
 class _DetailAnnouncePageState extends State<DetailAnnouncePage> {
+  var _rcvResult;
+  bool _isUsable = false;
+  Announce _temp;
+
+  @override
+  void initState() {
+    _temp = widget.announce;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -39,7 +50,27 @@ class _DetailAnnouncePageState extends State<DetailAnnouncePage> {
                     Icons.update,
                     color: Colors.black,
                   ),
-                  onPressed: () {},
+                  onPressed: () async {
+                    final result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => AddAnnouncePage(
+                                  user: widget.user,
+                                  announce: _temp,
+                                  isUpdate: true,
+                                )));
+                    setState(() {
+                      _rcvResult = result;
+                      if (_rcvResult == null) {
+                        _isUsable = false;
+                        return;
+                      }
+                      if (_rcvResult is Announce) {
+                        _isUsable = true;
+                        _temp = _rcvResult as Announce;
+                      }
+                    });
+                  },
                 )
               : SizedBox(),
           widget.user.isAdmin
@@ -62,7 +93,7 @@ class _DetailAnnouncePageState extends State<DetailAnnouncePage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      '${widget.announce.title}',
+                      '${_isUsable ? (_rcvResult as Announce).title : _temp.title}',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 22,
@@ -90,7 +121,8 @@ class _DetailAnnouncePageState extends State<DetailAnnouncePage> {
               ),
               Container(
                 padding: EdgeInsets.symmetric(vertical: 10),
-                child: Text('${widget.announce.writeDate}',
+                child: Text(
+                    '${_isUsable ? (_rcvResult as Announce).writeDate : _temp.writeDate}',
                     style: TextStyle(fontSize: 13, color: Colors.grey)),
               ),
               Container(
@@ -99,14 +131,15 @@ class _DetailAnnouncePageState extends State<DetailAnnouncePage> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text('작성자   ${widget.announce.writer}',
-                        style: TextStyle(fontSize: 15)),
+                    Text(
+                        '작성자  ${_isUsable ? (_rcvResult as Announce).writer : _temp.writer}',
+                        style: TextStyle(fontSize: 14)),
                     SizedBox(
                       width: size.width * 0.08,
                     ),
                     Text(
-                      '조회수   ${widget.newView}',
-                      style: TextStyle(fontSize: 15),
+                      '조회  ${widget.newView}',
+                      style: TextStyle(fontSize: 14),
                     ),
                   ],
                 ),
@@ -117,7 +150,7 @@ class _DetailAnnouncePageState extends State<DetailAnnouncePage> {
               Container(
                 padding: EdgeInsets.all(6),
                 child: Text(
-                  '${widget.announce.content}',
+                  '${_isUsable ? (_rcvResult as Announce).content : _temp.content}',
                   style: TextStyle(fontSize: 17),
                 ),
               ),
