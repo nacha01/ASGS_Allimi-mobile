@@ -95,9 +95,9 @@ class _AnnouncePageState extends State<AnnouncePage> {
               ))
         ],
       ),
-      body: RefreshIndicator(
-        onRefresh: _getAnnounceRequest,
-        child: Center(
+      body: Center(
+        child: RefreshIndicator(
+          onRefresh: _getAnnounceRequest,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
@@ -156,18 +156,35 @@ class _AnnouncePageState extends State<AnnouncePage> {
                       ],
                     )
                   : SizedBox(),
-              Expanded(
-                child: ListView.builder(
-                  itemBuilder: (context, index) => _announceItemLayout(
-                      title: _announceList[index].title,
-                      writer: _announceList[index].writer,
-                      date: _announceList[index].writeDate,
-                      isNew: _compareDateIsNew(_announceList[index].writeDate),
-                      size: size,
-                      announce: _announceList[index]),
-                  itemCount: _announceList.length,
-                ),
-              )
+              _announceList.length == 0
+                  ? SingleChildScrollView(
+                      physics: AlwaysScrollableScrollPhysics(),
+                      child: Container(
+                          alignment: Alignment.center,
+                          margin: EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            border: Border.all(width: 1, color: Colors.black54),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          height: size.height * 0.2,
+                          child: Text(
+                            '공지사항이 없습니다!\n새로고침하려면 이 박스를 아래로 당겨주세요!',
+                            textAlign: TextAlign.center,
+                          )),
+                    )
+                  : Expanded(
+                      child: ListView.builder(
+                        itemBuilder: (context, index) => _announceItemLayout(
+                            title: _announceList[index].title,
+                            writer: _announceList[index].writer,
+                            date: _announceList[index].writeDate,
+                            isNew: _compareDateIsNew(
+                                _announceList[index].writeDate),
+                            size: size,
+                            announce: _announceList[index]),
+                        itemCount: _announceList.length,
+                      ),
+                    )
             ],
           ),
         ),
