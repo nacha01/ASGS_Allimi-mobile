@@ -91,20 +91,6 @@ class _StoreMyPageState extends State<StoreMyPage> {
                   ],
                 ),
               ),
-              Container(
-                margin: EdgeInsets.all(10),
-                padding: EdgeInsets.all(5),
-                child: Row(
-                  children: [
-                    Icon(Icons.favorite,
-                        color: Colors.grey, size: size.width * 0.1),
-                    SizedBox(
-                      width: size.width * 0.03,
-                    ),
-                    Text('찜한 상품', style: TextStyle(fontSize: 19))
-                  ],
-                ),
-              ),
               dividerForContents(),
               Container(
                 margin: EdgeInsets.all(10),
@@ -115,23 +101,6 @@ class _StoreMyPageState extends State<StoreMyPage> {
                       '활동',
                       style: TextStyle(color: Color(0xFF9EE1E5), fontSize: 17),
                     )
-                  ],
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.all(10),
-                padding: EdgeInsets.all(5),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.article,
-                      color: Colors.grey,
-                      size: size.width * 0.1,
-                    ),
-                    SizedBox(
-                      width: size.width * 0.03,
-                    ),
-                    Text('예약 내역', style: TextStyle(fontSize: 19))
                   ],
                 ),
               ),
