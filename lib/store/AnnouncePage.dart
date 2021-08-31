@@ -107,6 +107,7 @@ class _AnnouncePageState extends State<AnnouncePage> {
                 child: Column(
                   children: [
                     //brief 설명 적는 곳
+                    Text('이 페이지의 간략한 설명 적는 란')
                   ],
                 ),
               ),

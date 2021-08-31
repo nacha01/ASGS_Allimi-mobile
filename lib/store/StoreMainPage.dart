@@ -270,6 +270,7 @@ class _StoreMainPageState extends State<StoreMainPage>
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_deleteProduct.php';
     final response = await http.get(url + '?id=$productID');
     if (response.statusCode == 200) {
+      print(response.body);
       if (response.body.contains('DELETED')) {
         return true;
       } else {
@@ -551,12 +552,12 @@ class _StoreMainPageState extends State<StoreMainPage>
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Icon(
-                                        Icons.lunch_dining_outlined,
-                                        size: size.width * 0.12,
-                                        color: _selectedCategory == 1
-                                            ? Color(0xFF9EE1E5)
-                                            : Colors.black,
+                                      Container(
+                                        child: Image.asset(_selectedCategory ==
+                                                1
+                                            ? "assets/images/dinner_on_icon.jpg"
+                                            : "assets/images/dinner_icon.jpg"),
+                                        height: size.height * 0.07,
                                       ),
                                       Text('음식류',
                                           style: TextStyle(
@@ -583,12 +584,12 @@ class _StoreMainPageState extends State<StoreMainPage>
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Icon(
-                                        Icons.icecream_outlined,
-                                        size: size.width * 0.12,
-                                        color: _selectedCategory == 2
-                                            ? Color(0xFF9EE1E5)
-                                            : Colors.black,
+                                      Container(
+                                        child: Image.asset(_selectedCategory ==
+                                                2
+                                            ? "assets/images/candy_on_icon.jpg"
+                                            : "assets/images/candy_icon.jpg"),
+                                        height: size.height * 0.07,
                                       ),
                                       Text('간식류',
                                           style: TextStyle(
@@ -615,12 +616,12 @@ class _StoreMainPageState extends State<StoreMainPage>
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Icon(
-                                        Icons.emoji_food_beverage_outlined,
-                                        size: size.width * 0.12,
-                                        color: _selectedCategory == 3
-                                            ? Color(0xFF9EE1E5)
-                                            : Colors.black,
+                                      Container(
+                                        child: Image.asset(_selectedCategory ==
+                                                3
+                                            ? "assets/images/drink_on_icon.jpg"
+                                            : "assets/images/drink_icon.jpg"),
+                                        height: size.height * 0.07,
                                       ),
                                       Text('음료류',
                                           style: TextStyle(
@@ -647,12 +648,12 @@ class _StoreMainPageState extends State<StoreMainPage>
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Icon(
-                                        Icons.mode_outlined,
-                                        size: size.width * 0.12,
-                                        color: _selectedCategory == 4
-                                            ? Color(0xFF9EE1E5)
-                                            : Colors.black,
+                                      Container(
+                                        child: Image.asset(_selectedCategory ==
+                                                4
+                                            ? "assets/images/pencil_on_icon.jpg"
+                                            : "assets/images/pencil_icon.jpg"),
+                                        height: size.height * 0.07,
                                       ),
                                       Text('문구류',
                                           style: TextStyle(
@@ -679,19 +680,13 @@ class _StoreMainPageState extends State<StoreMainPage>
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      // Icon(
-                                      //   Icons.volunteer_activism_outlined,
-                                      //   size: size.width * 0.12,
-                                      //   color: _selectedCategory == 5
-                                      //       ? Color(0xFF9EE1E5)
-                                      //       : Colors.black,
-                                      // ),
                                       Container(
-                                        child: Image.asset(
-                                            "assets/images/handmadeicon.jpg"),
+                                        child: Image.asset(_selectedCategory ==
+                                                5
+                                            ? "assets/images/handmade_on_icon.jpg"
+                                            : "assets/images/handmadeicon.jpg"),
                                         height: size.height * 0.07,
                                       ),
-
                                       Text('핸드메이드',
                                           style: TextStyle(
                                               fontWeight: FontWeight.bold,
@@ -878,8 +873,8 @@ class _StoreMainPageState extends State<StoreMainPage>
                                                           false);
                                                     } else {
                                                       Navigator.pop(ctx);
-                                                      showToast(
-                                                          '삭제가 실패되었습니다.', true);
+                                                      showToast('삭제에 실패하였습니다!!',
+                                                          true);
                                                     }
                                                   } else {
                                                     showToast(

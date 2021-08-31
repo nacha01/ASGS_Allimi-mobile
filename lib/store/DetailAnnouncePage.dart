@@ -50,7 +50,7 @@ class _DetailAnnouncePageState extends State<DetailAnnouncePage> {
       return false;
     }
   }
-
+  /// 현재 페이지를 강제종료하는 작업
   void _terminateScreen() {
     Navigator.pop(context);
   }
@@ -287,7 +287,7 @@ class _DetailAnnouncePageState extends State<DetailAnnouncePage> {
                         '작성자  ${_isUsable ? (_rcvResult as Announce).writer : _temp.writer}',
                         style: TextStyle(fontSize: 14)),
                     SizedBox(
-                      width: size.width * 0.08,
+                      width: size.width * 0.12,
                     ),
                     Text(
                       '조회  ${widget.newView}',
