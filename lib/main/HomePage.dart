@@ -84,7 +84,6 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
     final response = await http.get(uri + '?uid=${widget.user.uid}');
 
     if (response.statusCode == 200) {
-      print(response.body);
       String result = utf8
           .decode(response.bodyBytes)
           .replaceAll(

@@ -29,7 +29,6 @@ class _StoreSplashPageState extends State<StoreSplashPage> {
     List result = await _getProducts();
     var res = await _checkExistCart();
     _isExist = res;
-    print(res);
     await Future.delayed(Duration(seconds: 1));
     Navigator.pushReplacement(
         context,
@@ -46,7 +45,6 @@ class _StoreSplashPageState extends State<StoreSplashPage> {
     final response = await http.get(uri + '?uid=${widget.user.uid}');
 
     if (response.statusCode == 200) {
-      print(response.body);
       String result = utf8
           .decode(response.bodyBytes)
           .replaceAll(
@@ -70,7 +68,6 @@ class _StoreSplashPageState extends State<StoreSplashPage> {
     if (response.statusCode == 200) {
       print(response.body);
       if (response.body.contains('일일 트래픽을 모두 사용하였습니다.')) {
-        print('일일 트래픽 모두 사용');
         // 임시 유저로 이동
         return [];
       }

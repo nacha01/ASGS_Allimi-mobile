@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:flutter/services.dart';
+
 import 'HomePage.dart';
 import '../data/user_data.dart';
 import 'package:flutter/material.dart';
@@ -128,6 +130,9 @@ class _SignUpPageState extends State<SignUpPage> {
               Opacity(
                 opacity: isTwoRow() ? 1.0 : 0.0,
                 child: TextFormField(
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly
+                  ],
                   controller: _gradeController,
                   cursorColor: Colors.black,
                   style: TextStyle(fontSize: 18.0, color: Colors.black),

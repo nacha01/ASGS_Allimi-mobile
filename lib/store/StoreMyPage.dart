@@ -1,4 +1,5 @@
 import 'package:asgshighschool/data/user_data.dart';
+import 'package:asgshighschool/store/UpdateUserPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -46,7 +47,11 @@ class _StoreMyPageState extends State<StoreMyPage> {
                       child: Card(
                         child: ListTile(
                           onTap: (){
-                            
+
+                          },
+                          onLongPress: (){
+                            Navigator.push(context, MaterialPageRoute(builder: (context)
+                            => UpdateUserPage(user: widget.user,)));
                           },
                           leading: Container(
                             width: size.width * 0.2,
