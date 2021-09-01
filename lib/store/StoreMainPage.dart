@@ -412,15 +412,14 @@ class _StoreMainPageState extends State<StoreMainPage>
                       child: Column(
                         children: [
                           addProductForAdmin(size),
-                          SizedBox(
-                            height: size.width * 0.02,
+                          Expanded(
+                            child: Center(
+                                child: Text(
+                              '베스트 상품이 없습니다1',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 21),
+                            )),
                           ),
-                          Center(
-                              child: Text(
-                            '베스트 상품이 없습니다.',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 22),
-                          )),
                         ],
                       ),
                     )
@@ -457,15 +456,14 @@ class _StoreMainPageState extends State<StoreMainPage>
                       child: Column(
                         children: [
                           addProductForAdmin(size),
-                          SizedBox(
-                            height: size.width * 0.02,
+                          Expanded(
+                            child: Center(
+                                child: Text(
+                              '신규 상품이 없습니다!',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 21),
+                            )),
                           ),
-                          Center(
-                              child: Text(
-                            '신규 상품이 없습니다.',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 22),
-                          )),
                         ],
                       ),
                     )
@@ -498,7 +496,9 @@ class _StoreMainPageState extends State<StoreMainPage>
               /*------------ NEW TAB ---------------*/
               Container(
                 child: Center(
-                  child: Text('이벤트 탭'),
+                  child: Text('이벤트가 없습니다!',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 21)),
                 ),
               ),
               /*------------ EVENT TAB ---------------*/
@@ -706,12 +706,14 @@ class _StoreMainPageState extends State<StoreMainPage>
                         height: size.height * 0.02,
                       ),
                       _getLengthOfCurrentCategory(_selectedCategory) == 0
-                          ? Center(
-                              child: Text(
-                              '상품이 없습니다.',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 22),
-                            ))
+                          ? Expanded(
+                              child: Center(
+                                  child: Text(
+                                '상품이 없습니다!',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 21),
+                              )),
+                            )
                           : Expanded(
                               child: Container(
                                 height: size.height,

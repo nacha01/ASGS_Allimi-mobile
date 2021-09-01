@@ -15,7 +15,8 @@ class AddingProductPage extends StatefulWidget {
 /// 어드민 전용 페이지
 //상품 추가 페이지
 //저장할 때 비밀번호로 어드민 DB에서 확인
-// 직접적으로 추가하는 목록
+//직접적으로 추가하는 목록
+
 /*
 1. 제품 이름
 2. 제품 카테고리
@@ -26,15 +27,15 @@ class AddingProductPage extends StatefulWidget {
 7. 재고
 8. 제품 설명
  */
-///
-/* later Additional functions*/
-//나중에 실사용될 때, 상품 등록할 때 어드민 계정으로 비밀번호로 재확인
 
-// 현재 글자수 보여주는 것
+/// * later Additional functions
+///나중에 실사용될 때, 상품 등록할 때 어드민 계정으로 비밀번호로 재확인 - resolved
 
-// 파일 이름 확장자 통일?
+/// 현재 글자수 보여주는 것 - resolved
 
-// 상품 등록 성공한 화면에서 다시 되돌아오기?
+/// 파일 이름 확장자 통일 - resolved
+
+/// 상품 등록 성공한 화면에서 다시 되돌아오기?
 
 class _AddingProductPageState extends State<AddingProductPage> {
   var _productNameController = TextEditingController();
@@ -72,7 +73,9 @@ class _AddingProductPageState extends State<AddingProductPage> {
       'http://nacha01.dothome.co.kr/sin/arlimi_productImage/';
 
   AsyncMemoizer<bool> _memoizer;
-  // index : {0 -> main, 1 -> sub1, 2 -> sub3}
+
+  /// 갤러리에서 이미지를 가져오는 작업
+  /// [index] = {0 : main, 1 : sub1, 2 : sub3}
   Future<void> _getImageFromGallery(int index) async {
     var image = await ImagePicker().getImage(source: ImageSource.gallery);
     setState(() {
@@ -90,7 +93,8 @@ class _AddingProductPageState extends State<AddingProductPage> {
     });
   }
 
-  // index : {0 -> main, 1 -> sub1, 2 -> sub3}
+  /// 카메로에서 찍은 이미지를 가져오는 작업
+  /// [index] = {0 -> main, 1 -> sub1, 2 -> sub3}
   Future<void> _getImageFromCamera(int index) async {
     var image = await ImagePicker().getImage(source: ImageSource.camera);
     setState(() {
@@ -108,22 +112,24 @@ class _AddingProductPageState extends State<AddingProductPage> {
     });
   }
 
+  /// parameter로 가져온 이미지와 이미지 이름을 토대로 서버에 저장하는 요청
+  /// @param : 선택한 이미지[img], 그 이미지의 이름[fileName]
+  /// @return : 정상적으로 저장했으면 true, 그렇지 않으면 false
+  /// @response : complete0
+  /// ※ Multipart 요청
   Future<bool> _sendImageToServer(PickedFile img, String fileName) async {
     var request = http.MultipartRequest('POST',
         Uri.parse('http://nacha01.dothome.co.kr/sin/arlimi_storeImage.php'));
     var picture = await http.MultipartFile.fromPath('imgFile', img.path,
         filename: fileName + '.jpg');
     request.files.add(picture);
-
     var response = await request.send();
 
     if (response.statusCode == 200) {
-      // 전송 성공
       var responseData = await response.stream.toBytes();
       var responseString = String.fromCharCodes(responseData);
-      print(responseString);
+
       if (responseString.contains('일일 트래픽을 모두 사용하였습니다.')) {
-        print('일일 트래픽 모두 사용');
         return false;
       }
       if (responseString != 'complete0') return false;
@@ -134,6 +140,10 @@ class _AddingProductPageState extends State<AddingProductPage> {
     }
   }
 
+  /// 상품 등록을 요청하는 작업
+  /// 이미지를 먼저 저장하고 그 이미지 URL을 포함해 요청 BODY에 상품 정보 입력
+  /// @return 정상적으로 DB에 저장이 되면 true, 그렇지 않으면 false
+  /// @response : "1"
   Future<bool> _postRequestForInsertProduct() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_insertProduct.php';
     http.Response response = await http.post(url, headers: <String, String>{
@@ -156,23 +166,24 @@ class _AddingProductPageState extends State<AddingProductPage> {
     });
 
     if (response.statusCode == 200) {
-      // 전송 성공
       if (response.body.contains('일일 트래픽을 모두 사용하였습니다.')) {
-        print('일일 트래픽 모두 사용');
         return false;
       }
-      print(response.body);
       var replace = response.body.replaceAll(
           '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
           '');
       if (replace.trim() != '1') return false;
       return true;
     } else {
-      print('실패');
       return false;
     }
   }
 
+  /// 최종적으로 상품을 등록하는 작업
+  /// 먼저 대표이미지, 추가 이미지를 서버에 저장 요청
+  /// 이를 바탕으로 최종으로 이미지 포함해서 정보와 같이 DB에 저장 요청
+  /// @return 모든 작업이 true를 리턴하면 true, 하나라도 false면 false
+  /// ※ AsyncMemoizer 를 사용하여 FutureBuilder 의 반복을 방지
   Future<bool> _doRegisterProduct() async {
     return this._memoizer.runOnce(() async {
       if (_useSub1) {
@@ -234,8 +245,46 @@ class _AddingProductPageState extends State<AddingProductPage> {
                       height: 10,
                     ),
                     Text(
-                      '*표시는 필수 입력 사항',
+                      '* 표시는 필수 입력 사항',
                       style: TextStyle(color: Colors.grey),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(14.0),
+                      child: Column(
+                        children: [
+                          Text(
+                              '※ 파일 이름은 상품에 대한 규칙으로 영어와 숫자를 적절히 조합하여 필수로 작성하세요.'
+                              '\n(서버에 저장될 이미지로써 "abcd123.jpg" 형태로 저장이 됨)'),
+                          Text(
+                            '[파일 이름만 보고도 어떤 상품인지 식별할 수 있도록!]',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.redAccent),
+                          ),
+                          SizedBox(
+                            height: size.height * 0.02,
+                          ),
+                          Text('※ Best 메뉴 여부와 New 메뉴 여부는 등록할 상품이 해당되면 체크하세요.'),
+                          SizedBox(
+                            height: size.height * 0.02,
+                          ),
+                          Text(
+                              '※ 대표 이미지는 카메라로 즉석에서 찍은 사진, 혹은 갤러리에서 가져와서 사용하면 됩니다.'),
+                          SizedBox(
+                            height: size.height * 0.02,
+                          ),
+                          Text(
+                              '※ 추가 이미지는 필수가 아니며, 필요시 추가할 때는 이미지와 파일이름을 반드시 적어주세요. '),
+                          SizedBox(
+                            height: size.height * 0.02,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Divider(
+                      thickness: 2,
+                      endIndent: 15,
+                      indent: 15,
                     ),
                     SizedBox(
                       height: 20,
@@ -250,10 +299,9 @@ class _AddingProductPageState extends State<AddingProductPage> {
                         ),
                         textFieldLayoutWidget(
                             width: size.width * 0.7,
-                            height: size.height * 0.09,
                             controller: _productNameController,
                             maxCharNum: 100,
-                            maxLine: 3)
+                            maxLine: null)
                       ],
                     ),
                     SizedBox(
@@ -277,10 +325,9 @@ class _AddingProductPageState extends State<AddingProductPage> {
                         ),
                         textFieldLayoutWidget(
                             width: size.width * 0.7,
-                            height: size.height * 0.15,
                             controller: _productExplainController,
                             maxCharNum: 3000,
-                            maxLine: 5)
+                            maxLine: 30)
                       ],
                     ),
                     SizedBox(
@@ -523,8 +570,8 @@ class _AddingProductPageState extends State<AddingProductPage> {
                             : Image.file(
                                 File(_mainImage.path),
                                 fit: BoxFit.fill,
-                          width: size.width * 0.9,
-                          height: size.height * 0.45,
+                                width: size.width * 0.92,
+                                height: size.height * 0.6,
                               ),
                         SizedBox(
                           height: 10,
@@ -635,8 +682,8 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                   : Image.file(
                                       File(_subImage1.path),
                                       fit: BoxFit.fill,
-                                width: size.width * 0.9,
-                                height: size.height * 0.45,
+                                      width: size.width * 0.92,
+                                      height: size.height * 0.46,
                                     ),
                               SizedBox(
                                 height: 10,
@@ -749,8 +796,8 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                   : Image.file(
                                       File(_subImage2.path),
                                       fit: BoxFit.fill,
-                                width: size.width * 0.9,
-                                height: size.height * 0.45,
+                                      width: size.width * 0.92,
+                                      height: size.height * 0.6,
                                     ),
                               SizedBox(
                                 height: 10,
@@ -811,16 +858,16 @@ class _AddingProductPageState extends State<AddingProductPage> {
                       },
                       child: Container(
                         decoration: BoxDecoration(
-                            color: Colors.cyan,
+                            color: Colors.grey[200],
                             borderRadius: BorderRadius.circular(10),
-                            border:
-                                Border.all(width: 2, color: Colors.black26)),
+                            border: Border.all(width: 2, color: Colors.black)),
                         width: size.width * 0.85,
                         height: size.height * 0.04,
                         alignment: Alignment.center,
                         child: Text(
                           '이미지 추가하기(최대 2개)',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, color: Colors.blue),
                         ),
                       ),
                     ),
@@ -1144,11 +1191,9 @@ class _AddingProductPageState extends State<AddingProductPage> {
               : FilteringTextInputFormatter.singleLineFormatter
         ],
         decoration: InputDecoration(border: InputBorder.none),
-        maxLines: maxLine,
+        maxLines: null,
+        maxLength: maxCharNum,
         controller: controller,
-        onChanged: (text) {
-          setState(() {});
-        },
       ),
       decoration:
           BoxDecoration(border: Border.all(width: 2, color: Color(0xFF9EE1E5))),
@@ -1175,8 +1220,8 @@ class _AddingProductPageState extends State<AddingProductPage> {
 
   Widget imageLoadLayout(Size size) {
     return Container(
-        width: size.width * 0.9,
-        height: size.height * 0.45,
+        width: size.width * 0.92,
+        height: size.height * 0.6,
         child: Text(
           '이미지를 불러와주세요',
           style: TextStyle(color: Colors.grey[400]),

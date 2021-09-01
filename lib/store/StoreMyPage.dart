@@ -45,6 +45,9 @@ class _StoreMyPageState extends State<StoreMyPage> {
                       width: size.width * 0.95,
                       child: Card(
                         child: ListTile(
+                          onTap: (){
+                            
+                          },
                           leading: Container(
                             width: size.width * 0.2,
                             height: size.height * 0.075,
@@ -74,21 +77,24 @@ class _StoreMyPageState extends State<StoreMyPage> {
                   style: TextStyle(color: Color(0xFF9EE1E5), fontSize: 17),
                 ),
               ),
-              Container(
-                margin: EdgeInsets.all(10),
-                padding: EdgeInsets.all(5),
-                child: Row(
-                  children: [
-                    Icon(Icons.shopping_bag,
-                        color: Colors.grey, size: size.width * 0.1),
-                    SizedBox(
-                      width: size.width * 0.03,
-                    ),
-                    Text(
-                      '최근 본 상품',
-                      style: TextStyle(fontSize: 19),
-                    )
-                  ],
+              FlatButton(
+                onPressed: () {},
+                child: Container(
+                  margin: EdgeInsets.all(10),
+                  padding: EdgeInsets.all(5),
+                  child: Row(
+                    children: [
+                      Icon(Icons.shopping_bag,
+                          color: Colors.grey, size: size.width * 0.1),
+                      SizedBox(
+                        width: size.width * 0.03,
+                      ),
+                      Text(
+                        '최근 본 상품',
+                        style: TextStyle(fontSize: 19),
+                      )
+                    ],
+                  ),
                 ),
               ),
               dividerForContents(),
@@ -104,18 +110,21 @@ class _StoreMyPageState extends State<StoreMyPage> {
                   ],
                 ),
               ),
-              Container(
-                margin: EdgeInsets.all(10),
-                padding: EdgeInsets.all(5),
-                child: Row(
-                  children: [
-                    Icon(Icons.chat,
-                        color: Colors.grey, size: size.width * 0.1),
-                    SizedBox(
-                      width: size.width * 0.03,
-                    ),
-                    Text('문의 내역', style: TextStyle(fontSize: 19))
-                  ],
+              FlatButton(
+                onPressed: () {},
+                child: Container(
+                  margin: EdgeInsets.all(10),
+                  padding: EdgeInsets.all(5),
+                  child: Row(
+                    children: [
+                      Icon(Icons.chat,
+                          color: Colors.grey, size: size.width * 0.1),
+                      SizedBox(
+                        width: size.width * 0.03,
+                      ),
+                      Text('문의 내역', style: TextStyle(fontSize: 19))
+                    ],
+                  ),
                 ),
               ),
               dividerForContents(),
@@ -131,32 +140,38 @@ class _StoreMyPageState extends State<StoreMyPage> {
                   ],
                 ),
               ),
-              Container(
-                margin: EdgeInsets.all(10),
-                padding: EdgeInsets.all(5),
-                child: Row(
-                  children: [
-                    Icon(Icons.settings,
-                        color: Colors.grey, size: size.width * 0.1),
-                    SizedBox(
-                      width: size.width * 0.03,
-                    ),
-                    Text('설정', style: TextStyle(fontSize: 19))
-                  ],
+              FlatButton(
+                onPressed: () {},
+                child: Container(
+                  margin: EdgeInsets.all(10),
+                  padding: EdgeInsets.all(5),
+                  child: Row(
+                    children: [
+                      Icon(Icons.settings,
+                          color: Colors.grey, size: size.width * 0.1),
+                      SizedBox(
+                        width: size.width * 0.03,
+                      ),
+                      Text('설정', style: TextStyle(fontSize: 19))
+                    ],
+                  ),
                 ),
               ),
-              Container(
-                margin: EdgeInsets.all(10),
-                padding: EdgeInsets.all(5),
-                child: Row(
-                  children: [
-                    Icon(Icons.headset_mic_outlined,
-                        color: Colors.grey, size: size.width * 0.1),
-                    SizedBox(
-                      width: size.width * 0.03,
-                    ),
-                    Text('문의하기', style: TextStyle(fontSize: 19))
-                  ],
+              FlatButton(
+                onPressed: () {},
+                child: Container(
+                  margin: EdgeInsets.all(10),
+                  padding: EdgeInsets.all(5),
+                  child: Row(
+                    children: [
+                      Icon(Icons.headset_mic_outlined,
+                          color: Colors.grey, size: size.width * 0.1),
+                      SizedBox(
+                        width: size.width * 0.03,
+                      ),
+                      Text('문의하기', style: TextStyle(fontSize: 19))
+                    ],
+                  ),
                 ),
               ),
               widget.user.isAdmin
@@ -210,11 +225,11 @@ class _StoreMyPageState extends State<StoreMyPage> {
                           child: Row(
                             children: [
                               Container(
-
-                                  child: Image.asset(
-                                      'assets/images/log_image.jpg'),
-                              width: size.width * 0.1,
-                              height: size.height * 0.04,),
+                                child:
+                                    Image.asset('assets/images/log_image.jpg'),
+                                width: size.width * 0.1,
+                                height: size.height * 0.04,
+                              ),
                               SizedBox(
                                 width: size.width * 0.03,
                               ),
