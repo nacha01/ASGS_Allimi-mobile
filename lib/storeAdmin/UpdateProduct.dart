@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:asgshighschool/data/product_data.dart';
 import 'package:flutter/material.dart';
@@ -233,6 +234,53 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
             Text(
               '*표시는 필수 입력 사항',
               style: TextStyle(color: Colors.grey),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(14.0),
+              child: Column(
+                children: [
+                  Text('※ 파일 이름은 상품에 대한 규칙으로 영어와 숫자를 적절히 조합하여 필수로 작성하세요.'
+                      '\n(서버에 저장될 이미지로써 "abcd123.jpg" 형태로 저장이 됨)'),
+                  Text(
+                    '[파일 이름만 보고도 어떤 상품인지 식별할 수 있도록!]',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.redAccent),
+                  ),
+                  SizedBox(
+                    height: size.height * 0.02,
+                  ),
+                  Text('※ Best 메뉴 여부와 New 메뉴 여부는 등록할 상품이 해당되면 체크하세요.'),
+                  SizedBox(
+                    height: size.height * 0.02,
+                  ),
+                  Text('※ 대표 이미지는 카메라로 즉석에서 찍은 사진, 혹은 갤러리에서 가져와서 사용하면 됩니다.'),
+                  SizedBox(
+                    height: size.height * 0.02,
+                  ),
+                  Text('※ 추가 이미지는 필수가 아니며, 필요시 추가할 때는 이미지와 파일이름을 반드시 적어주세요. '),
+                  SizedBox(
+                    height: size.height * 0.02,
+                  ),
+                  Text(
+                    '※ 주의!\n최종으로 수정할 때, 이미지를 수정하지 않아도, 같은 이미지라도 반드시 이미지를 불러와야 하며 새로운 파일 이름으로 작성하고 완료해야 합니다.',
+                    style: TextStyle(
+                        color: Colors.red, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(
+                    height: size.height * 0.02,
+                  ),
+                  Text('※ "할인율"을 수정할 경우 반드시 .(온점)을 붙여서 소수점 한 자리까지 작성바랍니다.'
+                      '\nex) 2.4 , 50.0 \n(형식을 맞추지 않을 시 치명적인 오류가 발생할 수 있습니다.)'),
+                  SizedBox(
+                    height: size.height * 0.02,
+                  ),
+                ],
+              ),
+            ),
+            Divider(
+              thickness: 2,
+              endIndent: 15,
+              indent: 15,
             ),
             SizedBox(
               height: 20,
@@ -589,6 +637,13 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
                             width: size.width * 0.9,
                             height: size.height * 0.45,
                             fit: BoxFit.fill,
+                            errorBuilder: (context, object, tract) {
+                              return Text(
+                                '이미지를 불러오는데 실패하였습니다!',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 16),
+                              );
+                            },
                           ),
                         ],
                       )
@@ -881,15 +936,16 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
               },
               child: Container(
                 decoration: BoxDecoration(
-                    color: Colors.cyan,
+                    color: Colors.grey[200],
                     borderRadius: BorderRadius.circular(10),
-                    border: Border.all(width: 2, color: Colors.black26)),
+                    border: Border.all(width: 2, color: Colors.black)),
                 width: size.width * 0.85,
                 height: size.height * 0.04,
                 alignment: Alignment.center,
                 child: Text(
                   '이미지 추가하기(최대 2개)',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.blue),
                 ),
               ),
             ),
@@ -1007,7 +1063,6 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
       alignment: Alignment.center,
       padding: EdgeInsets.all(5),
       margin: EdgeInsets.all(3),
-      height: height,
       width: width,
       child: TextField(
         readOnly: isReadOnly,
@@ -1019,7 +1074,8 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
               : FilteringTextInputFormatter.singleLineFormatter
         ],
         decoration: InputDecoration(border: InputBorder.none),
-        maxLines: maxLine,
+        maxLines: null,
+        maxLength: maxCharNum,
         controller: controller,
         onChanged: (text) {
           setState(() {});
@@ -1050,8 +1106,8 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
 
   Widget imageLoadLayout(Size size) {
     return Container(
-        width: size.width * 0.9,
-        height: size.height * 0.45,
+        width: size.width * 0.92,
+        height: size.height * 0.6,
         child: Text(
           '이미지를 불러와주세요',
           style: TextStyle(color: Colors.grey[400]),
