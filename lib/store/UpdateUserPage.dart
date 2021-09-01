@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:asgshighschool/data/user_data.dart';
+import 'package:asgshighschool/store/UpdatePasswordPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -371,6 +372,7 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
                                       border: Border.all(
                                           width: 1, color: Colors.black87)),
                                   child: TextField(
+                                    obscureText: true,
                                     controller: _pwController,
                                   ),
                                 ),
@@ -410,7 +412,10 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
                               ));
                     },
                     child: Text('수정하기')),
-                FlatButton(onPressed: () {}, child: Text('비밀번호 변경하기')),
+                FlatButton(onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context)
+                  => UpdatePasswordPage(user: widget.user,)));
+                }, child: Text('비밀번호 변경하기')),
               ],
             )
           ],
