@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:asgshighschool/data/user_data.dart';
 import 'package:asgshighschool/store/UpdatePasswordPage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -123,26 +125,61 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Text('dwdw'),
+            Container(
+              width: size.width * 0.9,
+              padding: EdgeInsets.all(10),
+              child: Text(
+                '본인의 정보에 대해 확인할 수 있는 페이지이며, 수정이 가능합니다.',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 19),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                '* 표시는 수정 불가능한 항목을 의미합니다.',
+                style: TextStyle(
+                    color: Colors.red),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                '※ 개인정보를 수정하고자 하면 입력이 완료되면 하단에 "수정 완료하기" 버튼을 반드시 누르세요. ',
+                style: TextStyle(
+                    color: Colors.redAccent, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            Divider(
+              thickness: 0.5,
+              indent: 5,
+              endIndent: 5,
+            ),
+            SizedBox(
+              height: size.height * 0.02,
+            ),
             Row(
               children: [
                 Container(
                     alignment: Alignment.center,
-                    width: size.width * 0.2,
-                    height: size.height * 0.05,
+                    width: size.width * 0.4,
+                    height: size.height * 0.1,
                     decoration: BoxDecoration(
                         color: Color(0xFF9EE1E5),
                         border: Border(
-                            left: BorderSide(color: Colors.black, width: 2),
-                            right: BorderSide(color: Colors.black, width: 2),
-                            top: BorderSide(color: Colors.black, width: 2),
-                            bottom: BorderSide(color: Colors.black, width: 1))),
-                    child: Text('아이디')),
+                            left: BorderSide(color: Colors.black, width: 1),
+                            right: BorderSide(color: Colors.black, width: 1),
+                            top: BorderSide(color: Colors.black, width: 1),
+                            bottom:
+                                BorderSide(color: Colors.black, width: 0.5))),
+                    child: Text('* 아이디')),
                 Container(
-                    width: size.width * 0.8,
-                    height: size.width * 0.1,
+                    alignment: Alignment.center,
+                    width: size.width * 0.6,
+                    height: size.height * 0.1,
                     child: TextField(
-                      style: TextStyle(color: Colors.grey),
+                      style: TextStyle(color: Colors.black54),
                       readOnly: true,
                       textAlign: TextAlign.center,
                       decoration: InputDecoration(border: InputBorder.none),
@@ -154,20 +191,24 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
               children: [
                 Container(
                     alignment: Alignment.center,
-                    width: size.width * 0.2,
-                    height: size.height * 0.05,
+                    width: size.width * 0.4,
+                    height: size.height * 0.1,
                     decoration: BoxDecoration(
                         color: Color(0xFF9EE1E5),
                         border: Border(
-                            left: BorderSide(color: Colors.black, width: 2),
-                            right: BorderSide(color: Colors.black, width: 2),
-                            top: BorderSide(color: Colors.black, width: 1),
-                            bottom: BorderSide(color: Colors.black, width: 1))),
-                    child: Text('이름')),
+                            left: BorderSide(color: Colors.black, width: 1),
+                            right: BorderSide(color: Colors.black, width: 1),
+                            top: BorderSide(color: Colors.black, width: 0.5),
+                            bottom:
+                                BorderSide(color: Colors.black, width: 0.5))),
+                    child: Text(
+                      '이름',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    )),
                 Container(
                     alignment: Alignment.center,
-                    width: size.width * 0.8,
-                    height: size.height * 0.05,
+                    width: size.width * 0.6,
+                    height: size.height * 0.1,
                     child: TextField(
                       textAlign: TextAlign.center,
                       decoration: InputDecoration(border: InputBorder.none),
@@ -179,20 +220,24 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
               children: [
                 Container(
                     alignment: Alignment.center,
-                    width: size.width * 0.2,
-                    height: size.height * 0.05,
+                    width: size.width * 0.4,
+                    height: size.height * 0.1,
                     decoration: BoxDecoration(
                         color: Color(0xFF9EE1E5),
                         border: Border(
-                            left: BorderSide(color: Colors.black, width: 2),
-                            right: BorderSide(color: Colors.black, width: 2),
-                            top: BorderSide(color: Colors.black, width: 1),
-                            bottom: BorderSide(color: Colors.black, width: 1))),
-                    child: Text('신분')),
+                            left: BorderSide(color: Colors.black, width: 1),
+                            right: BorderSide(color: Colors.black, width: 1),
+                            top: BorderSide(color: Colors.black, width: 0.5),
+                            bottom:
+                                BorderSide(color: Colors.black, width: 0.5))),
+                    child: Text('신분',
+                        style: TextStyle(fontWeight: FontWeight.bold))),
                 Container(
-                  width: size.width * 0.8,
-                  height: size.height * 0.05,
+                  alignment: Alignment.center,
+                  width: size.width * 0.6,
+                  height: size.height * 0.1,
                   child: DropdownButton(
+                    itemHeight: size.height * 0.1,
                     isExpanded: true,
                     iconSize: 50,
                     value: _selectedValue,
@@ -218,19 +263,22 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
               children: [
                 Container(
                     alignment: Alignment.center,
-                    width: size.width * 0.2,
-                    height: size.height * 0.05,
+                    width: size.width * 0.4,
+                    height: size.height * 0.1,
                     decoration: BoxDecoration(
                         color: Color(0xFF9EE1E5),
                         border: Border(
-                            left: BorderSide(color: Colors.black, width: 2),
-                            right: BorderSide(color: Colors.black, width: 2),
-                            top: BorderSide(color: Colors.black, width: 1),
-                            bottom: BorderSide(color: Colors.black, width: 1))),
-                    child: Text('학번')),
+                            left: BorderSide(color: Colors.black, width: 1),
+                            right: BorderSide(color: Colors.black, width: 1),
+                            top: BorderSide(color: Colors.black, width: 0.5),
+                            bottom:
+                                BorderSide(color: Colors.black, width: 0.5))),
+                    child: Text('학번',
+                        style: TextStyle(fontWeight: FontWeight.bold))),
                 Container(
-                    width: size.width * 0.8,
-                    height: size.width * 0.1,
+                    alignment: Alignment.center,
+                    width: size.width * 0.6,
+                    height: size.height * 0.1,
                     child: TextField(
                       readOnly: _selectedValue == '재학생' ? false : true,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -244,20 +292,22 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
               children: [
                 Container(
                     alignment: Alignment.center,
-                    width: size.width * 0.2,
-                    height: size.height * 0.05,
+                    width: size.width * 0.4,
+                    height: size.height * 0.1,
                     decoration: BoxDecoration(
                         color: Color(0xFF9EE1E5),
                         border: Border(
-                            left: BorderSide(color: Colors.black, width: 2),
-                            right: BorderSide(color: Colors.black, width: 2),
-                            top: BorderSide(color: Colors.black, width: 1),
-                            bottom: BorderSide(color: Colors.black, width: 1))),
-                    child: Text('닉네임')),
+                            left: BorderSide(color: Colors.black, width: 1),
+                            right: BorderSide(color: Colors.black, width: 1),
+                            top: BorderSide(color: Colors.black, width: 0.5),
+                            bottom:
+                                BorderSide(color: Colors.black, width: 0.5))),
+                    child: Text('닉네임',
+                        style: TextStyle(fontWeight: FontWeight.bold))),
                 Container(
                     alignment: Alignment.center,
-                    width: size.width * 0.8,
-                    height: size.width * 0.1,
+                    width: size.width * 0.6,
+                    height: size.height * 0.1,
                     child: TextField(
                       textAlign: TextAlign.center,
                       decoration: InputDecoration(border: InputBorder.none),
@@ -269,19 +319,22 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
               children: [
                 Container(
                     alignment: Alignment.center,
-                    width: size.width * 0.2,
-                    height: size.height * 0.05,
+                    width: size.width * 0.4,
+                    height: size.height * 0.1,
                     decoration: BoxDecoration(
                         color: Color(0xFF9EE1E5),
                         border: Border(
-                            left: BorderSide(color: Colors.black, width: 2),
-                            right: BorderSide(color: Colors.black, width: 2),
-                            top: BorderSide(color: Colors.black, width: 1),
-                            bottom: BorderSide(color: Colors.black, width: 1))),
-                    child: Text('전화번호')),
+                            left: BorderSide(color: Colors.black, width: 1),
+                            right: BorderSide(color: Colors.black, width: 1),
+                            top: BorderSide(color: Colors.black, width: 0.5),
+                            bottom:
+                                BorderSide(color: Colors.black, width: 0.5))),
+                    child: Text('전화번호(- 제외)',
+                        style: TextStyle(fontWeight: FontWeight.bold))),
                 Container(
-                    width: size.width * 0.8,
-                    height: size.width * 0.1,
+                    alignment: Alignment.center,
+                    width: size.width * 0.6,
+                    height: size.height * 0.1,
                     child: TextField(
                       textAlign: TextAlign.center,
                       decoration: InputDecoration(border: InputBorder.none),
@@ -293,45 +346,49 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
               children: [
                 Container(
                     alignment: Alignment.center,
-                    width: size.width * 0.2,
-                    height: size.height * 0.05,
+                    width: size.width * 0.4,
+                    height: size.height * 0.1,
                     decoration: BoxDecoration(
                         color: Color(0xFF9EE1E5),
                         border: Border(
-                            left: BorderSide(color: Colors.black, width: 2),
-                            right: BorderSide(color: Colors.black, width: 2),
-                            top: BorderSide(color: Colors.black, width: 1),
-                            bottom: BorderSide(color: Colors.black, width: 1))),
-                    child: Text('가입일')),
+                            left: BorderSide(color: Colors.black, width: 1),
+                            right: BorderSide(color: Colors.black, width: 1),
+                            top: BorderSide(color: Colors.black, width: 0.5),
+                            bottom:
+                                BorderSide(color: Colors.black, width: 0.5))),
+                    child: Text('* 가입일',
+                        style: TextStyle(fontWeight: FontWeight.bold))),
                 Container(
                     alignment: Alignment.center,
-                    width: size.width * 0.8,
-                    height: size.width * 0.1,
+                    width: size.width * 0.6,
+                    height: size.height * 0.1,
                     child: Text('${widget.user.rDate}',
-                        style: TextStyle(color: Colors.grey)))
+                        style: TextStyle(color: Colors.black54)))
               ],
             ),
             Row(
               children: [
                 Container(
                     alignment: Alignment.center,
-                    width: size.width * 0.2,
-                    height: size.height * 0.05,
+                    width: size.width * 0.4,
+                    height: size.height * 0.1,
                     decoration: BoxDecoration(
                         color: Color(0xFF9EE1E5),
                         border: Border(
-                            left: BorderSide(color: Colors.black, width: 2),
-                            right: BorderSide(color: Colors.black, width: 2),
-                            top: BorderSide(color: Colors.black, width: 1),
-                            bottom: BorderSide(color: Colors.black, width: 1))),
-                    child: Text('구매수')),
+                            left: BorderSide(color: Colors.black, width: 1),
+                            right: BorderSide(color: Colors.black, width: 1),
+                            top: BorderSide(color: Colors.black, width: 0.5),
+                            bottom:
+                                BorderSide(color: Colors.black, width: 0.5))),
+                    child: Text('* 구매수',
+                        style: TextStyle(fontWeight: FontWeight.bold))),
                 Container(
                     alignment: Alignment.center,
-                    width: size.width * 0.8,
-                    height: size.width * 0.1,
+                    width: size.width * 0.6,
+                    height: size.height * 0.1,
                     child: Text(
                       '${widget.user.buyCount}회',
-                      style: TextStyle(color: Colors.grey),
+                      style: TextStyle(color: Colors.black54),
                     ))
               ],
             ),
@@ -339,83 +396,154 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
               children: [
                 Container(
                     alignment: Alignment.center,
-                    width: size.width * 0.2,
-                    height: size.height * 0.05,
+                    width: size.width * 0.4,
+                    height: size.height * 0.1,
                     decoration: BoxDecoration(
                         color: Color(0xFF9EE1E5),
                         border: Border(
-                            left: BorderSide(color: Colors.black, width: 2),
-                            right: BorderSide(color: Colors.black, width: 2),
-                            top: BorderSide(color: Colors.black, width: 1),
-                            bottom: BorderSide(color: Colors.black, width: 2))),
-                    child: Text('포인트')),
+                            left: BorderSide(color: Colors.black, width: 1),
+                            right: BorderSide(color: Colors.black, width: 1),
+                            top: BorderSide(color: Colors.black, width: 0.5),
+                            bottom:
+                                BorderSide(color: Colors.black, width: 0.5))),
+                    child: Text('* 포인트',
+                        style: TextStyle(fontWeight: FontWeight.bold))),
                 Container(
                     alignment: Alignment.center,
-                    width: size.width * 0.8,
-                    height: size.width * 0.1,
+                    width: size.width * 0.6,
+                    height: size.height * 0.1,
                     child: Text('${widget.user.point}P',
-                        style: TextStyle(color: Colors.grey)))
+                        style: TextStyle(color: Colors.black54)))
               ],
             ),
+            SizedBox(
+              height: size.height * 0.02,
+            ),
+            SizedBox(
+              height: size.height * 0.04,
+            ),
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                FlatButton(
-                    onPressed: () async {
-                      showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                                title: Text('비밀번호 입력'),
-                                content: Container(
-                                  decoration: BoxDecoration(
-                                      color: Colors.grey,
-                                      border: Border.all(
-                                          width: 1, color: Colors.black87)),
-                                  child: TextField(
-                                    obscureText: true,
-                                    controller: _pwController,
+                Container(
+                  width: size.width * 0.35,
+                  height: size.height * 0.07,
+                  decoration: BoxDecoration(
+                      border: Border.all(width: 0.5, color: Colors.black),
+                      borderRadius: BorderRadius.circular(6),
+                      color: Colors.white24),
+                  child: FlatButton(
+                      onPressed: () async {
+                        showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                                  title: Text('비밀번호 입력'),
+                                  content: Container(
+                                    decoration: BoxDecoration(
+                                        color: Colors.black54,
+                                        border: Border.all(
+                                            width: 1, color: Colors.black87)),
+                                    child: TextField(
+                                      obscureText: true,
+                                      controller: _pwController,
+                                    ),
                                   ),
-                                ),
-                                actions: [
-                                  FlatButton(
-                                      onPressed: () => Navigator.pop(context),
-                                      child: Text('취소')),
-                                  FlatButton(
-                                      onPressed: () async {
-                                        var res = await _certifyMyselfRequest();
-                                        if (res) {
+                                  actions: [
+                                    FlatButton(
+                                        onPressed: () => Navigator.pop(context),
+                                        child: Text('취소')),
+                                    FlatButton(
+                                        onPressed: () async {
                                           var res =
-                                              await _updateUserInfoRequest();
+                                              await _certifyMyselfRequest();
                                           if (res) {
-                                            Fluttertoast.showToast(
-                                                msg: "개인정보 수정이 완료되었습니다.",
-                                                gravity: ToastGravity.BOTTOM,
-                                                toastLength:
-                                                    Toast.LENGTH_SHORT);
+                                            var res =
+                                                await _updateUserInfoRequest();
+                                            if (res) {
+                                              Fluttertoast.showToast(
+                                                  msg: "개인정보 수정이 완료되었습니다.",
+                                                  gravity: ToastGravity.BOTTOM,
+                                                  toastLength:
+                                                      Toast.LENGTH_SHORT);
+                                            } else {
+                                              Fluttertoast.showToast(
+                                                  msg: "개인정보 수정에 실패하였습니다!",
+                                                  gravity: ToastGravity.BOTTOM,
+                                                  toastLength:
+                                                      Toast.LENGTH_SHORT);
+                                            }
+                                            Navigator.pop(context);
                                           } else {
                                             Fluttertoast.showToast(
-                                                msg: "개인정보 수정에 실패하였습니다!",
+                                                msg: "비밀번호가 올바르지 않습니다!",
                                                 gravity: ToastGravity.BOTTOM,
                                                 toastLength:
                                                     Toast.LENGTH_SHORT);
                                           }
-                                          Navigator.pop(context);
-                                        } else {
-                                          Fluttertoast.showToast(
-                                              msg: "비밀번호가 올바르지 않습니다!",
-                                              gravity: ToastGravity.BOTTOM,
-                                              toastLength: Toast.LENGTH_SHORT);
-                                        }
-                                      },
-                                      child: Text('완료'))
-                                ],
-                              ));
-                    },
-                    child: Text('수정하기')),
-                FlatButton(onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context)
-                  => UpdatePasswordPage(user: widget.user,)));
-                }, child: Text('비밀번호 변경하기')),
+                                        },
+                                        child: Text('완료'))
+                                  ],
+                                ));
+                      },
+                      child: Text('수정 완료하기')),
+                ),
+                Container(
+                  width: size.width * 0.52,
+                  height: size.height * 0.07,
+                  decoration: BoxDecoration(
+                      border: Border.all(width: 0.5, color: Colors.black),
+                      borderRadius: BorderRadius.circular(6),
+                      color: Colors.white24),
+                  child: FlatButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => UpdatePasswordPage(
+                                      user: widget.user,
+                                    )));
+                      },
+                      child: Text('비밀번호 변경하러 가기')),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: size.height * 0.04,
+            ),
+            Divider(
+              thickness: 0.5,
+            ),
+            SizedBox(
+              height: size.height * 0.01,
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: Text(
+                      '1. 아이디의 경우 본인을 식별하는 데이터이기 때문에 변경할 수 없습니다.\n (변경을 원하시면 변경 문의를 하길 바랍니다.)',
+                      style: TextStyle(color: Colors.grey, fontSize: 11)),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: Text('2. 구매수의 경우 본인이 지금까지 구매를 한 총 횟수를 의미합니다.',
+                      style: TextStyle(color: Colors.grey, fontSize: 11)),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: Text(
+                    '3. 학번의 경우 재학생이 아닌 이상 작성할 수 없으며, 표시되지 않습니다. ',
+                    style: TextStyle(color: Colors.grey, fontSize: 11),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: Text(
+                    '4. 수정한 값이 본인을 인증할 수 있는 올바른 값이 아니라면 불이익을 얻을 수 있습니다.',
+                    style: TextStyle(color: Colors.grey, fontSize: 11),
+                  ),
+                ),
               ],
             )
           ],
