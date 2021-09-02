@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:ui';
 
 import 'package:asgshighschool/data/exist_cart.dart';
+import 'package:asgshighschool/data/renewUser_data.dart';
 import 'package:asgshighschool/data/user_data.dart';
 import 'package:asgshighschool/store/AnnouncePage.dart';
 import 'package:asgshighschool/store/CartPage.dart';
@@ -62,9 +63,11 @@ class _StoreMainPageState extends State<StoreMainPage>
 
   int _selectedCategory = 0;
 
+  User _tmpUser;
   @override
   void initState() {
     super.initState();
+    _tmpUser = widget.user;
     _tabController = TabController(length: 4, vsync: this);
     _scrollViewController = ScrollController();
     _productList = widget.product;
@@ -312,6 +315,7 @@ class _StoreMainPageState extends State<StoreMainPage>
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
     var data = Provider.of<ExistCart>(context);
+    var providedUser = Provider.of<RenewUserData>(context);
     return Scaffold(
       body: SafeArea(child: getWidgetAccordingIndex(_currentNav, size)),
       bottomNavigationBar: BottomNavigationBar(

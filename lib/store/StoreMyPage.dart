@@ -1,7 +1,9 @@
+import 'package:asgshighschool/data/renewUser_data.dart';
 import 'package:asgshighschool/data/user_data.dart';
 import 'package:asgshighschool/store/UpdateUserPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class StoreMyPage extends StatefulWidget {
   StoreMyPage({this.user});
@@ -16,10 +18,18 @@ class StoreMyPage extends StatefulWidget {
 // 전화번호 변경 기능?
 
 class _StoreMyPageState extends State<StoreMyPage> {
+  // User data.user;
   final statusReverseList = ['재학생', '학부모', '교사', '졸업생', '기타'];
+  @override
+  void initState() {
+    super.initState();
+    // data.user = widget.user;
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final data = Provider.of<RenewUserData>(context);
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -46,12 +56,17 @@ class _StoreMyPageState extends State<StoreMyPage> {
                       width: size.width * 0.95,
                       child: Card(
                         child: ListTile(
-                          onTap: (){
-
-                          },
-                          onLongPress: (){
-                            Navigator.push(context, MaterialPageRoute(builder: (context)
-                            => UpdateUserPage(user: widget.user,)));
+                          onTap: () {},
+                          onLongPress: () async {
+                            final result = await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => UpdateUserPage(
+                                          user: data.user,
+                                        )));
+                            // setState(() {
+                            //   data.user = result as User;
+                            // });
                           },
                           leading: Container(
                             width: size.width * 0.2,
@@ -62,11 +77,11 @@ class _StoreMyPageState extends State<StoreMyPage> {
                             ),
                           ),
                           title: Text(
-                              statusReverseList[widget.user.identity - 1] +
+                              statusReverseList[data.user.identity - 1] +
                                   ' ' +
-                                  (widget.user.isAdmin ? '[관리자] ' : '')),
+                                  (data.user.isAdmin ? '[관리자] ' : '')),
                           subtitle: Text(
-                              '${widget.user.nickName} ${widget.user.studentId == null ? '' : widget.user.studentId} [${widget.user.name}]'),
+                              '${data.user.nickName} ${data.user.studentId == null ? '' : data.user.studentId} [${data.user.name}]'),
                         ),
                       ),
                     )
@@ -179,7 +194,7 @@ class _StoreMyPageState extends State<StoreMyPage> {
                   ),
                 ),
               ),
-              widget.user.isAdmin
+              data.user.isAdmin
                   ? Column(
                       children: [
                         dividerForContents(),

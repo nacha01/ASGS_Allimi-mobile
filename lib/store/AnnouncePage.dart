@@ -2,12 +2,15 @@ import 'dart:convert';
 import 'dart:ui';
 
 import 'package:asgshighschool/data/announce_data.dart';
+import 'package:asgshighschool/data/renewUser_data.dart';
 import 'package:asgshighschool/data/user_data.dart';
 import 'package:asgshighschool/store/DetailAnnouncePage.dart';
 import 'package:asgshighschool/storeAdmin/AddAnnouncePage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class AnnouncePage extends StatefulWidget {
   AnnouncePage({this.user});
@@ -77,6 +80,7 @@ class _AnnouncePageState extends State<AnnouncePage> {
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
+    var providedUser = Provider.of<RenewUserData>(context);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFF9EE1E5),
@@ -119,7 +123,7 @@ class _AnnouncePageState extends State<AnnouncePage> {
               SizedBox(
                 height: size.height * 0.01,
               ),
-              widget.user.isAdmin
+              providedUser.user.isAdmin
                   ? Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
@@ -137,7 +141,7 @@ class _AnnouncePageState extends State<AnnouncePage> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => AddAnnouncePage(
-                                              user: widget.user,
+                                              user: providedUser.user,
                                             ))),
                                 child: Row(
                                   mainAxisAlignment:
@@ -263,10 +267,13 @@ class _AnnouncePageState extends State<AnnouncePage> {
                     thickness: 1,
                     color: Colors.grey,
                   ),
-                  Container(
-                    child: Text(
-                      '작성일 : $date',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                  Expanded(
+                    child: Container(
+                      child: Text(
+                        '$date',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13 ),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
                   ),
                 ],

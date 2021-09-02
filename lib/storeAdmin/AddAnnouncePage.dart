@@ -1,11 +1,13 @@
 import 'dart:convert';
 
 import 'package:asgshighschool/data/announce_data.dart';
+import 'package:asgshighschool/data/renewUser_data.dart';
 import 'package:asgshighschool/data/user_data.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 /// 공지사항 추가 및 수정 페이지
 /// [isUpdate] ? modify : add
@@ -29,10 +31,10 @@ class _AddAnnouncePageState extends State<AddAnnouncePage> {
   /// 공지사항 등록을 서버에 요청하는 작업
   /// @response : 정상적인 성공 시, 문자열 1 응답
   /// @return : 정상적인 등록시 true, 그렇지 않으면 false
-  Future<bool> _registerAnnounceRequest() async {
+  Future<bool> _registerAnnounceRequest(RenewUserData providedUser) async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_addAnnounce.php';
     final response = await http.post(url, body: <String, String>{
-      'writer': _getWriterToString(_writer),
+      'writer': _getWriterToString(_writer, providedUser),
       'date': DateTime.now().toString().split('.')[0],
       'title': _titleController.text,
       'content': _contentController.text
@@ -54,11 +56,11 @@ class _AddAnnouncePageState extends State<AddAnnouncePage> {
   /// 공지사항을 서버에 수정을 요청하는 작업
   /// @response : none
   /// @return : 정상적인 업데이트 시 true, 그렇지 않으면 false
-  Future<bool> _updateAnnounceRequest() async {
+  Future<bool> _updateAnnounceRequest(RenewUserData providedUser) async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_updateAnnounce.php';
     final response = await http.post(url, body: <String, String>{
       'anID': widget.announce.announceID.toString(),
-      'writer': _getWriterToString(_writer),
+      'writer': _getWriterToString(_writer, providedUser),
       'date': DateTime.now().toString().split('.')[0],
       'title': _titleController.text,
       'content': _contentController.text
@@ -95,13 +97,13 @@ class _AddAnnouncePageState extends State<AddAnnouncePage> {
   /// 공지사항을 추가, 수정할 때, ENUM 값에 의해 mapping 되는 작성자를 리턴
   /// @param : 작성자 ENUM 값
   /// @return : mapping 된 작성자 문자열
-  String _getWriterToString(Writer writer) {
+  String _getWriterToString(Writer writer, RenewUserData providedUser) {
     if (writer == Writer.ADMIN) {
       return '관리자';
     } else if (writer == Writer.NAME) {
-      return widget.user.name;
+      return providedUser.user.name;
     } else if (writer == Writer.NICKNAME) {
-      return widget.user.nickName;
+      return providedUser.user.nickName;
     }
     return 'ERROR';
   }
@@ -139,6 +141,7 @@ class _AddAnnouncePageState extends State<AddAnnouncePage> {
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
+    final providedUser = Provider.of<RenewUserData>(context);
     return WillPopScope(
       // WillPopScope 위젯으로 뒤로가기 버튼 event 제어해서 데이터 전달
       onWillPop: () async {
@@ -309,14 +312,16 @@ class _AddAnnouncePageState extends State<AddAnnouncePage> {
                           ),
                           onPressed: () async {
                             if (widget.isUpdate) {
-                              var res = await _updateAnnounceRequest();
+                              var res =
+                                  await _updateAnnounceRequest(providedUser);
                               if (res) {
                                 showToastMessage('공지사항 수정에 성공하였습니다.');
                               } else {
                                 showToastMessage('공지사항 수정에 실패하였습니다.');
                               }
                             } else {
-                              var res = await _registerAnnounceRequest();
+                              var res =
+                                  await _registerAnnounceRequest(providedUser);
                               if (res) {
                                 showToastMessage('공지사항 등록에 성공하였습니다.');
                               } else {

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:asgshighschool/data/exist_cart.dart';
+import 'package:asgshighschool/data/renewUser_data.dart';
 import 'package:provider/provider.dart';
 
 import '../store/StoreSplashPage.dart';
@@ -126,6 +127,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
     var data = Provider.of<ExistCart>(context);
+    var providedUser = Provider.of<RenewUserData>(context);
     Widget homeTab = SingleChildScrollView(
       child: Column(
         children: <Widget>[
@@ -462,6 +464,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         tabController.index = 0;
                         var res = await _checkExistCart();
                         data.setExistCart(res);
+                        providedUser.setNewUser(widget.user);
                         Navigator.push(
                             context,
                             MaterialPageRoute(
