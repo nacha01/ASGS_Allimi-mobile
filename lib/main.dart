@@ -9,24 +9,19 @@ import 'main/SplashPage.dart';
 
 void main() {
   runZoned(() {
-    runApp(MultiProvider(
-      providers : [
-        ChangeNotifierProvider(
-        create: (_) => ExistCart()),
-        ChangeNotifierProvider(create: (_) => RenewUserData(null))
-      ],
+    runApp(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => ExistCart()),
+          ChangeNotifierProvider(create: (_) => RenewUserData(null))
+        ],
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
-          // page or widget
-          //     domain/pageName <= route
-          //     HTML  <= widget
-          // home: PushMessagingExample(), // single page
-          // multi page
           home: SplashPage(),
         ),
       ),
     );
   }, onError: (e) {
-    print('Error occurred : ${e.toString()}');
+    print('Error occurred [runZoned] : ${e.toString()}');
   });
 }

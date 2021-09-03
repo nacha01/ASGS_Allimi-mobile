@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:asgshighschool/data/exist_cart.dart';
 import 'package:asgshighschool/data/product_data.dart';
 import 'package:asgshighschool/data/user_data.dart';
+import 'package:asgshighschool/store/OrderPage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -234,34 +235,38 @@ class _CartPageState extends State<CartPage> {
                       },
                       itemCount: _cartProductList.length),
                 ),
-                Container(
-                  height: size.height * 0.05,
-                  margin: EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(9),
-                      color: Color(0xFF9EE1E5)),
-                  width: size.width,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        height: size.height * 0.05 * 0.8,
-                        child: CircleAvatar(
-                          child: Text(
-                            '${_cartProductList.length}',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                FlatButton(
+                  onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context)
+                  => OrderPage())),
+                  child: Container(
+                    height: size.height * 0.05,
+                    margin: EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(9),
+                        color: Color(0xFF9EE1E5)),
+                    width: size.width,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          height: size.height * 0.05 * 0.8,
+                          child: CircleAvatar(
+                            child: Text(
+                              '${_cartProductList.length}',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            backgroundColor: Colors.white,
                           ),
-                          backgroundColor: Colors.white,
                         ),
-                      ),
-                      SizedBox(
-                        width: size.width * 0.05,
-                      ),
-                      Text(
-                        '${_formatPrice(_totalPrice())}원  결제하기',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      )
-                    ],
+                        SizedBox(
+                          width: size.width * 0.05,
+                        ),
+                        Text(
+                          '${_formatPrice(_totalPrice())}원  결제하기',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        )
+                      ],
+                    ),
                   ),
                 )
               ],
