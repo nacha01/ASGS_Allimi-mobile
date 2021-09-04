@@ -1,13 +1,13 @@
-import 'dart:convert';
 import 'dart:ui';
 
 import 'package:asgshighschool/data/exist_cart.dart';
 import 'package:asgshighschool/data/product_data.dart';
 import 'package:asgshighschool/data/user_data.dart';
-import 'package:asgshighschool/store/StoreMainPage.dart';
+import 'package:asgshighschool/store/OrderPage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
@@ -29,6 +29,8 @@ class _DetailProductPageState extends State<DetailProductPage> {
     4: '핸드메이드'
   };
   bool _isDiscountZero;
+  int _count = 1;
+
   String _formatPrice(int price) {
     String p = price.toString();
     String newFormat = '';
@@ -56,11 +58,11 @@ class _DetailProductPageState extends State<DetailProductPage> {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_addCart.php';
     final response = await http.post(url, body: <String, String>{
       'uid': widget.user.uid,
-      'pid': widget.product.prodID.toString()
+      'pid': widget.product.prodID.toString(),
+      'quantity': _count.toString()
     });
 
     if (response.statusCode == 200) {
-      // print(response.body);
       var replace = response.body
           .replaceAll(
               '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
@@ -69,30 +71,6 @@ class _DetailProductPageState extends State<DetailProductPage> {
       print(replace);
       if (replace != '1' && replace != 'Already Exists1') return false;
       return true;
-    } else {
-      return false;
-    }
-  }
-
-  Future<bool> _checkExistCart() async {
-    String uri = 'http://nacha01.dothome.co.kr/sin/arlimi_checkCart.php';
-    final response = await http.get(uri + '?uid=${widget.user.uid}');
-
-    if (response.statusCode == 200) {
-      print(response.body);
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
-      if (int.parse(result) >= 1) {
-        // Provider.of<ExistCart>(this.context).setExistCart(true);
-        return true;
-      } else {
-        // Provider.of<ExistCart>(this.context).setExistCart(false);
-        return false;
-      }
     } else {
       return false;
     }
@@ -297,6 +275,55 @@ class _DetailProductPageState extends State<DetailProductPage> {
                   SizedBox(
                     height: size.height * 0.05,
                   ),
+                  Container(
+                    decoration: BoxDecoration(
+                        border: Border.all(width: 1, color: Colors.black),
+                        borderRadius: BorderRadius.circular(12)),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: size.width * 0.15,
+                          height: size.height * 0.06,
+                          child: IconButton(
+                            onPressed: () {
+                              if (_count > 1) {
+                                setState(() {
+                                  --_count;
+                                });
+                              }
+                            },
+                            icon: Icon(Icons.remove),
+                          ),
+                        ),
+                        Container(
+                          width: size.width * 0.16,
+                          height: size.height * 0.06,
+                          alignment: Alignment.center,
+                          child: Text(
+                            '$_count',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        Container(
+                          width: size.width * 0.15,
+                          height: size.height * 0.06,
+                          child: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                ++_count;
+                              });
+                            },
+                            icon: Icon(Icons.add),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: size.height * 0.03,
+                  ),
                   Divider(
                     thickness: 1,
                     endIndent: 15,
@@ -346,7 +373,6 @@ class _DetailProductPageState extends State<DetailProductPage> {
               children: [
                 GestureDetector(
                   onTap: () async {
-                    print('장바구니 이동');
                     var result = await _addCartProductRequest();
                     print(result);
                     if (result) {
@@ -366,13 +392,13 @@ class _DetailProductPageState extends State<DetailProductPage> {
                     padding: EdgeInsets.all(10),
                     color: Color(0xFF9EE1E5),
                     alignment: Alignment.center,
-                    width: size.width * 0.5,
+                    width: size.width * 0.45,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         Icon(
                           Icons.shopping_cart,
-                          size: 35,
+                          size: 33,
                         ),
                         Text('장바구니 담기',
                             style: TextStyle(fontWeight: FontWeight.bold))
@@ -382,20 +408,28 @@ class _DetailProductPageState extends State<DetailProductPage> {
                 ),
                 GestureDetector(
                   onTap: () {
-                    print('결제 이동');
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => OrderPage(
+                                  user: widget.user,
+                                  direct: widget.product,
+                                  productCount: _count,
+                                  cart: null,
+                                )));
                   },
                   child: Container(
                     padding: EdgeInsets.all(10),
                     color: Colors.cyan[700],
                     alignment: Alignment.center,
-                    width: size.width * 0.5,
+                    width: size.width * 0.55,
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Icon(Icons.payment_rounded,
-                            color: Colors.grey[300], size: 35),
+                            color: Colors.grey[300], size: 33),
                         Text(
-                          '결제하기',
+                          '${_formatPrice(((widget.product.price * (1 - (widget.product.discount / 100.0)) * _count)).round())}원 결제하기',
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Colors.grey[300]),

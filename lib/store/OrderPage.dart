@@ -142,7 +142,7 @@ class _OrderPageState extends State<OrderPage> {
       sum += ((widget.direct.price *
                   (widget.direct.discount.toString() == '0.0'
                       ? 0
-                      : widget.direct.discount)) *
+                      : widget.direct.discount / 100)) *
               widget.productCount)
           .round();
     }

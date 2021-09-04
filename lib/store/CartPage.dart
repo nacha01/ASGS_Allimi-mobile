@@ -244,7 +244,7 @@ class _CartPageState extends State<CartPage> {
                                   cart: _cartProductList,
                                   user: widget.user,
                                 )));
-                    if(res){
+                    if (res) {
                       setState(() {
                         _getCartForUserRequest();
                       });
