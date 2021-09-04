@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:asgshighschool/data/exist_cart.dart';
 import 'package:asgshighschool/data/product_data.dart';
 import 'package:asgshighschool/data/user_data.dart';
+import 'package:asgshighschool/store/PaymentCompletePage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -410,6 +411,11 @@ class _OrderPageState extends State<OrderPage> {
                 if (res) {
                   if (_isCart) {
                     data.setExistCart(false);
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => PaymentCompletePage(
+                                result: {'orderID': _generatedOID})));
                   }
                 }
                 print('요청함');
