@@ -389,7 +389,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                         ),
                         textFieldLayoutWidget(
                             width: size.width * 0.7,
-                            height: size.height * 0.07,
+                            // height: size.height * 0.07,
                             controller: _productPriceController,
                             maxCharNum: 30,
                             validation: true,
@@ -416,7 +416,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                         ),
                         textFieldLayoutWidget(
                             width: size.width * 0.7,
-                            height: size.height * 0.07,
+                            // height: size.height * 0.07,
                             controller: _productCountController,
                             maxCharNum: 10,
                             formatType: true)

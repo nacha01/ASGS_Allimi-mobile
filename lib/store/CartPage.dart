@@ -236,8 +236,20 @@ class _CartPageState extends State<CartPage> {
                       itemCount: _cartProductList.length),
                 ),
                 FlatButton(
-                  onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context)
-                  => OrderPage())),
+                  onPressed: () async {
+                    final res = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => OrderPage(
+                                  cart: _cartProductList,
+                                  user: widget.user,
+                                )));
+                    if(res){
+                      setState(() {
+                        _getCartForUserRequest();
+                      });
+                    }
+                  },
                   child: Container(
                     height: size.height * 0.05,
                     margin: EdgeInsets.all(12),

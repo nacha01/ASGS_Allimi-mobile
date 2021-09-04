@@ -117,6 +117,23 @@ class _StoreMyPageState extends State<StoreMyPage> {
                   ),
                 ),
               ),
+              FlatButton(
+                onPressed: () {},
+                child: Container(
+                  margin: EdgeInsets.all(10),
+                  padding: EdgeInsets.all(5),
+                  child: Row(
+                    children: [
+                      Icon(Icons.delivery_dining,
+                          color: Colors.grey, size: size.width * 0.1),
+                      SizedBox(
+                        width: size.width * 0.03,
+                      ),
+                      Text('주문 현황', style: TextStyle(fontSize: 19))
+                    ],
+                  ),
+                ),
+              ),
               dividerForContents(),
               Container(
                 margin: EdgeInsets.all(10),
