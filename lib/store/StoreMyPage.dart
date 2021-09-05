@@ -1,5 +1,6 @@
 import 'package:asgshighschool/data/renewUser_data.dart';
 import 'package:asgshighschool/data/user_data.dart';
+import 'package:asgshighschool/store/OrderStatePage.dart';
 import 'package:asgshighschool/store/UpdateUserPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -118,7 +119,14 @@ class _StoreMyPageState extends State<StoreMyPage> {
                 ),
               ),
               FlatButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => OrderStatePage(
+                                user: widget.user,
+                              )));
+                },
                 child: Container(
                   margin: EdgeInsets.all(10),
                   padding: EdgeInsets.all(5),
