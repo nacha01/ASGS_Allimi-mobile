@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:ui';
 
 import 'package:asgshighschool/data/user_data.dart';
+import 'package:asgshighschool/store/DetailOrderStatePage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -159,6 +160,17 @@ class _OrderStatePageState extends State<OrderStatePage> {
       ),
       body: Column(
         children: [
+          Container(
+            width: size.width,
+            height: size.height * 0.2,
+            child: Column(
+              children: [],
+            ),
+          ),
+          Divider(
+            thickness: 2,
+            color: Color(0xFF9EE1E5),
+          ),
           Expanded(
               child: ListView.builder(
             itemBuilder: (context, index) {
@@ -175,7 +187,13 @@ class _OrderStatePageState extends State<OrderStatePage> {
     return GestureDetector(
       onTap: () {
         // 상세 주문 현황 페이지로 이동
-        print('클릭');
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => DetailOrderStatePage(
+                      order: orderJson,
+                      user: widget.user,
+                    )));
       },
       child: Container(
         padding: EdgeInsets.all(size.width * 0.02),
@@ -210,7 +228,10 @@ class _OrderStatePageState extends State<OrderStatePage> {
                   '[${_categoryReverseMap[int.parse(orderJson['detail'][0]['pInfo']['category'])]}] ',
                   style: TextStyle(color: Colors.grey),
                 ),
-                Text(' ${_extractDetailProductText(orderJson['detail'])} '),
+                Text(
+                  ' ${_extractDetailProductText(orderJson['detail'])} ',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
               ],
             ),
             Row(
