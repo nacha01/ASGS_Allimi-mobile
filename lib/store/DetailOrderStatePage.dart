@@ -89,6 +89,32 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
     return newStr;
   }
 
+  int _getOriginTotalPrice() {
+    int sum = 0;
+    for (int i = 0; i < widget.order['detail'].length; ++i) {
+      sum += int.parse(widget.order['detail'][i]['pInfo']['price']) *
+          int.parse(widget.order['detail'][i]['quantity']);
+    }
+    return sum;
+  }
+
+  int _getTotalDiscount() {
+    int sum = 0;
+    for (int i = 0; i < widget.order['detail'].length; ++i) {
+      sum += ((int.parse(widget.order['detail'][i]['pInfo']['price']) *
+                  (double.parse(widget.order['detail'][i]['pInfo']['discount'])
+                              .toString() ==
+                          '0.0'
+                      ? 0
+                      : double.parse(
+                              widget.order['detail'][i]['pInfo']['discount']) /
+                          100)) *
+              int.parse(widget.order['detail'][i]['quantity']))
+          .round();
+    }
+    return sum;
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -114,132 +140,197 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Divider(
-              thickness: 10,
-            ),
-            SizedBox(
-              height: size.height * 0.01,
-            ),
-            Text(
-              '주문 번호  ${widget.order['oID']}',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            SizedBox(
-              height: size.height * 0.01,
-            ),
-            Text('주문일자  ${_formatDate(widget.order['oDate'])}',
-                style: TextStyle(color: Colors.grey, fontSize: 13)),
-            SizedBox(
-              height: size.height * 0.01,
-            ),
-            Row(
-              children: [
-                Text(
-                  '주문 상태  ',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  '${_getTextAccordingToOrderState(int.parse(widget.order['orderState']))}',
-                  style: TextStyle(
-                      color: _getColorAccordingToOrderState(
-                          int.parse(widget.order['orderState']))),
-                )
-              ],
-            ),
-            SizedBox(
-              height: size.height * 0.01,
-            ),
-            Divider(
-              thickness: 0.5,
-            ),
-            Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Text(
-                      '미결제 및 미수령',
-                      style: TextStyle(color: Colors.red, fontSize: 9),
-                    ),
-                    Text(': 결제완료된 상태가 아니며 상품을 수령하지 않은 상태입니다.',
-                        style: TextStyle(color: Colors.grey, fontSize: 9))
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Text(
-                      '결제완료 및 미수령',
-                      style: TextStyle(color: Colors.orangeAccent, fontSize: 9),
-                    ),
-                    Text(': 결제가 완료된 상태이며 아직 상품을 수령하지 않은 상태입니다.',
-                        style: TextStyle(color: Colors.grey, fontSize: 9))
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Text(
-                      '결제완료 및 수령완료',
-                      style: TextStyle(color: Colors.green, fontSize: 9),
-                    ),
-                    Text(': 결제가 완료된 상태이며  상품을 수령한 상태입니다.',
-                        style: TextStyle(color: Colors.grey, fontSize: 9))
-                  ],
-                )
-              ],
-            ),
-            Divider(
-              thickness: 0.5,
-            ),
-            SizedBox(
-              height: size.height * 0.01,
-            ),
-            Row(
-              children: [
-                Text(
-                  '수령 방식  ',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  '${int.parse(widget.order['receiveMethod']) == 0 ? '직접 수령' : '배달'}',
-                  style: TextStyle(
-                      color: Colors.indigo, fontWeight: FontWeight.bold),
-                )
-              ],
-            ),
-            SizedBox(
-              height: size.height * 0.01,
-            ),
-            Row(
-              children: [
-                Text('결제 방식 ', style: TextStyle(fontWeight: FontWeight.bold)),
-                Text(' ${widget.order['payMethod']}')
-              ],
-            ),
-            SizedBox(
-              height: size.height * 0.01,
-            ),
-            Text('요청 사항', style: TextStyle(fontWeight: FontWeight.bold)),
-            Text('${widget.order['options']}'),
-            Divider(
-              thickness: 10,
-            ),
-            Expanded(
-              child: ListView.builder(
-                itemBuilder: (context, index) {
-                  return _productItemLayout(
-                      widget.order['detail'][index]['pInfo'],
-                      int.parse(widget.order['detail'][index]['quantity']),
-                      size);
-                },
-                itemCount: widget.order['detail'].length,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Divider(
+                thickness: 10,
               ),
-            )
-          ],
+              SizedBox(
+                height: size.height * 0.015,
+              ),
+              Text(
+                '주문 번호  ${widget.order['oID']}',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              SizedBox(
+                height: size.height * 0.015,
+              ),
+              Text('주문일자  ${_formatDate(widget.order['oDate'])}',
+                  style: TextStyle(color: Colors.grey, fontSize: 13)),
+              SizedBox(
+                height: size.height * 0.015,
+              ),
+              Row(
+                children: [
+                  Text(
+                    '주문 상태  ',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    '[ ${_getTextAccordingToOrderState(int.parse(widget.order['orderState']))} ]',
+                    style: TextStyle(
+                        color: _getColorAccordingToOrderState(
+                            int.parse(widget.order['orderState']))),
+                  )
+                ],
+              ),
+              SizedBox(
+                height: size.height * 0.01,
+              ),
+              Divider(
+                thickness: 0.5,
+              ),
+              Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        '미결제 및 미수령',
+                        style: TextStyle(color: Colors.red, fontSize: 9),
+                      ),
+                      Text(': 결제완료된 상태가 아니며 상품을 수령하지 않은 상태입니다.',
+                          style: TextStyle(color: Colors.grey, fontSize: 9))
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        '결제완료 및 미수령',
+                        style:
+                            TextStyle(color: Colors.orangeAccent, fontSize: 9),
+                      ),
+                      Text(': 결제가 완료된 상태이며 아직 상품을 수령하지 않은 상태입니다.',
+                          style: TextStyle(color: Colors.grey, fontSize: 9))
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        '결제완료 및 수령완료',
+                        style: TextStyle(color: Colors.green, fontSize: 9),
+                      ),
+                      Text(': 결제가 완료된 상태이며  상품을 수령한 상태입니다.',
+                          style: TextStyle(color: Colors.grey, fontSize: 9))
+                    ],
+                  )
+                ],
+              ),
+              Divider(
+                thickness: 0.5,
+              ),
+              SizedBox(
+                height: size.height * 0.015,
+              ),
+              Row(
+                children: [
+                  Text(
+                    '수령 방식  ',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    '[ ${int.parse(widget.order['receiveMethod']) == 0 ? '직접 수령' : '배달'} ]',
+                    style: TextStyle(
+                        color: Colors.indigo, fontWeight: FontWeight.bold),
+                  )
+                ],
+              ),
+              SizedBox(
+                height: size.height * 0.015,
+              ),
+              Row(
+                children: [
+                  Text('결제 방식 ', style: TextStyle(fontWeight: FontWeight.bold)),
+                  Text(' [ ${widget.order['payMethod']} ]')
+                ],
+              ),
+              SizedBox(
+                height: size.height * 0.015,
+              ),
+              Text('요청 사항', style: TextStyle(fontWeight: FontWeight.bold)),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                    '${widget.order['options'] == '' ? 'X' : widget.order['options']}'),
+              ),
+              Divider(
+                thickness: 10,
+              ),
+              SizedBox(
+                height: size.height * 0.01,
+              ),
+              Text(
+                '*세부 상품 목록',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+              ),
+              SizedBox(
+                height: size.height * 0.01,
+              ),
+              Column(
+                children: _productLayoutList(size), // 세부 상품 목록 Column
+              ),
+              SizedBox(
+                height: size.height * 0.01,
+              ),
+              Divider(
+                thickness: 10,
+              ),
+              SizedBox(
+                height: size.height * 0.01,
+              ),
+              Card(
+                child: Container(
+                  height: size.height * 0.2,
+                  padding: EdgeInsets.all(size.width * 0.05),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('원가 총 금액'),
+                          Text('${_formatPrice(_getOriginTotalPrice())} 원')
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('총 할인 금액'),
+                          Text('- ${_formatPrice(_getTotalDiscount())} 원')
+                        ],
+                      ),
+                      Divider(
+                        thickness: 2,
+                        indent: 1,
+                        endIndent: 1,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            '최종 결제 금액',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                              '${_formatPrice(_getOriginTotalPrice() - _getTotalDiscount())} 원',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold))
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: size.height * 0.01,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -247,29 +338,52 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
 
   Widget _productItemLayout(Map productMap, int quantity, Size size) {
     return Container(
-      padding: EdgeInsets.all(5),
+      padding: EdgeInsets.all(10),
       width: size.width,
-      height: size.height * 0.09,
-      margin: EdgeInsets.all(8),
+      height: size.height * 0.1,
+      margin: EdgeInsets.all(6),
       decoration: BoxDecoration(
-          border: Border.all(width: 0.5, color: Colors.grey),
+          border: Border.all(width: 0.8, color: Colors.grey),
           borderRadius: BorderRadius.circular(10)),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          Text(
-              '${productMap['pName'] + '[' + _categoryReverseMap[int.parse(productMap['category'])]}]  $quantity개'),
-          Text(
-            '정가 ${_formatPrice(int.parse(productMap['price']))}원',
-            style: TextStyle(fontWeight: FontWeight.bold),
+          Row(
+            children: [
+              Text(
+                '${productMap['pName'] + ' [' + _categoryReverseMap[int.parse(productMap['category'])]}]  $quantity개',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+              ),
+            ],
           ),
-          double.parse(productMap['discount']).toString() == '0.0'
-              ? SizedBox()
-              : Text(
-                  '[ ${double.parse(productMap['discount'])}% 할인 ]',
-                  style: TextStyle(color: Colors.grey),
-                )
+          Row(
+            children: [
+              Text(
+                '정가 ${_formatPrice(int.parse(productMap['price']))}원',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              SizedBox(
+                width: size.width * 0.05,
+              ),
+              double.parse(productMap['discount']).toString() == '0.0'
+                  ? SizedBox()
+                  : Text(
+                      '[ ${double.parse(productMap['discount'])}% 할인 ]',
+                      style: TextStyle(color: Colors.grey),
+                    )
+            ],
+          ),
         ],
       ),
     );
+  }
+
+  List<Widget> _productLayoutList(Size size) {
+    List<Widget> list = [];
+    for (int i = 0; i < widget.order['detail'].length; ++i) {
+      list.add(_productItemLayout(widget.order['detail'][i]['pInfo'],
+          int.parse(widget.order['detail'][i]['quantity']), size));
+    }
+    return list;
   }
 }
