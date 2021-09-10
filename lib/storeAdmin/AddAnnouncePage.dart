@@ -289,6 +289,7 @@ class _AddAnnouncePageState extends State<AddAnnouncePage> {
                         }
                       },
                       maxLines: null,
+                      maxLength: 3000,
                       controller: _contentController,
                       decoration: InputDecoration(
                           border: InputBorder.none,

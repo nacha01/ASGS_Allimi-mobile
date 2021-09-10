@@ -4,6 +4,7 @@ import 'package:asgshighschool/data/exist_cart.dart';
 import 'package:asgshighschool/data/product_data.dart';
 import 'package:asgshighschool/data/user_data.dart';
 import 'package:asgshighschool/store/DetailProductPage.dart';
+import 'package:asgshighschool/store/EventPage.dart';
 import 'package:asgshighschool/storeAdmin/AddProduct.dart';
 import 'package:asgshighschool/storeAdmin/UpdateProduct.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -437,12 +438,13 @@ class _StoreHomePageState extends State<StoreHomePage>
                   ),
                 ),
           /*------------ NEW TAB ---------------*/
-          Container(
-            child: Center(
-              child: Text('이벤트가 없습니다!',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 21)),
-            ),
-          ),
+          // Container(
+          //   child: Center(
+          //     child: Text('이벤트가 없습니다!',
+          //         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 21)),
+          //   ),
+          // ),
+          EventPage(),
           /*------------ EVENT TAB ---------------*/
           if (_productLayoutList.length == 0)
             RefreshIndicator(

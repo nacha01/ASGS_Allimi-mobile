@@ -45,7 +45,7 @@ class _OrderPageState extends State<OrderPage> {
       'uid': widget.user.uid,
       'oDate': DateTime.now().toString(),
       'price': (_getOriginTotalPrice() - _getTotalDiscount()).toString(),
-      'oState': '0', // 임시 설정
+      'oState': '1', // 임시 설정
       'recvMethod': _receiveMethod == ReceiveMethod.DIRECT ? '0' : '1',
       'pay': '0', // 임시 설정
       'option': _requestOptionController.text
