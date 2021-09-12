@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:asgshighschool/data/user_data.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 class DetailOrderStatePage extends StatefulWidget {
   DetailOrderStatePage({this.order, this.user});
@@ -220,6 +221,32 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
                   )
                 ],
               ),
+              Divider(
+                thickness: 0.5,
+              ),
+              SizedBox(
+                height: size.height * 0.015,
+              ),
+              Text('주문 인증 QR코드', style: TextStyle(fontWeight: FontWeight.bold)),
+              SizedBox(height: size.height * 0.015,),
+              int.parse(widget.order['orderState']) == 2
+                  ? Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          '이미 수령하셨기 때문에 만료되었습니다.',
+                          style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.redAccent),
+                        ),
+                      ),
+                    )
+                  : Center(
+                      child: QrImage(
+                      data: widget.order['oID'],
+                      size: 250,
+                    )),
               Divider(
                 thickness: 0.5,
               ),

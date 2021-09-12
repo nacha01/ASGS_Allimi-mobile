@@ -11,19 +11,8 @@ class _EventPageState extends State<EventPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          QrImage(data: '테스트테스트테스트테스트테스트테스트테스트테스트테스트테스트테스트테스트'
-              '테스트테스트테스트테스트테스트테스트테스트테스트테스트테스트테스트테스트'
-              '테스트테스트테스트테스트테스트테스트테스트테스트테스트테스트테스트테스트',),
-          Center(
-            child: FlatButton(
-              child: Text('go'),
-              onPressed: () => Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => QRTest())),
-            ),
-          ),
-        ],
+      body: Center(
+        child: Text('이벤트가 없습니다!'),
       ),
     );
   }

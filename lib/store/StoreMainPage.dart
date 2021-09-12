@@ -6,6 +6,7 @@ import 'package:asgshighschool/store/AnnouncePage.dart';
 import 'package:asgshighschool/store/CartPage.dart';
 import 'package:asgshighschool/store/StoreHomePage.dart';
 import 'package:asgshighschool/store/StoreMyPage.dart';
+import 'package:asgshighschool/storeAdmin/QRScannerPage.dart';
 import 'package:badges/badges.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -31,6 +32,15 @@ class _StoreMainPageState extends State<StoreMainPage> {
     var data = Provider.of<ExistCart>(context);
     // var providedUser = Provider.of<RenewUserData>(context);
     return Scaffold(
+      floatingActionButton: widget.user.isAdmin
+          ? FloatingActionButton(
+              child: Icon(Icons.qr_code_scanner),
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => QRScannerPage()));
+              },
+            )
+          : null,
       body: SafeArea(child: getWidgetAccordingIndex(_currentNav, size)),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentNav,
