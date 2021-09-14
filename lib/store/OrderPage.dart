@@ -80,15 +80,22 @@ class _OrderPageState extends State<OrderPage> {
         var cartRes = await _addOrderDetailRequest(
             int.parse(widget.cart[i]['cPID']),
             int.parse(widget.cart[i]['quantity']));
+
         var deleteRes =
             await _deleteCartRequest(int.parse(widget.cart[i]['cID']));
+
         var renewCountRes = await _updateProductCountRequest(
+            int.parse(widget.cart[i]['cPID']),
+            int.parse(widget.cart[i]['quantity']));
+
+        var sellCountRes = await _updateEachProductSellCountRequest(
             int.parse(widget.cart[i]['cPID']),
             int.parse(widget.cart[i]['quantity']));
 
         if (!cartRes) return false;
         if (!deleteRes) return false;
         if (!renewCountRes) return false;
+        if (!sellCountRes) return false;
       }
     } else {
       var detRes = await _addOrderDetailRequest(
@@ -96,8 +103,12 @@ class _OrderPageState extends State<OrderPage> {
       var renewCountRes = await _updateProductCountRequest(
           widget.direct.prodID, widget.productCount);
 
+      var sellCountRes = await _updateEachProductSellCountRequest(
+          widget.direct.prodID, widget.productCount);
+
       if (!detRes) return false;
       if (!renewCountRes) return false;
+      if (!sellCountRes) return false;
     }
     return true;
   }
@@ -121,6 +132,29 @@ class _OrderPageState extends State<OrderPage> {
       'pid': pid.toString(),
       'quantity': quantity.toString()
     });
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<bool> _updateEachProductSellCountRequest(int pid, int quantity) async {
+    String url =
+        'http://nacha01.dothome.co.kr/sin/arlimi_updateProductSellCount.php';
+    final response = await http.get(url + '?pid=$pid&quantity=$quantity');
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<bool> _updateUserBuyCountRequest() async {
+    String url =
+        'http://nacha01.dothome.co.kr/sin/arlimi_updateUserBuyCount.php';
+    final response = await http.get(url);
+
     if (response.statusCode == 200) {
       return true;
     } else {
@@ -409,6 +443,8 @@ class _OrderPageState extends State<OrderPage> {
                 var res = await _registerOrderRequest();
 
                 if (res) {
+                  var r = await _updateUserBuyCountRequest();
+
                   if (_isCart) {
                     data.setExistCart(false);
                   }
