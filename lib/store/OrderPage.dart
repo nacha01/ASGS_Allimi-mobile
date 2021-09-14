@@ -412,7 +412,7 @@ class _OrderPageState extends State<OrderPage> {
                   if (_isCart) {
                     data.setExistCart(false);
                   }
-                  Navigator.push(
+                  Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
                           builder: (context) => PaymentCompletePage(
