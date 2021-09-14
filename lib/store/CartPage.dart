@@ -24,8 +24,9 @@ import 'package:provider/provider.dart';
 /// 9. discount[visible]
 /// 10. imgUrl1[visible] 고민중..
 class CartPage extends StatefulWidget {
-  CartPage({this.user});
+  CartPage({this.user, this.isFromDetail = false});
   final User user;
+  final bool isFromDetail;
   @override
   _CartPageState createState() => _CartPageState();
 }
@@ -195,7 +196,11 @@ class _CartPageState extends State<CartPage> {
     final size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
-        leading: SizedBox(),
+        leading: widget.isFromDetail
+            ? IconButton(
+                onPressed: () => Navigator.pop(context),
+                icon: Icon(Icons.arrow_back, color: Colors.black,))
+            : SizedBox(),
         backgroundColor: Color(0xFF9EE1E5),
         title: Text(
           '장바구니',

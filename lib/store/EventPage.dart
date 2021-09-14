@@ -1,4 +1,3 @@
-import 'package:asgshighschool/store/qr_test.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 

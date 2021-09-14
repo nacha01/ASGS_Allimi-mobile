@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:asgshighschool/data/exist_cart.dart';
 import 'package:asgshighschool/data/product_data.dart';
 import 'package:asgshighschool/data/user_data.dart';
+import 'package:asgshighschool/store/CartPage.dart';
 import 'package:asgshighschool/store/OrderPage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
@@ -30,6 +31,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
   };
   bool _isDiscountZero;
   int _count = 1;
+  bool _isCart = false;
 
   String _formatPrice(int price) {
     String p = price.toString();
@@ -373,19 +375,32 @@ class _DetailProductPageState extends State<DetailProductPage> {
               children: [
                 GestureDetector(
                   onTap: () async {
-                    var result = await _addCartProductRequest();
-                    print(result);
-                    if (result) {
-                      data.setExistCart(true);
-                      Fluttertoast.showToast(
-                          msg: '장바구니에 추가되었습니다.',
-                          gravity: ToastGravity.BOTTOM,
-                          toastLength: Toast.LENGTH_SHORT);
+                    if (!_isCart) {
+                      var result = await _addCartProductRequest();
+                      print(result);
+                      if (result) {
+                        data.setExistCart(true);
+                        Fluttertoast.showToast(
+                            msg: '장바구니에 추가되었습니다.',
+                            gravity: ToastGravity.BOTTOM,
+                            toastLength: Toast.LENGTH_SHORT);
+                      } else {
+                        Fluttertoast.showToast(
+                            msg: '장바구니에 추가하는데 문제가 발생했습니다!',
+                            gravity: ToastGravity.BOTTOM,
+                            toastLength: Toast.LENGTH_SHORT);
+                      }
+                      setState(() {
+                        _isCart = true;
+                      });
                     } else {
-                      Fluttertoast.showToast(
-                          msg: '장바구니에 추가하는데 문제가 발생했습니다!',
-                          gravity: ToastGravity.BOTTOM,
-                          toastLength: Toast.LENGTH_SHORT);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => CartPage(
+                                    user: widget.user,
+                                    isFromDetail: true,
+                                  )));
                     }
                   },
                   child: Container(
@@ -400,8 +415,10 @@ class _DetailProductPageState extends State<DetailProductPage> {
                           Icons.shopping_cart,
                           size: 33,
                         ),
-                        Text('장바구니 담기',
-                            style: TextStyle(fontWeight: FontWeight.bold))
+                        Text(_isCart ? '장바구니로 이동' : '장바구니 담기',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: _isCart ? Colors.indigo : Colors.black))
                       ],
                     ),
                   ),
