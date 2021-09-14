@@ -407,18 +407,17 @@ class _OrderPageState extends State<OrderPage> {
             FlatButton(
               onPressed: () async {
                 var res = await _registerOrderRequest();
-                print(res);
+
                 if (res) {
                   if (_isCart) {
                     data.setExistCart(false);
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => PaymentCompletePage(
-                                result: {'orderID': _generatedOID})));
                   }
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => PaymentCompletePage(
+                              result: {'orderID': _generatedOID})));
                 }
-                print('요청함');
               },
               child: Container(
                 alignment: Alignment.center,

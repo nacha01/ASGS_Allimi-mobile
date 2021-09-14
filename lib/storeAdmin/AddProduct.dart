@@ -43,10 +43,6 @@ class _AddingProductPageState extends State<AddingProductPage> {
   var _productCountController = TextEditingController();
   var _productExplainController = TextEditingController();
 
-  var _mainImageNameController = TextEditingController();
-  var _subImage1NameController = TextEditingController();
-  var _subImage2NameController = TextEditingController();
-
   PickedFile _mainImage;
   PickedFile _subImage1;
   PickedFile _subImage2;
@@ -60,6 +56,10 @@ class _AddingProductPageState extends State<AddingProductPage> {
   int _clickCount = 0;
   bool _isNotRegister = true;
 
+  String _mainName;
+  String _sub1Name;
+  String _sub2Name;
+
   final _categoryList = ['음식류', '간식류', '음료류', '문구류', '핸드메이드']; //드롭다운 아이템
   final _categoryMap = {
     '음식류': 0,
@@ -68,6 +68,13 @@ class _AddingProductPageState extends State<AddingProductPage> {
     '문구류': 3,
     '핸드메이드': 4
   }; // 드롭다운 mapping
+  final _prefix = {
+    '음식류': 'F',
+    '간식류': 'S',
+    '음료류': 'D',
+    '문구류': 'SS',
+    '핸드메이드': 'H'
+  };
   var _selectedCategory = '음식류'; // 드롭다운 아이템 default
   String serverImageUri =
       'http://nacha01.dothome.co.kr/sin/arlimi_productImage/';
@@ -156,15 +163,10 @@ class _AddingProductPageState extends State<AddingProductPage> {
       'stockCount': _productCountController.text,
       'isBest': _isBest ? '1' : '0',
       'isNew': _isNew ? '1' : '0',
-      'imgUrl1': serverImageUri + _mainImageNameController.text.trim() + '.jpg',
-      'imgUrl2': _useSub1
-          ? serverImageUri + _subImage1NameController.text.trim() + '.jpg'
-          : 'None',
-      'imgUrl3': _useSub2
-          ? serverImageUri + _subImage2NameController.text.trim() + '.jpg'
-          : 'None'
+      'imgUrl1': serverImageUri + _mainName + '.jpg',
+      'imgUrl2': _useSub1 ? serverImageUri + _sub1Name + '.jpg' : 'None',
+      'imgUrl3': _useSub2 ? serverImageUri + _sub2Name + '.jpg' : 'None'
     });
-
     if (response.statusCode == 200) {
       if (response.body.contains('일일 트래픽을 모두 사용하였습니다.')) {
         return false;
@@ -186,25 +188,36 @@ class _AddingProductPageState extends State<AddingProductPage> {
   /// ※ AsyncMemoizer 를 사용하여 FutureBuilder 의 반복을 방지
   Future<bool> _doRegisterProduct() async {
     return this._memoizer.runOnce(() async {
+      var now = DateTime.now();
+      String identified = _formatting(now.month) +
+          _formatting(now.day) +
+          _formatting(now.hour) +
+          _formatting(now.minute) +
+          _formatting(now.second);
+
       if (_useSub1) {
-        var sub1Result =
-            await _sendImageToServer(_subImage1, _subImage1NameController.text);
+        _sub1Name = _prefix[_selectedCategory] + identified + 'A';
+        var sub1Result = await _sendImageToServer(_subImage1, _sub1Name);
         if (!sub1Result) return false;
       }
       if (_useSub2) {
-        var sub2Result =
-            await _sendImageToServer(_subImage2, _subImage2NameController.text);
+        _sub2Name = _prefix[_selectedCategory] + identified + 'B';
+        var sub2Result = await _sendImageToServer(
+            _subImage2, _prefix[_selectedCategory] + identified + 'B');
         if (!sub2Result) return false;
       }
-
-      var mainResult =
-          await _sendImageToServer(_mainImage, _mainImageNameController.text);
+      _mainName = _prefix[_selectedCategory] + identified;
+      var mainResult = await _sendImageToServer(_mainImage, _mainName);
       if (!mainResult) return false;
 
       var registerResult = await _postRequestForInsertProduct();
       if (!registerResult) return false;
       return true;
     });
+  }
+
+  String _formatting(int value) {
+    return value > 9 ? value.toString() : '0' + value.toString();
   }
 
   @override
@@ -252,15 +265,6 @@ class _AddingProductPageState extends State<AddingProductPage> {
                       padding: const EdgeInsets.all(14.0),
                       child: Column(
                         children: [
-                          Text(
-                              '※ 파일 이름은 상품에 대한 규칙으로 영어와 숫자를 적절히 조합하여 필수로 작성하세요.'
-                              '\n(서버에 저장될 이미지로써 "abcd123.jpg" 형태로 저장이 됨)'),
-                          Text(
-                            '[파일 이름만 보고도 어떤 상품인지 식별할 수 있도록!]',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.redAccent),
-                          ),
                           SizedBox(
                             height: size.height * 0.02,
                           ),
@@ -391,7 +395,6 @@ class _AddingProductPageState extends State<AddingProductPage> {
                             width: size.width * 0.7,
                             // height: size.height * 0.07,
                             controller: _productPriceController,
-                            maxCharNum: 30,
                             validation: true,
                             formatType: true)
                       ],
@@ -418,7 +421,6 @@ class _AddingProductPageState extends State<AddingProductPage> {
                             width: size.width * 0.7,
                             // height: size.height * 0.07,
                             controller: _productCountController,
-                            maxCharNum: 10,
                             formatType: true)
                       ],
                     ),
@@ -570,41 +572,12 @@ class _AddingProductPageState extends State<AddingProductPage> {
                             : Image.file(
                                 File(_mainImage.path),
                                 fit: BoxFit.fill,
-                                width: size.width * 0.92,
-                                height: size.height * 0.6,
+                                width: size.width * 0.9,
+                                height: size.height * 0.5,
                               ),
                         SizedBox(
                           height: 10,
                         ),
-                        Row(
-                          children: [
-                            Container(
-                              margin: EdgeInsets.all(5),
-                              alignment: Alignment.center,
-                              width: size.width * 0.52,
-                              height: size.height * 0.06,
-                              child: Text(
-                                '*이미지 파일 이름(영어,숫자 조합)',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              decoration: BoxDecoration(
-                                  color: Color(0xFF9EE1E5),
-                                  borderRadius: BorderRadius.circular(8)),
-                            ),
-                            Container(
-                              child: TextField(
-                                controller: _mainImageNameController,
-                                textAlign: TextAlign.center,
-                                decoration: InputDecoration(
-                                    hintText: 'abcd123',
-                                    hintStyle: TextStyle(color: Colors.grey)),
-                              ),
-                              width: size.width * 0.4,
-                            )
-                          ],
-                        )
                       ],
                     ),
                     SizedBox(
@@ -688,36 +661,6 @@ class _AddingProductPageState extends State<AddingProductPage> {
                               SizedBox(
                                 height: 10,
                               ),
-                              Row(
-                                children: [
-                                  Container(
-                                    margin: EdgeInsets.all(5),
-                                    alignment: Alignment.center,
-                                    width: size.width * 0.52,
-                                    height: size.height * 0.06,
-                                    child: Text(
-                                      '*이미지 파일 이름(영어,숫자 조합)',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    decoration: BoxDecoration(
-                                        color: Color(0xFF9EE1E5),
-                                        borderRadius: BorderRadius.circular(8)),
-                                  ),
-                                  Container(
-                                    child: TextField(
-                                      controller: _subImage1NameController,
-                                      textAlign: TextAlign.center,
-                                      decoration: InputDecoration(
-                                          hintText: 'abcd123',
-                                          hintStyle:
-                                              TextStyle(color: Colors.grey)),
-                                    ),
-                                    width: size.width * 0.4,
-                                  )
-                                ],
-                              )
                             ],
                           )
                         : SizedBox(),
@@ -802,60 +745,32 @@ class _AddingProductPageState extends State<AddingProductPage> {
                               SizedBox(
                                 height: 10,
                               ),
-                              Row(
-                                children: [
-                                  Container(
-                                    margin: EdgeInsets.all(5),
-                                    alignment: Alignment.center,
-                                    width: size.width * 0.52,
-                                    height: size.height * 0.06,
-                                    child: Text(
-                                      '*이미지 파일 이름(영어,숫자 조합)',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    decoration: BoxDecoration(
-                                        color: Color(0xFF9EE1E5),
-                                        borderRadius: BorderRadius.circular(8)),
-                                  ),
-                                  Container(
-                                    child: TextField(
-                                      controller: _subImage2NameController,
-                                      textAlign: TextAlign.center,
-                                      decoration: InputDecoration(
-                                          hintText: 'abcd123',
-                                          hintStyle:
-                                              TextStyle(color: Colors.grey)),
-                                    ),
-                                    width: size.width * 0.4,
-                                  )
-                                ],
-                              )
                             ],
                           )
                         : SizedBox(),
                     SizedBox(
                       height: 10,
                     ),
-                    GestureDetector(
-                      onTap: () {
-                        if (_clickCount == 0) {
-                          ++_clickCount;
-                          setState(() {
-                            if (!_useSub1)
-                              _useSub1 = true;
-                            else if (!_useSub2) _useSub2 = true;
-                          });
-                        } else if (_clickCount == 1) {
-                          ++_clickCount;
-                          setState(() {
-                            if (!_useSub1)
-                              _useSub1 = true;
-                            else if (!_useSub2) _useSub2 = true;
-                          });
-                        }
-                      },
+                    FlatButton(
+                      onPressed: _useSub1 && _useSub2
+                          ? null
+                          : () {
+                              if (_clickCount == 0) {
+                                ++_clickCount;
+                                setState(() {
+                                  if (!_useSub1)
+                                    _useSub1 = true;
+                                  else if (!_useSub2) _useSub2 = true;
+                                });
+                              } else if (_clickCount == 1) {
+                                ++_clickCount;
+                                setState(() {
+                                  if (!_useSub1)
+                                    _useSub1 = true;
+                                  else if (!_useSub2) _useSub2 = true;
+                                });
+                              }
+                            },
                       child: Container(
                         decoration: BoxDecoration(
                             color: Colors.grey[200],
@@ -867,7 +782,10 @@ class _AddingProductPageState extends State<AddingProductPage> {
                         child: Text(
                           '이미지 추가하기(최대 2개)',
                           style: TextStyle(
-                              fontWeight: FontWeight.bold, color: Colors.blue),
+                              fontWeight: FontWeight.bold,
+                              color: _useSub1 && _useSub2
+                                  ? Colors.grey
+                                  : Colors.blue),
                         ),
                       ),
                     ),
@@ -899,20 +817,6 @@ class _AddingProductPageState extends State<AddingProductPage> {
                             return;
                           }
                           if (_productPriceController.text.isEmpty) {
-                            showErrorDialog();
-                            return;
-                          }
-                          if (_mainImageNameController.text.isEmpty) {
-                            showErrorDialog();
-                            return;
-                          }
-                          if (_useSub1 &&
-                              _subImage1NameController.text.isEmpty) {
-                            showErrorDialog();
-                            return;
-                          }
-                          if (_useSub2 &&
-                              _subImage2NameController.text.isEmpty) {
                             showErrorDialog();
                             return;
                           }

@@ -82,8 +82,6 @@ class _DetailProductPageState extends State<DetailProductPage> {
   void initState() {
     super.initState();
     _isDiscountZero = widget.product.discount.toString() == '0.0';
-    print(widget.product.imgUrl2 == null ? '이미지 2는 null' : '2 존재');
-    print(widget.product.imgUrl3 == null ? '이미지 3은 null' : '3 존재');
   }
 
   @override

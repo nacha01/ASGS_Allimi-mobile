@@ -21,9 +21,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
   var _productCountController = TextEditingController();
   var _productExplainController = TextEditingController();
   var _productDiscountController = TextEditingController();
-  var _mainImageNameController = TextEditingController();
-  var _subImage1NameController = TextEditingController();
-  var _subImage2NameController = TextEditingController();
+
   var _cumulativeSellCount = TextEditingController();
 
   PickedFile _mainImage;
@@ -38,6 +36,10 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
 
   int _clickCount = 0;
   bool _imageInitial = true;
+
+  String _mainName;
+  String _sub1Name;
+  String _sub2Name;
 
   final _categoryList = ['음식류', '간식류', '음료류', '문구류', '핸드메이드']; //드롭다운 아이템
   final _categoryMap = {
@@ -105,6 +107,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
     var picture = await http.MultipartFile.fromPath('imgFile', img.path,
         filename: fileName + '.jpg');
     request.files.add(picture);
+
     request.fields['oriName'] =
         originName == null ? 'None' : originName.replaceAll(serverImageUri, '');
     request.fields['newName'] = fileName + '.jpg';
@@ -127,6 +130,17 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
     }
   }
 
+  String _getFileNameByRule(String origin) {
+    if (origin.contains('_')) {
+      origin = origin.substring(0, origin.length - 1) +
+          (int.parse(origin[origin.length - 1]) + 1).toString();
+      print(origin);
+      return origin;
+    } else {
+      return origin + '_1';
+    }
+  }
+
   Future<bool> _updateProductRequest() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_updateProduct.php';
     final response = await http.post(url, body: <String, String>{
@@ -139,16 +153,13 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
       'discount': _productDiscountController.text,
       'isBest': _isBest ? '1' : '0',
       'isNew': _isNew ? '1' : '0',
-      'img1': serverImageUri + _mainImageNameController.text + '.jpg',
-      'img2': _useSub1
-          ? serverImageUri + _subImage1NameController.text.trim() + '.jpg'
-          : 'None',
-      'img3': _useSub2
-          ? serverImageUri + _subImage2NameController.text.trim() + '.jpg'
-          : 'None'
+      'img1': _mainImage == null ? 'NOT' : serverImageUri + _mainName + '.jpg',
+      'img2': _useSub1 ? serverImageUri + _sub1Name + '.jpg' : 'None',
+      'img3': _useSub2 ? serverImageUri + _sub2Name + '.jpg' : 'None'
     });
 
     if (response.statusCode == 200) {
+      print(response.body);
       var replace = response.body.replaceAll(
           '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
           '');
@@ -163,20 +174,33 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
 
   Future<int> _doUpdateForProduct() async {
     if (_useSub1) {
+      _sub1Name = _getFileNameByRule(widget.product.imgUrl2
+          .replaceAll(serverImageUri, '')
+          .replaceAll('.jpg', ''));
+
       var sub1Result = await _updateImageBeforeRequest(
-          _subImage1, _subImage1NameController.text, widget.product.imgUrl2);
+          _subImage1, _sub1Name, widget.product.imgUrl2);
+
       if (!sub1Result) return 402;
     }
     if (_useSub2) {
+      _sub2Name = _getFileNameByRule(widget.product.imgUrl3
+          .replaceAll(serverImageUri, '')
+          .replaceAll('.jpg', ''));
+
       var sub2Result = await _updateImageBeforeRequest(
-          _subImage2, _subImage2NameController.text, widget.product.imgUrl3);
+          _subImage2, _sub2Name, widget.product.imgUrl3);
+
       if (!sub2Result) return 403;
     }
-
-    var mainResult = await _updateImageBeforeRequest(
-        _mainImage, _mainImageNameController.text, widget.product.imgUrl1);
-    if (!mainResult) return 401;
-
+    if (_mainImage != null) {
+      _mainName = _getFileNameByRule(widget.product.imgUrl1
+          .replaceAll(serverImageUri, '')
+          .replaceAll('.jpg', ''));
+      var mainResult = await _updateImageBeforeRequest(
+          _mainImage, _mainName, widget.product.imgUrl1);
+      if (!mainResult) return 401;
+    }
     var registerResult = await _updateProductRequest();
     if (!registerResult) return 500;
     return 200; // 성공 코드
@@ -188,11 +212,6 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
     _productExplainController.text = widget.product.prodInfo;
     _productPriceController.text = widget.product.price.toString();
     _productCountController.text = widget.product.stockCount.toString();
-    _mainImageNameController.text = widget.product.imgUrl1
-        .replaceAll(serverImageUri, '')
-        .replaceAll('.jpg', '');
-    _subImage1NameController.text = widget.product.imgUrl2;
-    _subImage2NameController.text = widget.product.imgUrl3;
     _selectedCategory = _categoryReverseMap[widget.product.category];
     _isBest = widget.product.isBest == 1 ? true : false;
     _isNew = widget.product.isNew == 1 ? true : false;
@@ -239,13 +258,6 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
               padding: const EdgeInsets.all(14.0),
               child: Column(
                 children: [
-                  Text('※ 파일 이름은 상품에 대한 규칙으로 영어와 숫자를 적절히 조합하여 필수로 작성하세요.'
-                      '\n(서버에 저장될 이미지로써 "abcd123.jpg" 형태로 저장이 됨)'),
-                  Text(
-                    '[파일 이름만 보고도 어떤 상품인지 식별할 수 있도록!]',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold, color: Colors.redAccent),
-                  ),
                   SizedBox(
                     height: size.height * 0.02,
                   ),
@@ -260,11 +272,6 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
                   Text('※ 추가 이미지는 필수가 아니며, 필요시 추가할 때는 이미지와 파일이름을 반드시 적어주세요. '),
                   SizedBox(
                     height: size.height * 0.02,
-                  ),
-                  Text(
-                    '※ 주의!\n최종으로 수정할 때, 이미지를 수정하지 않아도, 같은 이미지라도 반드시 이미지를 불러와야 하며 새로운 파일 이름으로 작성하고 완료해야 합니다.',
-                    style: TextStyle(
-                        color: Colors.red, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(
                     height: size.height * 0.02,
@@ -385,7 +392,6 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
                     width: size.width * 0.7,
                     height: size.height * 0.07,
                     controller: _productPriceController,
-                    maxCharNum: 30,
                     validation: true,
                     formatType: true)
               ],
@@ -411,7 +417,6 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
                     width: size.width * 0.7,
                     height: size.height * 0.07,
                     controller: _productCountController,
-                    maxCharNum: 10,
                     formatType: true)
               ],
             ),
@@ -516,7 +521,6 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
                     width: size.width * 0.7,
                     height: size.height * 0.07,
                     controller: _productDiscountController,
-                    maxCharNum: 10,
                     formatType: false)
               ],
             ),
@@ -541,7 +545,6 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
                     width: size.width * 0.7,
                     height: size.height * 0.07,
                     controller: _cumulativeSellCount,
-                    maxCharNum: 10,
                     formatType: true,
                     isReadOnly: true)
               ],
@@ -625,13 +628,6 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
                 _imageInitial
                     ? Column(
                         children: [
-                          Text(
-                            '※아래 이미지는 임시 이미지입니다. \n상품수정을 완료하려면 새로 이미지를 불러오세요!',
-                            style: TextStyle(
-                                color: Colors.redAccent,
-                                fontWeight: FontWeight.bold),
-                            textAlign: TextAlign.center,
-                          ),
                           Image.network(
                             widget.product.imgUrl1,
                             width: size.width * 0.9,
@@ -658,35 +654,6 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
                 SizedBox(
                   height: 10,
                 ),
-                Row(
-                  children: [
-                    Container(
-                      margin: EdgeInsets.all(5),
-                      alignment: Alignment.center,
-                      width: size.width * 0.52,
-                      height: size.height * 0.06,
-                      child: Text(
-                        '*이미지 파일 이름(영어,숫자 조합)',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      decoration: BoxDecoration(
-                          color: Color(0xFF9EE1E5),
-                          borderRadius: BorderRadius.circular(8)),
-                    ),
-                    Container(
-                      child: TextField(
-                        controller: _mainImageNameController,
-                        textAlign: TextAlign.center,
-                        decoration: InputDecoration(
-                            hintText: 'abcd123',
-                            hintStyle: TextStyle(color: Colors.grey)),
-                      ),
-                      width: size.width * 0.4,
-                    )
-                  ],
-                )
               ],
             ),
             SizedBox(
@@ -769,35 +736,6 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
                       SizedBox(
                         height: 10,
                       ),
-                      Row(
-                        children: [
-                          Container(
-                            margin: EdgeInsets.all(5),
-                            alignment: Alignment.center,
-                            width: size.width * 0.52,
-                            height: size.height * 0.06,
-                            child: Text(
-                              '*이미지 파일 이름(영어,숫자 조합)',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            decoration: BoxDecoration(
-                                color: Color(0xFF9EE1E5),
-                                borderRadius: BorderRadius.circular(8)),
-                          ),
-                          Container(
-                            child: TextField(
-                              controller: _subImage1NameController,
-                              textAlign: TextAlign.center,
-                              decoration: InputDecoration(
-                                  hintText: 'abcd123',
-                                  hintStyle: TextStyle(color: Colors.grey)),
-                            ),
-                            width: size.width * 0.4,
-                          )
-                        ],
-                      )
                     ],
                   )
                 : SizedBox(),
@@ -881,35 +819,6 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
                       SizedBox(
                         height: 10,
                       ),
-                      Row(
-                        children: [
-                          Container(
-                            margin: EdgeInsets.all(5),
-                            alignment: Alignment.center,
-                            width: size.width * 0.52,
-                            height: size.height * 0.06,
-                            child: Text(
-                              '*이미지 파일 이름(영어,숫자 조합)',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            decoration: BoxDecoration(
-                                color: Color(0xFF9EE1E5),
-                                borderRadius: BorderRadius.circular(8)),
-                          ),
-                          Container(
-                            child: TextField(
-                              controller: _subImage2NameController,
-                              textAlign: TextAlign.center,
-                              decoration: InputDecoration(
-                                  hintText: 'abcd123',
-                                  hintStyle: TextStyle(color: Colors.grey)),
-                            ),
-                            width: size.width * 0.4,
-                          )
-                        ],
-                      )
                     ],
                   )
                 : SizedBox(),
@@ -964,16 +873,6 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 onPressed: () async {
-                  if (_mainImageNameController.text ==
-                      widget.product.imgUrl1
-                          .replaceAll(serverImageUri, '')
-                          .replaceAll('.jpg', '')) {
-                    Fluttertoast.showToast(
-                        msg: '기존과 다른 이름의 파일명을 작성해주세요!',
-                        toastLength: Toast.LENGTH_SHORT,
-                        gravity: ToastGravity.BOTTOM);
-                    return;
-                  }
                   if (_productNameController.text.isEmpty) {
                     showErrorDialog();
                     return;
@@ -990,21 +889,13 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
                     showErrorDialog();
                     return;
                   }
-                  if (_mainImageNameController.text.isEmpty) {
-                    showErrorDialog();
-                    return;
-                  }
-                  if (_useSub1 && _subImage1NameController.text.isEmpty) {
-                    showErrorDialog();
-                    return;
-                  }
-                  if (_useSub2 && _subImage2NameController.text.isEmpty) {
-                    showErrorDialog();
-                    return;
-                  }
-                  if (_mainImage == null && !_imageInitial) {
-                    showErrorDialog();
-                    return;
+                  if (_productDiscountController.text.isNotEmpty) {
+                    try {
+                      var a = double.parse(_productDiscountController.text);
+                    } catch (e) {
+                      showErrorDialog();
+                      return;
+                    }
                   }
                   if (_useSub1 && _subImage1 == null) {
                     showErrorDialog();
