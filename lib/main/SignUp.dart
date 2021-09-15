@@ -20,7 +20,6 @@ class _SignUpPageState extends State<SignUpPage> {
   TextEditingController _idController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   TextEditingController _nickNameController = TextEditingController();
-  TextEditingController _telController = TextEditingController();
   final statusList = ['재학생', '학부모', '교사', '졸업생', '기타'];
   final statusMap = {'재학생': 1, '학부모': 2, '교사': 3, '졸업생': 4, '기타': 5};
   var _selectedValue = '재학생';
@@ -48,7 +47,6 @@ class _SignUpPageState extends State<SignUpPage> {
       'name': _nameController.text.toString(),
       'nickname': _nickNameController.text.toString(),
       'identity': statusMap[_selectedValue].toString(),
-      'tel': _telController.text.toString(),
       'student_id': isTwoRow() ? _gradeController.text.toString() : 'NULL'
     });
 
@@ -215,26 +213,6 @@ class _SignUpPageState extends State<SignUpPage> {
               ),
               SizedBox(height: 20.0),
               TextFormField(
-                controller: _telController,
-                cursorColor: Colors.black,
-                style: TextStyle(fontSize: 18.0, color: Colors.black),
-                decoration: InputDecoration(
-                  fillColor: Colors.orange.withOpacity(0.1),
-                  filled: true,
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(20.0))),
-                  prefixIcon: Icon(Icons.contact_phone_rounded),
-                  labelText: '전화번호',
-                  labelStyle: TextStyle(
-                    fontSize: 16.0,
-                  ),
-                ),
-                onChanged: (value) {
-
-                },
-              ),
-              SizedBox(height: 20.0),
-              TextFormField(
                 controller: _nickNameController,
                 cursorColor: Colors.black,
                 style: TextStyle(fontSize: 18.0, color: Colors.black),
@@ -257,7 +235,7 @@ class _SignUpPageState extends State<SignUpPage> {
               RaisedButton(
                 onPressed: () async {
                   if(_idController.text.isEmpty || _nameController.text.isEmpty || _nickNameController.text.isEmpty
-                  || _telController.text.isEmpty){
+                  ){
                     showDialog(
                         context: context,
                         builder: (context) => AlertDialog(
@@ -296,7 +274,6 @@ class _SignUpPageState extends State<SignUpPage> {
                                     : SizedBox(height: 0.0,),
                                 Text('ID: ${_idController.text}'),
                                 Text('닉네임: ${_nickNameController.text}'),
-                                Text('전화번호: ${_telController.text}'),
                               ],
                             ),
                             actions: [

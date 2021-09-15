@@ -198,7 +198,6 @@ class _StoreHomePageState extends State<StoreHomePage>
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
-      print(response.body);
       if (response.body.contains('일일 트래픽을 모두 사용하였습니다.')) {
         print('일일 트래픽 모두 사용');
         return [];
@@ -249,7 +248,6 @@ class _StoreHomePageState extends State<StoreHomePage>
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_deleteProduct.php';
     final response = await http.get(url + '?id=$productID');
     if (response.statusCode == 200) {
-      print(response.body);
       if (response.body.contains('DELETED')) {
         return true;
       } else {
@@ -293,7 +291,6 @@ class _StoreHomePageState extends State<StoreHomePage>
     _tabController = TabController(length: 4, vsync: this);
     _scrollViewController = ScrollController();
     _getProducts();
-
   }
 
   @override

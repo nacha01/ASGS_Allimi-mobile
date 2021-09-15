@@ -201,7 +201,7 @@ class _SignInPageState extends State<SignInPage> {
       if (response.body.contains('일일 트래픽을 모두 사용하였습니다.')) {
         print('일일 트래픽 모두 사용 in 로그인');
         // 임시 유저로 이동
-        return User('tmp', 'tmp', 'tmp', 5, 'tmp', 'tmp', 'tmp', 'tmp', 0, 0);
+        return User('tmp', 'tmp', 'tmp', 5, 'tmp', 'tmp', 'tmp', 0, 0);
       }
       String result = utf8
           .decode(response.bodyBytes)

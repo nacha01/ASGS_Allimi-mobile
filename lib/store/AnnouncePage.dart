@@ -33,12 +33,10 @@ class _AnnouncePageState extends State<AnnouncePage> {
               '')
           .trim();
       List anList = json.decode(result);
-      print(anList);
       _announceList.clear();
       for (int i = 0; i < anList.length; ++i) {
         _announceList.add(Announce.fromJson(json.decode(anList[i])));
       }
-      print(_announceList);
       setState(() {});
       return true;
     } else {
@@ -271,7 +269,8 @@ class _AnnouncePageState extends State<AnnouncePage> {
                     child: Container(
                       child: Text(
                         '$date',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13 ),
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 13),
                         textAlign: TextAlign.center,
                       ),
                     ),

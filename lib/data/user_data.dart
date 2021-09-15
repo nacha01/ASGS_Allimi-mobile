@@ -5,14 +5,13 @@ class User {
   int _identity;
   String _studentId;
   String _nickName;
-  String _tel;
   String _rDate;
   int _buyCount;
   int _point;
   bool _isAdmin = false;
   String _adminKey;
   User(this._uid, this._token, this._name, this._identity, this._studentId,
-      this._nickName, this._tel, this._rDate, this._buyCount, this._point);
+      this._nickName, this._rDate, this._buyCount, this._point);
 
   User.fromJson(Map<String, dynamic> json)
       : _uid = json['uid'],
@@ -21,7 +20,6 @@ class User {
         _identity = int.parse(json['identity']),
         _studentId = json['student_id'],
         _nickName = json['nickname'],
-        _tel = json['tel'],
         _rDate = json['reg_date'],
         _buyCount = int.parse(json['buy_count']),
         _point = int.parse(json['point']);
@@ -42,12 +40,6 @@ class User {
 
   set rDate(String value) {
     _rDate = value;
-  }
-
-  String get tel => _tel;
-
-  set tel(String value) {
-    _tel = value;
   }
 
   String get nickName => _nickName;

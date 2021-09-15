@@ -34,7 +34,6 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
   TextEditingController _nameController = TextEditingController();
   TextEditingController _studentIDController = TextEditingController();
   TextEditingController _nicknameController = TextEditingController();
-  TextEditingController _telController = TextEditingController();
 
   TextEditingController _pwController = TextEditingController();
   final statusList = ['재학생', '학부모', '교사', '졸업생', '기타'];
@@ -47,7 +46,6 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
     _nameController.text = widget.user.name;
     _studentIDController.text = widget.user.studentId;
     _nicknameController.text = widget.user.nickName;
-    _telController.text = widget.user.tel;
     _selectedValue = statusList[widget.user.identity - 1];
   }
 
@@ -59,7 +57,6 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
       'identity': statusMap[_selectedValue].toString(),
       'studentID': _studentIDController.text,
       'nickname': _nicknameController.text,
-      'tel': _telController.text
     });
 
     if (response.statusCode == 200) {
@@ -110,8 +107,7 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
         _tmpUser = null;
       }
       if (response.body.contains('일일 트래픽을 모두 사용하였습니다.')) {
-        _tmpUser =
-            User('tmp', 'tmp', 'tmp', 5, 'tmp', 'tmp', 'tmp', 'tmp', 0, 0);
+        _tmpUser = User('tmp', 'tmp', 'tmp', 5, 'tmp', 'tmp', 'tmp', 0, 0);
       }
       String result = utf8
           .decode(response.bodyBytes)
@@ -217,7 +213,8 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
                               top: BorderSide(color: Colors.black, width: 1),
                               bottom:
                                   BorderSide(color: Colors.black, width: 0.5))),
-                      child: Text('* 아이디')),
+                      child: Text('* 아이디',
+                          style: TextStyle(fontWeight: FontWeight.bold))),
                   Container(
                       alignment: Alignment.center,
                       width: size.width * 0.6,
@@ -375,33 +372,6 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
                               top: BorderSide(color: Colors.black, width: 0.5),
                               bottom:
                                   BorderSide(color: Colors.black, width: 0.5))),
-                      child: Text('전화번호(- 제외)',
-                          style: TextStyle(fontWeight: FontWeight.bold))),
-                  Container(
-                      alignment: Alignment.center,
-                      width: size.width * 0.6,
-                      height: size.height * 0.1,
-                      child: TextField(
-                        textAlign: TextAlign.center,
-                        decoration: InputDecoration(border: InputBorder.none),
-                        controller: _telController,
-                      ))
-                ],
-              ),
-              Row(
-                children: [
-                  Container(
-                      alignment: Alignment.center,
-                      width: size.width * 0.4,
-                      height: size.height * 0.1,
-                      decoration: BoxDecoration(
-                          color: Color(0xFF9EE1E5),
-                          border: Border(
-                              left: BorderSide(color: Colors.black, width: 1),
-                              right: BorderSide(color: Colors.black, width: 1),
-                              top: BorderSide(color: Colors.black, width: 0.5),
-                              bottom:
-                                  BorderSide(color: Colors.black, width: 0.5))),
                       child: Text('* 가입일',
                           style: TextStyle(fontWeight: FontWeight.bold))),
                   Container(
@@ -534,7 +504,11 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
                                     ],
                                   ));
                         },
-                        child: Text('수정 완료하기')),
+                        child: Text(
+                          '수정 완료하기',
+                          style: TextStyle(
+                              color: Colors.blue, fontWeight: FontWeight.bold),
+                        )),
                   ),
                   Container(
                     width: size.width * 0.52,
