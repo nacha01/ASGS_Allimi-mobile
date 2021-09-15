@@ -20,11 +20,11 @@ class StoreMainPage extends StatefulWidget {
   final List<Product> product;
   final bool existCart;
   @override
-  _StoreMainPageState createState() => _StoreMainPageState();
+  StoreMainPageState createState() => StoreMainPageState();
 }
 
-class _StoreMainPageState extends State<StoreMainPage> {
-  int _currentNav = 0;
+class StoreMainPageState extends State<StoreMainPage> {
+  static int currentNav = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -41,12 +41,12 @@ class _StoreMainPageState extends State<StoreMainPage> {
               },
             )
           : null,
-      body: SafeArea(child: getWidgetAccordingIndex(_currentNav, size)),
+      body: SafeArea(child: getWidgetAccordingIndex(currentNav, size)),
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentNav,
+        currentIndex: currentNav,
         onTap: (index) {
           setState(() {
-            _currentNav = index;
+            currentNav = index;
           });
         },
         selectedItemColor: Colors.blue,

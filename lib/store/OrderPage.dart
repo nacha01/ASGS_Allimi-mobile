@@ -4,6 +4,7 @@ import 'package:asgshighschool/data/exist_cart.dart';
 import 'package:asgshighschool/data/product_data.dart';
 import 'package:asgshighschool/data/user_data.dart';
 import 'package:asgshighschool/store/PaymentCompletePage.dart';
+import 'package:asgshighschool/store/StoreMainPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -26,6 +27,7 @@ class _OrderPageState extends State<OrderPage> {
   TextEditingController _requestOptionController = TextEditingController();
   bool _isCart = true;
   String _generatedOID;
+
   @override
   void initState() {
     if (widget.direct == null) {
@@ -37,6 +39,7 @@ class _OrderPageState extends State<OrderPage> {
     super.initState();
   }
 
+  /// 주문을 등록하는 요청
   Future<bool> _addOrderRequest() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_addOrder.php';
     _generatedOID = DateTime.now().millisecondsSinceEpoch.toString();
@@ -57,6 +60,7 @@ class _OrderPageState extends State<OrderPage> {
     }
   }
 
+  /// orderDetail 테이블에 oid인 값에 대하여 어떤 상품인지 등록하는 http 요청
   Future<bool> _addOrderDetailRequest(int pid, int quantity) async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_addOrderDetail.php';
     final response = await http.post(url, body: <String, String>{
@@ -71,6 +75,7 @@ class _OrderPageState extends State<OrderPage> {
     }
   }
 
+  /// 최종적으로 주문을 등록하는 과정
   Future<bool> _registerOrderRequest() async {
     var orderRes = await _addOrderRequest();
     if (!orderRes) return false;
@@ -113,6 +118,7 @@ class _OrderPageState extends State<OrderPage> {
     return true;
   }
 
+  /// 장바구니에서 결제를 시도한다면 장바구니에 있는 데이터들을 지우는 요청
   Future<bool> _deleteCartRequest(int cid) async {
     String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_deleteCart.php?cid=$cid';
@@ -125,6 +131,7 @@ class _OrderPageState extends State<OrderPage> {
     }
   }
 
+  /// 각 상품의 수량을 [quantity]만큼 깎는 요청
   Future<bool> _updateProductCountRequest(int pid, int quantity) async {
     String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_updateProductCount.php';
@@ -139,6 +146,7 @@ class _OrderPageState extends State<OrderPage> {
     }
   }
 
+  /// 각 상품의 누적 판매수를 반영하는 요청
   Future<bool> _updateEachProductSellCountRequest(int pid, int quantity) async {
     String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_updateProductSellCount.php';
@@ -150,9 +158,10 @@ class _OrderPageState extends State<OrderPage> {
     }
   }
 
+  /// 이 주문을 요청한 사용자의 누적 구매수를 증가시키는 요청
   Future<bool> _updateUserBuyCountRequest() async {
     String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_updateUserBuyCount.php';
+        'http://nacha01.dothome.co.kr/sin/arlimi_updateUserBuyCount.php?uid=${widget.user.uid}';
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -162,6 +171,7 @@ class _OrderPageState extends State<OrderPage> {
     }
   }
 
+  /// 총 할인 금액을 구하는 작업
   int _getTotalDiscount() {
     int sum = 0;
     if (_isCart) {
@@ -213,6 +223,7 @@ class _OrderPageState extends State<OrderPage> {
     return newStr;
   }
 
+  /// 총 원가격의 금액을 구하는 작업
   int _getOriginTotalPrice() {
     int sum = 0;
     if (_isCart) {
@@ -444,7 +455,7 @@ class _OrderPageState extends State<OrderPage> {
 
                 if (res) {
                   var r = await _updateUserBuyCountRequest();
-
+                  StoreMainPageState.currentNav = 0;
                   if (_isCart) {
                     data.setExistCart(false);
                   }
