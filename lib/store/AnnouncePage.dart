@@ -83,7 +83,7 @@ class _AnnouncePageState extends State<AnnouncePage> {
       appBar: AppBar(
         backgroundColor: Color(0xFF9EE1E5),
         title: Text(
-          '나래 소식',
+          '두루두루 소식',
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,

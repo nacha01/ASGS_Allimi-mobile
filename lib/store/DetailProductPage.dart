@@ -405,7 +405,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                     padding: EdgeInsets.all(10),
                     color: Color(0xFF9EE1E5),
                     alignment: Alignment.center,
-                    width: size.width * 0.45,
+                    width: size.width * 0.48,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
@@ -437,7 +437,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                     padding: EdgeInsets.all(10),
                     color: Colors.cyan[700],
                     alignment: Alignment.center,
-                    width: size.width * 0.55,
+                    width: size.width * 0.52,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [

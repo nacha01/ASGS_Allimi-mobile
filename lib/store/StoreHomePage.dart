@@ -307,18 +307,18 @@ class _StoreHomePageState extends State<StoreHomePage>
               backgroundColor: Colors.white,
               expandedHeight: 110,
               forceElevated: innerBoxIsScrolled,
-              leadingWidth: size.width * 0.18,
+              leadingWidth: size.width * 0.23,
               centerTitle: true,
               title: aboveTap(size),
               leading: Container(
                   margin: EdgeInsets.only(left: 9),
                   alignment: Alignment.center,
                   child: Text(
-                    '나래',
+                    '두루두루',
                     style: TextStyle(
                       color: Color(0xFF9EE1E5),
                       fontWeight: FontWeight.bold,
-                      fontSize: 25,
+                      fontSize: 18,
                     ),
                   )),
               bottom: TabBar(
@@ -941,7 +941,7 @@ class _StoreHomePageState extends State<StoreHomePage>
   Widget aboveTap(Size size) {
     return Container(
       margin: EdgeInsets.all(5),
-      width: size.width * 0.78,
+      width: size.width * 0.7,
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12), color: Color(0xFF9EE1E5)),
       child: TextField(

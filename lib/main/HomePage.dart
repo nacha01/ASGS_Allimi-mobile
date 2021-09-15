@@ -478,7 +478,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     indicatorWeight: 6.0,
                     tabs: <Tab>[
                       Tab(text: "Home"),
-                      Tab(text: "나래 매점"),
+                      Tab(text: "두루두루"),
                       Tab(text: "알리미 공지사항"),
                     ],
                     controller: tabController,
