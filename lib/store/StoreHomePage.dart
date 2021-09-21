@@ -8,6 +8,7 @@ import 'package:asgshighschool/store/EventPage.dart';
 import 'package:asgshighschool/storeAdmin/AddProduct.dart';
 import 'package:asgshighschool/storeAdmin/UpdateProduct.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -311,18 +312,27 @@ class _StoreHomePageState extends State<StoreHomePage>
               centerTitle: true,
               title: aboveTap(size),
               leading: Container(
-                  margin: EdgeInsets.only(left: 9),
+                  margin: EdgeInsets.only(left: 7),
                   alignment: Alignment.center,
-                  child: Text(
-                    '두루두루',
-                    style: TextStyle(
-                      color: Color(0xFF9EE1E5),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
+                  child: FlatButton(
+                    padding: EdgeInsets.all(0),
+                    onPressed: () {
+                      _tabController.index = 0;
+                    },
+                    child: Text(
+                      '두루두루',
+                      style: TextStyle(
+                        color: Color(0xFF9EE1E5),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
                     ),
                   )),
               bottom: TabBar(
                 tabs: [
+                  Tab(
+                    text: 'MENU',
+                  ),
                   Tab(
                     text: 'BEST',
                   ),
@@ -331,9 +341,6 @@ class _StoreHomePageState extends State<StoreHomePage>
                   ),
                   Tab(
                     text: 'EVENT',
-                  ),
-                  Tab(
-                    text: 'MENU',
                   )
                 ],
                 labelColor: Colors.black,
@@ -347,102 +354,6 @@ class _StoreHomePageState extends State<StoreHomePage>
           ];
         },
         body: TabBarView(controller: _tabController, children: [
-          _bestProductLayoutList.length == 0
-              ? RefreshIndicator(
-                  onRefresh: _getProducts,
-                  child: Column(
-                    children: [
-                      addProductForAdmin(size),
-                      Expanded(
-                        child: Center(
-                            child: Text(
-                          '베스트 상품이 없습니다!',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 21),
-                        )),
-                      ),
-                    ],
-                  ),
-                )
-              : RefreshIndicator(
-                  onRefresh: _getProducts,
-                  child: Column(
-                    children: [
-                      addProductForAdmin(size),
-                      SizedBox(
-                        height: size.width * 0.02,
-                      ),
-                      Expanded(
-                        child: Container(
-                          height: size.height * 1.07,
-                          child: GridView.builder(
-                              itemCount: _bestProductLayoutList.length,
-                              gridDelegate:
-                                  SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 2,
-                                      mainAxisSpacing: 15,
-                                      crossAxisSpacing: 1),
-                              itemBuilder: (context, index) {
-                                return _bestProductLayoutList[index];
-                              }),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-          /*------------ BEST TAB ---------------*/
-          _newProductLayoutList.length == 0
-              ? RefreshIndicator(
-                  onRefresh: _getProducts,
-                  child: Column(
-                    children: [
-                      addProductForAdmin(size),
-                      Expanded(
-                        child: Center(
-                            child: Text(
-                          '신규 상품이 없습니다!',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 21),
-                        )),
-                      ),
-                    ],
-                  ),
-                )
-              : RefreshIndicator(
-                  onRefresh: _getProducts,
-                  child: Column(
-                    children: [
-                      addProductForAdmin(size),
-                      SizedBox(
-                        height: size.width * 0.02,
-                      ),
-                      Expanded(
-                        child: Container(
-                          height: size.height * 1.07,
-                          child: GridView.builder(
-                              itemCount: _newProductLayoutList.length,
-                              gridDelegate:
-                                  SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 2,
-                                      mainAxisSpacing: 15,
-                                      crossAxisSpacing: 1),
-                              itemBuilder: (context, index) {
-                                return _newProductLayoutList[index];
-                              }),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-          /*------------ NEW TAB ---------------*/
-          // Container(
-          //   child: Center(
-          //     child: Text('이벤트가 없습니다!',
-          //         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 21)),
-          //   ),
-          // ),
-          EventPage(),
-          /*------------ EVENT TAB ---------------*/
           if (_productLayoutList.length == 0)
             RefreshIndicator(
               onRefresh: _getProducts,
@@ -670,6 +581,102 @@ class _StoreHomePageState extends State<StoreHomePage>
               ),
             ),
           /*------------ MENU TAB ---------------*/
+          _bestProductLayoutList.length == 0
+              ? RefreshIndicator(
+                  onRefresh: _getProducts,
+                  child: Column(
+                    children: [
+                      addProductForAdmin(size),
+                      Expanded(
+                        child: Center(
+                            child: Text(
+                          '베스트 상품이 없습니다!',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 21),
+                        )),
+                      ),
+                    ],
+                  ),
+                )
+              : RefreshIndicator(
+                  onRefresh: _getProducts,
+                  child: Column(
+                    children: [
+                      addProductForAdmin(size),
+                      SizedBox(
+                        height: size.width * 0.02,
+                      ),
+                      Expanded(
+                        child: Container(
+                          height: size.height * 1.07,
+                          child: GridView.builder(
+                              itemCount: _bestProductLayoutList.length,
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 2,
+                                      mainAxisSpacing: 15,
+                                      crossAxisSpacing: 1),
+                              itemBuilder: (context, index) {
+                                return _bestProductLayoutList[index];
+                              }),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+          /*------------ BEST TAB ---------------*/
+          _newProductLayoutList.length == 0
+              ? RefreshIndicator(
+                  onRefresh: _getProducts,
+                  child: Column(
+                    children: [
+                      addProductForAdmin(size),
+                      Expanded(
+                        child: Center(
+                            child: Text(
+                          '신규 상품이 없습니다!',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 21),
+                        )),
+                      ),
+                    ],
+                  ),
+                )
+              : RefreshIndicator(
+                  onRefresh: _getProducts,
+                  child: Column(
+                    children: [
+                      addProductForAdmin(size),
+                      SizedBox(
+                        height: size.width * 0.02,
+                      ),
+                      Expanded(
+                        child: Container(
+                          height: size.height * 1.07,
+                          child: GridView.builder(
+                              itemCount: _newProductLayoutList.length,
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 2,
+                                      mainAxisSpacing: 15,
+                                      crossAxisSpacing: 1),
+                              itemBuilder: (context, index) {
+                                return _newProductLayoutList[index];
+                              }),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+          /*------------ NEW TAB ---------------*/
+          // Container(
+          //   child: Center(
+          //     child: Text('이벤트가 없습니다!',
+          //         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 21)),
+          //   ),
+          // ),
+          EventPage(),
+          /*------------ EVENT TAB ---------------*/
         ]),
       ),
     );
