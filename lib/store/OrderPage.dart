@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:ui';
 
 import 'package:asgshighschool/data/exist_cart.dart';
@@ -7,6 +8,7 @@ import 'package:asgshighschool/store/PaymentCompletePage.dart';
 import 'package:asgshighschool/store/StoreMainPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
@@ -27,6 +29,7 @@ class _OrderPageState extends State<OrderPage> {
   TextEditingController _requestOptionController = TextEditingController();
   bool _isCart = true;
   String _generatedOID;
+  String _checkMessage;
 
   @override
   void initState() {
@@ -37,6 +40,7 @@ class _OrderPageState extends State<OrderPage> {
       _isCart = false;
     }
     super.initState();
+    print(widget.cart);
   }
 
   /// 주문을 등록하는 요청
@@ -165,6 +169,36 @@ class _OrderPageState extends State<OrderPage> {
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<bool> _checkSynchronousStockCount() async {
+    String uri = 'http://nacha01.dothome.co.kr/sin/arlimi_getAllCart.php';
+    final response = await http.get(uri + '?uid=${widget.user.uid}');
+    if (response.statusCode == 200) {
+      String result = utf8
+          .decode(response.bodyBytes)
+          .replaceAll(
+              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+              '')
+          .trim();
+      List cartProduct = json.decode(result);
+      List<Map> checksum = [];
+      for (int i = 0; i < cartProduct.length; ++i) {
+        checksum.add(json.decode(cartProduct[i]));
+      }
+      for (int i = 0; i < checksum.length; ++i) {
+        if (int.parse(widget.cart[i]['quantity']) >
+            (int.parse(checksum[i]['stockCount']) - 5)) {
+          _checkMessage =
+              '"${widget.cart[i]['prodName']}"상품의 선택 수량이 현재 재고보다 많습니다.';
+          return false;
+        }
+      }
+      _checkMessage = '성공적으로 처리가 완료되었습니다.';
       return true;
     } else {
       return false;
@@ -451,10 +485,45 @@ class _OrderPageState extends State<OrderPage> {
             ),
             FlatButton(
               onPressed: () async {
+                await showDialog(
+                    context: context,
+                    builder: (ctx) {
+                      Future.delayed(Duration(milliseconds: 500),
+                          () => Navigator.pop(ctx));
+                      return AlertDialog(
+                        title: Text('동기화 및 재고 점검중'),
+                        content: LinearProgressIndicator(),
+                        shape: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide:
+                                BorderSide(color: Colors.black, width: 2)),
+                      );
+                    });
+
+                var syncChk = await _checkSynchronousStockCount();
+
+                await showDialog(
+                    context: context,
+                    builder: (ctx) {
+                      Future.delayed(Duration(milliseconds: 1000),
+                          () => Navigator.pop(ctx));
+                      return AlertDialog(
+                        title: Text(_checkMessage),
+                        shape: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide:
+                                BorderSide(color: Colors.black, width: 2)),
+                      );
+                    });
+
+                if (!syncChk) {
+                  return;
+                }
+
                 var res = await _registerOrderRequest();
 
                 if (res) {
-                  var r = await _updateUserBuyCountRequest();
+                  await _updateUserBuyCountRequest();
                   StoreMainPageState.currentNav = 0;
                   if (_isCart) {
                     data.setExistCart(false);

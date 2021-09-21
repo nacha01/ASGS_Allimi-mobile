@@ -53,6 +53,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
 
   @override
   void initState() {
+    print('결제완료');
     super.initState();
     _getOrderInfo();
   }

@@ -844,9 +844,11 @@ class _StoreHomePageState extends State<StoreHomePage>
                     imageUrl: imgUrl,
                     fit: BoxFit.fill,
                     progressIndicatorBuilder: (context, url, progress) =>
-                        CircularProgressIndicator(
+                        Center(
+                          child: CircularProgressIndicator(
                       value: progress.progress,
                     ),
+                        ),
                     errorWidget: (context, url, error) {
                       return Container(
                           alignment: Alignment.center,
