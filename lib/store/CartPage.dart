@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:ui';
 
 import 'package:asgshighschool/data/exist_cart.dart';
-import 'package:asgshighschool/data/product_data.dart';
 import 'package:asgshighschool/data/user_data.dart';
 import 'package:asgshighschool/store/OrderPage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -199,7 +198,10 @@ class _CartPageState extends State<CartPage> {
         leading: widget.isFromDetail
             ? IconButton(
                 onPressed: () => Navigator.pop(context),
-                icon: Icon(Icons.arrow_back, color: Colors.black,))
+                icon: Icon(
+                  Icons.arrow_back,
+                  color: Colors.black,
+                ))
             : SizedBox(),
         backgroundColor: Color(0xFF9EE1E5),
         title: Text(
@@ -391,9 +393,18 @@ class _CartPageState extends State<CartPage> {
                               Border.all(width: 1, color: Colors.grey[400])),
                       child: IconButton(
                         onPressed: () async {
-                          setState(() {
-                            _countList[index]++;
-                          });
+                          if (_countList[index] <
+                              int.parse(_cartProductList[index]['stockCount']) -
+                                  5) {
+                            setState(() {
+                              _countList[index]++;
+                            });
+                          } else {
+                            Fluttertoast.showToast(
+                                msg: '현재 상품의 재고를 초과할 수 없습니다!',
+                                gravity: ToastGravity.BOTTOM,
+                                toastLength: Toast.LENGTH_SHORT);
+                          }
                         },
                         icon: Icon(Icons.add),
                       ),

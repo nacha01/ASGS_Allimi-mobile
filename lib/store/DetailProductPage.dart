@@ -13,6 +13,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
+// 상품의 재고는 실제 재고보다 5개 작게 보여준다. 2021/09/21
 class DetailProductPage extends StatefulWidget {
   DetailProductPage({this.product, this.user});
   final Product product;
@@ -30,8 +31,8 @@ class _DetailProductPageState extends State<DetailProductPage> {
     4: '핸드메이드'
   };
   bool _isDiscountZero;
-  int _count = 1;
-  bool _isCart = false;
+  int _count = 1; // 버튼으로 누른 수량
+  bool _isCart = false; // 장바구니에 담았는지 판단
 
   String _formatPrice(int price) {
     String p = price.toString();
@@ -217,7 +218,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                         ),
                         title: Center(
                           child: Text(
-                            '상품 재고 : ${widget.product.stockCount}개',
+                            '상품 재고 : ${widget.product.stockCount - 5}개',
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 18),
                           ),
@@ -311,9 +312,16 @@ class _DetailProductPageState extends State<DetailProductPage> {
                           height: size.height * 0.06,
                           child: IconButton(
                             onPressed: () {
-                              setState(() {
-                                ++_count;
-                              });
+                              if (_count < widget.product.stockCount - 5) {
+                                setState(() {
+                                  ++_count;
+                                });
+                              } else {
+                                Fluttertoast.showToast(
+                                    msg: '더 추가할 수 없습니다!',
+                                    gravity: ToastGravity.BOTTOM,
+                                    toastLength: Toast.LENGTH_SHORT);
+                              }
                             },
                             icon: Icon(Icons.add),
                           ),
@@ -373,6 +381,13 @@ class _DetailProductPageState extends State<DetailProductPage> {
               children: [
                 GestureDetector(
                   onTap: () async {
+                    if (_count < 1 || widget.product.stockCount - 5 < 1) {
+                      Fluttertoast.showToast(
+                          msg: '상품의 재고가 없어 장바구니에 담을 수 없습니다!',
+                          gravity: ToastGravity.BOTTOM,
+                          toastLength: Toast.LENGTH_SHORT);
+                      return;
+                    }
                     if (!_isCart) {
                       var result = await _addCartProductRequest();
                       print(result);
@@ -423,6 +438,13 @@ class _DetailProductPageState extends State<DetailProductPage> {
                 ),
                 GestureDetector(
                   onTap: () {
+                    if (_count < 1 || widget.product.stockCount - 5 < 1) {
+                      Fluttertoast.showToast(
+                          msg: '상품의 재고가 없어 결제할 수가 없습니다!',
+                          gravity: ToastGravity.BOTTOM,
+                          toastLength: Toast.LENGTH_SHORT);
+                      return;
+                    }
                     Navigator.push(
                         context,
                         MaterialPageRoute(
