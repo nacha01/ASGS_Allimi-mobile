@@ -62,7 +62,8 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
 
   // index : {0 -> main, 1 -> sub1, 2 -> sub3}
   Future<void> _getImageFromGallery(int index) async {
-    var image = await ImagePicker().getImage(source: ImageSource.gallery);
+    var image = await ImagePicker()
+        .getImage(source: ImageSource.gallery, imageQuality: 50);
     setState(() {
       _imageInitial = false;
       switch (index) {
@@ -81,7 +82,8 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
 
   // index : {0 -> main, 1 -> sub1, 2 -> sub3}
   Future<void> _getImageFromCamera(int index) async {
-    var image = await ImagePicker().getImage(source: ImageSource.camera);
+    var image = await ImagePicker()
+        .getImage(source: ImageSource.camera, imageQuality: 50);
     setState(() {
       _imageInitial = false;
       switch (index) {
@@ -134,7 +136,6 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
     if (origin.contains('_')) {
       origin = origin.substring(0, origin.length - 1) +
           (int.parse(origin[origin.length - 1]) + 1).toString();
-      print(origin);
       return origin;
     } else {
       return origin + '_1';

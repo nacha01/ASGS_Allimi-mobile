@@ -84,7 +84,8 @@ class _AddingProductPageState extends State<AddingProductPage> {
   /// 갤러리에서 이미지를 가져오는 작업
   /// [index] = {0 : main, 1 : sub1, 2 : sub3}
   Future<void> _getImageFromGallery(int index) async {
-    var image = await ImagePicker().getImage(source: ImageSource.gallery);
+    var image = await ImagePicker()
+        .getImage(source: ImageSource.gallery, imageQuality: 50);
     setState(() {
       switch (index) {
         case 0:
@@ -103,7 +104,8 @@ class _AddingProductPageState extends State<AddingProductPage> {
   /// 카메로에서 찍은 이미지를 가져오는 작업
   /// [index] = {0 -> main, 1 -> sub1, 2 -> sub3}
   Future<void> _getImageFromCamera(int index) async {
-    var image = await ImagePicker().getImage(source: ImageSource.camera);
+    var image = await ImagePicker()
+        .getImage(source: ImageSource.camera, imageQuality: 50);
     setState(() {
       switch (index) {
         case 0:

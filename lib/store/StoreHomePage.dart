@@ -839,6 +839,8 @@ class _StoreHomePageState extends State<StoreHomePage>
               children: [
                 ClipRRect(
                   child: CachedNetworkImage(
+                    width: 150,
+                    height: 400,
                     imageUrl: imgUrl,
                     fit: BoxFit.fill,
                     progressIndicatorBuilder: (context, url, progress) =>
