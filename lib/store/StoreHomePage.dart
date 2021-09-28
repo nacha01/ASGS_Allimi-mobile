@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:asgshighschool/data/exist_cart.dart';
 import 'package:asgshighschool/data/product_data.dart';
@@ -31,6 +32,9 @@ class _StoreHomePageState extends State<StoreHomePage>
   TabController _tabController;
   ScrollController _scrollViewController;
   int _selectedCategory = 0;
+  int _selectRadio = 0;
+  List _sortTitleList = ['등록순', '이름순', '가격순'];
+  bool _isAsc = true; // true : 오름차순 , false : 내림차순
 
   List<Product> _productList = [];
   List<Widget> _productLayoutList = [];
@@ -91,6 +95,297 @@ class _StoreHomePageState extends State<StoreHomePage>
     getBeverageProdLayout();
     getStationeryProdLayout();
     getHandmadeProdLayout();
+  }
+
+  void _sortProductByIndex(int sortMethod) {
+    // 0 : 등록순 - prodID 필드 기준으로 정렬
+    // 1 : 이름순 - prodName 필드 기준으로 정렬
+    // 2 : 가격순 - price 필드 기준으로 정렬
+    switch (sortMethod) {
+      case 0:
+        _productList.sort((a, b) => a.prodID.compareTo(b.prodID));
+        _productLayoutList.clear();
+        if (!_isAsc) _productList = List.from(_productList.reversed);
+        for (int i = 0; i < _productList.length; ++i) {
+          _productLayoutList.add(itemTile(
+              _productList[i].imgUrl1,
+              _productList[i].price,
+              _productList[i].prodName,
+              false,
+              _productList[i]));
+        }
+        _foodProductList.sort((a, b) => a.prodID.compareTo(b.prodID));
+        _foodProductLayoutList.clear();
+        if (!_isAsc) _foodProductList = List.from(_foodProductList.reversed);
+        for (int i = 0; i < _foodProductList.length; ++i) {
+          _foodProductLayoutList.add(itemTile(
+              _foodProductList[i].imgUrl1,
+              _foodProductList[i].price,
+              _foodProductList[i].prodName,
+              false,
+              _foodProductList[i]));
+        }
+        _snackProductList.sort((a, b) => a.prodID.compareTo(b.prodID));
+        _snackProductLayoutList.clear();
+        if (!_isAsc) _snackProductList = List.from(_snackProductList.reversed);
+        for (int i = 0; i < _snackProductList.length; ++i) {
+          _snackProductLayoutList.add(itemTile(
+              _snackProductList[i].imgUrl1,
+              _snackProductList[i].price,
+              _snackProductList[i].prodName,
+              false,
+              _snackProductList[i]));
+        }
+        _beverageProductList.sort((a, b) => a.prodID.compareTo(b.prodID));
+        _beverageProductLayoutList.clear();
+        if (!_isAsc)
+          _beverageProductList = List.from(_beverageProductList.reversed);
+        for (int i = 0; i < _beverageProductList.length; ++i) {
+          _beverageProductLayoutList.add(itemTile(
+              _beverageProductList[i].imgUrl1,
+              _beverageProductList[i].price,
+              _beverageProductList[i].prodName,
+              false,
+              _beverageProductList[i]));
+        }
+        _stationeryProductList.sort((a, b) => a.prodID.compareTo(b.prodID));
+        _stationeryProductLayoutList.clear();
+        if (!_isAsc)
+          _stationeryProductList = List.from(_stationeryProductList.reversed);
+        for (int i = 0; i < _stationeryProductList.length; ++i) {
+          _stationeryProductLayoutList.add(itemTile(
+              _stationeryProductList[i].imgUrl1,
+              _stationeryProductList[i].price,
+              _stationeryProductList[i].prodName,
+              false,
+              _stationeryProductList[i]));
+        }
+        _handmadeProductList.sort((a, b) => a.prodID.compareTo(b.prodID));
+        _handmadeProductLayoutList.clear();
+        if (!_isAsc)
+          _handmadeProductList = List.from(_handmadeProductList.reversed);
+        for (int i = 0; i < _handmadeProductList.length; ++i) {
+          _handmadeProductLayoutList.add(itemTile(
+              _handmadeProductList[i].imgUrl1,
+              _handmadeProductList[i].price,
+              _handmadeProductList[i].prodName,
+              false,
+              _handmadeProductList[i]));
+        }
+        _bestProductList.sort((a, b) => a.prodID.compareTo(b.prodID));
+        _bestProductLayoutList.clear();
+        if (!_isAsc) _bestProductList = List.from(_bestProductList.reversed);
+        for (int i = 0; i < _bestProductList.length; ++i) {
+          _bestProductLayoutList.add(itemTile(
+              _bestProductList[i].imgUrl1,
+              _bestProductList[i].price,
+              _bestProductList[i].prodName,
+              false,
+              _bestProductList[i]));
+        }
+
+        _newProductList.sort((a, b) => a.prodID.compareTo(b.prodID));
+        _newProductLayoutList.clear();
+        if (!_isAsc) _newProductList = List.from(_newProductList.reversed);
+        for (int i = 0; i < _newProductList.length; ++i) {
+          _newProductLayoutList.add(itemTile(
+              _newProductList[i].imgUrl1,
+              _newProductList[i].price,
+              _newProductList[i].prodName,
+              false,
+              _newProductList[i]));
+        }
+        break;
+      case 1:
+        _productList.sort((a, b) => a.prodName.compareTo(b.prodName));
+        _productLayoutList.clear();
+        if (!_isAsc) _productList = List.from(_productList.reversed);
+        for (int i = 0; i < _productList.length; ++i) {
+          _productLayoutList.add(itemTile(
+              _productList[i].imgUrl1,
+              _productList[i].price,
+              _productList[i].prodName,
+              false,
+              _productList[i]));
+        }
+        _foodProductList.sort((a, b) => a.prodName.compareTo(b.prodName));
+        _foodProductLayoutList.clear();
+        if (!_isAsc) _foodProductList = List.from(_foodProductList.reversed);
+        for (int i = 0; i < _foodProductList.length; ++i) {
+          _foodProductLayoutList.add(itemTile(
+              _foodProductList[i].imgUrl1,
+              _foodProductList[i].price,
+              _foodProductList[i].prodName,
+              false,
+              _foodProductList[i]));
+        }
+        _snackProductList.sort((a, b) => a.prodName.compareTo(b.prodName));
+        _snackProductLayoutList.clear();
+        if (!_isAsc) _snackProductList = List.from(_snackProductList.reversed);
+        for (int i = 0; i < _snackProductList.length; ++i) {
+          _snackProductLayoutList.add(itemTile(
+              _snackProductList[i].imgUrl1,
+              _snackProductList[i].price,
+              _snackProductList[i].prodName,
+              false,
+              _snackProductList[i]));
+        }
+        _beverageProductList.sort((a, b) => a.prodName.compareTo(b.prodName));
+        _beverageProductLayoutList.clear();
+        if (!_isAsc)
+          _beverageProductList = List.from(_beverageProductList.reversed);
+        for (int i = 0; i < _beverageProductList.length; ++i) {
+          _beverageProductLayoutList.add(itemTile(
+              _beverageProductList[i].imgUrl1,
+              _beverageProductList[i].price,
+              _beverageProductList[i].prodName,
+              false,
+              _beverageProductList[i]));
+        }
+        _stationeryProductList.sort((a, b) => a.prodName.compareTo(b.prodName));
+        _stationeryProductLayoutList.clear();
+        if (!_isAsc)
+          _stationeryProductList = List.from(_stationeryProductList.reversed);
+        for (int i = 0; i < _stationeryProductList.length; ++i) {
+          _stationeryProductLayoutList.add(itemTile(
+              _stationeryProductList[i].imgUrl1,
+              _stationeryProductList[i].price,
+              _stationeryProductList[i].prodName,
+              false,
+              _stationeryProductList[i]));
+        }
+        _handmadeProductList.sort((a, b) => a.prodName.compareTo(b.prodName));
+        _handmadeProductLayoutList.clear();
+        if (!_isAsc)
+          _handmadeProductList = List.from(_handmadeProductList.reversed);
+        for (int i = 0; i < _handmadeProductList.length; ++i) {
+          _handmadeProductLayoutList.add(itemTile(
+              _handmadeProductList[i].imgUrl1,
+              _handmadeProductList[i].price,
+              _handmadeProductList[i].prodName,
+              false,
+              _handmadeProductList[i]));
+        }
+        _bestProductList.sort((a, b) => a.prodName.compareTo(b.prodName));
+        _bestProductLayoutList.clear();
+        if (!_isAsc) _bestProductList = List.from(_bestProductList.reversed);
+        for (int i = 0; i < _bestProductList.length; ++i) {
+          _bestProductLayoutList.add(itemTile(
+              _bestProductList[i].imgUrl1,
+              _bestProductList[i].price,
+              _bestProductList[i].prodName,
+              false,
+              _bestProductList[i]));
+        }
+
+        _newProductList.sort((a, b) => a.prodName.compareTo(b.prodName));
+        _newProductLayoutList.clear();
+        if (!_isAsc) _newProductList = List.from(_newProductList.reversed);
+        for (int i = 0; i < _newProductList.length; ++i) {
+          _newProductLayoutList.add(itemTile(
+              _newProductList[i].imgUrl1,
+              _newProductList[i].price,
+              _newProductList[i].prodName,
+              false,
+              _newProductList[i]));
+        }
+        break;
+      case 2:
+        _productList.sort((a, b) => a.price.compareTo(b.price));
+        _productLayoutList.clear();
+        if (!_isAsc) _productList = List.from(_productList.reversed);
+        for (int i = 0; i < _productList.length; ++i) {
+          _productLayoutList.add(itemTile(
+              _productList[i].imgUrl1,
+              _productList[i].price,
+              _productList[i].prodName,
+              false,
+              _productList[i]));
+        }
+        _foodProductList.sort((a, b) => a.price.compareTo(b.price));
+        _foodProductLayoutList.clear();
+        if (!_isAsc) _foodProductList = List.from(_foodProductList.reversed);
+        for (int i = 0; i < _foodProductList.length; ++i) {
+          _foodProductLayoutList.add(itemTile(
+              _foodProductList[i].imgUrl1,
+              _foodProductList[i].price,
+              _foodProductList[i].prodName,
+              false,
+              _foodProductList[i]));
+        }
+        _snackProductList.sort((a, b) => a.price.compareTo(b.price));
+        _snackProductLayoutList.clear();
+        if (!_isAsc) _snackProductList = List.from(_snackProductList.reversed);
+        for (int i = 0; i < _snackProductList.length; ++i) {
+          _snackProductLayoutList.add(itemTile(
+              _snackProductList[i].imgUrl1,
+              _snackProductList[i].price,
+              _snackProductList[i].prodName,
+              false,
+              _snackProductList[i]));
+        }
+        _beverageProductList.sort((a, b) => a.price.compareTo(b.price));
+        _beverageProductLayoutList.clear();
+        if (!_isAsc)
+          _beverageProductList = List.from(_beverageProductList.reversed);
+        for (int i = 0; i < _beverageProductList.length; ++i) {
+          _beverageProductLayoutList.add(itemTile(
+              _beverageProductList[i].imgUrl1,
+              _beverageProductList[i].price,
+              _beverageProductList[i].prodName,
+              false,
+              _beverageProductList[i]));
+        }
+        _stationeryProductList.sort((a, b) => a.price.compareTo(b.price));
+        _stationeryProductLayoutList.clear();
+        if (!_isAsc)
+          _stationeryProductList = List.from(_stationeryProductList.reversed);
+        for (int i = 0; i < _stationeryProductList.length; ++i) {
+          _stationeryProductLayoutList.add(itemTile(
+              _stationeryProductList[i].imgUrl1,
+              _stationeryProductList[i].price,
+              _stationeryProductList[i].prodName,
+              false,
+              _stationeryProductList[i]));
+        }
+        _handmadeProductList.sort((a, b) => a.price.compareTo(b.price));
+        _handmadeProductLayoutList.clear();
+        if (!_isAsc)
+          _handmadeProductList = List.from(_handmadeProductList.reversed);
+        for (int i = 0; i < _handmadeProductList.length; ++i) {
+          _handmadeProductLayoutList.add(itemTile(
+              _handmadeProductList[i].imgUrl1,
+              _handmadeProductList[i].price,
+              _handmadeProductList[i].prodName,
+              false,
+              _handmadeProductList[i]));
+        }
+        _bestProductList.sort((a, b) => a.price.compareTo(b.price));
+        _bestProductLayoutList.clear();
+        if (!_isAsc) _bestProductList = List.from(_bestProductList.reversed);
+        for (int i = 0; i < _bestProductList.length; ++i) {
+          _bestProductLayoutList.add(itemTile(
+              _bestProductList[i].imgUrl1,
+              _bestProductList[i].price,
+              _bestProductList[i].prodName,
+              false,
+              _bestProductList[i]));
+        }
+
+        _newProductList.sort((a, b) => a.price.compareTo(b.price));
+        _newProductLayoutList.clear();
+        if (!_isAsc) _newProductList = List.from(_newProductList.reversed);
+        for (int i = 0; i < _newProductList.length; ++i) {
+          _newProductLayoutList.add(itemTile(
+              _newProductList[i].imgUrl1,
+              _newProductList[i].price,
+              _newProductList[i].prodName,
+              false,
+              _newProductList[i]));
+        }
+        break;
+    }
+    setState(() {});
   }
 
   String _formatPrice(int price) {
@@ -238,6 +533,8 @@ class _StoreHomePageState extends State<StoreHomePage>
       }
       setState(() {
         _groupingProduct();
+        _isAsc = true;
+        _selectRadio = 0;
       });
     }
   }
@@ -548,8 +845,107 @@ class _StoreHomePageState extends State<StoreHomePage>
                       ),
                     ),
                   ),
-                  SizedBox(
-                    height: size.height * 0.02,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          setState(() {
+                            _isAsc = !_isAsc;
+                            _productList = List.from(_productList.reversed);
+                            _productLayoutList =
+                                List.from(_productLayoutList.reversed);
+                            _foodProductList =
+                                List.from(_foodProductList.reversed);
+                            _foodProductLayoutList =
+                                List.from(_foodProductLayoutList.reversed);
+
+                            _snackProductList =
+                                List.from(_snackProductList.reversed);
+                            _snackProductLayoutList =
+                                List.from(_snackProductLayoutList.reversed);
+
+                            _beverageProductList =
+                                List.from(_beverageProductList.reversed);
+                            _beverageProductLayoutList =
+                                List.from(_beverageProductLayoutList.reversed);
+
+                            _stationeryProductList =
+                                List.from(_stationeryProductList.reversed);
+                            _stationeryProductLayoutList = List.from(
+                                _stationeryProductLayoutList.reversed);
+
+                            _handmadeProductList =
+                                List.from(_handmadeProductList.reversed);
+                            _handmadeProductLayoutList =
+                                List.from(_handmadeProductLayoutList.reversed);
+
+                            _bestProductList =
+                                List.from(_bestProductList.reversed);
+                            _bestProductLayoutList =
+                                List.from(_bestProductLayoutList.reversed);
+
+                            _newProductList =
+                                List.from(_newProductList.reversed);
+                            _newProductLayoutList =
+                                List.from(_newProductLayoutList.reversed);
+                          });
+                        },
+                        icon: Icon(_isAsc
+                            ? Icons.arrow_circle_up
+                            : Icons.arrow_circle_down),
+                        iconSize: 32,
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                    shape: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(15),
+                                        borderSide: BorderSide(
+                                            color: Colors.black, width: 2)),
+                                    title: Center(
+                                      child: Text(
+                                        '상품정렬 기준 선택',
+                                        style: TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                    content: StatefulBuilder(
+                                      builder: (context, setState) {
+                                        return Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: List.generate(3, (index) {
+                                            return RadioListTile<int>(
+                                              title: Center(
+                                                  child: Text(
+                                                      _sortTitleList[index])),
+                                              value: index,
+                                              groupValue: _selectRadio,
+                                              onChanged: (value) {
+                                                setState(() {
+                                                  _selectRadio = value;
+                                                });
+                                                _sortProductByIndex(
+                                                    _selectRadio);
+                                              },
+                                            );
+                                          }),
+                                        );
+                                      },
+                                    ),
+                                  ));
+                        },
+                        icon: Icon(Icons.sort),
+                        padding: EdgeInsets.all(0),
+                        iconSize: 32,
+                      ),
+                      SizedBox(
+                        width: size.width * 0.02,
+                      )
+                    ],
                   ),
                   _getLengthOfCurrentCategory(_selectedCategory) == 0
                       ? Expanded(
@@ -603,8 +999,110 @@ class _StoreHomePageState extends State<StoreHomePage>
                   child: Column(
                     children: [
                       addProductForAdmin(size),
-                      SizedBox(
-                        height: size.width * 0.02,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          IconButton(
+                            onPressed: () {
+                              setState(() {
+                                _isAsc = !_isAsc;
+                                _productList = List.from(_productList.reversed);
+                                _productLayoutList =
+                                    List.from(_productLayoutList.reversed);
+                                _foodProductList =
+                                    List.from(_foodProductList.reversed);
+                                _foodProductLayoutList =
+                                    List.from(_foodProductLayoutList.reversed);
+
+                                _snackProductList =
+                                    List.from(_snackProductList.reversed);
+                                _snackProductLayoutList =
+                                    List.from(_snackProductLayoutList.reversed);
+
+                                _beverageProductList =
+                                    List.from(_beverageProductList.reversed);
+                                _beverageProductLayoutList = List.from(
+                                    _beverageProductLayoutList.reversed);
+
+                                _stationeryProductList =
+                                    List.from(_stationeryProductList.reversed);
+                                _stationeryProductLayoutList = List.from(
+                                    _stationeryProductLayoutList.reversed);
+
+                                _handmadeProductList =
+                                    List.from(_handmadeProductList.reversed);
+                                _handmadeProductLayoutList = List.from(
+                                    _handmadeProductLayoutList.reversed);
+
+                                _bestProductList =
+                                    List.from(_bestProductList.reversed);
+                                _bestProductLayoutList =
+                                    List.from(_bestProductLayoutList.reversed);
+
+                                _newProductList =
+                                    List.from(_newProductList.reversed);
+                                _newProductLayoutList =
+                                    List.from(_newProductLayoutList.reversed);
+                              });
+                            },
+                            icon: Icon(_isAsc
+                                ? Icons.arrow_circle_up
+                                : Icons.arrow_circle_down),
+                            iconSize: 32,
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                        shape: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(15),
+                                            borderSide: BorderSide(
+                                                color: Colors.black, width: 2)),
+                                        title: Center(
+                                          child: Text(
+                                            '상품정렬 기준 선택',
+                                            style: TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ),
+                                        content: StatefulBuilder(
+                                          builder: (context, setState) {
+                                            return Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children:
+                                                  List.generate(3, (index) {
+                                                return RadioListTile<int>(
+                                                  title: Center(
+                                                      child: Text(
+                                                          _sortTitleList[
+                                                              index])),
+                                                  value: index,
+                                                  groupValue: _selectRadio,
+                                                  onChanged: (value) {
+                                                    setState(() {
+                                                      _selectRadio = value;
+                                                    });
+                                                    _sortProductByIndex(
+                                                        _selectRadio);
+                                                  },
+                                                );
+                                              }),
+                                            );
+                                          },
+                                        ),
+                                      ));
+                            },
+                            icon: Icon(Icons.sort),
+                            padding: EdgeInsets.all(0),
+                            iconSize: 32,
+                          ),
+                          SizedBox(
+                            width: size.width * 0.02,
+                          )
+                        ],
                       ),
                       Expanded(
                         child: Container(
@@ -647,8 +1145,110 @@ class _StoreHomePageState extends State<StoreHomePage>
                   child: Column(
                     children: [
                       addProductForAdmin(size),
-                      SizedBox(
-                        height: size.width * 0.02,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          IconButton(
+                            onPressed: () {
+                              setState(() {
+                                _isAsc = !_isAsc;
+                                _productList = List.from(_productList.reversed);
+                                _productLayoutList =
+                                    List.from(_productLayoutList.reversed);
+                                _foodProductList =
+                                    List.from(_foodProductList.reversed);
+                                _foodProductLayoutList =
+                                    List.from(_foodProductLayoutList.reversed);
+
+                                _snackProductList =
+                                    List.from(_snackProductList.reversed);
+                                _snackProductLayoutList =
+                                    List.from(_snackProductLayoutList.reversed);
+
+                                _beverageProductList =
+                                    List.from(_beverageProductList.reversed);
+                                _beverageProductLayoutList = List.from(
+                                    _beverageProductLayoutList.reversed);
+
+                                _stationeryProductList =
+                                    List.from(_stationeryProductList.reversed);
+                                _stationeryProductLayoutList = List.from(
+                                    _stationeryProductLayoutList.reversed);
+
+                                _handmadeProductList =
+                                    List.from(_handmadeProductList.reversed);
+                                _handmadeProductLayoutList = List.from(
+                                    _handmadeProductLayoutList.reversed);
+
+                                _bestProductList =
+                                    List.from(_bestProductList.reversed);
+                                _bestProductLayoutList =
+                                    List.from(_bestProductLayoutList.reversed);
+
+                                _newProductList =
+                                    List.from(_newProductList.reversed);
+                                _newProductLayoutList =
+                                    List.from(_newProductLayoutList.reversed);
+                              });
+                            },
+                            icon: Icon(_isAsc
+                                ? Icons.arrow_circle_up
+                                : Icons.arrow_circle_down),
+                            iconSize: 32,
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                        shape: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(15),
+                                            borderSide: BorderSide(
+                                                color: Colors.black, width: 2)),
+                                        title: Center(
+                                          child: Text(
+                                            '상품정렬 기준 선택',
+                                            style: TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ),
+                                        content: StatefulBuilder(
+                                          builder: (context, setState) {
+                                            return Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children:
+                                                  List.generate(3, (index) {
+                                                return RadioListTile<int>(
+                                                  title: Center(
+                                                      child: Text(
+                                                          _sortTitleList[
+                                                              index])),
+                                                  value: index,
+                                                  groupValue: _selectRadio,
+                                                  onChanged: (value) {
+                                                    setState(() {
+                                                      _selectRadio = value;
+                                                    });
+                                                    _sortProductByIndex(
+                                                        _selectRadio);
+                                                  },
+                                                );
+                                              }),
+                                            );
+                                          },
+                                        ),
+                                      ));
+                            },
+                            icon: Icon(Icons.sort),
+                            padding: EdgeInsets.all(0),
+                            iconSize: 32,
+                          ),
+                          SizedBox(
+                            width: size.width * 0.02,
+                          )
+                        ],
                       ),
                       Expanded(
                         child: Container(
@@ -669,12 +1269,6 @@ class _StoreHomePageState extends State<StoreHomePage>
                   ),
                 ),
           /*------------ NEW TAB ---------------*/
-          // Container(
-          //   child: Center(
-          //     child: Text('이벤트가 없습니다!',
-          //         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 21)),
-          //   ),
-          // ),
           EventPage(),
           /*------------ EVENT TAB ---------------*/
         ]),
@@ -845,10 +1439,10 @@ class _StoreHomePageState extends State<StoreHomePage>
                     fit: BoxFit.fill,
                     progressIndicatorBuilder: (context, url, progress) =>
                         Center(
-                          child: CircularProgressIndicator(
-                      value: progress.progress,
+                      child: CircularProgressIndicator(
+                        value: progress.progress,
+                      ),
                     ),
-                        ),
                     errorWidget: (context, url, error) {
                       return Container(
                           alignment: Alignment.center,
