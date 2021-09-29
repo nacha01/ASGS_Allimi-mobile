@@ -679,7 +679,21 @@ class _StoreHomePageState extends State<StoreHomePage>
               ? _searchProductLayoutList.length == 0
                   ? Column(
                       children: [
+                        SizedBox(
+                          height: size.height * 0.01,
+                        ),
+                        Text(
+                          '상품 검색 결과',
+                          style: TextStyle(
+                              fontSize: 23, fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(
+                          height: size.height * 0.01,
+                        ),
                         _removeSearchResultWidget(size),
+                        SizedBox(
+                          height: size.height * 0.01,
+                        ),
                         Expanded(
                             child: Center(
                                 child: Text(
@@ -691,7 +705,19 @@ class _StoreHomePageState extends State<StoreHomePage>
                     )
                   : Column(
                       children: [
+                        SizedBox(
+                          height: size.height * 0.01,
+                        ),
+                        Text('상품 검색 결과',
+                            style: TextStyle(
+                                fontSize: 23, fontWeight: FontWeight.bold)),
+                        SizedBox(
+                          height: size.height * 0.01,
+                        ),
                         _removeSearchResultWidget(size),
+                        SizedBox(
+                          height: size.height * 0.01,
+                        ),
                         Expanded(
                           child: Container(
                             height: size.height * 1.07,

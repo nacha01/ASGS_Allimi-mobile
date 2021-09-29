@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:asgshighschool/data/renewUser_data.dart';
 import 'package:asgshighschool/data/user_data.dart';
 import 'package:asgshighschool/store/OrderStatePage.dart';
@@ -269,16 +271,44 @@ class _StoreMyPageState extends State<StoreMyPage> {
                           padding: EdgeInsets.all(5),
                           child: Row(
                             children: [
-                              Container(
-                                child:
-                                    Image.asset('assets/images/log_image.jpg'),
-                                width: size.width * 0.1,
-                                height: size.height * 0.04,
-                              ),
+                              Icon(Icons.timer,
+                                  color: Colors.grey, size: size.width * 0.1),
                               SizedBox(
                                 width: size.width * 0.03,
                               ),
-                              Text('로그 확인하기', style: TextStyle(fontSize: 19))
+                              Text('실시간 주문 현황',
+                                  style: TextStyle(
+                                      fontSize: 19,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.deepOrangeAccent))
+                            ],
+                          ),
+                        ),
+                        Container(
+                          margin: EdgeInsets.all(10),
+                          padding: EdgeInsets.all(5),
+                          child: Row(
+                            children: [
+                              Icon(Icons.add_shopping_cart,
+                                  color: Colors.grey, size: size.width * 0.1),
+                              SizedBox(
+                                width: size.width * 0.03,
+                              ),
+                              Text('상품 입고 작성', style: TextStyle(fontSize: 19))
+                            ],
+                          ),
+                        ),
+                        Container(
+                          margin: EdgeInsets.all(10),
+                          padding: EdgeInsets.all(5),
+                          child: Row(
+                            children: [
+                              Icon(Icons.chat,
+                                  color: Colors.grey, size: size.width * 0.1),
+                              SizedBox(
+                                width: size.width * 0.03,
+                              ),
+                              Text('문의 현황', style: TextStyle(fontSize: 19))
                             ],
                           ),
                         ),
