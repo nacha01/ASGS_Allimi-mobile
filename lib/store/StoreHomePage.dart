@@ -12,6 +12,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
@@ -31,10 +32,14 @@ class _StoreHomePageState extends State<StoreHomePage>
   TextEditingController _adminKeyController = TextEditingController();
   TabController _tabController;
   ScrollController _scrollViewController;
-  int _selectedCategory = 0;
-  int _selectRadio = 0;
-  List _sortTitleList = ['등록순', '이름순', '가격순'];
+  int _selectedCategory = 0; // MENU 탭에서 어느 카테고리인지에 대한 값
+  int _selectRadio = 0; // 정렬 기준 선택 라디오 버튼 값
+  List _sortTitleList = ['등록순', '이름순', '가격순']; // 정렬 기준 라디오 버튼 title 리스트
   bool _isAsc = true; // true : 오름차순 , false : 내림차순
+  bool _isSearch = false; // 검색 기능 사용했는지 판단
+
+  List<Product> _searchProductList = [];
+  List<Widget> _searchProductLayoutList = [];
 
   List<Product> _productList = [];
   List<Widget> _productLayoutList = [];
@@ -388,6 +393,25 @@ class _StoreHomePageState extends State<StoreHomePage>
     setState(() {});
   }
 
+  void _searchProducts(String toSearch) {
+    _tabController.index = 0;
+    _isSearch = true;
+    _searchProductList.clear();
+    _searchProductLayoutList.clear();
+    for (int i = 0; i < _productList.length; ++i) {
+      if (_productList[i].prodName.contains('$toSearch')) {
+        _searchProductList.add(_productList[i]);
+        _searchProductLayoutList.add(itemTile(
+            _productList[i].imgUrl1,
+            _productList[i].price,
+            _productList[i].prodName,
+            false,
+            _productList[i]));
+      }
+    }
+    setState(() {});
+  }
+
   String _formatPrice(int price) {
     String p = price.toString();
     String newFormat = '';
@@ -651,331 +675,378 @@ class _StoreHomePageState extends State<StoreHomePage>
           ];
         },
         body: TabBarView(controller: _tabController, children: [
-          if (_productLayoutList.length == 0)
-            RefreshIndicator(
-              onRefresh: _getProducts,
-              child: Column(
-                children: [
-                  addProductForAdmin(size),
-                  Expanded(
-                    child: Center(
-                        child: Text(
-                      '상품이 없습니다.',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
-                    )),
-                  ),
-                ],
-              ),
-            )
-          else
-            RefreshIndicator(
-              onRefresh: _getProducts,
-              child: Column(
-                children: [
-                  addProductForAdmin(size),
-                  SizedBox(
-                    height: size.height * 0.01,
-                  ),
-                  Card(
-                    elevation: 2,
-                    child: Container(
-                      margin: EdgeInsets.all(5),
-                      height: size.height * 0.10,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                if (_selectedCategory != 1)
-                                  _selectedCategory = 1;
-                                else
-                                  _selectedCategory = 0;
-                              });
-                            },
-                            child: Container(
-                              width: size.width * 0.19,
-                              child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Container(
-                                    child: Image.asset(_selectedCategory == 1
-                                        ? "assets/images/dinner_on_icon.jpg"
-                                        : "assets/images/dinner_icon.jpg"),
-                                    height: size.height * 0.07,
-                                  ),
-                                  Text('음식류',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: _selectedCategory == 1
-                                              ? Color(0xFF9EE1E5)
-                                              : Colors.black))
-                                ],
-                              ),
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                if (_selectedCategory != 2)
-                                  _selectedCategory = 2;
-                                else
-                                  _selectedCategory = 0;
-                              });
-                            },
-                            child: Container(
-                              width: size.width * 0.19,
-                              child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Container(
-                                    child: Image.asset(_selectedCategory == 2
-                                        ? "assets/images/candy_on_icon.jpg"
-                                        : "assets/images/candy_icon.jpg"),
-                                    height: size.height * 0.07,
-                                  ),
-                                  Text('간식류',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: _selectedCategory == 2
-                                              ? Color(0xFF9EE1E5)
-                                              : Colors.black))
-                                ],
-                              ),
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                if (_selectedCategory != 3)
-                                  _selectedCategory = 3;
-                                else
-                                  _selectedCategory = 0;
-                              });
-                            },
-                            child: Container(
-                              width: size.width * 0.19,
-                              child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Container(
-                                    child: Image.asset(_selectedCategory == 3
-                                        ? "assets/images/drink_on_icon.jpg"
-                                        : "assets/images/drink_icon.jpg"),
-                                    height: size.height * 0.07,
-                                  ),
-                                  Text('음료류',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: _selectedCategory == 3
-                                              ? Color(0xFF9EE1E5)
-                                              : Colors.black))
-                                ],
-                              ),
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                if (_selectedCategory != 4)
-                                  _selectedCategory = 4;
-                                else
-                                  _selectedCategory = 0;
-                              });
-                            },
-                            child: Container(
-                              width: size.width * 0.19,
-                              child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Container(
-                                    child: Image.asset(_selectedCategory == 4
-                                        ? "assets/images/pencil_on_icon.jpg"
-                                        : "assets/images/pencil_icon.jpg"),
-                                    height: size.height * 0.07,
-                                  ),
-                                  Text('문구류',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: _selectedCategory == 4
-                                              ? Color(0xFF9EE1E5)
-                                              : Colors.black))
-                                ],
-                              ),
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                if (_selectedCategory != 5)
-                                  _selectedCategory = 5;
-                                else
-                                  _selectedCategory = 0;
-                              });
-                            },
-                            child: Container(
-                              width: size.width * 0.19,
-                              child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Container(
-                                    child: Image.asset(_selectedCategory == 5
-                                        ? "assets/images/handmade_on_icon.jpg"
-                                        : "assets/images/handmadeicon.jpg"),
-                                    height: size.height * 0.07,
-                                  ),
-                                  Text('핸드메이드',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 13,
-                                          color: _selectedCategory == 5
-                                              ? Color(0xFF9EE1E5)
-                                              : Colors.black))
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      IconButton(
-                        onPressed: () {
-                          setState(() {
-                            _isAsc = !_isAsc;
-                            _productList = List.from(_productList.reversed);
-                            _productLayoutList =
-                                List.from(_productLayoutList.reversed);
-                            _foodProductList =
-                                List.from(_foodProductList.reversed);
-                            _foodProductLayoutList =
-                                List.from(_foodProductLayoutList.reversed);
-
-                            _snackProductList =
-                                List.from(_snackProductList.reversed);
-                            _snackProductLayoutList =
-                                List.from(_snackProductLayoutList.reversed);
-
-                            _beverageProductList =
-                                List.from(_beverageProductList.reversed);
-                            _beverageProductLayoutList =
-                                List.from(_beverageProductLayoutList.reversed);
-
-                            _stationeryProductList =
-                                List.from(_stationeryProductList.reversed);
-                            _stationeryProductLayoutList = List.from(
-                                _stationeryProductLayoutList.reversed);
-
-                            _handmadeProductList =
-                                List.from(_handmadeProductList.reversed);
-                            _handmadeProductLayoutList =
-                                List.from(_handmadeProductLayoutList.reversed);
-
-                            _bestProductList =
-                                List.from(_bestProductList.reversed);
-                            _bestProductLayoutList =
-                                List.from(_bestProductLayoutList.reversed);
-
-                            _newProductList =
-                                List.from(_newProductList.reversed);
-                            _newProductLayoutList =
-                                List.from(_newProductLayoutList.reversed);
-                          });
-                        },
-                        icon: Icon(_isAsc
-                            ? Icons.arrow_circle_up
-                            : Icons.arrow_circle_down),
-                        iconSize: 32,
-                      ),
-                      IconButton(
-                        onPressed: () {
-                          showDialog(
-                              context: context,
-                              builder: (context) => AlertDialog(
-                                    shape: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(15),
-                                        borderSide: BorderSide(
-                                            color: Colors.black, width: 2)),
-                                    title: Center(
-                                      child: Text(
-                                        '상품정렬 기준 선택',
-                                        style: TextStyle(
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                    ),
-                                    content: StatefulBuilder(
-                                      builder: (context, setState) {
-                                        return Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: List.generate(3, (index) {
-                                            return RadioListTile<int>(
-                                              title: Center(
-                                                  child: Text(
-                                                      _sortTitleList[index])),
-                                              value: index,
-                                              groupValue: _selectRadio,
-                                              onChanged: (value) {
-                                                setState(() {
-                                                  _selectRadio = value;
-                                                });
-                                                _sortProductByIndex(
-                                                    _selectRadio);
-                                              },
-                                            );
-                                          }),
-                                        );
-                                      },
-                                    ),
-                                  ));
-                        },
-                        icon: Icon(Icons.sort),
-                        padding: EdgeInsets.all(0),
-                        iconSize: 32,
-                      ),
-                      SizedBox(
-                        width: size.width * 0.02,
-                      )
-                    ],
-                  ),
-                  _getLengthOfCurrentCategory(_selectedCategory) == 0
-                      ? Expanded(
-                          child: Center(
-                              child: Text(
-                            '상품이 없습니다!',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 21),
-                          )),
-                        )
-                      : Expanded(
+          _isSearch
+              ? _searchProductLayoutList.length == 0
+                  ? Column(
+                      children: [
+                        _removeSearchResultWidget(size),
+                        Expanded(
+                            child: Center(
+                                child: Text(
+                          '검색 결과가 없습니다!',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 21),
+                        )))
+                      ],
+                    )
+                  : Column(
+                      children: [
+                        _removeSearchResultWidget(size),
+                        Expanded(
                           child: Container(
-                            height: size.height,
+                            height: size.height * 1.07,
                             child: GridView.builder(
-                                itemCount: _getLengthOfCurrentCategory(
-                                    _selectedCategory),
+                                itemCount: _searchProductLayoutList.length,
                                 gridDelegate:
                                     SliverGridDelegateWithFixedCrossAxisCount(
                                         crossAxisCount: 2,
                                         mainAxisSpacing: 15,
                                         crossAxisSpacing: 1),
                                 itemBuilder: (context, index) {
-                                  return _getItemTileOfCurrentCategory(
-                                      index, _selectedCategory);
+                                  return _searchProductLayoutList[index];
                                 }),
                           ),
                         ),
-                ],
-              ),
-            ),
+                      ],
+                    )
+              : _productLayoutList.length == 0
+                  ? RefreshIndicator(
+                      onRefresh: _getProducts,
+                      child: Column(
+                        children: [
+                          addProductForAdmin(size),
+                          Expanded(
+                            child: Center(
+                                child: Text(
+                              '상품이 없습니다.',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 22),
+                            )),
+                          ),
+                        ],
+                      ),
+                    )
+                  : RefreshIndicator(
+                      onRefresh: _getProducts,
+                      child: Column(
+                        children: [
+                          addProductForAdmin(size),
+                          SizedBox(
+                            height: size.height * 0.01,
+                          ),
+                          Card(
+                            elevation: 2,
+                            child: Container(
+                              margin: EdgeInsets.all(5),
+                              height: size.height * 0.10,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        if (_selectedCategory != 1)
+                                          _selectedCategory = 1;
+                                        else
+                                          _selectedCategory = 0;
+                                      });
+                                    },
+                                    child: Container(
+                                      width: size.width * 0.19,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Container(
+                                            child: Image.asset(_selectedCategory ==
+                                                    1
+                                                ? "assets/images/dinner_on_icon.jpg"
+                                                : "assets/images/dinner_icon.jpg"),
+                                            height: size.height * 0.07,
+                                          ),
+                                          Text('음식류',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: _selectedCategory == 1
+                                                      ? Color(0xFF9EE1E5)
+                                                      : Colors.black))
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        if (_selectedCategory != 2)
+                                          _selectedCategory = 2;
+                                        else
+                                          _selectedCategory = 0;
+                                      });
+                                    },
+                                    child: Container(
+                                      width: size.width * 0.19,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Container(
+                                            child: Image.asset(_selectedCategory ==
+                                                    2
+                                                ? "assets/images/candy_on_icon.jpg"
+                                                : "assets/images/candy_icon.jpg"),
+                                            height: size.height * 0.07,
+                                          ),
+                                          Text('간식류',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: _selectedCategory == 2
+                                                      ? Color(0xFF9EE1E5)
+                                                      : Colors.black))
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        if (_selectedCategory != 3)
+                                          _selectedCategory = 3;
+                                        else
+                                          _selectedCategory = 0;
+                                      });
+                                    },
+                                    child: Container(
+                                      width: size.width * 0.19,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Container(
+                                            child: Image.asset(_selectedCategory ==
+                                                    3
+                                                ? "assets/images/drink_on_icon.jpg"
+                                                : "assets/images/drink_icon.jpg"),
+                                            height: size.height * 0.07,
+                                          ),
+                                          Text('음료류',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: _selectedCategory == 3
+                                                      ? Color(0xFF9EE1E5)
+                                                      : Colors.black))
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        if (_selectedCategory != 4)
+                                          _selectedCategory = 4;
+                                        else
+                                          _selectedCategory = 0;
+                                      });
+                                    },
+                                    child: Container(
+                                      width: size.width * 0.19,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Container(
+                                            child: Image.asset(_selectedCategory ==
+                                                    4
+                                                ? "assets/images/pencil_on_icon.jpg"
+                                                : "assets/images/pencil_icon.jpg"),
+                                            height: size.height * 0.07,
+                                          ),
+                                          Text('문구류',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: _selectedCategory == 4
+                                                      ? Color(0xFF9EE1E5)
+                                                      : Colors.black))
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        if (_selectedCategory != 5)
+                                          _selectedCategory = 5;
+                                        else
+                                          _selectedCategory = 0;
+                                      });
+                                    },
+                                    child: Container(
+                                      width: size.width * 0.19,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Container(
+                                            child: Image.asset(_selectedCategory ==
+                                                    5
+                                                ? "assets/images/handmade_on_icon.jpg"
+                                                : "assets/images/handmadeicon.jpg"),
+                                            height: size.height * 0.07,
+                                          ),
+                                          Text('핸드메이드',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 13,
+                                                  color: _selectedCategory == 5
+                                                      ? Color(0xFF9EE1E5)
+                                                      : Colors.black))
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _isAsc = !_isAsc;
+                                    _productList =
+                                        List.from(_productList.reversed);
+                                    _productLayoutList =
+                                        List.from(_productLayoutList.reversed);
+                                    _foodProductList =
+                                        List.from(_foodProductList.reversed);
+                                    _foodProductLayoutList = List.from(
+                                        _foodProductLayoutList.reversed);
+
+                                    _snackProductList =
+                                        List.from(_snackProductList.reversed);
+                                    _snackProductLayoutList = List.from(
+                                        _snackProductLayoutList.reversed);
+
+                                    _beverageProductList = List.from(
+                                        _beverageProductList.reversed);
+                                    _beverageProductLayoutList = List.from(
+                                        _beverageProductLayoutList.reversed);
+
+                                    _stationeryProductList = List.from(
+                                        _stationeryProductList.reversed);
+                                    _stationeryProductLayoutList = List.from(
+                                        _stationeryProductLayoutList.reversed);
+
+                                    _handmadeProductList = List.from(
+                                        _handmadeProductList.reversed);
+                                    _handmadeProductLayoutList = List.from(
+                                        _handmadeProductLayoutList.reversed);
+
+                                    _bestProductList =
+                                        List.from(_bestProductList.reversed);
+                                    _bestProductLayoutList = List.from(
+                                        _bestProductLayoutList.reversed);
+
+                                    _newProductList =
+                                        List.from(_newProductList.reversed);
+                                    _newProductLayoutList = List.from(
+                                        _newProductLayoutList.reversed);
+                                  });
+                                },
+                                icon: Icon(_isAsc
+                                    ? Icons.arrow_circle_up
+                                    : Icons.arrow_circle_down),
+                                iconSize: 32,
+                              ),
+                              IconButton(
+                                onPressed: () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                            shape: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(15),
+                                                borderSide: BorderSide(
+                                                    color: Colors.black,
+                                                    width: 2)),
+                                            title: Center(
+                                              child: Text(
+                                                '상품정렬 기준 선택',
+                                                style: TextStyle(
+                                                    fontSize: 15,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                            ),
+                                            content: StatefulBuilder(
+                                              builder: (context, setState) {
+                                                return Column(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children:
+                                                      List.generate(3, (index) {
+                                                    return RadioListTile<int>(
+                                                      title: Center(
+                                                          child: Text(
+                                                              _sortTitleList[
+                                                                  index])),
+                                                      value: index,
+                                                      groupValue: _selectRadio,
+                                                      onChanged: (value) {
+                                                        setState(() {
+                                                          _selectRadio = value;
+                                                        });
+                                                        _sortProductByIndex(
+                                                            _selectRadio);
+                                                      },
+                                                    );
+                                                  }),
+                                                );
+                                              },
+                                            ),
+                                          ));
+                                },
+                                icon: Icon(Icons.sort),
+                                padding: EdgeInsets.all(0),
+                                iconSize: 32,
+                              ),
+                              SizedBox(
+                                width: size.width * 0.02,
+                              )
+                            ],
+                          ),
+                          _getLengthOfCurrentCategory(_selectedCategory) == 0
+                              ? Expanded(
+                                  child: Center(
+                                      child: Text(
+                                    '상품이 없습니다!',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 21),
+                                  )),
+                                )
+                              : Expanded(
+                                  child: Container(
+                                    height: size.height,
+                                    child: GridView.builder(
+                                        itemCount: _getLengthOfCurrentCategory(
+                                            _selectedCategory),
+                                        gridDelegate:
+                                            SliverGridDelegateWithFixedCrossAxisCount(
+                                                crossAxisCount: 2,
+                                                mainAxisSpacing: 15,
+                                                crossAxisSpacing: 1),
+                                        itemBuilder: (context, index) {
+                                          return _getItemTileOfCurrentCategory(
+                                              index, _selectedCategory);
+                                        }),
+                                  ),
+                                ),
+                        ],
+                      ),
+                    ),
           /*------------ MENU TAB ---------------*/
           _bestProductLayoutList.length == 0
               ? RefreshIndicator(
@@ -1551,17 +1622,50 @@ class _StoreHomePageState extends State<StoreHomePage>
           borderRadius: BorderRadius.circular(12), color: Color(0xFF9EE1E5)),
       child: TextField(
         onSubmitted: (text) {
-          //완료 버튼 눌렀을 때
-          print(text);
+          if (text.isNotEmpty) {
+            //다 입력하고 완료 버튼 눌렀을 때
+            _searchProducts(text);
+          }
         },
         decoration: InputDecoration(
-            hintText: 'search',
-            border: InputBorder.none,
-            prefixIcon: Icon(
-              Icons.search,
-              color: Colors.black,
-            )),
+          hintText: '상품 검색',
+          border: InputBorder.none,
+          prefixIcon: Icon(
+            Icons.search,
+            color: Colors.black,
+          ),
+        ),
         controller: _searchController,
+      ),
+    );
+  }
+
+  Widget _removeSearchResultWidget(Size size) {
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 8),
+      width: size.width * 0.5,
+      height: size.height * 0.05,
+      decoration: BoxDecoration(
+          color: Color(0xFF9EE1E5).withOpacity(0.7),
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(color: Color(0xFF9EE1E5), width: 2)),
+      child: FlatButton(
+        onPressed: () {
+          setState(() {
+            _isSearch = false;
+            _searchController.text = '';
+          });
+        },
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Icon(
+              Icons.remove_circle,
+              color: Colors.red,
+            ),
+            Text('검색 결과창 지우기')
+          ],
+        ),
       ),
     );
   }
