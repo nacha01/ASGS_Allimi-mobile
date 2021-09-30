@@ -21,6 +21,12 @@ class AnnouncePage extends StatefulWidget {
 
 class _AnnouncePageState extends State<AnnouncePage> {
   List<Announce> _announceList = [];
+  bool _isFinished = false;
+  TextEditingController _searchController = TextEditingController();
+  List _searchCategoryList = ['제목', '날짜', '작성자'];
+  List<Announce> _searchList = [];
+  var _selectedCategory = '제목';
+  bool _isSearch = false;
 
   Future<bool> _getAnnounceRequest() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getAnnounce.php';
@@ -37,7 +43,9 @@ class _AnnouncePageState extends State<AnnouncePage> {
       for (int i = 0; i < anList.length; ++i) {
         _announceList.add(Announce.fromJson(json.decode(anList[i])));
       }
-      setState(() {});
+      setState(() {
+        _isFinished = true;
+      });
       return true;
     } else {
       return false;
@@ -63,10 +71,48 @@ class _AnnouncePageState extends State<AnnouncePage> {
     }
   }
 
+  /// 오늘 날짜와 비교해서 공지글이 최신글인지 판단
+  /// @param : 공지글 작성된 비교할 날짜
   bool _compareDateIsNew(String cmpDate) {
     int diff = int.parse(
         DateTime.now().difference(DateTime.parse(cmpDate)).inDays.toString());
     return diff < 3 ? true : false;
+  }
+
+  void _searchAnnounceByCategory(String category, String toSearch) {
+    if (toSearch.isEmpty) {
+      setState(() {
+        _isSearch = false;
+      });
+      return;
+    }
+    _searchList.clear();
+    switch (category) {
+      case '제목':
+        for (int i = 0; i < _announceList.length; ++i) {
+          if (_announceList[i].title.contains(toSearch)) {
+            _searchList.add(_announceList[i]);
+          }
+        }
+        break;
+      case '날짜':
+        for (int i = 0; i < _announceList.length; ++i) {
+          if (_announceList[i].writeDate.contains(toSearch)) {
+            _searchList.add(_announceList[i]);
+          }
+        }
+        break;
+      case '작성자':
+        for (int i = 0; i < _announceList.length; ++i) {
+          if (_announceList[i].writer.contains(toSearch)) {
+            _searchList.add(_announceList[i]);
+          }
+        }
+        break;
+    }
+    setState(() {
+      _isSearch = true;
+    });
   }
 
   @override
@@ -88,14 +134,6 @@ class _AnnouncePageState extends State<AnnouncePage> {
         ),
         centerTitle: true,
         leading: SizedBox(),
-        actions: [
-          IconButton(
-              onPressed: () {},
-              icon: Icon(
-                Icons.search,
-                color: Colors.black,
-              ))
-        ],
       ),
       body: Center(
         child: RefreshIndicator(
@@ -112,6 +150,66 @@ class _AnnouncePageState extends State<AnnouncePage> {
                     Text('이 페이지의 간략한 설명 적는 란')
                   ],
                 ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: size.width * 0.55,
+                    height: size.height * 0.05,
+                    decoration: BoxDecoration(
+                        border: Border.all(width: 0.5, color: Colors.black)),
+                    child: TextField(
+                      onSubmitted: (value) {
+                        _searchAnnounceByCategory(_selectedCategory, value);
+                      },
+                      controller: _searchController,
+                      decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: '검색하기',
+                          hintStyle: TextStyle(color: Colors.grey),
+                          prefixIcon: Icon(
+                            Icons.search,
+                            color: Colors.black,
+                          )),
+                    ),
+                  ),
+                  Container(
+                    width: size.width * 0.1,
+                    height: size.height * 0.05,
+                    decoration: BoxDecoration(
+                        border: Border.all(color: Color(0xFF9EE1E5), width: 3)),
+                    child: IconButton(
+                      iconSize: 28,
+                      padding: EdgeInsets.all(0),
+                      onPressed: () {
+                        _searchAnnounceByCategory(
+                            _selectedCategory, _searchController.text);
+                      },
+                      icon: Icon(
+                        Icons.search,
+                        color: Color(0xFF9EE1E5),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: size.width * 0.07,
+                  ),
+                  DropdownButton(
+                    value: _selectedCategory,
+                    items: _searchCategoryList.map((value) {
+                      return DropdownMenuItem(
+                        child: Text(value),
+                        value: value,
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedCategory = value;
+                      });
+                    },
+                  ),
+                ],
               ),
               Divider(
                 indent: 10,
@@ -159,35 +257,71 @@ class _AnnouncePageState extends State<AnnouncePage> {
                       ],
                     )
                   : SizedBox(),
-              _announceList.length == 0
-                  ? SingleChildScrollView(
-                      physics: AlwaysScrollableScrollPhysics(),
-                      child: Container(
-                          alignment: Alignment.center,
-                          margin: EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            border: Border.all(width: 1, color: Colors.black54),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          height: size.height * 0.2,
-                          child: Text(
-                            '공지사항이 없습니다!\n새로고침하려면 이 박스를 아래로 당겨주세요!',
-                            textAlign: TextAlign.center,
-                          )),
-                    )
-                  : Expanded(
-                      child: ListView.builder(
-                        itemBuilder: (context, index) => _announceItemLayout(
-                            title: _announceList[index].title,
-                            writer: _announceList[index].writer,
-                            date: _announceList[index].writeDate,
-                            isNew: _compareDateIsNew(
-                                _announceList[index].writeDate),
-                            size: size,
-                            announce: _announceList[index]),
-                        itemCount: _announceList.length,
-                      ),
-                    )
+              _isFinished
+                  ? _announceList.length == 0
+                      ? SingleChildScrollView(
+                          physics: AlwaysScrollableScrollPhysics(),
+                          child: Container(
+                              alignment: Alignment.center,
+                              margin: EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                border:
+                                    Border.all(width: 1, color: Colors.black54),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              height: size.height * 0.2,
+                              child: Text(
+                                '공지사항이 없습니다!\n새로고침하려면 이 박스를 아래로 당겨주세요!',
+                                textAlign: TextAlign.center,
+                              )),
+                        )
+                      : _isSearch
+                          ? _searchList.length == 0
+                              ? Center(
+                                  child: Column(
+                                    children: [
+                                      _removeSearchResultWidget(size),
+                                      SizedBox(
+                                        height: size.height * 0.1,
+                                      ),
+                                      Text(
+                                        '검색 결과가 없습니다!',
+                                        style: TextStyle(
+                                            fontSize: 19,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              : Expanded(
+                                  child: ListView.builder(
+                                    itemBuilder: (context, index) =>
+                                        _announceItemLayout(
+                                            title: _searchList[index].title,
+                                            writer: _searchList[index].writer,
+                                            date: _searchList[index].writeDate,
+                                            isNew: _compareDateIsNew(
+                                                _searchList[index].writeDate),
+                                            size: size,
+                                            announce: _searchList[index]),
+                                    itemCount: _searchList.length,
+                                  ),
+                                )
+                          : Expanded(
+                              child: ListView.builder(
+                                itemBuilder: (context, index) =>
+                                    _announceItemLayout(
+                                        title: _announceList[index].title,
+                                        writer: _announceList[index].writer,
+                                        date: _announceList[index].writeDate,
+                                        isNew: _compareDateIsNew(
+                                            _announceList[index].writeDate),
+                                        size: size,
+                                        announce: _announceList[index]),
+                                itemCount: _announceList.length,
+                              ),
+                            )
+                  : SizedBox()
             ],
           ),
         ),
@@ -287,6 +421,36 @@ class _AnnouncePageState extends State<AnnouncePage> {
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
               height: size.height * 0.1 * 0.4,
             )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _removeSearchResultWidget(Size size) {
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 4),
+      width: size.width * 0.5,
+      height: size.height * 0.04,
+      decoration: BoxDecoration(
+          color: Color(0xFF9EE1E5).withOpacity(0.7),
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(color: Color(0xFF9EE1E5), width: 2)),
+      child: FlatButton(
+        onPressed: () {
+          setState(() {
+            _isSearch = false;
+            _searchController.text = '';
+          });
+        },
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Icon(
+              Icons.remove_circle,
+              color: Colors.red,
+            ),
+            Text('검색 결과창 지우기')
           ],
         ),
       ),
