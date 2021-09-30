@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:asgshighschool/data/renewUser_data.dart';
 import 'package:asgshighschool/data/user_data.dart';
 import 'package:asgshighschool/store/InquirePage.dart';
+import 'package:asgshighschool/store/MyQnAPage.dart';
 import 'package:asgshighschool/store/OrderStatePage.dart';
 import 'package:asgshighschool/store/UpdateUserPage.dart';
 import 'package:flutter/cupertino.dart';
@@ -159,7 +160,14 @@ class _StoreMyPageState extends State<StoreMyPage> {
                 ),
               ),
               FlatButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => MyQnAPage(
+                                user: widget.user,
+                              )));
+                },
                 child: Container(
                   margin: EdgeInsets.all(10),
                   padding: EdgeInsets.all(5),
