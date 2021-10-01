@@ -6,6 +6,7 @@ import 'package:asgshighschool/store/InquirePage.dart';
 import 'package:asgshighschool/store/MyQnAPage.dart';
 import 'package:asgshighschool/store/OrderStatePage.dart';
 import 'package:asgshighschool/store/UpdateUserPage.dart';
+import 'package:asgshighschool/storeAdmin/QnAListPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -237,100 +238,111 @@ class _StoreMyPageState extends State<StoreMyPage> {
                   ),
                 ),
               ),
-              data.user.isAdmin
-                  ? Column(
-                      children: [
-                        dividerForContents(),
-                        Container(
-                          margin: EdgeInsets.all(10),
-                          padding: EdgeInsets.all(5),
-                          child: Row(
-                            children: [
-                              Text(
-                                '관리자',
-                                style: TextStyle(
-                                    color: Colors.redAccent, fontSize: 17),
-                              )
-                            ],
+              if (data.user.isAdmin)
+                Column(
+                  children: [
+                    dividerForContents(),
+                    Container(
+                      margin: EdgeInsets.all(10),
+                      padding: EdgeInsets.all(5),
+                      child: Row(
+                        children: [
+                          Text(
+                            '관리자',
+                            style: TextStyle(
+                                color: Colors.redAccent, fontSize: 17),
+                          )
+                        ],
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.all(10),
+                      padding: EdgeInsets.all(5),
+                      child: Row(
+                        children: [
+                          Icon(Icons.settings,
+                              color: Colors.grey, size: size.width * 0.1),
+                          SizedBox(
+                            width: size.width * 0.03,
                           ),
-                        ),
-                        Container(
-                          margin: EdgeInsets.all(10),
-                          padding: EdgeInsets.all(5),
-                          child: Row(
-                            children: [
-                              Icon(Icons.settings,
-                                  color: Colors.grey, size: size.width * 0.1),
-                              SizedBox(
-                                width: size.width * 0.03,
-                              ),
-                              Text('관리자 설정', style: TextStyle(fontSize: 19))
-                            ],
+                          Text('관리자 설정', style: TextStyle(fontSize: 19))
+                        ],
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.all(10),
+                      padding: EdgeInsets.all(5),
+                      child: Row(
+                        children: [
+                          Icon(Icons.bar_chart,
+                              color: Colors.grey, size: size.width * 0.1),
+                          SizedBox(
+                            width: size.width * 0.03,
                           ),
-                        ),
-                        Container(
-                          margin: EdgeInsets.all(10),
-                          padding: EdgeInsets.all(5),
-                          child: Row(
-                            children: [
-                              Icon(Icons.bar_chart,
-                                  color: Colors.grey, size: size.width * 0.1),
-                              SizedBox(
-                                width: size.width * 0.03,
-                              ),
-                              Text('통계', style: TextStyle(fontSize: 19))
-                            ],
+                          Text('통계', style: TextStyle(fontSize: 19))
+                        ],
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.all(10),
+                      padding: EdgeInsets.all(5),
+                      child: Row(
+                        children: [
+                          Icon(Icons.timer,
+                              color: Colors.grey, size: size.width * 0.1),
+                          SizedBox(
+                            width: size.width * 0.03,
                           ),
-                        ),
-                        Container(
-                          margin: EdgeInsets.all(10),
-                          padding: EdgeInsets.all(5),
-                          child: Row(
-                            children: [
-                              Icon(Icons.timer,
-                                  color: Colors.grey, size: size.width * 0.1),
-                              SizedBox(
-                                width: size.width * 0.03,
-                              ),
-                              Text('실시간 주문 현황',
-                                  style: TextStyle(
-                                      fontSize: 19,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.deepOrangeAccent))
-                            ],
+                          Text('실시간 주문 현황',
+                              style: TextStyle(
+                                  fontSize: 19,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.deepOrangeAccent))
+                        ],
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.all(10),
+                      padding: EdgeInsets.all(5),
+                      child: Row(
+                        children: [
+                          Icon(Icons.add_shopping_cart,
+                              color: Colors.grey, size: size.width * 0.1),
+                          SizedBox(
+                            width: size.width * 0.03,
                           ),
+                          Text('상품 입고 작성', style: TextStyle(fontSize: 19))
+                        ],
+                      ),
+                    ),
+                    FlatButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => QnAListPage(
+                                      user: widget.user,
+                                    )));
+                      },
+                      child: Container(
+                        margin: EdgeInsets.all(10),
+                        padding: EdgeInsets.all(5),
+                        child: Row(
+                          children: [
+                            Icon(Icons.chat,
+                                color: Colors.grey, size: size.width * 0.1),
+                            SizedBox(
+                              width: size.width * 0.03,
+                            ),
+                            Text('문의 현황', style: TextStyle(fontSize: 19))
+                          ],
                         ),
-                        Container(
-                          margin: EdgeInsets.all(10),
-                          padding: EdgeInsets.all(5),
-                          child: Row(
-                            children: [
-                              Icon(Icons.add_shopping_cart,
-                                  color: Colors.grey, size: size.width * 0.1),
-                              SizedBox(
-                                width: size.width * 0.03,
-                              ),
-                              Text('상품 입고 작성', style: TextStyle(fontSize: 19))
-                            ],
-                          ),
-                        ),
-                        Container(
-                          margin: EdgeInsets.all(10),
-                          padding: EdgeInsets.all(5),
-                          child: Row(
-                            children: [
-                              Icon(Icons.chat,
-                                  color: Colors.grey, size: size.width * 0.1),
-                              SizedBox(
-                                width: size.width * 0.03,
-                              ),
-                              Text('문의 현황', style: TextStyle(fontSize: 19))
-                            ],
-                          ),
-                        ),
-                      ],
-                    )
-                  : SizedBox()
+                      ),
+                    ),
+                  ],
+                )
+              else
+                SizedBox()
             ],
           ),
         ),

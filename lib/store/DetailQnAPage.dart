@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:ui';
 
 import 'package:asgshighschool/data/user_data.dart';
@@ -14,7 +15,6 @@ class DetailQnAPage extends StatefulWidget {
 
 class _DetailQnAPageState extends State<DetailQnAPage> {
   String _formatDate(String originDate) {
-    print(widget.data['answer']);
     String date = originDate.split(' ')[0];
     String time = originDate.split(' ')[1];
     var dateSuffix = ['년', '월', '일'];
@@ -155,9 +155,82 @@ class _DetailQnAPageState extends State<DetailQnAPage> {
           Divider(
             thickness: 1,
           ),
+          SizedBox(
+            height: size.height * 0.02,
+          ),
           int.parse(widget.data['isAnswer']) == 0
               ? Text('답변이 아직 없습니다.')
-              : SizedBox()
+              : Container(
+                  height: size.height * 0.4,
+                  child: ListView.builder(
+                    itemBuilder: (context, index) {
+                      print(index);
+                      var data = jsonDecode(widget.data['answer'][index]);
+                      return _answerItemTile(data['awUID'], data['awContent'],
+                          data['awDate'], index, size);
+                    },
+                    itemCount: widget.data['answer'].length,
+                  ),
+                )
+        ],
+      ),
+    );
+  }
+
+  Widget _answerItemTile(
+      String uid, String content, String date, int index, Size size) {
+    return Container(
+      margin: EdgeInsets.all(3),
+      padding: EdgeInsets.all(size.width * 0.03),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(width: 2, color: Colors.grey)),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '답변 ${index + 1}',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 17,
+                    color: Colors.redAccent),
+              ),
+              Text(
+                '$date',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          SizedBox(
+            height: size.height * 0.01,
+          ),
+          Row(
+            children: [
+              Container(
+                alignment: Alignment.centerLeft,
+                padding: EdgeInsets.all(size.width * 0.035),
+                width: size.width * 0.9,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    color: Colors.grey[300]),
+                child: Text(content),
+              ),
+            ],
+          ),
+          SizedBox(
+            height: size.height * 0.01,
+          ),
+          Row(
+            children: [
+              Container(
+                  child: Text(
+                '답변자 ID :  $uid',
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+              )),
+            ],
+          )
         ],
       ),
     );
