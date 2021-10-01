@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:ui';
 
 import 'package:asgshighschool/data/user_data.dart';
+import 'package:asgshighschool/store/DetailQnAPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -65,7 +66,9 @@ class _MyQnAPageState extends State<MyQnAPage> {
       ),
       body: Column(
         children: [
-          Text('테스트'),
+          SizedBox(
+            height: size.height * 0.08,
+          ),
           Expanded(
               child: ListView.builder(
             itemBuilder: (context, index) {
@@ -74,7 +77,8 @@ class _MyQnAPageState extends State<MyQnAPage> {
                   _qnaList[index]['qDate'],
                   _categoryMap[int.parse(_qnaList[index]['qCategory'])],
                   int.parse(_qnaList[index]['isAnswer']) == 1 ? true : false,
-                  size);
+                  size,
+                  _qnaList[index]);
             },
             itemCount: _qnaList.length,
           ))
@@ -83,30 +87,38 @@ class _MyQnAPageState extends State<MyQnAPage> {
     );
   }
 
-  Widget _itemTile(
-      String title, String date, String category, bool isAnswer, Size size) {
+  Widget _itemTile(String title, String date, String category, bool isAnswer,
+      Size size, Map data) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => DetailQnAPage(
+                      user: widget.user,
+                      data: data,
+                    )));
+      },
       child: Container(
-        margin: EdgeInsets.all(3),
+        margin: EdgeInsets.all(5),
         height: size.height * 0.11,
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(5),
+            borderRadius: BorderRadius.circular(8),
             border: Border.all(width: 0.5, color: Colors.black38),
             color: Colors.white24),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            Padding(
-              padding: const EdgeInsets.all(4.0),
+            Container(
+              height: size.height * 0.10 * 0.4,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   isAnswer
                       ? Container(
                           alignment: Alignment.center,
-                          width: size.width * 0.25,
-                          height: size.height * 0.04,
+                          width: size.width * 0.24,
+                          height: size.height * 0.10 * 0.4 * 0.8,
                           child: Text(
                             '답변 완료',
                             style: TextStyle(fontWeight: FontWeight.bold),
@@ -119,11 +131,13 @@ class _MyQnAPageState extends State<MyQnAPage> {
                         )
                       : Container(
                           width: size.width * 0.25,
-                          height: size.height * 0.04,
+                          height: size.height * 0.11 * 0.4 * 0.8,
                         ),
                   VerticalDivider(
-                    thickness: 1,
+                    thickness: 0.8,
                     color: Colors.grey,
+                    indent: 4,
+                    endIndent: 4,
                   ),
                   Container(
                     child: Text(
@@ -131,16 +145,16 @@ class _MyQnAPageState extends State<MyQnAPage> {
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     width: size.width * 0.63,
-                    alignment: Alignment.centerRight,
+                    alignment: Alignment.center,
                   )
                 ],
               ),
             ),
             Divider(),
-            Padding(
-              padding: const EdgeInsets.all(4.0),
+            Container(
+              height: size.height * 0.10 * 0.45,
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     '[$category] ',
