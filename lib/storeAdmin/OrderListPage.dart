@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:ui';
 
 import 'package:asgshighschool/data/user_data.dart';
+import 'package:asgshighschool/storeAdmin/AdminDetailOrder.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -52,7 +53,8 @@ class _OrderListPageState extends State<OrderListPage> {
               '')
           .trim();
       List map1st = json.decode(result);
-
+      _orderList.clear();
+      _noneList.clear();
       for (int i = 0; i < map1st.length; ++i) {
         _orderList.add(json.decode(map1st[i]));
         for (int j = 0; j < _orderList[i]['detail'].length; ++j) {
@@ -184,7 +186,18 @@ class _OrderListPageState extends State<OrderListPage> {
           borderRadius: BorderRadius.circular(6),
           border: Border.all(width: 0.5, color: Colors.black)),
       child: FlatButton(
-        onPressed: () {},
+        onPressed: () async {
+          var res = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => AdminDetailOrder(
+                        user: widget.user,
+                        data: data,
+                      )));
+          if (res) {
+            await _getAllOrderData();
+          }
+        },
         child: Container(
           width: size.width * 0.9,
           padding: EdgeInsets.all(size.width * 0.005),
@@ -218,13 +231,13 @@ class _OrderListPageState extends State<OrderListPage> {
                       ? Row(
                           children: [
                             Container(
-                              width: size.width * 0.18,
+                              width: size.width * 0.25,
                               height: size.height * 0.026,
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(6),
                                   color: Colors.lightBlueAccent),
                               child: Text(
-                                '처리 중',
+                                '처리 담당 중',
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 13),
                               ),
@@ -292,7 +305,23 @@ class _OrderListPageState extends State<OrderListPage> {
                             )
                           ],
                         )
-                      : SizedBox(),
+                      : orderState == 3
+                          ? Container(
+                              width: size.width * 0.22,
+                              height: size.height * 0.026,
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                      width: 0.5, color: Colors.black),
+                                  borderRadius: BorderRadius.circular(6),
+                                  color: Colors.lightGreenAccent),
+                              child: Text(
+                                '처리 완료',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 13),
+                              ),
+                              alignment: Alignment.center,
+                            )
+                          : SizedBox(),
                 ],
               )
             ],

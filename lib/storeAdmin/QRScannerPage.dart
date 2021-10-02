@@ -9,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 class QRScannerPage extends StatefulWidget {
+  QRScannerPage({this.oID});
+  final String oID;
   @override
   _QRScannerPageState createState() => _QRScannerPageState();
 }
