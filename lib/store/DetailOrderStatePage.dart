@@ -29,6 +29,8 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
       case 1:
         return '결제완료 및 미수령';
       case 2:
+        return '주문 처리 중';
+      case 3:
         return '결제완료 및 수령완료';
       default:
         return 'Error';
@@ -42,6 +44,8 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
       case 1:
         return Colors.orangeAccent;
       case 2:
+        return Colors.lightBlue;
+      case 3:
         return Colors.green;
       default:
         return Colors.grey;
@@ -212,6 +216,18 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
+                        '주문 처리 중',
+                        style:
+                        TextStyle(color: Colors.lightBlue, fontSize: 9),
+                      ),
+                      Text(': 주문이 확인되고, 상품 수령 준비 및 수령 중인 상태입니다. ',
+                          style: TextStyle(color: Colors.grey, fontSize: 9))
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
                         '결제완료 및 수령완료',
                         style: TextStyle(color: Colors.green, fontSize: 9),
                       ),
@@ -229,7 +245,7 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
               ),
               Text('주문 인증 QR코드', style: TextStyle(fontWeight: FontWeight.bold)),
               SizedBox(height: size.height * 0.015,),
-              int.parse(widget.order['orderState']) == 2
+              int.parse(widget.order['orderState']) == 3
                   ? Center(
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),

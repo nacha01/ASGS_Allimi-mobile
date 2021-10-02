@@ -6,6 +6,7 @@ import 'package:asgshighschool/store/InquirePage.dart';
 import 'package:asgshighschool/store/MyQnAPage.dart';
 import 'package:asgshighschool/store/OrderStatePage.dart';
 import 'package:asgshighschool/store/UpdateUserPage.dart';
+import 'package:asgshighschool/storeAdmin/OrderListPage.dart';
 import 'package:asgshighschool/storeAdmin/QnAListPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -283,22 +284,32 @@ class _StoreMyPageState extends State<StoreMyPage> {
                         ],
                       ),
                     ),
-                    Container(
-                      margin: EdgeInsets.all(10),
-                      padding: EdgeInsets.all(5),
-                      child: Row(
-                        children: [
-                          Icon(Icons.timer,
-                              color: Colors.grey, size: size.width * 0.1),
-                          SizedBox(
-                            width: size.width * 0.03,
-                          ),
-                          Text('실시간 주문 현황',
-                              style: TextStyle(
-                                  fontSize: 19,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.deepOrangeAccent))
-                        ],
+                    FlatButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => OrderListPage(
+                                      user: widget.user,
+                                    )));
+                      },
+                      child: Container(
+                        margin: EdgeInsets.all(10),
+                        padding: EdgeInsets.all(5),
+                        child: Row(
+                          children: [
+                            Icon(Icons.timer,
+                                color: Colors.grey, size: size.width * 0.1),
+                            SizedBox(
+                              width: size.width * 0.03,
+                            ),
+                            Text('실시간 주문 현황',
+                                style: TextStyle(
+                                    fontSize: 19,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.deepOrangeAccent))
+                          ],
+                        ),
                       ),
                     ),
                     Container(
