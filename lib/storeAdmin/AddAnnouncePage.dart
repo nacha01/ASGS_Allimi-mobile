@@ -145,7 +145,7 @@ class _AddAnnouncePageState extends State<AddAnnouncePage> {
     return WillPopScope(
       // WillPopScope 위젯으로 뒤로가기 버튼 event 제어해서 데이터 전달
       onWillPop: () async {
-        Navigator.pop(context, widget.isUpdate ? _updatedAnnounceObj : '');
+        Navigator.pop(context, widget.isUpdate ? _updatedAnnounceObj : true);
         return false;
       },
       child: Scaffold(
@@ -156,7 +156,7 @@ class _AddAnnouncePageState extends State<AddAnnouncePage> {
               color: Colors.black,
             ),
             onPressed: () => Navigator.pop(
-                context, widget.isUpdate ? _updatedAnnounceObj : ''),
+                context, widget.isUpdate ? _updatedAnnounceObj : true),
           ),
           backgroundColor: Color(0xFF9EE1E5),
           title: Text(
@@ -317,6 +317,7 @@ class _AddAnnouncePageState extends State<AddAnnouncePage> {
                                   await _updateAnnounceRequest(providedUser);
                               if (res) {
                                 showToastMessage('공지사항 수정에 성공하였습니다.');
+                                Navigator.pop(context);
                               } else {
                                 showToastMessage('공지사항 수정에 실패하였습니다.');
                               }
@@ -325,6 +326,7 @@ class _AddAnnouncePageState extends State<AddAnnouncePage> {
                                   await _registerAnnounceRequest(providedUser);
                               if (res) {
                                 showToastMessage('공지사항 등록에 성공하였습니다.');
+                                Navigator.pop(context);
                               } else {
                                 showToastMessage('공지사항 등록에 실패하였습니다.');
                               }

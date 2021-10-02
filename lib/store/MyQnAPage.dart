@@ -33,7 +33,9 @@ class _MyQnAPageState extends State<MyQnAPage> {
       for (int i = 0; i < map.length; ++i) {
         _qnaList.add(json.decode(map[i]));
       }
-      setState(() {});
+      setState(() {
+        _qnaList = List.from(_qnaList.reversed);
+      });
       return true;
     } else {
       return false;

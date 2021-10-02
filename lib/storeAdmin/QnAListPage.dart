@@ -182,14 +182,17 @@ class _QnAListPageState extends State<QnAListPage> {
   Widget _itemTile(String title, String uid, String date, String category,
       bool isAnswer, Map data, Size size) {
     return FlatButton(
-      onPressed: () {
-        Navigator.push(
+      onPressed: () async {
+        var res = await Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) => AnswerQnAPage(
                       user: widget.user,
                       data: data,
                     )));
+        if (res) {
+          await _getAllQnAData();
+        }
       },
       child: Container(
         width: size.width,

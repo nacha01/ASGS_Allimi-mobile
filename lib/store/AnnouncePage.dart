@@ -233,12 +233,17 @@ class _AnnouncePageState extends State<AnnouncePage> {
                                     Border.all(width: 2, color: Colors.black54),
                                 borderRadius: BorderRadius.circular(8)),
                             child: FlatButton(
-                                onPressed: () => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => AddAnnouncePage(
-                                              user: providedUser.user,
-                                            ))),
+                                onPressed: () async {
+                                  var res = await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => AddAnnouncePage(
+                                                user: providedUser.user,
+                                              )));
+                                  if (res) {
+                                    await _getAnnounceRequest();
+                                  }
+                                },
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
