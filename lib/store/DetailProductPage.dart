@@ -426,7 +426,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                               _isCart = true;
                             });
                           } else {
-                            Navigator.push(
+                            Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => CartPage(
@@ -466,7 +466,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                                 toastLength: Toast.LENGTH_SHORT);
                             return;
                           }
-                          Navigator.push(
+                          Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => OrderPage(

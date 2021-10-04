@@ -225,7 +225,7 @@ class _CartPageState extends State<CartPage> {
                   child: Column(
                     children: [
                       //brief 설명 적는 곳
-                      Text(''/*이 페이지의 간략한 설명 적는 란*/)
+                      Text('' /*이 페이지의 간략한 설명 적는 란*/)
                     ],
                   ),
                 ),
@@ -254,11 +254,9 @@ class _CartPageState extends State<CartPage> {
                                   cart: _cartProductList,
                                   user: widget.user,
                                 )));
-                    if (res) {
-                      setState(() {
-                        _getCartForUserRequest();
-                      });
-                    }
+                    setState(() {
+                      _getCartForUserRequest();
+                    });
                   },
                   child: Container(
                     height: size.height * 0.05,

@@ -40,7 +40,6 @@ class _OrderPageState extends State<OrderPage> {
       _isCart = false;
     }
     super.initState();
-    print(widget.cart);
   }
 
   /// 주문을 등록하는 요청
@@ -175,10 +174,35 @@ class _OrderPageState extends State<OrderPage> {
     }
   }
 
-  /// 최종적으로 결제 하기 전 그 순간에서 재고 상황을 체크하는 작업
-  Future<bool> _checkSynchronousStockCount() async {
-    String uri = 'http://nacha01.dothome.co.kr/sin/arlimi_getAllCart.php';
-    final response = await http.get(uri + '?uid=${widget.user.uid}');
+  /// 최종적으로 결제 하기 전 그 순간에서 재고 상황을 체크하는 작업(단일 상품)
+  Future<bool> _checkSynchronousStockCountForProduct() async {
+    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getOneProduct.php';
+    final response = await http.get(url + '?pid=${widget.direct.prodID}');
+
+    if (response.statusCode == 200) {
+      String result = utf8
+          .decode(response.bodyBytes)
+          .replaceAll(
+              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+              '')
+          .trim();
+      Map p = json.decode(result);
+      if (widget.direct.stockCount > int.parse(p['stockCount']) - 5) {
+        _checkMessage = '성공적으로 처리가 완료되었습니다.';
+        return true;
+      } else {
+        _checkMessage = '"${widget.direct.prodName}"상품의 선택 수량이 현재 재고보다 많습니다.';
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+
+  /// 최종적으로 결제 하기 전 그 순간에서 재고 상황을 체크하는 작업(장바구니)
+  Future<bool> _checkSynchronousStockCountForCart() async {
+    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getAllCart.php';
+    final response = await http.get(url + '?uid=${widget.user.uid}');
     if (response.statusCode == 200) {
       String result = utf8
           .decode(response.bodyBytes)
@@ -501,8 +525,12 @@ class _OrderPageState extends State<OrderPage> {
                       );
                     });
 
-                var syncChk = await _checkSynchronousStockCount();
-
+                bool syncChk = false;
+                if (_isCart) {
+                  syncChk = await _checkSynchronousStockCountForCart();
+                } else {
+                  syncChk = await _checkSynchronousStockCountForProduct();
+                }
                 await showDialog(
                     context: context,
                     builder: (ctx) {
