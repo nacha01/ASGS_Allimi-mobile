@@ -175,6 +175,7 @@ class _OrderPageState extends State<OrderPage> {
     }
   }
 
+  /// 최종적으로 결제 하기 전 그 순간에서 재고 상황을 체크하는 작업
   Future<bool> _checkSynchronousStockCount() async {
     String uri = 'http://nacha01.dothome.co.kr/sin/arlimi_getAllCart.php';
     final response = await http.get(uri + '?uid=${widget.user.uid}');

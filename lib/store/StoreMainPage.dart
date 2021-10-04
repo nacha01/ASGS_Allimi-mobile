@@ -30,7 +30,6 @@ class StoreMainPageState extends State<StoreMainPage> {
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
     var data = Provider.of<ExistCart>(context);
-    // var providedUser = Provider.of<RenewUserData>(context);
     return Scaffold(
       floatingActionButton: widget.user.isAdmin
           ? FloatingActionButton(

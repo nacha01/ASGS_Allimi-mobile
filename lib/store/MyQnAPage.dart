@@ -18,6 +18,7 @@ class _MyQnAPageState extends State<MyQnAPage> {
   List _qnaList = [];
   Map _categoryMap = {0: '상품', 1: '교환/환불', 2: '계정', 3: '앱 이용', 4: '기타'};
 
+  /// 나(uid)의 모든 문의 내역 데이터들을 요청하는 작업
   Future<bool> _getMyQnAData() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getUserQnA.php';
     final response = await http.get(url + '?uid=${widget.user.uid}');

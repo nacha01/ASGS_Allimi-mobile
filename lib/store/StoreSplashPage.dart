@@ -25,6 +25,7 @@ class _StoreSplashPageState extends State<StoreSplashPage> {
     loading();
   }
 
+  /// Splash 페이지의 로딩 process
   loading() async {
     List result = await _getProducts();
     var res = await _checkExistCart();
@@ -40,6 +41,7 @@ class _StoreSplashPageState extends State<StoreSplashPage> {
                 )));
   }
 
+  /// 장바구니에 데이터가 존재하는지 체크 요청을 하는 작업
   Future<bool> _checkExistCart() async {
     String uri = 'http://nacha01.dothome.co.kr/sin/arlimi_checkCart.php';
     final response = await http.get(uri + '?uid=${widget.user.uid}');
@@ -61,6 +63,7 @@ class _StoreSplashPageState extends State<StoreSplashPage> {
     }
   }
 
+  /// 모든 상품 데이터를 요청하는 작업
   Future<List<Product>> _getProducts() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getProduct.php';
     final response = await http.get(url);
@@ -120,5 +123,4 @@ class _StoreSplashPageState extends State<StoreSplashPage> {
       ),
     ));
   }
-
 }

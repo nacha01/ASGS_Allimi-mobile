@@ -14,6 +14,9 @@ class DetailQnAPage extends StatefulWidget {
 }
 
 class _DetailQnAPageState extends State<DetailQnAPage> {
+
+  /// 현재 문의 글 데이터의 date field를 사용자에게 더 직관적으로 보여주는 날짜 formatting 작업
+  /// format : yyyy년 MM월 dd일 (오후 or 오전) hh시 mm분
   String _formatDate(String originDate) {
     String date = originDate.split(' ')[0];
     String time = originDate.split(' ')[1];

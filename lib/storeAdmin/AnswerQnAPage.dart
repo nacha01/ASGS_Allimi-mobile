@@ -23,6 +23,7 @@ class _AnswerQnAPageState extends State<AnswerQnAPage> {
   bool _isAnswer = false;
   TextEditingController _answerController = TextEditingController();
 
+  /// 특정 문의 글에 대해 답변을 등록하는 요청을 하는 작업
   Future<bool> _registerAnswerToDB() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_addAnswer.php';
 

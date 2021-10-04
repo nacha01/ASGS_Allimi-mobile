@@ -22,6 +22,8 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
     4: '핸드메이드'
   };
 
+  /// 주문 상태 field 값에 따른 사용자에게 보여줄 mapping 문자열을 반환
+  /// @param : DB에 저장된 '주문 상태 필드'의 정수 값
   String _getTextAccordingToOrderState(int state) {
     switch (state) {
       case 0:
@@ -37,6 +39,8 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
     }
   }
 
+  /// 주문 상태 field 값에 따른 사용자에게 보여줄 mapping 색상을 반환
+  /// @param : DB에 저장된 '주문 상태 필드'의 정수 값
   Color _getColorAccordingToOrderState(int state) {
     switch (state) {
       case 0:
@@ -52,6 +56,8 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
     }
   }
 
+  /// DB에 저장된 date 필드를 사용자에게 직관적으로 보여주기 위한 날짜 formatting 작업
+  /// @param : 주문 데이터의 date 필드 문자열
   String _formatDate(String date) {
     // yyyy-mm-dd hh:mm:ss
     var split = date.split(' ');
@@ -94,6 +100,7 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
     return newStr;
   }
 
+  /// 이 주문에 포함된 상품들의 원가격에 대한 총 가격을 구하는 작업
   int _getOriginTotalPrice() {
     int sum = 0;
     for (int i = 0; i < widget.order['detail'].length; ++i) {
@@ -103,6 +110,7 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
     return sum;
   }
 
+  /// 이 주문에 포함된 상품들의 총 할인 가격을 구하는 작업
   int _getTotalDiscount() {
     int sum = 0;
     for (int i = 0; i < widget.order['detail'].length; ++i) {

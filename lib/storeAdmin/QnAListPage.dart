@@ -23,6 +23,8 @@ class _QnAListPageState extends State<QnAListPage> {
   bool _isChecked = true;
   Map _categoryMap = {0: '상품', 1: '교환/환불', 2: '계정', 3: '앱 이용', 4: '기타'};
 
+  /// 등록된 날짜와 오늘의 날짜를 비교해서 어느 정도 차이가 있는지에 대한 문자열을 반환하는 작업
+  /// n일 전, n시간 전, n분 전
   String _formatDateTimeForToday(String origin) {
     var today = DateTime.now();
 
@@ -42,6 +44,7 @@ class _QnAListPageState extends State<QnAListPage> {
     }
   }
 
+  /// 문의 글을 날짜 순으로 정렬하는 작업
   void _sortListOrderByTime() {
     _qnaDateList
         .sort((a, b) => b['qDate'].toString().compareTo(a['qDate'].toString()));
@@ -49,6 +52,8 @@ class _QnAListPageState extends State<QnAListPage> {
         .sort((a, b) => b['qDate'].toString().compareTo(a['qDate'].toString()));
   }
 
+  /// 모든 문의 글 데이터를 요청하는 작업
+  /// 답변이 된 글과 되지 않은 글을 각 List에 구분하여 추가
   Future<bool> _getAllQnAData() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getAllQnA.php';
     final response = await http.get(url);
@@ -60,10 +65,11 @@ class _QnAListPageState extends State<QnAListPage> {
               '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
               '')
           .trim();
-      print(result);
+
       List map = jsonDecode(result);
       _qnaDateList.clear();
       _noneQnAList.clear();
+
       for (int i = 0; i < map.length; ++i) {
         _qnaDateList.add(jsonDecode(map[i]));
         if (int.parse(_qnaDateList[i]['isAnswer']) == 0) {
@@ -88,7 +94,6 @@ class _QnAListPageState extends State<QnAListPage> {
   void initState() {
     _getAllQnAData();
     super.initState();
-    print(DateTime.now().toString());
   }
 
   @override

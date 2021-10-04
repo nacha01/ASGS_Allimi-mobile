@@ -29,18 +29,19 @@ class UpdateUserPage extends StatefulWidget {
 }
 
 class _UpdateUserPageState extends State<UpdateUserPage> {
-  final statusReverseList = ['재학생', '학부모', '교사', '졸업생', '기타'];
   TextEditingController _uidController = TextEditingController();
   TextEditingController _nameController = TextEditingController();
   TextEditingController _studentIDController = TextEditingController();
   TextEditingController _nicknameController = TextEditingController();
-
   TextEditingController _pwController = TextEditingController();
+
   final statusList = ['재학생', '학부모', '교사', '졸업생', '기타'];
   final statusMap = {'재학생': 1, '학부모': 2, '교사': 3, '졸업생': 4, '기타': 5};
+  final statusReverseList = ['재학생', '학부모', '교사', '졸업생', '기타'];
   var _selectedValue;
   User _tmpUser;
 
+  /// 사용자의 정보를 화면에 보여지게 하는 초기화 작업
   void _initInfo() {
     _uidController.text = widget.user.uid;
     _nameController.text = widget.user.name;
@@ -49,6 +50,7 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
     _selectedValue = statusList[widget.user.identity - 1];
   }
 
+  /// 사용자 정보의 변경에 대해 업데이트 요청을 하는 작업
   Future<bool> _updateUserInfoRequest() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_updateUser.php';
     final response = await http.post(url, body: <String, String>{
@@ -60,7 +62,6 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
     });
 
     if (response.statusCode == 200) {
-      print(response.body);
       String result = utf8
           .decode(response.bodyBytes)
           .replaceAll(
@@ -74,13 +75,13 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
     }
   }
 
+  /// 본인 인증을 하기 위한 요청
   Future<bool> _certifyMyselfRequest() async {
     String uri = 'http://nacha01.dothome.co.kr/sin/arlimi_certifyMyself.php';
     final response = await http
         .get(uri + '?uid=${widget.user.uid}&pw=${_pwController.text}');
 
     if (response.statusCode == 200) {
-      print(response.body);
       String result = utf8
           .decode(response.bodyBytes)
           .replaceAll(
@@ -97,6 +98,7 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
     }
   }
 
+  /// 사용자(본인) 정보를 요청하는 작업
   Future<void> _getUserInfoRequest() async {
     String uri =
         'http://nacha01.dothome.co.kr/sin/arlimi_getOneUser.php?uid=${widget.user.uid}';

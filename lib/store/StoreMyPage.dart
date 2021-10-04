@@ -31,6 +31,7 @@ class _StoreMyPageState extends State<StoreMyPage> {
     super.initState();
   }
 
+  /// 미구현 메뉴 클릭 시 띄워주는 dialog
   void _dialogNotImplement() {
     showDialog(
         context: context,

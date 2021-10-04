@@ -21,6 +21,8 @@ class _InquirePageState extends State<InquirePage> {
   Map _categoryMap = {'상품': 0, '교환/환불': 1, '계정': 2, '앱 이용': 3, '기타': 4};
   var _selectedCategory = '상품';
 
+  /// 새로운 문의 글을 등록하는 요청을 하는 작업
+  /// @response : 성공 시, '1'
   Future<bool> _registerNewQnA() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_addQnA.php';
     final response = await http.post(url, body: <String, String>{
@@ -45,6 +47,7 @@ class _InquirePageState extends State<InquirePage> {
     }
   }
 
+  /// 현재 route 를 강제 종료하는 작업
   void _finishThisPage() {
     Navigator.pop(this.context);
   }

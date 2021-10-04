@@ -13,9 +13,9 @@ class AddingProductPage extends StatefulWidget {
 }
 
 /// 어드민 전용 페이지
-//상품 추가 페이지
-//저장할 때 비밀번호로 어드민 DB에서 확인
-//직접적으로 추가하는 목록
+///상품 추가 페이지
+///저장할 때 비밀번호로 어드민 DB에서 확인
+///직접적으로 추가하는 목록
 
 /*
 1. 제품 이름
@@ -30,11 +30,8 @@ class AddingProductPage extends StatefulWidget {
 
 /// * later Additional functions
 ///나중에 실사용될 때, 상품 등록할 때 어드민 계정으로 비밀번호로 재확인 - resolved
-
 /// 현재 글자수 보여주는 것 - resolved
-
 /// 파일 이름 확장자 통일 - resolved
-
 /// 상품 등록 성공한 화면에서 다시 되돌아오기?
 
 class _AddingProductPageState extends State<AddingProductPage> {
@@ -218,8 +215,23 @@ class _AddingProductPageState extends State<AddingProductPage> {
     });
   }
 
+  /// 정수 값의 날짜 혹은 시간을 두자리의 문자열로 formatting 하는 작업
   String _formatting(int value) {
     return value > 9 ? value.toString() : '0' + value.toString();
+  }
+
+  /// 문제 발생 시 에러 메세지를 띄워주는 dialog
+  void _showErrorDialog() {
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: Text('문제 발생'),
+              content: Text('입력사항을 재확인 바랍니다'),
+              actions: [
+                FlatButton(
+                    onPressed: () => Navigator.pop(context), child: Text('확인'))
+              ],
+            ));
   }
 
   @override
@@ -822,31 +834,39 @@ class _AddingProductPageState extends State<AddingProductPage> {
                           ),
                           onPressed: () {
                             if (_productNameController.text.isEmpty) {
-                              showErrorDialog();
+                              _showErrorDialog();
                               return;
                             }
                             if (_productExplainController.text.isEmpty) {
-                              showErrorDialog();
+                              _showErrorDialog();
                               return;
                             }
                             if (_productCountController.text.isEmpty) {
-                              showErrorDialog();
+                              _showErrorDialog();
                               return;
                             }
                             if (_productPriceController.text.isEmpty) {
-                              showErrorDialog();
+                              _showErrorDialog();
                               return;
                             }
                             if (_mainImage == null) {
-                              showErrorDialog();
+                              _showErrorDialog();
                               return;
                             }
                             if (_useSub1 && _subImage1 == null) {
-                              showErrorDialog();
+                              _showErrorDialog();
                               return;
                             }
                             if (_useSub2 && _subImage2 == null) {
-                              showErrorDialog();
+                              _showErrorDialog();
+                              return;
+                            }
+                            if (int.parse(_productCountController.text) < 0) {
+                              _showErrorDialog();
+                              return;
+                            }
+                            if (int.parse(_productPriceController.text) < 0) {
+                              _showErrorDialog();
                               return;
                             }
                             setState(() {
@@ -1157,18 +1177,5 @@ class _AddingProductPageState extends State<AddingProductPage> {
         alignment: Alignment.center,
         decoration:
             BoxDecoration(border: Border.all(width: 5, color: Colors.grey)));
-  }
-
-  void showErrorDialog() {
-    showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-              title: Text('문제 발생'),
-              content: Text('입력사항을 재확인 바랍니다'),
-              actions: [
-                FlatButton(
-                    onPressed: () => Navigator.pop(context), child: Text('확인'))
-              ],
-            ));
   }
 }

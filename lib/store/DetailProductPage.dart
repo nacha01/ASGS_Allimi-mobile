@@ -30,11 +30,14 @@ class _DetailProductPageState extends State<DetailProductPage> {
     3: '문구류',
     4: '핸드메이드'
   };
-  bool _isDiscountZero;
+  bool _isDiscountZero; // 할인율이 0.0%인지 아닌지 판단
   int _count = 1; // 버튼으로 누른 수량
   bool _isCart = false; // 장바구니에 담았는지 판단
   bool _isClicked = false; // 구매하기 버튼을 눌렀는지 판단
 
+  /// 일반 숫자에 ,를 붙여서 직관적인 가격을 보이게 하는 작업
+  /// @param : 직관적인 가격을 보여줄 실제 int 가격[price]
+  /// @return : 직관적인 가격 문자열
   String _formatPrice(int price) {
     String p = price.toString();
     String newFormat = '';
@@ -50,6 +53,9 @@ class _DetailProductPageState extends State<DetailProductPage> {
     return _reverseString(newFormat);
   }
 
+  /// 문자열을 뒤집는 작업
+  /// @param : 뒤집고 싶은 문자열[str]
+  /// @return : 뒤집은 문자열
   String _reverseString(String str) {
     String newStr = '';
     for (int i = str.length - 1; i >= 0; --i) {
@@ -58,6 +64,8 @@ class _DetailProductPageState extends State<DetailProductPage> {
     return newStr;
   }
 
+  /// 상품을 장바구니에 추가하는 요청을 하는 작업
+  /// @response : 성공 시, '1' or 'Already Exists1'
   Future<bool> _addCartProductRequest() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_addCart.php';
     final response = await http.post(url, body: <String, String>{
@@ -494,13 +502,13 @@ class _DetailProductPageState extends State<DetailProductPage> {
               : FlatButton(
                   padding: EdgeInsets.all(0),
                   onPressed: () {
-                    if(widget.product.stockCount - 5 < 1){
+                    if (widget.product.stockCount - 5 < 1) {
                       Fluttertoast.showToast(
                           msg: '상품의 재고가 없어 구매가 불가능합니다.',
                           gravity: ToastGravity.BOTTOM,
                           toastLength: Toast.LENGTH_SHORT);
                       return;
-                    }else {
+                    } else {
                       setState(() {
                         _isClicked = !_isClicked;
                       });

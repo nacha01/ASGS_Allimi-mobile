@@ -55,6 +55,8 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
     return newStr;
   }
 
+  /// 등록된 날짜와 오늘의 날짜를 비교해서 어느 정도 차이가 있는지에 대한 문자열을 반환하는 작업
+  /// n일 전, n시간 전, n분 전
   String _formatDateTimeForToday(String origin) {
     var today = DateTime.now();
 
@@ -74,9 +76,9 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
     }
   }
 
+  /// date 필드를 사용자에게 직관적으로 보여주기 위한 formatting 작업
+  /// yyyy-mm-dd hh:mm:ss → yyyy년 MM월 dd일 hh시 mm분
   String _formatDate(String date) {
-    print(widget.data);
-    // yyyy-mm-dd hh:mm:ss
     var split = date.split(' ');
 
     var leftSp = split[0].split('-');
@@ -88,17 +90,8 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
     return left + right;
   }
 
-  @override
-  void initState() {
-    _isCharged = (int.parse(widget.data['orderState']) == 3 ||
-            int.parse(widget.data['orderState']) == 2)
-        ? true
-        : false;
-    print(_isCharged);
-    _state = int.parse(widget.data['orderState']);
-    super.initState();
-  }
-
+  /// 현재 관리자 user가 이 주문을 맡겠다는 요청 작업
+  /// chargerID 필드 업데이트 및 orderState 필드 업데이트
   Future<bool> _chargeOrderRequest() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_chargeOrder.php';
     final response = await http.post(url, body: <String, String>{
@@ -111,6 +104,16 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
     } else {
       return false;
     }
+  }
+
+  @override
+  void initState() {
+    _isCharged = (int.parse(widget.data['orderState']) == 3 ||
+            int.parse(widget.data['orderState']) == 2)
+        ? true
+        : false;
+    _state = int.parse(widget.data['orderState']);
+    super.initState();
   }
 
   @override

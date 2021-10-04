@@ -23,6 +23,8 @@ class _DetailAnnouncePageState extends State<DetailAnnouncePage> {
   Announce _temp;
   TextEditingController _adminKeyController = TextEditingController();
 
+  /// 토스트 메세지를 띄워주는 작업
+  /// @param : message - 띄워줄 메세지 문자열
   Future<bool> showToast(String message, bool fail) {
     return Fluttertoast.showToast(
         msg: message,
@@ -50,11 +52,14 @@ class _DetailAnnouncePageState extends State<DetailAnnouncePage> {
       return false;
     }
   }
+
   /// 현재 페이지를 강제종료하는 작업
   void _terminateScreen() {
     Navigator.pop(context);
   }
 
+  /// parameter의 ID를 가진 공지사항 데이터에 대해 삭제 요청하는 작업
+  /// @response : 성공적으로 삭제 시 'DELETE'
   Future<bool> _deleteAnnounceRequest(int announceID) async {
     String uri = 'http://nacha01.dothome.co.kr/sin/arlimi_deleteAnnounce.php';
     final response = await http.get(uri + '?anID=$announceID');

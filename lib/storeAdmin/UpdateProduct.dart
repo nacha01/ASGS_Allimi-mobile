@@ -60,7 +60,8 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
   String serverImageUri =
       'http://nacha01.dothome.co.kr/sin/arlimi_productImage/'; // 이미지 저장 서버 URI
 
-  // index : {0 -> main, 1 -> sub1, 2 -> sub3}
+  /// 갤러리에서 이미지를 가져오는 작업
+  /// [index] : {0 -> main, 1 -> sub1, 2 -> sub3}
   Future<void> _getImageFromGallery(int index) async {
     var image = await ImagePicker()
         .getImage(source: ImageSource.gallery, imageQuality: 50);
@@ -80,7 +81,8 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
     });
   }
 
-  // index : {0 -> main, 1 -> sub1, 2 -> sub3}
+  /// 카메로에서 찍은 이미지를 가져오는 작업
+  /// [index] : {0 -> main, 1 -> sub1, 2 -> sub3}
   Future<void> _getImageFromCamera(int index) async {
     var image = await ImagePicker()
         .getImage(source: ImageSource.camera, imageQuality: 50);
@@ -100,6 +102,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
     });
   }
 
+  /// 최종 요청하기 전 수정하고자 하는 이미지를 서버에 업데이트 요청을 하는 작업
   Future<bool> _updateImageBeforeRequest(
       PickedFile img, String fileName, String originName) async {
     var request = http.MultipartRequest(
@@ -132,6 +135,8 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
     }
   }
 
+  /// 이미지 수정 시에 호출되는 함수
+  /// 이미지 파일 이름 규칙에 의한 새로운 이미지 파일 이름 문자열을 반환
   String _getFileNameByRule(String origin) {
     if (origin.contains('_')) {
       origin = origin.substring(0, origin.length - 1) +
@@ -142,6 +147,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
     }
   }
 
+  /// 상품을 수정하는 요청을 하는 작업
   Future<bool> _updateProductRequest() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_updateProduct.php';
     final response = await http.post(url, body: <String, String>{
@@ -160,7 +166,6 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
     });
 
     if (response.statusCode == 200) {
-      print(response.body);
       var replace = response.body.replaceAll(
           '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
           '');
@@ -173,6 +178,8 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
     }
   }
 
+  /// 상품 수정을 위한 과정 process 함수
+  /// 이미지 업데이트, 상품 변경 내용 업데이트
   Future<int> _doUpdateForProduct() async {
     if (_useSub1) {
       _sub1Name = _getFileNameByRule(widget.product.imgUrl2
@@ -912,6 +919,14 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
                       return;
                     }
                     if (_useSub2 && _subImage2 == null) {
+                      showErrorDialog();
+                      return;
+                    }
+                    if (int.parse(_productCountController.text) < 0) {
+                      showErrorDialog();
+                      return;
+                    }
+                    if (int.parse(_productPriceController.text) < 0) {
                       showErrorDialog();
                       return;
                     }

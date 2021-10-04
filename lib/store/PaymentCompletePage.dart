@@ -23,6 +23,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
   };
   List _orderInfo = [];
 
+  /// route 이동 시 넘겨 받은 주문 ID를 통한 주문 상세 정보 요청 작업
   Future<bool> _getOrderInfo() async {
     String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_searchOrderInfo.php?oid=${widget.result['orderID']}';
@@ -53,7 +54,6 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
 
   @override
   void initState() {
-    print('결제완료');
     super.initState();
     _getOrderInfo();
   }

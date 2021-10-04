@@ -22,6 +22,8 @@ class _OrderListPageState extends State<OrderListPage> {
   bool _isChecked = true;
   final statusList = ['재학생', '학부모', '교사', '졸업생', '기타'];
 
+  /// 등록된 날짜와 오늘의 날짜를 비교해서 어느 정도 차이가 있는지에 대한 문자열을 반환하는 작업
+  /// n일 전, n시간 전, n분 전
   String _formatDateTimeForToday(String origin) {
     var today = DateTime.now();
 
@@ -41,6 +43,8 @@ class _OrderListPageState extends State<OrderListPage> {
     }
   }
 
+  /// 모든 주문 내역을 요청하는 작업
+  /// 이미 주문 처리가 된 것과 안된 것을 구분하여 각각의 List 에 저장
   Future<bool> _getAllOrderData() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getAllOrder.php';
     final response = await http.get(url);
@@ -74,6 +78,7 @@ class _OrderListPageState extends State<OrderListPage> {
     }
   }
 
+  /// 특정 uid 값을 통해 그 관리자의 사용자 정보를 가져오는 요청
   Future<Map> _getAdminUserInfoByID(String uid) async {
     String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_getUserInfo.php?uid=' + uid;

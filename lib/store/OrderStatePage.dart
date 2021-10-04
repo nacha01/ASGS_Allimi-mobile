@@ -23,6 +23,7 @@ class _OrderStatePageState extends State<OrderStatePage> {
     3: '문구류',
     4: '핸드메이드'
   };
+  /// 나(uid)의 모든 주문한 내역(현황)들을 요청하는 작업
   Future<bool> _getOrderInfoRequest() async {
     String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_getAllOrderInfo.php?uid=${widget.user.uid}';
@@ -36,19 +37,18 @@ class _OrderStatePageState extends State<OrderStatePage> {
               '')
           .trim();
       List map1st = json.decode(result);
-      // json의 가장 바깥쪽 껍데기 파싱
+      /// json 의 가장 바깥쪽 껍데기 파싱
 
       for (int i = 0; i < map1st.length; ++i) {
         map1st[i] = json.decode(map1st[i]);
-        // 2차 내부 json 내용 파싱
+        /// 2차 내부 json 내용 파싱
         for (int j = 0; j < map1st[i]['detail'].length; ++j) {
           map1st[i]['detail'][j] = json.decode(map1st[i]['detail'][j]);
           map1st[i]['detail'][j]['pInfo'] =
               json.decode(map1st[i]['detail'][j]['pInfo']);
+          /// 내부 detail 의 json 파싱
         }
       }
-      // 내부 detail의 json 파싱
-      print(map1st);
       setState(() {
         _orderMap = map1st;
       });
@@ -58,8 +58,9 @@ class _OrderStatePageState extends State<OrderStatePage> {
     }
   }
 
+  /// 주문의 date 필드를 사용자에게 직관적으로 보이게 하는 날짜 formatting 작업
+  /// yyyy-mm-dd hh:mm:ss  ->  mm/dd hh:mm
   String _formatForItemDate(String date) {
-    // yyyy-mm-dd hh:mm:ss  ->  mm/dd hh:mm
     return date.substring(5, 16).replaceAll('-', '/');
   }
 
@@ -97,7 +98,8 @@ class _OrderStatePageState extends State<OrderStatePage> {
     super.initState();
     _getOrderInfoRequest();
   }
-
+  /// 주문 상태 field 값에 따른 사용자에게 보여줄 mapping 색상을 반환
+  /// @param : DB에 저장된 '주문 상태 필드'의 정수 값
   Color _getColorAccordingToOrderState(int state) {
     switch (state) {
       case 0:
@@ -112,7 +114,8 @@ class _OrderStatePageState extends State<OrderStatePage> {
         return Colors.grey;
     }
   }
-
+  /// 주문 상태 field 값에 따른 사용자에게 보여줄 mapping 문자열을 반환
+  /// @param : DB에 저장된 '주문 상태 필드'의 정수 값
   String _getTextAccordingToOrderState(int state) {
     switch (state) {
       case 0:
@@ -128,6 +131,9 @@ class _OrderStatePageState extends State<OrderStatePage> {
     }
   }
 
+  /// 목록에서 어떤 상품을 구매했는지에 대한 간략 소개를 위한 텍스트 작업
+  /// @param : 특정 주문 데이터에 대한 상품 목록 List
+  /// format : 상품이 한 종류 시, xxx n개 | 두 종류 이상 시, xxx n개 외 y개
   String _extractDetailProductText(List detail) {
     if (detail.length == 1) {
       return detail[0]['pInfo']['pName'] + ' ' + detail[0]['quantity'] + '개';

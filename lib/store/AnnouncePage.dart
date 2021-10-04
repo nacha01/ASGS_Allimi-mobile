@@ -28,6 +28,7 @@ class _AnnouncePageState extends State<AnnouncePage> {
   var _selectedCategory = '제목';
   bool _isSearch = false;
 
+  /// 모든 공지사항 데이터를 요청하는 작업
   Future<bool> _getAnnounceRequest() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getAnnounce.php';
     final response = await http.get(url);
@@ -52,6 +53,7 @@ class _AnnouncePageState extends State<AnnouncePage> {
     }
   }
 
+  /// 특정 공지사항 글에 대해서 조회수 증가 요청
   Future<int> _increaseViewCountRequest(int anID) async {
     String uri =
         'http://nacha01.dothome.co.kr/sin/arlimi_increaseViewCount.php';
@@ -79,6 +81,8 @@ class _AnnouncePageState extends State<AnnouncePage> {
     return diff < 3 ? true : false;
   }
 
+  /// parameter로 들어온 검색 기준에 따라 검색 하고자 하는 단어가 포함되는 공지사항 데이터를
+  /// List 에 추가하는 작업
   void _searchAnnounceByCategory(String category, String toSearch) {
     if (toSearch.isEmpty) {
       setState(() {
@@ -147,7 +151,7 @@ class _AnnouncePageState extends State<AnnouncePage> {
                 child: Column(
                   children: [
                     //brief 설명 적는 곳
-                    Text(''/*이 페이지의 간략한 설명 적는 란*/)
+                    Text('' /*이 페이지의 간략한 설명 적는 란*/)
                   ],
                 ),
               ),

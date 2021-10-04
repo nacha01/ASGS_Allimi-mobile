@@ -19,6 +19,8 @@ class _UpdatePasswordPageState extends State<UpdatePasswordPage> {
   TextEditingController _newController = TextEditingController();
   TextEditingController _againController = TextEditingController();
   bool _isValid = true;
+
+  /// 새로운 비밀번호 업데이트 요청을 하는 작업
   Future<int> _updatePasswordRequest() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_updatePassword.php';
     final response = await http.post(url, body: <String, String>{
@@ -28,7 +30,6 @@ class _UpdatePasswordPageState extends State<UpdatePasswordPage> {
     });
 
     if (response.statusCode == 200) {
-      print(response.body);
       String result = utf8
           .decode(response.bodyBytes)
           .replaceAll(
