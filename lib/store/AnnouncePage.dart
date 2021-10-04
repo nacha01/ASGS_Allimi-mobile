@@ -147,7 +147,7 @@ class _AnnouncePageState extends State<AnnouncePage> {
                 child: Column(
                   children: [
                     //brief 설명 적는 곳
-                    Text('이 페이지의 간략한 설명 적는 란')
+                    Text(''/*이 페이지의 간략한 설명 적는 란*/)
                   ],
                 ),
               ),
@@ -178,7 +178,7 @@ class _AnnouncePageState extends State<AnnouncePage> {
                     width: size.width * 0.1,
                     height: size.height * 0.05,
                     decoration: BoxDecoration(
-                        border: Border.all(color: Color(0xFF9EE1E5), width: 3)),
+                        border: Border.all(color: Color(0xFF9EE1E5), width: 1)),
                     child: IconButton(
                       iconSize: 28,
                       padding: EdgeInsets.all(0),

@@ -212,7 +212,10 @@ class _CartPageState extends State<CartPage> {
       ),
       body: _cartProductList.length == 0
           ? Center(
-              child: Text('장바구니에 상품이 없습니다!'),
+              child: Text(
+                '장바구니에 상품이 없습니다!',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
             )
           : Column(
               children: [
@@ -222,7 +225,7 @@ class _CartPageState extends State<CartPage> {
                   child: Column(
                     children: [
                       //brief 설명 적는 곳
-                      Text('이 페이지의 간략한 설명 적는 란')
+                      Text(''/*이 페이지의 간략한 설명 적는 란*/)
                     ],
                   ),
                 ),

@@ -33,6 +33,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
   bool _isDiscountZero;
   int _count = 1; // 버튼으로 누른 수량
   bool _isCart = false; // 장바구니에 담았는지 판단
+  bool _isClicked = false; // 구매하기 버튼을 눌렀는지 판단
 
   String _formatPrice(int price) {
     String p = price.toString();
@@ -218,7 +219,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                         ),
                         title: Center(
                           child: Text(
-                            '상품 재고 : ${widget.product.stockCount - 5}개',
+                            '상품 재고 : ${(widget.product.stockCount - 5) < 0 ? 0 : (widget.product.stockCount - 5)}개',
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 18),
                           ),
@@ -276,59 +277,68 @@ class _DetailProductPageState extends State<DetailProductPage> {
                   SizedBox(
                     height: size.height * 0.05,
                   ),
-                  Container(
-                    decoration: BoxDecoration(
-                        border: Border.all(width: 1, color: Colors.black),
-                        borderRadius: BorderRadius.circular(12)),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          width: size.width * 0.15,
-                          height: size.height * 0.06,
-                          child: IconButton(
-                            onPressed: () {
-                              if (_count > 1) {
-                                setState(() {
-                                  --_count;
-                                });
-                              }
-                            },
-                            icon: Icon(Icons.remove),
-                          ),
-                        ),
-                        Container(
-                          width: size.width * 0.16,
-                          height: size.height * 0.06,
-                          alignment: Alignment.center,
+                  (widget.product.stockCount - 5) < 0
+                      ? Container(
                           child: Text(
-                            '$_count',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            '재고가 부족합니다.',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 15),
+                          ),
+                        )
+                      : Container(
+                          decoration: BoxDecoration(
+                              border: Border.all(width: 1, color: Colors.black),
+                              borderRadius: BorderRadius.circular(12)),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                width: size.width * 0.15,
+                                height: size.height * 0.06,
+                                child: IconButton(
+                                  onPressed: () {
+                                    if (_count > 1) {
+                                      setState(() {
+                                        --_count;
+                                      });
+                                    }
+                                  },
+                                  icon: Icon(Icons.remove),
+                                ),
+                              ),
+                              Container(
+                                width: size.width * 0.16,
+                                height: size.height * 0.06,
+                                alignment: Alignment.center,
+                                child: Text(
+                                  '$_count',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              Container(
+                                width: size.width * 0.15,
+                                height: size.height * 0.06,
+                                child: IconButton(
+                                  onPressed: () {
+                                    if (_count <
+                                        widget.product.stockCount - 5) {
+                                      setState(() {
+                                        ++_count;
+                                      });
+                                    } else {
+                                      Fluttertoast.showToast(
+                                          msg: '더 추가할 수 없습니다!',
+                                          gravity: ToastGravity.BOTTOM,
+                                          toastLength: Toast.LENGTH_SHORT);
+                                    }
+                                  },
+                                  icon: Icon(Icons.add),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        Container(
-                          width: size.width * 0.15,
-                          height: size.height * 0.06,
-                          child: IconButton(
-                            onPressed: () {
-                              if (_count < widget.product.stockCount - 5) {
-                                setState(() {
-                                  ++_count;
-                                });
-                              } else {
-                                Fluttertoast.showToast(
-                                    msg: '더 추가할 수 없습니다!',
-                                    gravity: ToastGravity.BOTTOM,
-                                    toastLength: Toast.LENGTH_SHORT);
-                              }
-                            },
-                            icon: Icon(Icons.add),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
                   SizedBox(
                     height: size.height * 0.03,
                   ),
@@ -374,110 +384,141 @@ class _DetailProductPageState extends State<DetailProductPage> {
               ),
             ),
           ),
-          Container(
-            height: size.height * 0.06,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                GestureDetector(
-                  onTap: () async {
-                    if (_count < 1 || widget.product.stockCount - 5 < 1) {
-                      Fluttertoast.showToast(
-                          msg: '상품의 재고가 없어 장바구니에 담을 수 없습니다!',
-                          gravity: ToastGravity.BOTTOM,
-                          toastLength: Toast.LENGTH_SHORT);
-                      return;
-                    }
-                    if (!_isCart) {
-                      var result = await _addCartProductRequest();
-                      print(result);
-                      if (result) {
-                        data.setExistCart(true);
-                        Fluttertoast.showToast(
-                            msg: '장바구니에 추가되었습니다.',
-                            gravity: ToastGravity.BOTTOM,
-                            toastLength: Toast.LENGTH_SHORT);
-                      } else {
-                        Fluttertoast.showToast(
-                            msg: '장바구니에 추가하는데 문제가 발생했습니다!',
-                            gravity: ToastGravity.BOTTOM,
-                            toastLength: Toast.LENGTH_SHORT);
-                      }
-                      setState(() {
-                        _isCart = true;
-                      });
-                    } else {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => CartPage(
-                                    user: widget.user,
-                                    isFromDetail: true,
-                                  )));
-                    }
-                  },
-                  child: Container(
-                    padding: EdgeInsets.all(10),
-                    color: Color(0xFF9EE1E5),
-                    alignment: Alignment.center,
-                    width: size.width * 0.48,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Icon(
-                          Icons.shopping_cart,
-                          size: 33,
+          _isClicked
+              ? Container(
+                  height: size.height * 0.06,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      GestureDetector(
+                        onTap: () async {
+                          if (_count < 1 || widget.product.stockCount - 5 < 1) {
+                            Fluttertoast.showToast(
+                                msg: '상품의 재고가 없어 장바구니에 담을 수 없습니다!',
+                                gravity: ToastGravity.BOTTOM,
+                                toastLength: Toast.LENGTH_SHORT);
+                            return;
+                          }
+                          if (!_isCart) {
+                            var result = await _addCartProductRequest();
+                            print(result);
+                            if (result) {
+                              data.setExistCart(true);
+                              Fluttertoast.showToast(
+                                  msg: '장바구니에 추가되었습니다.',
+                                  gravity: ToastGravity.BOTTOM,
+                                  toastLength: Toast.LENGTH_SHORT);
+                            } else {
+                              Fluttertoast.showToast(
+                                  msg: '장바구니에 추가하는데 문제가 발생했습니다!',
+                                  gravity: ToastGravity.BOTTOM,
+                                  toastLength: Toast.LENGTH_SHORT);
+                            }
+                            setState(() {
+                              _isCart = true;
+                            });
+                          } else {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => CartPage(
+                                          user: widget.user,
+                                          isFromDetail: true,
+                                        )));
+                          }
+                        },
+                        child: Container(
+                          padding: EdgeInsets.all(10),
+                          color: Color(0xFF9EE1E5),
+                          alignment: Alignment.center,
+                          width: size.width * 0.48,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Icon(
+                                Icons.shopping_cart,
+                                size: 33,
+                              ),
+                              Text(_isCart ? '장바구니로 이동' : '장바구니 담기',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: _isCart
+                                          ? Colors.indigo
+                                          : Colors.black))
+                            ],
+                          ),
                         ),
-                        Text(_isCart ? '장바구니로 이동' : '장바구니 담기',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: _isCart ? Colors.indigo : Colors.black))
-                      ],
-                    ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          if (_count < 1 || widget.product.stockCount - 5 < 1) {
+                            Fluttertoast.showToast(
+                                msg: '상품의 재고가 없어 결제할 수가 없습니다!',
+                                gravity: ToastGravity.BOTTOM,
+                                toastLength: Toast.LENGTH_SHORT);
+                            return;
+                          }
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => OrderPage(
+                                        user: widget.user,
+                                        direct: widget.product,
+                                        productCount: _count,
+                                        cart: null,
+                                      )));
+                        },
+                        child: Container(
+                          padding: EdgeInsets.all(10),
+                          color: Colors.cyan[700],
+                          alignment: Alignment.center,
+                          width: size.width * 0.52,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Icon(Icons.payment_rounded,
+                                  color: Colors.grey[300], size: 33),
+                              Text(
+                                '${_formatPrice(((widget.product.price * (1 - (widget.product.discount / 100.0)) * _count)).round())}원 결제하기',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.grey[300]),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    if (_count < 1 || widget.product.stockCount - 5 < 1) {
+                )
+              : FlatButton(
+                  padding: EdgeInsets.all(0),
+                  onPressed: () {
+                    if(widget.product.stockCount - 5 < 1){
                       Fluttertoast.showToast(
-                          msg: '상품의 재고가 없어 결제할 수가 없습니다!',
+                          msg: '상품의 재고가 없어 구매가 불가능합니다.',
                           gravity: ToastGravity.BOTTOM,
                           toastLength: Toast.LENGTH_SHORT);
                       return;
+                    }else {
+                      setState(() {
+                        _isClicked = !_isClicked;
+                      });
                     }
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => OrderPage(
-                                  user: widget.user,
-                                  direct: widget.product,
-                                  productCount: _count,
-                                  cart: null,
-                                )));
                   },
                   child: Container(
-                    padding: EdgeInsets.all(10),
-                    color: Colors.cyan[700],
                     alignment: Alignment.center,
-                    width: size.width * 0.52,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Icon(Icons.payment_rounded,
-                            color: Colors.grey[300], size: 33),
-                        Text(
-                          '${_formatPrice(((widget.product.price * (1 - (widget.product.discount / 100.0)) * _count)).round())}원 결제하기',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.grey[300]),
-                        )
-                      ],
+                    width: size.width * 0.98,
+                    padding: EdgeInsets.all(size.width * 0.025),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        color: Colors.blueAccent),
+                    child: Text(
+                      '구매하기',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.white),
                     ),
-                  ),
-                ),
-              ],
-            ),
-          )
+                  ))
         ],
       ),
     );

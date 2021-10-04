@@ -14,7 +14,7 @@ import 'package:provider/provider.dart';
 
 class StoreMyPage extends StatefulWidget {
   StoreMyPage({this.user});
-  User user;
+  final User user;
   @override
   _StoreMyPageState createState() => _StoreMyPageState();
 }
@@ -25,12 +25,30 @@ class StoreMyPage extends StatefulWidget {
 // 전화번호 변경 기능?
 
 class _StoreMyPageState extends State<StoreMyPage> {
-  // User data.user;
   final statusReverseList = ['재학생', '학부모', '교사', '졸업생', '기타'];
   @override
   void initState() {
     super.initState();
-    // data.user = widget.user;
+  }
+
+  void _dialogNotImplement() {
+    showDialog(
+        context: context,
+        builder: (ctx) {
+          Future.delayed(Duration(milliseconds: 500), () {
+            Navigator.pop(ctx);
+          });
+          return AlertDialog(
+            shape: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            content: Text(
+              '준비중 입니다...',
+              style: TextStyle(fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+          );
+        });
   }
 
   @override
@@ -63,17 +81,13 @@ class _StoreMyPageState extends State<StoreMyPage> {
                       width: size.width * 0.95,
                       child: Card(
                         child: ListTile(
-                          onTap: () {},
-                          onLongPress: () async {
+                          onTap: () async {
                             final result = await Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => UpdateUserPage(
                                           user: data.user,
                                         )));
-                            // setState(() {
-                            //   data.user = result as User;
-                            // });
                           },
                           leading: Container(
                             width: size.width * 0.2,
@@ -105,7 +119,9 @@ class _StoreMyPageState extends State<StoreMyPage> {
                 ),
               ),
               FlatButton(
-                onPressed: () {},
+                onPressed: () {
+                  _dialogNotImplement();
+                },
                 child: Container(
                   margin: EdgeInsets.all(10),
                   padding: EdgeInsets.all(5),
@@ -118,7 +134,7 @@ class _StoreMyPageState extends State<StoreMyPage> {
                       ),
                       Text(
                         '최근 본 상품',
-                        style: TextStyle(fontSize: 19),
+                        style: TextStyle(fontSize: 19, color: Colors.grey),
                       )
                     ],
                   ),
@@ -199,7 +215,9 @@ class _StoreMyPageState extends State<StoreMyPage> {
                 ),
               ),
               FlatButton(
-                onPressed: () {},
+                onPressed: () {
+                  _dialogNotImplement();
+                },
                 child: Container(
                   margin: EdgeInsets.all(10),
                   padding: EdgeInsets.all(5),
@@ -210,7 +228,8 @@ class _StoreMyPageState extends State<StoreMyPage> {
                       SizedBox(
                         width: size.width * 0.03,
                       ),
-                      Text('설정', style: TextStyle(fontSize: 19))
+                      Text('설정',
+                          style: TextStyle(fontSize: 19, color: Colors.grey))
                     ],
                   ),
                 ),
@@ -256,32 +275,46 @@ class _StoreMyPageState extends State<StoreMyPage> {
                         ],
                       ),
                     ),
-                    Container(
-                      margin: EdgeInsets.all(10),
-                      padding: EdgeInsets.all(5),
-                      child: Row(
-                        children: [
-                          Icon(Icons.settings,
-                              color: Colors.grey, size: size.width * 0.1),
-                          SizedBox(
-                            width: size.width * 0.03,
-                          ),
-                          Text('관리자 설정', style: TextStyle(fontSize: 19))
-                        ],
+                    FlatButton(
+                      onPressed: () {
+                        _dialogNotImplement();
+                      },
+                      child: Container(
+                        margin: EdgeInsets.all(10),
+                        padding: EdgeInsets.all(5),
+                        child: Row(
+                          children: [
+                            Icon(Icons.settings,
+                                color: Colors.grey, size: size.width * 0.1),
+                            SizedBox(
+                              width: size.width * 0.03,
+                            ),
+                            Text('관리자 설정',
+                                style:
+                                    TextStyle(fontSize: 19, color: Colors.grey))
+                          ],
+                        ),
                       ),
                     ),
-                    Container(
-                      margin: EdgeInsets.all(10),
-                      padding: EdgeInsets.all(5),
-                      child: Row(
-                        children: [
-                          Icon(Icons.bar_chart,
-                              color: Colors.grey, size: size.width * 0.1),
-                          SizedBox(
-                            width: size.width * 0.03,
-                          ),
-                          Text('통계', style: TextStyle(fontSize: 19))
-                        ],
+                    FlatButton(
+                      onPressed: () {
+                        _dialogNotImplement();
+                      },
+                      child: Container(
+                        margin: EdgeInsets.all(10),
+                        padding: EdgeInsets.all(5),
+                        child: Row(
+                          children: [
+                            Icon(Icons.bar_chart,
+                                color: Colors.grey, size: size.width * 0.1),
+                            SizedBox(
+                              width: size.width * 0.03,
+                            ),
+                            Text('통계',
+                                style:
+                                    TextStyle(fontSize: 19, color: Colors.grey))
+                          ],
+                        ),
                       ),
                     ),
                     FlatButton(
@@ -303,7 +336,7 @@ class _StoreMyPageState extends State<StoreMyPage> {
                             SizedBox(
                               width: size.width * 0.03,
                             ),
-                            Text('실시간 주문 현황',
+                            Text('실시간 주문 현황 목록',
                                 style: TextStyle(
                                     fontSize: 19,
                                     fontWeight: FontWeight.bold,
@@ -312,18 +345,25 @@ class _StoreMyPageState extends State<StoreMyPage> {
                         ),
                       ),
                     ),
-                    Container(
-                      margin: EdgeInsets.all(10),
-                      padding: EdgeInsets.all(5),
-                      child: Row(
-                        children: [
-                          Icon(Icons.add_shopping_cart,
-                              color: Colors.grey, size: size.width * 0.1),
-                          SizedBox(
-                            width: size.width * 0.03,
-                          ),
-                          Text('상품 입고 작성', style: TextStyle(fontSize: 19))
-                        ],
+                    FlatButton(
+                      onPressed: () {
+                        _dialogNotImplement();
+                      },
+                      child: Container(
+                        margin: EdgeInsets.all(10),
+                        padding: EdgeInsets.all(5),
+                        child: Row(
+                          children: [
+                            Icon(Icons.add_shopping_cart,
+                                color: Colors.grey, size: size.width * 0.1),
+                            SizedBox(
+                              width: size.width * 0.03,
+                            ),
+                            Text('상품 입고 작성',
+                                style:
+                                    TextStyle(fontSize: 19, color: Colors.grey))
+                          ],
+                        ),
                       ),
                     ),
                     FlatButton(
@@ -345,7 +385,7 @@ class _StoreMyPageState extends State<StoreMyPage> {
                             SizedBox(
                               width: size.width * 0.03,
                             ),
-                            Text('문의 현황', style: TextStyle(fontSize: 19))
+                            Text('문의 목록', style: TextStyle(fontSize: 19))
                           ],
                         ),
                       ),

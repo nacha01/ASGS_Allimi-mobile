@@ -106,7 +106,7 @@ class _StoreSplashPageState extends State<StoreSplashPage> {
             child: Column(
               children: [
                 Text(
-                  '텍스트 및 로고',
+                  ''/*텍스트 및 로고*/,
                   textScaleFactor: 1.5,
                 ),
                 SizedBox(

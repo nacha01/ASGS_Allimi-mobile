@@ -231,673 +231,771 @@ class _AddingProductPageState extends State<AddingProductPage> {
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          onPressed: () => Navigator.pop(context),
-          color: Colors.black,
-          icon: Icon(
-            Icons.arrow_back,
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pop(context, true);
+        return false;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            onPressed: () => Navigator.pop(context, true),
             color: Colors.black,
+            icon: Icon(
+              Icons.arrow_back,
+              color: Colors.black,
+            ),
           ),
+          backgroundColor: Color(0xFF9EE1E5),
+          title: Text(
+            '상품 등록하기',
+            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          ),
+          centerTitle: true,
         ),
-        backgroundColor: Color(0xFF9EE1E5),
-        title: Text(
-          '상품 등록하기',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: _isNotRegister
-              ? Column(
-                  children: [
-                    SizedBox(
-                      height: 10,
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Text(
-                      '* 표시는 필수 입력 사항',
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(14.0),
-                      child: Column(
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: _isNotRegister
+                ? Column(
+                    children: [
+                      SizedBox(
+                        height: 10,
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        '* 표시는 필수 입력 사항',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(14.0),
+                        child: Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.02,
+                            ),
+                            Text(
+                                '※ Best 메뉴 여부와 New 메뉴 여부는 등록할 상품이 해당되면 체크하세요.'),
+                            SizedBox(
+                              height: size.height * 0.02,
+                            ),
+                            Text(
+                                '※ 대표 이미지는 카메라로 즉석에서 찍은 사진, 혹은 갤러리에서 가져와서 사용하면 됩니다.'),
+                            SizedBox(
+                              height: size.height * 0.02,
+                            ),
+                            Text(
+                                '※ 추가 이미지는 필수가 아니며, 필요시 추가할 때는 이미지와 파일이름을 반드시 적어주세요. '),
+                            SizedBox(
+                              height: size.height * 0.02,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Divider(
+                        thickness: 2,
+                        endIndent: 15,
+                        indent: 15,
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          titleLayoutWidget(
+                              title: '상품명', require: true, size: size),
                           SizedBox(
-                            height: size.height * 0.02,
+                            width: size.width * 0.02,
                           ),
-                          Text('※ Best 메뉴 여부와 New 메뉴 여부는 등록할 상품이 해당되면 체크하세요.'),
+                          textFieldLayoutWidget(
+                              width: size.width * 0.7,
+                              controller: _productNameController,
+                              maxCharNum: 100,
+                              maxLine: null)
+                        ],
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Divider(
+                        thickness: 2,
+                        endIndent: 15,
+                        indent: 15,
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          titleLayoutWidget(
+                              title: '상품 설명', require: true, size: size),
                           SizedBox(
-                            height: size.height * 0.02,
+                            width: size.width * 0.02,
                           ),
-                          Text(
-                              '※ 대표 이미지는 카메라로 즉석에서 찍은 사진, 혹은 갤러리에서 가져와서 사용하면 됩니다.'),
+                          textFieldLayoutWidget(
+                              width: size.width * 0.7,
+                              controller: _productExplainController,
+                              maxCharNum: 3000,
+                              maxLine: 30)
+                        ],
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Divider(
+                        thickness: 2,
+                        endIndent: 15,
+                        indent: 15,
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        children: [
+                          titleLayoutWidget(
+                              title: '카테고리', require: true, size: size),
                           SizedBox(
-                            height: size.height * 0.02,
+                            width: size.width * 0.02,
                           ),
-                          Text(
-                              '※ 추가 이미지는 필수가 아니며, 필요시 추가할 때는 이미지와 파일이름을 반드시 적어주세요. '),
+                          Container(
+                            width: size.width * 0.7,
+                            height: size.height * 0.05,
+                            child: DropdownButton(
+                              isExpanded: true,
+                              value: _selectedCategory,
+                              items: _categoryList.map((value) {
+                                return DropdownMenuItem(
+                                  child: Center(child: Text(value)),
+                                  value: value,
+                                );
+                              }).toList(),
+                              onChanged: (value) {
+                                setState(() {
+                                  _selectedCategory = value;
+                                });
+                              },
+                            ),
+                          )
+                        ],
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Divider(
+                        thickness: 2,
+                        endIndent: 15,
+                        indent: 15,
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        children: [
+                          titleLayoutWidget(
+                              title: '가격', require: true, size: size),
                           SizedBox(
-                            height: size.height * 0.02,
+                            width: size.width * 0.02,
+                          ),
+                          textFieldLayoutWidget(
+                              width: size.width * 0.7,
+                              // height: size.height * 0.07,
+                              controller: _productPriceController,
+                              validation: true,
+                              formatType: true)
+                        ],
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Divider(
+                        thickness: 2,
+                        endIndent: 15,
+                        indent: 15,
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        children: [
+                          titleLayoutWidget(
+                              title: '재고', require: true, size: size),
+                          SizedBox(
+                            width: size.width * 0.02,
+                          ),
+                          textFieldLayoutWidget(
+                              width: size.width * 0.7,
+                              // height: size.height * 0.07,
+                              controller: _productCountController,
+                              formatType: true)
+                        ],
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Divider(
+                        thickness: 2,
+                        endIndent: 15,
+                        indent: 15,
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        children: [
+                          Container(
+                            margin: EdgeInsets.all(5),
+                            alignment: Alignment.center,
+                            width: size.width * 0.32,
+                            height: size.height * 0.06,
+                            child: Text(
+                              'Best 메뉴 여부',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            decoration: BoxDecoration(
+                                color: Color(0xFF9EE1E5),
+                                borderRadius: BorderRadius.circular(8)),
+                          ),
+                          Container(
+                            width: size.width * 0.6,
+                            child: Checkbox(
+                                value: _isBest,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _isBest = value;
+                                  });
+                                }),
+                          )
+                        ],
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Divider(
+                        thickness: 2,
+                        endIndent: 15,
+                        indent: 15,
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        children: [
+                          Container(
+                            margin: EdgeInsets.all(5),
+                            alignment: Alignment.center,
+                            width: size.width * 0.32,
+                            height: size.height * 0.06,
+                            child: Text(
+                              'New 메뉴 여부',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            decoration: BoxDecoration(
+                                color: Color(0xFF9EE1E5),
+                                borderRadius: BorderRadius.circular(8)),
+                          ),
+                          Container(
+                            width: size.width * 0.6,
+                            child: Checkbox(
+                                value: _isNew,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _isNew = value;
+                                  });
+                                }),
+                          )
+                        ],
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Divider(
+                        thickness: 2,
+                        endIndent: 15,
+                        indent: 15,
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      /*----------------------------------------------------*/
+                      Column(
+                        children: [
+                          Container(
+                            alignment: Alignment.center,
+                            width: size.width * 0.8,
+                            height: size.height * 0.05,
+                            child: Text(
+                              '*대표 이미지 선택',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            decoration: BoxDecoration(
+                                color: Color(0xFF9EE1E5),
+                                borderRadius: BorderRadius.circular(8)),
+                          ),
+                          SizedBox(
+                            height: 15,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                margin: EdgeInsets.all(3),
+                                width: size.width * 0.2,
+                                child: IconButton(
+                                    onPressed: () => _getImageFromCamera(0),
+                                    icon: Icon(Icons.camera_alt_rounded)),
+                                decoration: BoxDecoration(
+                                    border: Border.all(
+                                        width: 1, color: Colors.teal),
+                                    color: Color(0xFF9EE1E5),
+                                    borderRadius: BorderRadius.circular(5)),
+                              ),
+                              Container(
+                                margin: EdgeInsets.all(3),
+                                width: size.width * 0.2,
+                                child: IconButton(
+                                    onPressed: () => _getImageFromGallery(0),
+                                    icon: Icon(Icons.photo_outlined)),
+                                decoration: BoxDecoration(
+                                    border: Border.all(
+                                        width: 1, color: Colors.teal),
+                                    color: Color(0xFF9EE1E5),
+                                    borderRadius: BorderRadius.circular(5)),
+                              )
+                            ],
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          _mainImage == null
+                              ? imageLoadLayout(size)
+                              : Image.file(
+                                  File(_mainImage.path),
+                                  fit: BoxFit.fill,
+                                  width: size.width * 0.9,
+                                  height: size.height * 0.5,
+                                ),
+                          SizedBox(
+                            height: 10,
                           ),
                         ],
                       ),
-                    ),
-                    Divider(
-                      thickness: 2,
-                      endIndent: 15,
-                      indent: 15,
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        titleLayoutWidget(
-                            title: '상품명', require: true, size: size),
-                        SizedBox(
-                          width: size.width * 0.02,
-                        ),
-                        textFieldLayoutWidget(
-                            width: size.width * 0.7,
-                            controller: _productNameController,
-                            maxCharNum: 100,
-                            maxLine: null)
-                      ],
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Divider(
-                      thickness: 2,
-                      endIndent: 15,
-                      indent: 15,
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        titleLayoutWidget(
-                            title: '상품 설명', require: true, size: size),
-                        SizedBox(
-                          width: size.width * 0.02,
-                        ),
-                        textFieldLayoutWidget(
-                            width: size.width * 0.7,
-                            controller: _productExplainController,
-                            maxCharNum: 3000,
-                            maxLine: 30)
-                      ],
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Divider(
-                      thickness: 2,
-                      endIndent: 15,
-                      indent: 15,
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      children: [
-                        titleLayoutWidget(
-                            title: '카테고리', require: true, size: size),
-                        SizedBox(
-                          width: size.width * 0.02,
-                        ),
-                        Container(
-                          width: size.width * 0.7,
-                          height: size.height * 0.05,
-                          child: DropdownButton(
-                            isExpanded: true,
-                            value: _selectedCategory,
-                            items: _categoryList.map((value) {
-                              return DropdownMenuItem(
-                                child: Center(child: Text(value)),
-                                value: value,
-                              );
-                            }).toList(),
-                            onChanged: (value) {
-                              setState(() {
-                                _selectedCategory = value;
-                              });
-                            },
-                          ),
-                        )
-                      ],
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Divider(
-                      thickness: 2,
-                      endIndent: 15,
-                      indent: 15,
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      children: [
-                        titleLayoutWidget(
-                            title: '가격', require: true, size: size),
-                        SizedBox(
-                          width: size.width * 0.02,
-                        ),
-                        textFieldLayoutWidget(
-                            width: size.width * 0.7,
-                            // height: size.height * 0.07,
-                            controller: _productPriceController,
-                            validation: true,
-                            formatType: true)
-                      ],
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Divider(
-                      thickness: 2,
-                      endIndent: 15,
-                      indent: 15,
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      children: [
-                        titleLayoutWidget(
-                            title: '재고', require: true, size: size),
-                        SizedBox(
-                          width: size.width * 0.02,
-                        ),
-                        textFieldLayoutWidget(
-                            width: size.width * 0.7,
-                            // height: size.height * 0.07,
-                            controller: _productCountController,
-                            formatType: true)
-                      ],
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Divider(
-                      thickness: 2,
-                      endIndent: 15,
-                      indent: 15,
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      children: [
-                        Container(
-                          margin: EdgeInsets.all(5),
-                          alignment: Alignment.center,
-                          width: size.width * 0.32,
-                          height: size.height * 0.06,
-                          child: Text(
-                            'Best 메뉴 여부',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          decoration: BoxDecoration(
-                              color: Color(0xFF9EE1E5),
-                              borderRadius: BorderRadius.circular(8)),
-                        ),
-                        Container(
-                          width: size.width * 0.6,
-                          child: Checkbox(
-                              value: _isBest,
-                              onChanged: (value) {
-                                setState(() {
-                                  _isBest = value;
-                                });
-                              }),
-                        )
-                      ],
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Divider(
-                      thickness: 2,
-                      endIndent: 15,
-                      indent: 15,
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      children: [
-                        Container(
-                          margin: EdgeInsets.all(5),
-                          alignment: Alignment.center,
-                          width: size.width * 0.32,
-                          height: size.height * 0.06,
-                          child: Text(
-                            'New 메뉴 여부',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          decoration: BoxDecoration(
-                              color: Color(0xFF9EE1E5),
-                              borderRadius: BorderRadius.circular(8)),
-                        ),
-                        Container(
-                          width: size.width * 0.6,
-                          child: Checkbox(
-                              value: _isNew,
-                              onChanged: (value) {
-                                setState(() {
-                                  _isNew = value;
-                                });
-                              }),
-                        )
-                      ],
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Divider(
-                      thickness: 2,
-                      endIndent: 15,
-                      indent: 15,
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    /*----------------------------------------------------*/
-                    Column(
-                      children: [
-                        Container(
-                          alignment: Alignment.center,
-                          width: size.width * 0.8,
-                          height: size.height * 0.05,
-                          child: Text(
-                            '*대표 이미지 선택',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          decoration: BoxDecoration(
-                              color: Color(0xFF9EE1E5),
-                              borderRadius: BorderRadius.circular(8)),
-                        ),
-                        SizedBox(
-                          height: 15,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              margin: EdgeInsets.all(3),
-                              width: size.width * 0.2,
-                              child: IconButton(
-                                  onPressed: () => _getImageFromCamera(0),
-                                  icon: Icon(Icons.camera_alt_rounded)),
-                              decoration: BoxDecoration(
-                                  border:
-                                      Border.all(width: 1, color: Colors.teal),
-                                  color: Color(0xFF9EE1E5),
-                                  borderRadius: BorderRadius.circular(5)),
-                            ),
-                            Container(
-                              margin: EdgeInsets.all(3),
-                              width: size.width * 0.2,
-                              child: IconButton(
-                                  onPressed: () => _getImageFromGallery(0),
-                                  icon: Icon(Icons.photo_outlined)),
-                              decoration: BoxDecoration(
-                                  border:
-                                      Border.all(width: 1, color: Colors.teal),
-                                  color: Color(0xFF9EE1E5),
-                                  borderRadius: BorderRadius.circular(5)),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      /* ---------------------------------------------------- */
+                      _useSub1
+                          ? Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      alignment: Alignment.center,
+                                      width: size.width * 0.6,
+                                      height: size.height * 0.05,
+                                      child: Text(
+                                        '추가 이미지 1 선택',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      decoration: BoxDecoration(
+                                          color: Color(0xFF9EE1E5),
+                                          borderRadius:
+                                              BorderRadius.circular(8)),
+                                    ),
+                                    IconButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          _clickCount--;
+                                          _useSub1 = false;
+                                          _subImage1 = null;
+                                        });
+                                      },
+                                      icon: Icon(Icons.cancel),
+                                      color: Colors.red,
+                                    )
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      margin: EdgeInsets.all(3),
+                                      width: size.width * 0.2,
+                                      child: IconButton(
+                                          onPressed: () =>
+                                              _getImageFromCamera(1),
+                                          icon: Icon(Icons.camera_alt_rounded)),
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
+                                              width: 1, color: Colors.teal),
+                                          color: Color(0xFF9EE1E5),
+                                          borderRadius:
+                                              BorderRadius.circular(5)),
+                                    ),
+                                    Container(
+                                      margin: EdgeInsets.all(3),
+                                      width: size.width * 0.2,
+                                      child: IconButton(
+                                          onPressed: () =>
+                                              _getImageFromGallery(1),
+                                          icon: Icon(Icons.photo_outlined)),
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
+                                              width: 1, color: Colors.teal),
+                                          color: Color(0xFF9EE1E5),
+                                          borderRadius:
+                                              BorderRadius.circular(5)),
+                                    )
+                                  ],
+                                ),
+                                _subImage1 == null
+                                    ? imageLoadLayout(size)
+                                    : Image.file(
+                                        File(_subImage1.path),
+                                        fit: BoxFit.fill,
+                                        width: size.width * 0.92,
+                                        height: size.height * 0.46,
+                                      ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                              ],
                             )
-                          ],
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        _mainImage == null
-                            ? imageLoadLayout(size)
-                            : Image.file(
-                                File(_mainImage.path),
-                                fit: BoxFit.fill,
-                                width: size.width * 0.9,
-                                height: size.height * 0.5,
-                              ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    /* ---------------------------------------------------- */
-                    _useSub1
-                        ? Column(
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    alignment: Alignment.center,
-                                    width: size.width * 0.6,
-                                    height: size.height * 0.05,
-                                    child: Text(
-                                      '추가 이미지 1 선택',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
+                          : SizedBox(),
+                      /* ---------------------------------------------------- */
+                      _useSub2
+                          ? Column(
+                              children: [
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      alignment: Alignment.center,
+                                      width: size.width * 0.6,
+                                      height: size.height * 0.05,
+                                      child: Text(
+                                        '추가 이미지 2 선택',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
+                                      decoration: BoxDecoration(
+                                          color: Color(0xFF9EE1E5),
+                                          borderRadius:
+                                              BorderRadius.circular(8)),
                                     ),
-                                    decoration: BoxDecoration(
-                                        color: Color(0xFF9EE1E5),
-                                        borderRadius: BorderRadius.circular(8)),
-                                  ),
-                                  IconButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        _clickCount--;
-                                        _useSub1 = false;
-                                        _subImage1 = null;
-                                      });
-                                    },
-                                    icon: Icon(Icons.cancel),
-                                    color: Colors.red,
-                                  )
-                                ],
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    margin: EdgeInsets.all(3),
-                                    width: size.width * 0.2,
-                                    child: IconButton(
-                                        onPressed: () => _getImageFromCamera(1),
-                                        icon: Icon(Icons.camera_alt_rounded)),
-                                    decoration: BoxDecoration(
-                                        border: Border.all(
-                                            width: 1, color: Colors.teal),
-                                        color: Color(0xFF9EE1E5),
-                                        borderRadius: BorderRadius.circular(5)),
-                                  ),
-                                  Container(
-                                    margin: EdgeInsets.all(3),
-                                    width: size.width * 0.2,
-                                    child: IconButton(
-                                        onPressed: () =>
-                                            _getImageFromGallery(1),
-                                        icon: Icon(Icons.photo_outlined)),
-                                    decoration: BoxDecoration(
-                                        border: Border.all(
-                                            width: 1, color: Colors.teal),
-                                        color: Color(0xFF9EE1E5),
-                                        borderRadius: BorderRadius.circular(5)),
-                                  )
-                                ],
-                              ),
-                              _subImage1 == null
-                                  ? imageLoadLayout(size)
-                                  : Image.file(
-                                      File(_subImage1.path),
-                                      fit: BoxFit.fill,
-                                      width: size.width * 0.92,
-                                      height: size.height * 0.46,
+                                    IconButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          _clickCount--;
+                                          _useSub2 = false;
+                                          _subImage2 = null;
+                                        });
+                                      },
+                                      icon: Icon(Icons.cancel),
+                                      color: Colors.red,
+                                    )
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      margin: EdgeInsets.all(3),
+                                      width: size.width * 0.2,
+                                      child: IconButton(
+                                          onPressed: () =>
+                                              _getImageFromCamera(2),
+                                          icon: Icon(Icons.camera_alt_rounded)),
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
+                                              width: 1, color: Colors.teal),
+                                          color: Color(0xFF9EE1E5),
+                                          borderRadius:
+                                              BorderRadius.circular(5)),
                                     ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                            ],
-                          )
-                        : SizedBox(),
-                    /* ---------------------------------------------------- */
-                    _useSub2
-                        ? Column(
-                            children: [
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    alignment: Alignment.center,
-                                    width: size.width * 0.6,
-                                    height: size.height * 0.05,
-                                    child: Text(
-                                      '추가 이미지 2 선택',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
+                                    Container(
+                                      margin: EdgeInsets.all(3),
+                                      width: size.width * 0.2,
+                                      child: IconButton(
+                                          onPressed: () =>
+                                              _getImageFromGallery(2),
+                                          icon: Icon(Icons.photo_outlined)),
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
+                                              width: 1, color: Colors.teal),
+                                          color: Color(0xFF9EE1E5),
+                                          borderRadius:
+                                              BorderRadius.circular(5)),
+                                    )
+                                  ],
+                                ),
+                                _subImage2 == null
+                                    ? imageLoadLayout(size)
+                                    : Image.file(
+                                        File(_subImage2.path),
+                                        fit: BoxFit.fill,
+                                        width: size.width * 0.92,
+                                        height: size.height * 0.6,
                                       ),
-                                    ),
-                                    decoration: BoxDecoration(
-                                        color: Color(0xFF9EE1E5),
-                                        borderRadius: BorderRadius.circular(8)),
-                                  ),
-                                  IconButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        _clickCount--;
-                                        _useSub2 = false;
-                                        _subImage2 = null;
-                                      });
-                                    },
-                                    icon: Icon(Icons.cancel),
-                                    color: Colors.red,
-                                  )
-                                ],
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    margin: EdgeInsets.all(3),
-                                    width: size.width * 0.2,
-                                    child: IconButton(
-                                        onPressed: () => _getImageFromCamera(2),
-                                        icon: Icon(Icons.camera_alt_rounded)),
-                                    decoration: BoxDecoration(
-                                        border: Border.all(
-                                            width: 1, color: Colors.teal),
-                                        color: Color(0xFF9EE1E5),
-                                        borderRadius: BorderRadius.circular(5)),
-                                  ),
-                                  Container(
-                                    margin: EdgeInsets.all(3),
-                                    width: size.width * 0.2,
-                                    child: IconButton(
-                                        onPressed: () =>
-                                            _getImageFromGallery(2),
-                                        icon: Icon(Icons.photo_outlined)),
-                                    decoration: BoxDecoration(
-                                        border: Border.all(
-                                            width: 1, color: Colors.teal),
-                                        color: Color(0xFF9EE1E5),
-                                        borderRadius: BorderRadius.circular(5)),
-                                  )
-                                ],
-                              ),
-                              _subImage2 == null
-                                  ? imageLoadLayout(size)
-                                  : Image.file(
-                                      File(_subImage2.path),
-                                      fit: BoxFit.fill,
-                                      width: size.width * 0.92,
-                                      height: size.height * 0.6,
-                                    ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                            ],
-                          )
-                        : SizedBox(),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    FlatButton(
-                      onPressed: _useSub1 && _useSub2
-                          ? null
-                          : () {
-                              if (_clickCount == 0) {
-                                ++_clickCount;
-                                setState(() {
-                                  if (!_useSub1)
-                                    _useSub1 = true;
-                                  else if (!_useSub2) _useSub2 = true;
-                                });
-                              } else if (_clickCount == 1) {
-                                ++_clickCount;
-                                setState(() {
-                                  if (!_useSub1)
-                                    _useSub1 = true;
-                                  else if (!_useSub2) _useSub2 = true;
-                                });
-                              }
-                            },
-                      child: Container(
+                                SizedBox(
+                                  height: 10,
+                                ),
+                              ],
+                            )
+                          : SizedBox(),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      FlatButton(
+                        onPressed: _useSub1 && _useSub2
+                            ? null
+                            : () {
+                                if (_clickCount == 0) {
+                                  ++_clickCount;
+                                  setState(() {
+                                    if (!_useSub1)
+                                      _useSub1 = true;
+                                    else if (!_useSub2) _useSub2 = true;
+                                  });
+                                } else if (_clickCount == 1) {
+                                  ++_clickCount;
+                                  setState(() {
+                                    if (!_useSub1)
+                                      _useSub1 = true;
+                                    else if (!_useSub2) _useSub2 = true;
+                                  });
+                                }
+                              },
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: Colors.grey[200],
+                              borderRadius: BorderRadius.circular(10),
+                              border:
+                                  Border.all(width: 2, color: Colors.black)),
+                          width: size.width * 0.85,
+                          height: size.height * 0.04,
+                          alignment: Alignment.center,
+                          child: Text(
+                            '이미지 추가하기(최대 2개)',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: _useSub1 && _useSub2
+                                    ? Colors.grey
+                                    : Colors.blue),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: size.height * 0.05,
+                      ),
+                      Container(
+                        width: size.width * 0.5,
                         decoration: BoxDecoration(
-                            color: Colors.grey[200],
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(width: 2, color: Colors.black)),
-                        width: size.width * 0.85,
-                        height: size.height * 0.04,
-                        alignment: Alignment.center,
-                        child: Text(
-                          '이미지 추가하기(최대 2개)',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: _useSub1 && _useSub2
-                                  ? Colors.grey
-                                  : Colors.blue),
+                            color: Colors.deepOrange,
+                            border: Border.all(width: 2, color: Colors.indigo),
+                            borderRadius: BorderRadius.circular(20)),
+                        child: FlatButton(
+                          child: Text(
+                            '최종 등록하기',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          onPressed: () {
+                            if (_productNameController.text.isEmpty) {
+                              showErrorDialog();
+                              return;
+                            }
+                            if (_productExplainController.text.isEmpty) {
+                              showErrorDialog();
+                              return;
+                            }
+                            if (_productCountController.text.isEmpty) {
+                              showErrorDialog();
+                              return;
+                            }
+                            if (_productPriceController.text.isEmpty) {
+                              showErrorDialog();
+                              return;
+                            }
+                            if (_mainImage == null) {
+                              showErrorDialog();
+                              return;
+                            }
+                            if (_useSub1 && _subImage1 == null) {
+                              showErrorDialog();
+                              return;
+                            }
+                            if (_useSub2 && _subImage2 == null) {
+                              showErrorDialog();
+                              return;
+                            }
+                            setState(() {
+                              _isNotRegister = false;
+                            });
+                          },
                         ),
                       ),
-                    ),
-                    SizedBox(
-                      height: size.height * 0.05,
-                    ),
-                    Container(
-                      width: size.width * 0.5,
-                      decoration: BoxDecoration(
-                          color: Colors.deepOrange,
-                          border: Border.all(width: 2, color: Colors.indigo),
-                          borderRadius: BorderRadius.circular(20)),
-                      child: FlatButton(
-                        child: Text(
-                          '최종 등록하기',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        onPressed: () {
-                          if (_productNameController.text.isEmpty) {
-                            showErrorDialog();
-                            return;
-                          }
-                          if (_productExplainController.text.isEmpty) {
-                            showErrorDialog();
-                            return;
-                          }
-                          if (_productCountController.text.isEmpty) {
-                            showErrorDialog();
-                            return;
-                          }
-                          if (_productPriceController.text.isEmpty) {
-                            showErrorDialog();
-                            return;
-                          }
-                          if (_mainImage == null) {
-                            showErrorDialog();
-                            return;
-                          }
-                          if (_useSub1 && _subImage1 == null) {
-                            showErrorDialog();
-                            return;
-                          }
-                          if (_useSub2 && _subImage2 == null) {
-                            showErrorDialog();
-                            return;
-                          }
-                          setState(() {
-                            _isNotRegister = false;
-                          });
-                        },
-                      ),
-                    ),
-                    SizedBox(
-                      height: 15,
-                    )
-                  ],
-                )
-              : FutureBuilder<bool>(
-                  future: _doRegisterProduct(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      if (snapshot.data) {
-                        return Padding(
-                          padding: EdgeInsets.all(15),
-                          child: Container(
-                            width: size.width,
-                            height: size.height * 0.8,
-                            alignment: Alignment.center,
+                      SizedBox(
+                        height: 15,
+                      )
+                    ],
+                  )
+                : FutureBuilder<bool>(
+                    future: _doRegisterProduct(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        if (snapshot.data) {
+                          return Padding(
+                            padding: EdgeInsets.all(15),
                             child: Container(
-                              width: size.width * 0.85,
-                              height: size.height * 0.4,
-                              decoration: BoxDecoration(
-                                  border: Border.all(
-                                      width: 2, color: Colors.black38),
-                                  borderRadius: BorderRadius.circular(12),
-                                  color: Colors.grey[300]),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    '상품등록이 완료되었습니다.',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 22),
-                                  ),
-                                  SizedBox(
-                                    height: size.height * 0.06,
-                                  ),
-                                  Container(
-                                    decoration: BoxDecoration(
-                                        border: Border.all(
-                                            width: 2, color: Colors.black38),
-                                        color: Colors.blueGrey),
-                                    width: size.width * 0.45,
-                                    height: size.height * 0.06,
-                                    child: FlatButton(
-                                        onPressed: () => Navigator.pop(context),
-                                        child: Text(
-                                          '이전으로 돌아가기',
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.white),
-                                        )),
-                                  )
-                                ],
+                              width: size.width,
+                              height: size.height * 0.8,
+                              alignment: Alignment.center,
+                              child: Container(
+                                width: size.width * 0.85,
+                                height: size.height * 0.4,
+                                decoration: BoxDecoration(
+                                    border: Border.all(
+                                        width: 2, color: Colors.black38),
+                                    borderRadius: BorderRadius.circular(12),
+                                    color: Colors.grey[300]),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      '상품등록이 완료되었습니다.',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 22),
+                                    ),
+                                    SizedBox(
+                                      height: size.height * 0.06,
+                                    ),
+                                    Container(
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
+                                              width: 2, color: Colors.black38),
+                                          color: Colors.blueGrey),
+                                      width: size.width * 0.45,
+                                      height: size.height * 0.06,
+                                      child: FlatButton(
+                                          onPressed: () =>
+                                              Navigator.pop(context, true),
+                                          child: Text(
+                                            '이전으로 돌아가기',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white),
+                                          )),
+                                    )
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                        );
-                      } else {
+                          );
+                        } else {
+                          return Padding(
+                            padding: EdgeInsets.all(5),
+                            child: Container(
+                              alignment: Alignment.center,
+                              width: size.width,
+                              height: size.height * 0.8,
+                              child: Container(
+                                width: size.width * 0.85,
+                                height: size.height * 0.5,
+                                decoration: BoxDecoration(
+                                    color: Colors.grey[300],
+                                    border: Border.all(
+                                        width: 2, color: Colors.black),
+                                    borderRadius: BorderRadius.circular(12)),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.warning_amber_outlined,
+                                      color: Colors.red,
+                                      size: size.width * 0.2,
+                                    ),
+                                    SizedBox(
+                                      height: size.height * 0.03,
+                                    ),
+                                    Text(
+                                      '상품 등록에 문제가 발생하였습니다. \n재확인바랍니다.',
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    SizedBox(
+                                      height: size.height * 0.03,
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Container(
+                                          width: size.width * 0.2,
+                                          height: size.height * 0.06,
+                                          decoration: BoxDecoration(
+                                              color: Colors.orange,
+                                              border: Border.all(
+                                                  color: Colors.black,
+                                                  width: 1)),
+                                          child: FlatButton(
+                                              onPressed: () =>
+                                                  Navigator.pop(context),
+                                              child: Text('이전')),
+                                        ),
+                                        SizedBox(
+                                          width: size.width * 0.15,
+                                        ),
+                                        Container(
+                                          width: size.width * 0.4,
+                                          height: size.height * 0.06,
+                                          decoration: BoxDecoration(
+                                              color: Colors.orange,
+                                              border: Border.all(
+                                                  color: Colors.black,
+                                                  width: 1)),
+                                          child: FlatButton(
+                                              onPressed: () {
+                                                setState(() {
+                                                  _isNotRegister =
+                                                      !_isNotRegister;
+                                                });
+                                              },
+                                              child: Text('다시 작성하기')),
+                                        )
+                                      ],
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        }
+                      } else if (snapshot.hasError) {
+                        print(snapshot.stackTrace);
                         return Padding(
                           padding: EdgeInsets.all(5),
                           child: Container(
@@ -924,7 +1022,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                     height: size.height * 0.03,
                                   ),
                                   Text(
-                                    '상품 등록에 문제가 발생하였습니다. \n재확인바랍니다.',
+                                    '상품 등록에 문제가 발생하였습니다. \n[System Error]',
                                     style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold),
@@ -974,101 +1072,25 @@ class _AddingProductPageState extends State<AddingProductPage> {
                             ),
                           ),
                         );
-                      }
-                    } else if (snapshot.hasError) {
-                      print(snapshot.stackTrace);
-                      return Padding(
-                        padding: EdgeInsets.all(5),
-                        child: Container(
-                          alignment: Alignment.center,
-                          width: size.width,
-                          height: size.height * 0.8,
-                          child: Container(
-                            width: size.width * 0.85,
-                            height: size.height * 0.5,
-                            decoration: BoxDecoration(
-                                color: Colors.grey[300],
-                                border:
-                                    Border.all(width: 2, color: Colors.black),
-                                borderRadius: BorderRadius.circular(12)),
+                      } else {
+                        return Container(
+                            alignment: Alignment.center,
+                            width: size.width,
+                            height: size.height,
                             child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(
-                                  Icons.warning_amber_outlined,
-                                  color: Colors.red,
-                                  size: size.width * 0.2,
-                                ),
-                                SizedBox(
-                                  height: size.height * 0.03,
-                                ),
                                 Text(
-                                  '상품 등록에 문제가 발생하였습니다. \n[System Error]',
+                                  '상품을 등록 중입니다...',
                                   style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold),
-                                  textAlign: TextAlign.center,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 21),
                                 ),
-                                SizedBox(
-                                  height: size.height * 0.03,
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      width: size.width * 0.2,
-                                      height: size.height * 0.06,
-                                      decoration: BoxDecoration(
-                                          color: Colors.orange,
-                                          border: Border.all(
-                                              color: Colors.black, width: 1)),
-                                      child: FlatButton(
-                                          onPressed: () =>
-                                              Navigator.pop(context),
-                                          child: Text('이전')),
-                                    ),
-                                    SizedBox(
-                                      width: size.width * 0.15,
-                                    ),
-                                    Container(
-                                      width: size.width * 0.4,
-                                      height: size.height * 0.06,
-                                      decoration: BoxDecoration(
-                                          color: Colors.orange,
-                                          border: Border.all(
-                                              color: Colors.black, width: 1)),
-                                      child: FlatButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              _isNotRegister = !_isNotRegister;
-                                            });
-                                          },
-                                          child: Text('다시 작성하기')),
-                                    )
-                                  ],
-                                )
+                                CircularProgressIndicator(),
                               ],
-                            ),
-                          ),
-                        ),
-                      );
-                    } else {
-                      return Container(
-                          alignment: Alignment.center,
-                          width: size.width,
-                          height: size.height,
-                          child: Column(
-                            children: [
-                              Text(
-                                '상품을 등록 중입니다...',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 21),
-                              ),
-                              CircularProgressIndicator(),
-                            ],
-                          ));
-                    }
-                  }),
+                            ));
+                      }
+                    }),
+          ),
         ),
       ),
     );

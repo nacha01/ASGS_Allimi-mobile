@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:ui';
 
-import 'package:asgshighschool/data/exist_cart.dart';
 import 'package:asgshighschool/data/product_data.dart';
 import 'package:asgshighschool/data/user_data.dart';
 import 'package:asgshighschool/store/DetailProductPage.dart';
@@ -15,7 +14,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
 
 class StoreHomePage extends StatefulWidget {
   StoreHomePage({this.user, this.product, this.existCart});
@@ -65,7 +63,8 @@ class _StoreHomePageState extends State<StoreHomePage>
   List<Product> _handmadeProductList = [];
   List<Widget> _handmadeProductLayoutList = [];
 
-  void _groupingProduct() {
+  /// 전체 상품을 카테고리 별 상품, 베스트 상품, 신규 상품 별로 각 List 에 분류
+  void _groupingProduct(Size size) {
     for (int i = 0; i < _productList.length; ++i) {
       if (_productList[i].isBest == 1 && _productList[i].isNew == 1) {
         _bestProductList.add(_productList[i]);
@@ -93,19 +92,21 @@ class _StoreHomePageState extends State<StoreHomePage>
           break;
       }
     }
-    getBestProdLayout();
-    getNewProdLayout();
-    getFoodProdLayout();
-    getSnackProdLayout();
-    getBeverageProdLayout();
-    getStationeryProdLayout();
-    getHandmadeProdLayout();
+    getBestProdLayout(size);
+    getNewProdLayout(size);
+    getFoodProdLayout(size);
+    getSnackProdLayout(size);
+    getBeverageProdLayout(size);
+    getStationeryProdLayout(size);
+    getHandmadeProdLayout(size);
   }
 
-  void _sortProductByIndex(int sortMethod) {
-    // 0 : 등록순 - prodID 필드 기준으로 정렬
-    // 1 : 이름순 - prodName 필드 기준으로 정렬
-    // 2 : 가격순 - price 필드 기준으로 정렬
+  /// 모든 각 상품 리스트를 method 에 따라 정렬시키는 작업
+  /// @param : 정렬 기준 정수 값
+  /// 0 : 등록순 - prodID 필드 기준으로 정렬
+  /// 1 : 이름순 - prodName 필드 기준으로 정렬
+  /// 2 : 가격순 - price 필드 기준으로 정렬
+  void _sortProductByIndex(int sortMethod, Size size) {
     switch (sortMethod) {
       case 0:
         _productList.sort((a, b) => a.prodID.compareTo(b.prodID));
@@ -117,7 +118,8 @@ class _StoreHomePageState extends State<StoreHomePage>
               _productList[i].price,
               _productList[i].prodName,
               false,
-              _productList[i]));
+              _productList[i],
+              size));
         }
         _foodProductList.sort((a, b) => a.prodID.compareTo(b.prodID));
         _foodProductLayoutList.clear();
@@ -128,7 +130,8 @@ class _StoreHomePageState extends State<StoreHomePage>
               _foodProductList[i].price,
               _foodProductList[i].prodName,
               false,
-              _foodProductList[i]));
+              _foodProductList[i],
+              size));
         }
         _snackProductList.sort((a, b) => a.prodID.compareTo(b.prodID));
         _snackProductLayoutList.clear();
@@ -139,7 +142,8 @@ class _StoreHomePageState extends State<StoreHomePage>
               _snackProductList[i].price,
               _snackProductList[i].prodName,
               false,
-              _snackProductList[i]));
+              _snackProductList[i],
+              size));
         }
         _beverageProductList.sort((a, b) => a.prodID.compareTo(b.prodID));
         _beverageProductLayoutList.clear();
@@ -151,7 +155,8 @@ class _StoreHomePageState extends State<StoreHomePage>
               _beverageProductList[i].price,
               _beverageProductList[i].prodName,
               false,
-              _beverageProductList[i]));
+              _beverageProductList[i],
+              size));
         }
         _stationeryProductList.sort((a, b) => a.prodID.compareTo(b.prodID));
         _stationeryProductLayoutList.clear();
@@ -163,7 +168,8 @@ class _StoreHomePageState extends State<StoreHomePage>
               _stationeryProductList[i].price,
               _stationeryProductList[i].prodName,
               false,
-              _stationeryProductList[i]));
+              _stationeryProductList[i],
+              size));
         }
         _handmadeProductList.sort((a, b) => a.prodID.compareTo(b.prodID));
         _handmadeProductLayoutList.clear();
@@ -175,7 +181,8 @@ class _StoreHomePageState extends State<StoreHomePage>
               _handmadeProductList[i].price,
               _handmadeProductList[i].prodName,
               false,
-              _handmadeProductList[i]));
+              _handmadeProductList[i],
+              size));
         }
         _bestProductList.sort((a, b) => a.prodID.compareTo(b.prodID));
         _bestProductLayoutList.clear();
@@ -186,7 +193,8 @@ class _StoreHomePageState extends State<StoreHomePage>
               _bestProductList[i].price,
               _bestProductList[i].prodName,
               false,
-              _bestProductList[i]));
+              _bestProductList[i],
+              size));
         }
 
         _newProductList.sort((a, b) => a.prodID.compareTo(b.prodID));
@@ -198,7 +206,8 @@ class _StoreHomePageState extends State<StoreHomePage>
               _newProductList[i].price,
               _newProductList[i].prodName,
               false,
-              _newProductList[i]));
+              _newProductList[i],
+              size));
         }
         break;
       case 1:
@@ -211,7 +220,8 @@ class _StoreHomePageState extends State<StoreHomePage>
               _productList[i].price,
               _productList[i].prodName,
               false,
-              _productList[i]));
+              _productList[i],
+              size));
         }
         _foodProductList.sort((a, b) => a.prodName.compareTo(b.prodName));
         _foodProductLayoutList.clear();
@@ -222,7 +232,8 @@ class _StoreHomePageState extends State<StoreHomePage>
               _foodProductList[i].price,
               _foodProductList[i].prodName,
               false,
-              _foodProductList[i]));
+              _foodProductList[i],
+              size));
         }
         _snackProductList.sort((a, b) => a.prodName.compareTo(b.prodName));
         _snackProductLayoutList.clear();
@@ -233,7 +244,8 @@ class _StoreHomePageState extends State<StoreHomePage>
               _snackProductList[i].price,
               _snackProductList[i].prodName,
               false,
-              _snackProductList[i]));
+              _snackProductList[i],
+              size));
         }
         _beverageProductList.sort((a, b) => a.prodName.compareTo(b.prodName));
         _beverageProductLayoutList.clear();
@@ -245,7 +257,8 @@ class _StoreHomePageState extends State<StoreHomePage>
               _beverageProductList[i].price,
               _beverageProductList[i].prodName,
               false,
-              _beverageProductList[i]));
+              _beverageProductList[i],
+              size));
         }
         _stationeryProductList.sort((a, b) => a.prodName.compareTo(b.prodName));
         _stationeryProductLayoutList.clear();
@@ -257,7 +270,8 @@ class _StoreHomePageState extends State<StoreHomePage>
               _stationeryProductList[i].price,
               _stationeryProductList[i].prodName,
               false,
-              _stationeryProductList[i]));
+              _stationeryProductList[i],
+              size));
         }
         _handmadeProductList.sort((a, b) => a.prodName.compareTo(b.prodName));
         _handmadeProductLayoutList.clear();
@@ -269,7 +283,8 @@ class _StoreHomePageState extends State<StoreHomePage>
               _handmadeProductList[i].price,
               _handmadeProductList[i].prodName,
               false,
-              _handmadeProductList[i]));
+              _handmadeProductList[i],
+              size));
         }
         _bestProductList.sort((a, b) => a.prodName.compareTo(b.prodName));
         _bestProductLayoutList.clear();
@@ -280,7 +295,8 @@ class _StoreHomePageState extends State<StoreHomePage>
               _bestProductList[i].price,
               _bestProductList[i].prodName,
               false,
-              _bestProductList[i]));
+              _bestProductList[i],
+              size));
         }
 
         _newProductList.sort((a, b) => a.prodName.compareTo(b.prodName));
@@ -292,7 +308,8 @@ class _StoreHomePageState extends State<StoreHomePage>
               _newProductList[i].price,
               _newProductList[i].prodName,
               false,
-              _newProductList[i]));
+              _newProductList[i],
+              size));
         }
         break;
       case 2:
@@ -305,7 +322,8 @@ class _StoreHomePageState extends State<StoreHomePage>
               _productList[i].price,
               _productList[i].prodName,
               false,
-              _productList[i]));
+              _productList[i],
+              size));
         }
         _foodProductList.sort((a, b) => a.price.compareTo(b.price));
         _foodProductLayoutList.clear();
@@ -316,7 +334,8 @@ class _StoreHomePageState extends State<StoreHomePage>
               _foodProductList[i].price,
               _foodProductList[i].prodName,
               false,
-              _foodProductList[i]));
+              _foodProductList[i],
+              size));
         }
         _snackProductList.sort((a, b) => a.price.compareTo(b.price));
         _snackProductLayoutList.clear();
@@ -327,7 +346,8 @@ class _StoreHomePageState extends State<StoreHomePage>
               _snackProductList[i].price,
               _snackProductList[i].prodName,
               false,
-              _snackProductList[i]));
+              _snackProductList[i],
+              size));
         }
         _beverageProductList.sort((a, b) => a.price.compareTo(b.price));
         _beverageProductLayoutList.clear();
@@ -339,7 +359,8 @@ class _StoreHomePageState extends State<StoreHomePage>
               _beverageProductList[i].price,
               _beverageProductList[i].prodName,
               false,
-              _beverageProductList[i]));
+              _beverageProductList[i],
+              size));
         }
         _stationeryProductList.sort((a, b) => a.price.compareTo(b.price));
         _stationeryProductLayoutList.clear();
@@ -351,7 +372,8 @@ class _StoreHomePageState extends State<StoreHomePage>
               _stationeryProductList[i].price,
               _stationeryProductList[i].prodName,
               false,
-              _stationeryProductList[i]));
+              _stationeryProductList[i],
+              size));
         }
         _handmadeProductList.sort((a, b) => a.price.compareTo(b.price));
         _handmadeProductLayoutList.clear();
@@ -363,7 +385,8 @@ class _StoreHomePageState extends State<StoreHomePage>
               _handmadeProductList[i].price,
               _handmadeProductList[i].prodName,
               false,
-              _handmadeProductList[i]));
+              _handmadeProductList[i],
+              size));
         }
         _bestProductList.sort((a, b) => a.price.compareTo(b.price));
         _bestProductLayoutList.clear();
@@ -374,7 +397,8 @@ class _StoreHomePageState extends State<StoreHomePage>
               _bestProductList[i].price,
               _bestProductList[i].prodName,
               false,
-              _bestProductList[i]));
+              _bestProductList[i],
+              size));
         }
 
         _newProductList.sort((a, b) => a.price.compareTo(b.price));
@@ -386,14 +410,17 @@ class _StoreHomePageState extends State<StoreHomePage>
               _newProductList[i].price,
               _newProductList[i].prodName,
               false,
-              _newProductList[i]));
+              _newProductList[i],
+              size));
         }
         break;
     }
     setState(() {});
   }
 
-  void _searchProducts(String toSearch) {
+  /// parameter로 들어온 검색하고 싶은 키워드로 상품들을 검색하여 검색 List 에 추가하는 작업
+  /// @param : 검색하고자 하는 문자열
+  void _searchProducts(String toSearch, Size size) {
     _tabController.index = 0;
     _isSearch = true;
     _searchProductList.clear();
@@ -406,12 +433,16 @@ class _StoreHomePageState extends State<StoreHomePage>
             _productList[i].price,
             _productList[i].prodName,
             false,
-            _productList[i]));
+            _productList[i],
+            size));
       }
     }
     setState(() {});
   }
 
+  /// 일반 숫자에 ,를 붙여서 직관적인 가격을 보이게 하는 작업
+  /// @param : 직관적인 가격을 보여줄 실제 int 가격[price]
+  /// @return : 직관적인 가격 문자열
   String _formatPrice(int price) {
     String p = price.toString();
     String newFormat = '';
@@ -427,6 +458,9 @@ class _StoreHomePageState extends State<StoreHomePage>
     return _reverseString(newFormat);
   }
 
+  /// 문자열을 뒤집는 작업
+  /// @param : 뒤집고 싶은 문자열[str]
+  /// @return : 뒤집은 문자열
   String _reverseString(String str) {
     String newStr = '';
     for (int i = str.length - 1; i >= 0; --i) {
@@ -435,62 +469,71 @@ class _StoreHomePageState extends State<StoreHomePage>
     return newStr;
   }
 
-  void getNewProdLayout() {
+  /// 신규 상품 List 를 토대로 신규 상품 Widget List 에 추가
+  void getNewProdLayout(Size size) {
     for (int i = 0; i < _newProductList.length; ++i) {
       var tmp = _newProductList[i];
-      _newProductLayoutList
-          .add(itemTile(tmp.imgUrl1, tmp.price, tmp.prodName, false, tmp));
+      _newProductLayoutList.add(
+          itemTile(tmp.imgUrl1, tmp.price, tmp.prodName, false, tmp, size));
     }
   }
 
-  void getBestProdLayout() {
+  /// 베스트 상품 List 를 토대로 신규 상품 Widget List 에 추가
+  void getBestProdLayout(Size size) {
     for (int i = 0; i < _bestProductList.length; ++i) {
       var tmp = _bestProductList[i];
-      _bestProductLayoutList
-          .add(itemTile(tmp.imgUrl1, tmp.price, tmp.prodName, false, tmp));
+      _bestProductLayoutList.add(
+          itemTile(tmp.imgUrl1, tmp.price, tmp.prodName, false, tmp, size));
     }
   }
 
-  void getFoodProdLayout() {
+  /// 음식류 상품 List 를 토대로 신규 상품 Widget List 에 추가
+  void getFoodProdLayout(Size size) {
     for (int i = 0; i < _foodProductList.length; ++i) {
       var tmp = _foodProductList[i];
-      _foodProductLayoutList
-          .add(itemTile(tmp.imgUrl1, tmp.price, tmp.prodName, false, tmp));
+      _foodProductLayoutList.add(
+          itemTile(tmp.imgUrl1, tmp.price, tmp.prodName, false, tmp, size));
     }
   }
 
-  void getSnackProdLayout() {
+  /// 간식류 상품 List 를 토대로 신규 상품 Widget List 에 추가
+  void getSnackProdLayout(Size size) {
     for (int i = 0; i < _snackProductList.length; ++i) {
       var tmp = _snackProductList[i];
-      _snackProductLayoutList
-          .add(itemTile(tmp.imgUrl1, tmp.price, tmp.prodName, false, tmp));
+      _snackProductLayoutList.add(
+          itemTile(tmp.imgUrl1, tmp.price, tmp.prodName, false, tmp, size));
     }
   }
 
-  void getBeverageProdLayout() {
+  /// 음료류 상품 List 를 토대로 신규 상품 Widget List 에 추가
+  void getBeverageProdLayout(Size size) {
     for (int i = 0; i < _beverageProductList.length; ++i) {
       var tmp = _beverageProductList[i];
-      _beverageProductLayoutList
-          .add(itemTile(tmp.imgUrl1, tmp.price, tmp.prodName, false, tmp));
+      _beverageProductLayoutList.add(
+          itemTile(tmp.imgUrl1, tmp.price, tmp.prodName, false, tmp, size));
     }
   }
 
-  void getStationeryProdLayout() {
+  /// 문구류 상품 List 를 토대로 신규 상품 Widget List 에 추가
+  void getStationeryProdLayout(Size size) {
     for (int i = 0; i < _stationeryProductList.length; ++i) {
       var tmp = _stationeryProductList[i];
-      _stationeryProductLayoutList
-          .add(itemTile(tmp.imgUrl1, tmp.price, tmp.prodName, false, tmp));
+      _stationeryProductLayoutList.add(
+          itemTile(tmp.imgUrl1, tmp.price, tmp.prodName, false, tmp, size));
     }
   }
 
-  void getHandmadeProdLayout() {
+  /// 핸드메이드 상품 List 를 토대로 신규 상품 Widget List 에 추가
+  void getHandmadeProdLayout(Size size) {
     for (int i = 0; i < _handmadeProductList.length; ++i) {
       var tmp = _handmadeProductList[i];
-      _handmadeProductLayoutList
-          .add(itemTile(tmp.imgUrl1, tmp.price, tmp.prodName, false, tmp));
+      _handmadeProductLayoutList.add(
+          itemTile(tmp.imgUrl1, tmp.price, tmp.prodName, false, tmp, size));
     }
   }
 
+  /// MENU 탭에서 현재 보여지는 카테고리의 상품 개수를 반환
+  /// @param : 현재 카테고리 위치 index
   int _getLengthOfCurrentCategory(int position) {
     switch (position) {
       case 0:
@@ -550,13 +593,14 @@ class _StoreHomePageState extends State<StoreHomePage>
       _stationeryProductLayoutList.clear();
       _stationeryProductList.clear();
 
+      var size = MediaQuery.of(context).size;
       for (int i = 0; i < _productList.length; ++i) {
         var tmp = _productList[i];
-        _productLayoutList
-            .add(itemTile(tmp.imgUrl1, tmp.price, tmp.prodName, false, tmp));
+        _productLayoutList.add(
+            itemTile(tmp.imgUrl1, tmp.price, tmp.prodName, false, tmp, size));
       }
       setState(() {
-        _groupingProduct();
+        _groupingProduct(size);
         _isAsc = true;
         _selectRadio = 0;
       });
@@ -598,6 +642,8 @@ class _StoreHomePageState extends State<StoreHomePage>
     }
   }
 
+  /// 토스트 메세지 출력
+  /// @param : message : 출력할 메세지, fail : 특정 동작에 대해 에러 발생 시 true
   Future<bool> showToast(String message, bool fail) {
     return Fluttertoast.showToast(
         msg: message,
@@ -609,16 +655,15 @@ class _StoreHomePageState extends State<StoreHomePage>
 
   @override
   void initState() {
-    super.initState();
     _tabController = TabController(length: 4, vsync: this);
     _scrollViewController = ScrollController();
     _getProducts();
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
-    var data = Provider.of<ExistCart>(context);
     return RefreshIndicator(
       onRefresh: _getProducts,
       child: NestedScrollView(
@@ -726,8 +771,8 @@ class _StoreHomePageState extends State<StoreHomePage>
                                 gridDelegate:
                                     SliverGridDelegateWithFixedCrossAxisCount(
                                         crossAxisCount: 2,
-                                        mainAxisSpacing: 15,
-                                        crossAxisSpacing: 1),
+                                        mainAxisSpacing: size.height * 0.025,
+                                        crossAxisSpacing: size.width * 0.01),
                                 itemBuilder: (context, index) {
                                   return _searchProductLayoutList[index];
                                 }),
@@ -1025,7 +1070,7 @@ class _StoreHomePageState extends State<StoreHomePage>
                                                           _selectRadio = value;
                                                         });
                                                         _sortProductByIndex(
-                                                            _selectRadio);
+                                                            _selectRadio, size);
                                                       },
                                                     );
                                                   }),
@@ -1062,8 +1107,10 @@ class _StoreHomePageState extends State<StoreHomePage>
                                         gridDelegate:
                                             SliverGridDelegateWithFixedCrossAxisCount(
                                                 crossAxisCount: 2,
-                                                mainAxisSpacing: 15,
-                                                crossAxisSpacing: 1),
+                                                mainAxisSpacing:
+                                                    size.height * 0.025,
+                                                crossAxisSpacing:
+                                                    size.width * 0.01),
                                         itemBuilder: (context, index) {
                                           return _getItemTileOfCurrentCategory(
                                               index, _selectedCategory);
@@ -1073,7 +1120,7 @@ class _StoreHomePageState extends State<StoreHomePage>
                         ],
                       ),
                     ),
-          /*------------ MENU TAB ---------------*/
+          /*------------------------ MENU TAB -------------------------*/
           _bestProductLayoutList.length == 0
               ? RefreshIndicator(
                   onRefresh: _getProducts,
@@ -1183,7 +1230,7 @@ class _StoreHomePageState extends State<StoreHomePage>
                                                       _selectRadio = value;
                                                     });
                                                     _sortProductByIndex(
-                                                        _selectRadio);
+                                                        _selectRadio, size);
                                                   },
                                                 );
                                               }),
@@ -1209,8 +1256,8 @@ class _StoreHomePageState extends State<StoreHomePage>
                               gridDelegate:
                                   SliverGridDelegateWithFixedCrossAxisCount(
                                       crossAxisCount: 2,
-                                      mainAxisSpacing: 15,
-                                      crossAxisSpacing: 1),
+                                      mainAxisSpacing: size.height * 0.025,
+                                      crossAxisSpacing: size.width * 0.01),
                               itemBuilder: (context, index) {
                                 return _bestProductLayoutList[index];
                               }),
@@ -1329,7 +1376,7 @@ class _StoreHomePageState extends State<StoreHomePage>
                                                       _selectRadio = value;
                                                     });
                                                     _sortProductByIndex(
-                                                        _selectRadio);
+                                                        _selectRadio, size);
                                                   },
                                                 );
                                               }),
@@ -1355,8 +1402,8 @@ class _StoreHomePageState extends State<StoreHomePage>
                               gridDelegate:
                                   SliverGridDelegateWithFixedCrossAxisCount(
                                       crossAxisCount: 2,
-                                      mainAxisSpacing: 15,
-                                      crossAxisSpacing: 1),
+                                      mainAxisSpacing: size.height * 0.025,
+                                      crossAxisSpacing: size.width * 0.01),
                               itemBuilder: (context, index) {
                                 return _newProductLayoutList[index];
                               }),
@@ -1373,8 +1420,8 @@ class _StoreHomePageState extends State<StoreHomePage>
     );
   }
 
-  Widget itemTile(
-      String imgUrl, int price, String prodName, bool isWish, Product product) {
+  Widget itemTile(String imgUrl, int price, String prodName, bool isWish,
+      Product product, Size size) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -1512,12 +1559,15 @@ class _StoreHomePageState extends State<StoreHomePage>
                       ));
               break;
             case 'modify':
-              Navigator.push(
+              var res = await Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) => UpdatingProductPage(
                             product: product,
                           )));
+              if (res) {
+                await _getProducts();
+              }
               break;
           }
         }
@@ -1525,13 +1575,15 @@ class _StoreHomePageState extends State<StoreHomePage>
       child: Column(
         children: [
           Expanded(
-            //핵심.... Stack의 높이는 정해져있지 않아서 Expanded로?..
+            //핵심 : Stack() 의 높이는 정해져있지 않기 때문에 Expanded() 로
             child: Stack(
               children: [
                 ClipRRect(
                   child: CachedNetworkImage(
-                    width: 150,
-                    height: 400,
+                    // 가로 : 세로 비율 어떻게?
+                    // 현재 1:1
+                    width: size.width * 0.4,
+                    height: size.width * 0.4,
                     imageUrl: imgUrl,
                     fit: BoxFit.fill,
                     progressIndicatorBuilder: (context, url, progress) =>
@@ -1592,9 +1644,13 @@ class _StoreHomePageState extends State<StoreHomePage>
 
   Widget managerAddingProductLayout(Size size) {
     return GestureDetector(
-      onTap: () {
-        Navigator.push(context,
+      onTap: () async {
+        var res = await Navigator.push(context,
             MaterialPageRoute(builder: (context) => AddingProductPage()));
+        print(res);
+        if (res) {
+          await _getProducts();
+        }
       },
       child: Container(
         alignment: Alignment.center,
@@ -1649,8 +1705,7 @@ class _StoreHomePageState extends State<StoreHomePage>
       child: TextField(
         onSubmitted: (text) {
           if (text.isNotEmpty) {
-            //다 입력하고 완료 버튼 눌렀을 때
-            _searchProducts(text);
+            _searchProducts(text, size);
           }
         },
         decoration: InputDecoration(
