@@ -145,13 +145,14 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
                 ? null
                 : FloatingActionButton(
                     child: Icon(Icons.qr_code_scanner),
-                    onPressed: () {
-                      Navigator.push(
+                    onPressed: () async {
+                      var res = await Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => QRScannerPage(
                                     oID: widget.data['oID'],
                                   )));
+                      if (res) Navigator.pop(context, true);
                     },
                   )
             : null,

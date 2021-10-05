@@ -66,8 +66,7 @@ class _OrderListPageState extends State<OrderListPage> {
           _orderList[i]['detail'][j]['pInfo'] =
               json.decode(_orderList[i]['detail'][j]['pInfo']);
         }
-        if (int.parse(_orderList[i]['orderState']) == 0 ||
-            int.parse(_orderList[i]['orderState']) == 1) {
+        if (int.parse(_orderList[i]['orderState']) != 3) {
           _noneList.add(_orderList[i]);
         }
       }
