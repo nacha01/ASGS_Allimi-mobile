@@ -40,6 +40,7 @@ class _CartPageState extends State<CartPage> {
     4: '핸드메이드'
   };
   List<int> _countList = [];
+  bool _isLoading = true;
 
   /// 특정 유저에 대해 그 유저가 갖고 있는 장바구니 상품들을 가져오는 HTTP 요청
   /// @return : 요청 성공 여부
@@ -59,7 +60,9 @@ class _CartPageState extends State<CartPage> {
         _cartProductList.add(json.decode(cartProduct[i]));
       }
       _initCartCount();
-      setState(() {});
+      setState(() {
+        _isLoading = false;
+      });
       return true;
     } else {
       return false;
@@ -211,12 +214,22 @@ class _CartPageState extends State<CartPage> {
         centerTitle: true,
       ),
       body: _cartProductList.length == 0
-          ? Center(
-              child: Text(
-                '장바구니에 상품이 없습니다!',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-              ),
-            )
+          ? _isLoading
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('불러오는 중...'),
+                      CircularProgressIndicator(),
+                    ],
+                  ),
+                )
+              : Center(
+                  child: Text(
+                    '장바구니에 상품이 없습니다!',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                )
           : Column(
               children: [
                 Container(

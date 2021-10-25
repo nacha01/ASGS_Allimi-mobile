@@ -35,6 +35,7 @@ class _StoreHomePageState extends State<StoreHomePage>
   List _sortTitleList = ['등록순', '이름순', '가격순']; // 정렬 기준 라디오 버튼 title 리스트
   bool _isAsc = true; // true : 오름차순 , false : 내림차순
   bool _isSearch = false; // 검색 기능 사용했는지 판단
+  bool _isLoading = true; // 상품 데이터 가져오는 동안의 로딩 상태
 
   List<Product> _searchProductList = [];
   List<Widget> _searchProductLayoutList = [];
@@ -603,6 +604,7 @@ class _StoreHomePageState extends State<StoreHomePage>
         _groupingProduct(size);
         _isAsc = true;
         _selectRadio = 0;
+        _isLoading = false;
       });
     }
   }
@@ -781,22 +783,35 @@ class _StoreHomePageState extends State<StoreHomePage>
                       ],
                     )
               : _productLayoutList.length == 0
-                  ? RefreshIndicator(
-                      onRefresh: _getProducts,
-                      child: Column(
-                        children: [
-                          addProductForAdmin(size),
-                          Expanded(
-                            child: Center(
-                                child: Text(
-                              '상품이 없습니다.',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 22),
-                            )),
+                  ? _isLoading
+                      ? Expanded(
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text('불러오는 중...'),
+                                CircularProgressIndicator(),
+                              ],
+                            ),
                           ),
-                        ],
-                      ),
-                    )
+                        )
+                      : RefreshIndicator(
+                          onRefresh: _getProducts,
+                          child: Column(
+                            children: [
+                              addProductForAdmin(size),
+                              Expanded(
+                                child: Center(
+                                    child: Text(
+                                  '상품이 없습니다.',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 22),
+                                )),
+                              ),
+                            ],
+                          ),
+                        )
                   : RefreshIndicator(
                       onRefresh: _getProducts,
                       child: Column(

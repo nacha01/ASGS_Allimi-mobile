@@ -27,6 +27,7 @@ enum ReceiveMethod { DELIVERY, DIRECT }
 class _OrderPageState extends State<OrderPage> {
   ReceiveMethod _receiveMethod = ReceiveMethod.DIRECT;
   TextEditingController _requestOptionController = TextEditingController();
+  TextEditingController _locationController = TextEditingController();
   bool _isCart = true;
   String _generatedOID;
   String _checkMessage;
@@ -54,7 +55,10 @@ class _OrderPageState extends State<OrderPage> {
       'oState': '1', // 임시 설정
       'recvMethod': _receiveMethod == ReceiveMethod.DIRECT ? '0' : '1',
       'pay': '0', // 임시 설정
-      'option': _requestOptionController.text
+      'option': _requestOptionController.text,
+      'location': _receiveMethod == ReceiveMethod.DELIVERY
+          ? _locationController.text
+          : 'NULL'
     });
     if (response.statusCode == 200) {
       return true;
@@ -368,6 +372,13 @@ class _OrderPageState extends State<OrderPage> {
                             _receiveMethod = value;
                           });
                         }),
+                    Text(
+                      ' * 수령 방식 선택',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                          color: Colors.black54),
+                    ),
                     RadioListTile(
                         subtitle: Text('요청하신 장소로 배달해드립니다.'),
                         title: Text('배달'),
@@ -378,6 +389,28 @@ class _OrderPageState extends State<OrderPage> {
                             _receiveMethod = value;
                           });
                         }),
+                    _receiveMethod == ReceiveMethod.DELIVERY
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                alignment: Alignment.center,
+                                width: size.width * 0.95,
+                                decoration: BoxDecoration(
+                                    border: Border.all(
+                                        width: 1, color: Colors.black),
+                                    borderRadius: BorderRadius.circular(6)),
+                                child: TextField(
+                                  controller: _locationController,
+                                  decoration: InputDecoration(
+                                      border: InputBorder.none,
+                                      hintText: ' 배달 장소를 입력해주세요.',
+                                      hintStyle: TextStyle(color: Colors.grey)),
+                                ),
+                              ),
+                            ],
+                          )
+                        : SizedBox(),
                     Divider(
                       thickness: 0.5,
                       indent: 5,

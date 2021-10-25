@@ -225,8 +225,7 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
                     children: [
                       Text(
                         '주문 처리 중',
-                        style:
-                        TextStyle(color: Colors.lightBlue, fontSize: 9),
+                        style: TextStyle(color: Colors.lightBlue, fontSize: 9),
                       ),
                       Text(': 주문이 확인되고, 상품 수령 준비 및 수령 중인 상태입니다. ',
                           style: TextStyle(color: Colors.grey, fontSize: 9))
@@ -252,7 +251,9 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
                 height: size.height * 0.015,
               ),
               Text('주문 인증 QR코드', style: TextStyle(fontWeight: FontWeight.bold)),
-              SizedBox(height: size.height * 0.015,),
+              SizedBox(
+                height: size.height * 0.015,
+              ),
               int.parse(widget.order['orderState']) == 3
                   ? Center(
                       child: Padding(
@@ -290,6 +291,18 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
                   )
                 ],
               ),
+              int.parse(widget.order['receiveMethod']) == 1
+                  ? Padding(
+                      padding: EdgeInsets.all(size.width * 0.04),
+                      child: Text(
+                        '장소 : ' + widget.order['location'],
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 17,
+                            color: Colors.red),
+                      ),
+                    )
+                  : SizedBox(),
               SizedBox(
                 height: size.height * 0.015,
               ),

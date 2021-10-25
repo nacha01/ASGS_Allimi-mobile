@@ -27,6 +27,7 @@ class _AnnouncePageState extends State<AnnouncePage> {
   List<Announce> _searchList = [];
   var _selectedCategory = '제목';
   bool _isSearch = false;
+  bool _isLoading = true; // 로딩 중인지 판단
 
   /// 모든 공지사항 데이터를 요청하는 작업
   Future<bool> _getAnnounceRequest() async {
@@ -46,6 +47,7 @@ class _AnnouncePageState extends State<AnnouncePage> {
       }
       setState(() {
         _isFinished = true;
+        _isLoading = false;
       });
       return true;
     } else {
@@ -330,7 +332,16 @@ class _AnnouncePageState extends State<AnnouncePage> {
                                 itemCount: _announceList.length,
                               ),
                             )
-                  : SizedBox()
+                  : Expanded(
+                      child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text('불러오는 중..'),
+                          CircularProgressIndicator(),
+                        ],
+                      ),
+                    ))
             ],
           ),
         ),

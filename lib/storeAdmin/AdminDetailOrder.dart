@@ -215,10 +215,22 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
                     Text(
                       '[ ${int.parse(widget.data['receiveMethod']) == 0 ? '직접 수령' : '배달'} ]',
                       style: TextStyle(
-                          color: Colors.indigo, fontWeight: FontWeight.bold),
+                          color: Colors.lightBlue, fontWeight: FontWeight.bold),
                     )
                   ],
                 ),
+                int.parse(widget.data['receiveMethod']) == 1
+                    ? Padding(
+                        padding: EdgeInsets.all(size.width * 0.04),
+                        child: Text(
+                          '장소 : ' + widget.data['location'],
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 19,
+                              color: Colors.teal),
+                        ),
+                      )
+                    : SizedBox(),
                 SizedBox(
                   height: size.height * 0.015,
                 ),
@@ -407,7 +419,7 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
               ),
               Text(
-                ' $quantity개',
+                '  $quantity개',
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.deepOrange,

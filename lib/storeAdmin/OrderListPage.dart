@@ -230,7 +230,9 @@ class _OrderListPageState extends State<OrderListPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text('[${recv == 0 ? '직접 수령' : '배달'}]',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: recv == 0 ? Colors.lightBlue : Colors.green)),
                   orderState == 2
                       ? Row(
                           children: [
