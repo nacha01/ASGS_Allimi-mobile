@@ -562,7 +562,8 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
                       height: size.height * 0.07,
                       controller: _cumulativeSellCount,
                       formatType: true,
-                      isReadOnly: true)
+                      isReadOnly: true,
+                      isInteractive: false)
                 ],
               ),
               SizedBox(
@@ -975,13 +976,15 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
       bool validation = false,
       int maxLine = 1,
       bool formatType = false,
-      bool isReadOnly = false}) {
+      bool isReadOnly = false,
+      bool isInteractive = true}) {
     return Container(
       alignment: Alignment.center,
       padding: EdgeInsets.all(5),
       margin: EdgeInsets.all(3),
       width: width,
       child: TextField(
+        style: TextStyle(color: isInteractive ? Colors.black : Colors.grey),
         readOnly: isReadOnly,
         textAlign: TextAlign.center,
         keyboardType: formatType ? TextInputType.number : TextInputType.text,
