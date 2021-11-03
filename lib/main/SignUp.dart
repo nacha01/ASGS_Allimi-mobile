@@ -34,7 +34,9 @@ class _SignUpPageState extends State<SignUpPage> {
     }
     return true;
   }
-
+  void _terminateScreen(){
+    Navigator.pop(this.context);
+  }
   Future<void> _postRegisterRequest() async {
     Navigator.pop(context);
     String uri = 'http://nacha01.dothome.co.kr/sin/arlimi_register.php';
@@ -52,6 +54,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
     if (response.statusCode == 200) {
       String result = utf8.decode(response.bodyBytes);
+
       if (result.contains('PRIMARY') && result.contains('Duplicate entry')) {
         showDialog(
             context: context,
@@ -60,7 +63,6 @@ class _SignUpPageState extends State<SignUpPage> {
               content: Text('이미 사용중인 아이디입니다!'),
             ));
       } else {
-        print('dwdw');
         showDialog(
             context: context,
             builder: (context) => AlertDialog(
@@ -72,7 +74,6 @@ class _SignUpPageState extends State<SignUpPage> {
                 }, child: Text('확인'))
               ],
             ));
-        //_getUserData();
       }
     } else {
       print('전송 실패');
@@ -84,8 +85,9 @@ class _SignUpPageState extends State<SignUpPage> {
         'Content-Type' : 'application/x-www-form-urlencoded'
       });
       if(response.statusCode == 200){
-        print('wqjfoqifq');
         String result = utf8.decode(response.bodyBytes).replaceAll('<meta http-equiv="Content-Type" content="text/html; charset=utf-8">', '').trim();
+
+        _terminateScreen();
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) =>
         HomePage(user: User.fromJson(json.decode(result)),)));
       }
@@ -288,7 +290,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                   child: Text('아니오')),
                               FlatButton(
                                   onPressed: () async {
-                                    _postRegisterRequest();
+                                    await _postRegisterRequest();
                                   },
                                   child: Text('예'))
                             ],
