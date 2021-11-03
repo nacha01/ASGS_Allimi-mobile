@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:asgshighschool/data/user_data.dart';
+import 'package:asgshighschool/main/RecordListPage.dart';
 import 'package:asgshighschool/memoryGame/MemoryGamePAge.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -37,7 +38,8 @@ class _GameListPageState extends State<GameListPage> {
         children: [
           _boardLayout(
               title: '기억력 게임',
-              info: '순발력과 기억력으로 이미 클릭한 도형을 기억하며, 시간안에 최대한 많은 도형을 클릭하세요 ',
+              info:
+                  '순발력과 기억력 게임으로 가장 최근에 출현한 도형을 클릭하며, 제한시간 안에 최대한 많은 도형을 클릭하세요 ',
               size: size,
               press: () {
                 Navigator.push(
@@ -45,6 +47,15 @@ class _GameListPageState extends State<GameListPage> {
                     MaterialPageRoute(
                         builder: (context) => MemoryGamePage(
                               user: widget.user,
+                            )));
+              },
+              record: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => RecordListPage(
+                              user: widget.user,
+                              gameCode: 1,
                             )));
               })
         ],
@@ -56,12 +67,16 @@ class _GameListPageState extends State<GameListPage> {
   }
 
   Widget _boardLayout(
-      {String title, String info, void Function() press, Size size}) {
+      {String title,
+      String info,
+      void Function() press,
+      Size size,
+      void Function() record}) {
     return Container(
       padding: EdgeInsets.all(size.width * 0.02),
       decoration: BoxDecoration(
-          border: Border.all(width: 0.5, color: Colors.black),
-          borderRadius: BorderRadius.circular(3)),
+          border: Border.all(width: 0.3, color: Colors.black),
+          borderRadius: BorderRadius.circular(5)),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -69,7 +84,10 @@ class _GameListPageState extends State<GameListPage> {
             '$title',
             style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
           ),
-          Text('$info'),
+          Text(
+            '$info',
+            textAlign: TextAlign.center,
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -80,7 +98,7 @@ class _GameListPageState extends State<GameListPage> {
                       borderRadius: BorderRadius.circular(6),
                       color: Colors.orange),
                   child: IconButton(
-                      onPressed: () {}, icon: Icon(Icons.military_tech))),
+                      onPressed: record, icon: Icon(Icons.military_tech))),
               Container(
                 width: size.width * 0.27,
                 alignment: Alignment.center,
