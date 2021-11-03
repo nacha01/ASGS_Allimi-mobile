@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:ui';
 
 import 'package:asgshighschool/data/user_data.dart';
@@ -10,6 +11,7 @@ import 'dart:math';
 import 'DrawCircle.dart';
 import 'DrawRectangle.dart';
 import 'DrawTriangle.dart';
+import 'package:http/http.dart' as http;
 
 class MemoryGamePage extends StatefulWidget {
   final User user;
@@ -28,8 +30,8 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
   Timer _timer;
   int _start = 30;
   int _currentOpacityIndex = 2;
-  bool _isStart = false;
-
+  int _myRecord = 0;
+  bool _isRenew = false;
   @override
   void initState() {
     super.initState();
@@ -37,12 +39,90 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
     _shapeSize.add(_circleSizes);
     _shapeSize.add(_rectSizes);
     _addShape();
+    _initialProcessOnRecord();
   }
 
   @override
   void dispose() {
-    _timer.cancel();
+    _timer?.cancel();
     super.dispose();
+  }
+
+  void _initialProcessOnRecord() async {
+    var res = await _isThereRecord();
+    if (res) {
+      _myRecord = await _getCurrentRecord();
+    }
+  }
+
+  Future<bool> _isThereRecord() async {
+    String url =
+        'http://nacha01.dothome.co.kr/sin/arlimi_searchRecordMG.php?uid=${widget.user.uid}';
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      String result = utf8
+          .decode(response.bodyBytes)
+          .replaceAll(
+              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+              '')
+          .trim();
+      print(result);
+      if (result.contains('EXIST')) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+
+  Future<int> _getCurrentRecord() async {
+    String url =
+        'http://nacha01.dothome.co.kr/sin/arlimi_getCurRecord.php?uid=${widget.user.uid}';
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      String result = utf8
+          .decode(response.bodyBytes)
+          .replaceAll(
+              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+              '')
+          .trim();
+      int tmp = 0;
+      try {
+        tmp = int.parse(result);
+        return tmp;
+      } catch (e) {
+        return -1;
+      }
+    } else {
+      return -2;
+    }
+  }
+
+  Future<bool> _updateRecord() async {
+    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_updateRecord.php';
+    final response = await http.post(url, body: <String, String>{
+      'uid': widget.user.uid,
+      'record': _myRecord.toString()
+    });
+
+    if (response.statusCode == 200) {
+      String result = utf8
+          .decode(response.bodyBytes)
+          .replaceAll(
+              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+              '')
+          .trim();
+      if (result != '1') {
+        return false;
+      }
+      return true;
+    } else {
+      return false;
+    }
   }
 
   void _startTimer() {
@@ -138,8 +218,13 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
     Navigator.pop(this.context);
   }
 
-  void _showGameOverDialog() {
-    showDialog(
+  void _showGameOverDialog() async {
+    if (_shapeList.length - 1 > _myRecord) {
+      _myRecord = _shapeList.length - 1;
+      _isRenew = true;
+      await _updateRecord();
+    }
+    await showDialog(
         barrierDismissible: false, // 외부 터치로 인해 종료되는 상황 방지
         context: context,
         builder: (ctx) => AlertDialog(
@@ -154,7 +239,7 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
                 textAlign: TextAlign.center,
               ),
               content: Text(
-                '최종 점수 : ${_shapeList.length - 1}점',
+                '${_isRenew ? '최고 기록 달성! ' : ''}최종 점수 : ${_shapeList.length - 1}점',
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 18,
@@ -166,6 +251,7 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
                     padding: EdgeInsets.all(0),
                     onPressed: () {
                       setState(() {
+                        _isRenew = false;
                         _reInitializeGameSetting();
                       });
                       Navigator.pop(ctx);
