@@ -4,6 +4,8 @@ import 'dart:io';
 
 import 'package:asgshighschool/data/exist_cart.dart';
 import 'package:asgshighschool/data/renewUser_data.dart';
+import 'package:asgshighschool/main/GameListPage.dart';
+import 'package:asgshighschool/memoryGame/MemoryGamePage.dart';
 import 'package:provider/provider.dart';
 
 import '../store/StoreSplashPage.dart';
@@ -50,7 +52,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     //getMainImage();
-    _numberOfTabs = 3;
+    _numberOfTabs = 4;
     tabController = TabController(vsync: this, length: _numberOfTabs);
     _scrollViewController = ScrollController();
   }
@@ -471,6 +473,14 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 builder: (context) => StoreSplashPage(
                                       user: widget.user,
                                     )));
+                      } else if (index == 3) {
+                        tabController.index = 0;
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => GameListPage(
+                                      user: widget.user,
+                                    )));
                       }
                     },
                     labelColor: Colors.black,
@@ -480,6 +490,9 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       Tab(text: "Home"),
                       Tab(text: "두루두루"),
                       Tab(text: "알리미 공지사항"),
+                      Tab(
+                        text: '게임',
+                      )
                     ],
                     controller: tabController,
                   ),
@@ -492,6 +505,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 homeTab,
                 movingToStorePage(),
                 asgsMovieTab,
+                movingToGamePage()
               ],
             ),
           )),
@@ -499,6 +513,10 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   Widget movingToStorePage() {
+    return Stack();
+  }
+
+  Widget movingToGamePage() {
     return Stack();
   }
 
