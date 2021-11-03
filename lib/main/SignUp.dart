@@ -60,13 +60,16 @@ class _SignUpPageState extends State<SignUpPage> {
               content: Text('이미 사용중인 아이디입니다!'),
             ));
       } else {
+        print('dwdw');
         showDialog(
             context: context,
             builder: (context) => AlertDialog(
               title: Text('회원 가입 성공'),
               content: Text('성공적으로 회원가입이 되었습니다. \n메인 화면으로 이동합니다.'),
               actions: [
-                FlatButton(onPressed: _getUserData, child: Text('확인'))
+                FlatButton(onPressed: () async{
+                  await _getUserData();
+                }, child: Text('확인'))
               ],
             ));
         //_getUserData();
@@ -81,6 +84,7 @@ class _SignUpPageState extends State<SignUpPage> {
         'Content-Type' : 'application/x-www-form-urlencoded'
       });
       if(response.statusCode == 200){
+        print('wqjfoqifq');
         String result = utf8.decode(response.bodyBytes).replaceAll('<meta http-equiv="Content-Type" content="text/html; charset=utf-8">', '').trim();
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) =>
         HomePage(user: User.fromJson(json.decode(result)),)));
