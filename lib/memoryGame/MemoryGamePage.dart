@@ -23,9 +23,9 @@ class MemoryGamePage extends StatefulWidget {
 class _MemoryGamePageState extends State<MemoryGamePage> {
   List<Widget> _shapeList = [];
   List<List> _shapeSize = [];
-  List<double> _triangleSizes = [25.0, 30.0, 35.0];
-  List<double> _circleSizes = [15.0, 20.0, 25.0];
-  List<double> _rectSizes = [25.0, 30.0, 35.0];
+  List<double> _triangleSizes = [25.0, 30.0, 35.0, 40.0];
+  List<double> _circleSizes = [12.0, 15.0, 18.0, 21.0];
+  List<double> _rectSizes = [25.0, 30.0, 35.0, 40.0];
   List<double> _lifeOpacityList = [1.0, 1.0, 1.0];
   Timer _timer;
   int _start = 30;
@@ -150,18 +150,22 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
   }
 
   Color _getRandomColor() {
-    var rv = Random().nextInt(5) + 1;
+    var rv = Random().nextInt(7) + 1;
     switch (rv) {
       case 1:
         return Colors.red;
       case 2:
-        return Colors.blue;
+        return Colors.orange;
       case 3:
-        return Colors.green;
-      case 4:
-        return Colors.white;
-      case 5:
         return Colors.yellow;
+      case 4:
+        return Colors.green;
+      case 5:
+        return Colors.blue;
+      case 6:
+        return Color(0xFF000080);
+      case 7:
+        return Colors.purple;
       default:
         return Colors.grey;
     }
@@ -169,7 +173,7 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
 
   void _addShape() {
     var shapeRv = Random().nextInt(3);
-    var sizeRv = Random().nextInt(3);
+    var sizeRv = Random().nextInt(4);
     Widget obj;
     switch (shapeRv) {
       case 0: // 삼각형

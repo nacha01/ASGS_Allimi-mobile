@@ -7,11 +7,11 @@ class RectangleShape extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     Paint paintBorder = Paint()
-    ..color = Colors.grey
-    ..style = PaintingStyle.stroke
-    ..strokeWidth = _size * 0.1;
+      ..color = Colors.white
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = _size * 0.05;
     canvas.drawRect(Offset(0, 0) & Size(_size, _size), _painter);
-    canvas.drawRect(Offset(0,0) & Size(_size, _size), paintBorder);
+    canvas.drawRect(Offset(0, 0) & Size(_size, _size), paintBorder);
   }
 
   @override
@@ -25,5 +25,4 @@ class RectangleShape extends CustomPainter {
       ..color = color
       ..style = PaintingStyle.fill;
   }
-
 }

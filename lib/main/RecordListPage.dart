@@ -1,8 +1,10 @@
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:asgshighschool/data/user_data.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 
 /// 게임코드
@@ -50,6 +52,28 @@ class _RecordListPageState extends State<RecordListPage> {
     }
   }
 
+  int _findMyIndexInRankList() {
+    for (int i = 0; i < _rankList.length; ++i) {
+      if (_rankList[i]['nickname'] == widget.user.nickName) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  Color _getTop3TextColor(int index) {
+    switch (index) {
+      case 0:
+        return Color(0xFFD5A11E);
+      case 1:
+        return Color(0xFFA3A3A3);
+      case 2:
+        return Color(0xFFCD7F32);
+      default:
+        return Colors.black;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -69,14 +93,35 @@ class _RecordListPageState extends State<RecordListPage> {
         backgroundColor: Color(0xFF9EE1E5),
       ),
       body: Padding(
-        padding: EdgeInsets.all(size.width * 0.1),
+        padding: EdgeInsets.all(size.width * 0.15),
         child: ListView.builder(
             itemCount: _rankList.length,
             itemBuilder: (context, index) => Card(
                   child: ListTile(
-                    leading: Text('${index + 1}'),
-                    title: Text('${_rankList[index]['nickname']}'),
-                    trailing: Text('${_rankList[index]['record']}점'),
+                    leading: Text(
+                      '${index + 1}',
+                      style: TextStyle(
+                          color: _getTop3TextColor(index),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18),
+                    ),
+                    title: Center(
+                        child: Text(
+                      '${_rankList[index]['nickname']}',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontStyle: FontStyle.italic),
+                    )),
+                    trailing: Text(
+                      '${_rankList[index]['record']}점',
+                      style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red),
+                    ),
+                    tileColor: (index == _findMyIndexInRankList())
+                        ? Colors.orange[200]
+                        : null,
                   ),
                 )),
       ),

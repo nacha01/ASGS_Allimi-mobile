@@ -39,7 +39,7 @@ class _GameListPageState extends State<GameListPage> {
           _boardLayout(
               title: '기억력 게임',
               info:
-                  '순발력과 기억력 게임으로 가장 최근에 출현한 도형을 클릭하며, 제한시간 안에 최대한 많은 도형을 클릭하세요 ',
+                  '순발력과 기억력 게임으로, \n 가장 최근에 출현한 도형을 클릭하며, \n제한시간 안에 최대한 많은 도형을 클릭하세요 ',
               size: size,
               press: () {
                 Navigator.push(

@@ -6,7 +6,7 @@ class TriangleShape extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     var path = Path();
-    path.moveTo(size.width /2, 0);
+    path.moveTo(size.width / 2, 0);
     path.lineTo(0, size.height);
     path.lineTo(size.height, size.width);
     path.close();
@@ -14,9 +14,9 @@ class TriangleShape extends CustomPainter {
     canvas.drawPath(path, _painter);
 
     Paint paintBorder = Paint()
-    ..color = Colors.grey
-    ..style = PaintingStyle.stroke
-    ..strokeWidth = size.width * 0.1;
+      ..color = Colors.white
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = size.width * 0.05;
 
     canvas.drawPath(path, paintBorder);
   }
@@ -26,10 +26,9 @@ class TriangleShape extends CustomPainter {
     return false;
   }
 
-  TriangleShape(Color color){
+  TriangleShape(Color color) {
     _painter = Paint()
       ..color = color
       ..style = PaintingStyle.fill;
   }
-
 }
