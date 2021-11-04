@@ -12,6 +12,13 @@ class TriangleShape extends CustomPainter {
     path.close();
 
     canvas.drawPath(path, _painter);
+
+    Paint paintBorder = Paint()
+    ..color = Colors.grey
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = size.width * 0.1;
+
+    canvas.drawPath(path, paintBorder);
   }
 
   @override
