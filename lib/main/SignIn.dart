@@ -13,7 +13,7 @@ import '../LocalNotifyManager.dart';
 
 class SignInPage extends StatefulWidget {
   SignInPage({Key key, this.token}) : super(key: key);
-  var token;
+  final token;
   @override
   _SignInPageState createState() => _SignInPageState();
 }
@@ -221,20 +221,20 @@ class _SignInPageState extends State<SignInPage> {
     final response = await http.get(uri, headers: <String, String>{
       'Content-Type': 'application/x-www-form-urlencoded'
     });
-    if(response.statusCode == 200){
+    if (response.statusCode == 200) {
       print(response.body);
-      if(response.body.contains('ADMIN')){
-        String body = response.body.replaceAll('<meta http-equiv="Content-Type" content="text/html; charset=utf-8">', '');
+      if (response.body.contains('ADMIN')) {
+        String body = response.body.replaceAll(
+            '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+            '');
         body = body.replaceAll('ADMIN', '');
         _key = body.trim();
         print(_key);
         return true;
-      }
-      else{
+      } else {
         return false;
       }
-    }
-    else{
+    } else {
       return false;
     }
   }
@@ -404,7 +404,7 @@ class _SignInPageState extends State<SignInPage> {
                                 return;
                               } else {
                                 result.isAdmin = await _judgeIsAdminAccount();
-                                if(result.isAdmin){
+                                if (result.isAdmin) {
                                   result.adminKey = _key;
                                 }
                                 Navigator.pushReplacement(
@@ -428,7 +428,7 @@ class _SignInPageState extends State<SignInPage> {
                         SizedBox(height: 20.0),
                         RaisedButton(
                           onPressed: () {
-                            Navigator.pushReplacement(
+                            Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => SignUpPage(

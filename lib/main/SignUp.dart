@@ -34,9 +34,11 @@ class _SignUpPageState extends State<SignUpPage> {
     }
     return true;
   }
-  void _terminateScreen(){
+
+  void _terminateScreen() {
     Navigator.pop(this.context);
   }
+
   Future<void> _postRegisterRequest() async {
     Navigator.pop(context);
     String uri = 'http://nacha01.dothome.co.kr/sin/arlimi_register.php';
@@ -59,48 +61,66 @@ class _SignUpPageState extends State<SignUpPage> {
         showDialog(
             context: context,
             builder: (context) => AlertDialog(
-              title: Text('회원 가입 실패'),
-              content: Text('이미 사용중인 아이디입니다!'),
-            ));
+                  title: Text('회원 가입 실패'),
+                  content: Text('이미 사용중인 아이디입니다!'),
+                ));
       } else {
         showDialog(
             context: context,
             builder: (context) => AlertDialog(
-              title: Text('회원 가입 성공'),
-              content: Text('성공적으로 회원가입이 되었습니다. \n메인 화면으로 이동합니다.'),
-              actions: [
-                FlatButton(onPressed: () async{
-                  await _getUserData();
-                }, child: Text('확인'))
-              ],
-            ));
+                  title: Text('회원 가입 성공'),
+                  content: Text('성공적으로 회원가입이 되었습니다. \n메인 화면으로 이동합니다.'),
+                  actions: [
+                    FlatButton(
+                        onPressed: () async {
+                          await _getUserData();
+                        },
+                        child: Text('확인'))
+                  ],
+                ));
       }
     } else {
       print('전송 실패');
     }
   }
-  Future<void> _getUserData() async{
-      String uri = 'http://nacha01.dothome.co.kr/sin/arlimi_login.php?uid=${_idController.text}&pw=${_passwordController.text}';
-      final response= await http.get(uri, headers: <String,String>{
-        'Content-Type' : 'application/x-www-form-urlencoded'
-      });
-      if(response.statusCode == 200){
-        String result = utf8.decode(response.bodyBytes).replaceAll('<meta http-equiv="Content-Type" content="text/html; charset=utf-8">', '').trim();
 
-        _terminateScreen();
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) =>
-        HomePage(user: User.fromJson(json.decode(result)),)));
-      }
+  Future<void> _getUserData() async {
+    String uri =
+        'http://nacha01.dothome.co.kr/sin/arlimi_login.php?uid=${_idController.text}&pw=${_passwordController.text}';
+    final response = await http.get(uri, headers: <String, String>{
+      'Content-Type': 'application/x-www-form-urlencoded'
+    });
+    if (response.statusCode == 200) {
+      String result = utf8
+          .decode(response.bodyBytes)
+          .replaceAll(
+              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+              '')
+          .trim();
+
+      _terminateScreen();
+      Navigator.pop(context);
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) => HomePage(
+                    user: User.fromJson(json.decode(result)),
+                  )));
+    }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         title: Text('회원가입'),
-        leading: IconButton(icon: Icon(Icons.arrow_back),onPressed: (){
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
             Navigator.pop(context);
-        },),
+          },
+        ),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -123,7 +143,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   onChanged: (value) {
                     setState(() {
                       _selectedValue = value;
-                      if(statusMap[_selectedValue] > 1){
+                      if (statusMap[_selectedValue] > 1) {
                         _gradeController.text = '';
                       }
                     });
@@ -134,9 +154,7 @@ class _SignUpPageState extends State<SignUpPage> {
               Opacity(
                 opacity: isTwoRow() ? 1.0 : 0.0,
                 child: TextFormField(
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly
-                  ],
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   controller: _gradeController,
                   cursorColor: Colors.black,
                   style: TextStyle(fontSize: 18.0, color: Colors.black),
@@ -151,9 +169,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       fontSize: 16.0,
                     ),
                   ),
-                  onChanged: (value) {
-
-                  },
+                  onChanged: (value) {},
                 ),
               ),
               SizedBox(height: 20.0),
@@ -172,9 +188,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     fontSize: 16.0,
                   ),
                 ),
-                onChanged: (value) {
-
-                },
+                onChanged: (value) {},
               ),
               SizedBox(height: 20.0),
               TextFormField(
@@ -193,9 +207,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     fontSize: 16.0,
                   ),
                 ),
-                onChanged: (value) {
-
-                },
+                onChanged: (value) {},
               ),
               SizedBox(height: 20.0),
               TextFormField(
@@ -213,9 +225,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     fontSize: 16.0,
                   ),
                 ),
-                onChanged: (value) {
-
-                },
+                onChanged: (value) {},
               ),
               SizedBox(height: 20.0),
               TextFormField(
@@ -233,20 +243,19 @@ class _SignUpPageState extends State<SignUpPage> {
                     fontSize: 16.0,
                   ),
                 ),
-                onChanged: (value) {
-
-                },
+                onChanged: (value) {},
               ),
               SizedBox(height: 20.0),
               RaisedButton(
                 onPressed: () async {
-                  if(_idController.text.isEmpty || _nameController.text.isEmpty || _nickNameController.text.isEmpty
-                  ){
+                  if (_idController.text.isEmpty ||
+                      _nameController.text.isEmpty ||
+                      _nickNameController.text.isEmpty) {
                     showDialog(
                         context: context,
                         builder: (context) => AlertDialog(
-                          content: Text('입력하지 않은 정보가 있습니다!'),
-                        ));
+                              content: Text('입력하지 않은 정보가 있습니다!'),
+                            ));
                   }
                   if (_passwordController.text.toString().length < 6) {
                     showDialog(
@@ -277,7 +286,9 @@ class _SignUpPageState extends State<SignUpPage> {
                                 Text('이 름: ${_nameController.text}'),
                                 isTwoRow()
                                     ? Text('학번: ${_gradeController.text}')
-                                    : SizedBox(height: 0.0,),
+                                    : SizedBox(
+                                        height: 0.0,
+                                      ),
                                 Text('ID: ${_idController.text}'),
                                 Text('닉네임: ${_nickNameController.text}'),
                               ],
