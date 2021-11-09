@@ -47,7 +47,7 @@ class _SignInPageState extends State<SignInPage> {
 
         String screenLoc = message['data']['screen'];
 
-        //selectLocation(screenLoc);
+        selectLocation(screenLoc);
       },
       onLaunch: (Map<String, dynamic> message) async {
         String screenLoc = message['data']['screen'];
