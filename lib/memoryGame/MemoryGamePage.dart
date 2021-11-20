@@ -27,10 +27,12 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
   List<double> _circleSizes = [12.0, 15.0, 18.0, 21.0];
   List<double> _rectSizes = [25.0, 30.0, 35.0, 40.0];
   List<double> _lifeOpacityList = [1.0, 1.0, 1.0];
+  List<Widget> _emptyList = [];
   Timer _timer;
-  int _start = 30;
+  int _start = 35;
   int _currentOpacityIndex = 2;
   int _myRecord = 0;
+  int _currentPoint = 0;
   bool _isRenew = false;
   @override
   void initState() {
@@ -142,7 +144,8 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
   }
 
   void _reInitializeGameSetting() {
-    _start = 30;
+    _start = 35;
+    _currentPoint = 0;
     _shapeList.clear();
     _addShape();
     _currentOpacityIndex = 2;
@@ -171,7 +174,7 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
     }
   }
 
-  void _addShape() {
+  void _addShape() async {
     var shapeRv = Random().nextInt(3);
     var sizeRv = Random().nextInt(4);
     Widget obj;
@@ -195,7 +198,16 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
             posKey: GlobalKey());
         break;
     }
-    _shapeList.add(obj);
+    var tmp = _shapeList;
+    setState(() {
+      _shapeList = _emptyList;
+    });
+    await Future.delayed(Duration(milliseconds: 400), () {
+      setState(() {
+        _shapeList = tmp;
+        _shapeList.add(obj);
+      });
+    });
   }
 
   Alignment _getRandomLocation() {
@@ -223,8 +235,8 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
   }
 
   void _showGameOverDialog() async {
-    if (_shapeList.length - 1 > _myRecord) {
-      _myRecord = _shapeList.length - 1;
+    if (_currentPoint > _myRecord) {
+      _myRecord = _currentPoint;
       _isRenew = true;
       await _updateRecord();
     }
@@ -243,7 +255,7 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
                 textAlign: TextAlign.center,
               ),
               content: Text(
-                '${_isRenew ? '최고 기록 달성! ' : ''}최종 점수 : ${_shapeList.length - 1}점',
+                '${_isRenew ? '최고 기록 달성! ' : ''}최종 점수 : $_currentPoint점',
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 18,
@@ -291,6 +303,7 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
           if (posKey == _shapeList[_shapeList.length - 1].key) {
             setState(() {
               _addShape();
+              _currentPoint++;
             });
           } else {
             setState(() {
@@ -324,6 +337,7 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
           if (posKey == _shapeList[_shapeList.length - 1].key) {
             setState(() {
               _addShape();
+              _currentPoint++;
             });
           } else {
             setState(() {
@@ -357,6 +371,7 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
           if (posKey == _shapeList[_shapeList.length - 1].key) {
             setState(() {
               _addShape();
+              _currentPoint++;
             });
           } else {
             setState(() {
@@ -476,7 +491,7 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
                       Expanded(
                           child: Center(
                               child: Text(
-                        '${_shapeList.length - 1}',
+                        '$_currentPoint',
                         style: TextStyle(
                             fontSize: 19, fontWeight: FontWeight.bold),
                       )))
