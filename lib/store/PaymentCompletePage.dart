@@ -77,7 +77,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
         title: Text(
           '주문 완료',
           style: TextStyle(
-              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 13),
+              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
         ),
         centerTitle: true,
       ),

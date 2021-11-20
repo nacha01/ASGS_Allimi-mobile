@@ -260,6 +260,8 @@ class _CartPageState extends State<CartPage> {
                 ),
                 FlatButton(
                   onPressed: () async {
+                    await _renewCartCount();
+                    await _getCartForUserRequest();
                     final res = await Navigator.push(
                         context,
                         MaterialPageRoute(
