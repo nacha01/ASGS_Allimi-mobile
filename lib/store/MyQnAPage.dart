@@ -103,8 +103,8 @@ class _MyQnAPageState extends State<MyQnAPage> {
                     )));
       },
       child: Container(
-        margin: EdgeInsets.all(5),
-        height: size.height * 0.11,
+        margin: EdgeInsets.all(size.width * 0.015),
+        height: size.height * 0.12,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
             border: Border.all(width: 0.5, color: Colors.black38),
@@ -133,21 +133,19 @@ class _MyQnAPageState extends State<MyQnAPage> {
                               color: Colors.yellow),
                         )
                       : Container(
-                          width: size.width * 0.25,
-                          height: size.height * 0.11 * 0.4 * 0.8,
+                          width: size.width * 0.24,
+                          height: size.height * 0.10 * 0.4 * 0.8,
                         ),
                   VerticalDivider(
                     thickness: 0.8,
                     color: Colors.grey,
-                    indent: 4,
-                    endIndent: 4,
                   ),
                   Container(
                     child: Text(
                       date,
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    width: size.width * 0.63,
+                    width: size.width * 0.6,
                     alignment: Alignment.center,
                   )
                 ],
