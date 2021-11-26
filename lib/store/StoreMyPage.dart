@@ -61,25 +61,54 @@ class _StoreMyPageState extends State<StoreMyPage> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              Container(
-                alignment: Alignment.centerLeft,
-                padding: EdgeInsets.all(5),
-                margin: EdgeInsets.all(10),
-                child: Text(
-                  '마이페이지',
-                  style: TextStyle(
-                      color: Color(0xFF9EE1E5),
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold),
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    alignment: Alignment.centerLeft,
+                    padding: EdgeInsets.all(size.width * 0.03),
+                    margin: EdgeInsets.all(size.width * 0.01),
+                    child: Text(
+                      '마이페이지',
+                      style: TextStyle(
+                          color: Color(0xFF9EE1E5),
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  FlatButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Icon(
+                          Icons.keyboard_return,
+                          color: Colors.deepOrange,
+                        ),
+                        SizedBox(
+                          width: size.width * 0.008,
+                        ),
+                        Text(
+                          '알리미로 돌아가기',
+                          style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.deepOrange),
+                        )
+                      ],
+                    ),
+                  )
+                ],
               ),
               Container(
-                padding: EdgeInsets.all(5),
-                margin: EdgeInsets.all(5),
+                padding: EdgeInsets.all(size.width * 0.01),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                      width: size.width * 0.95,
+                      width: size.width * 0.9,
                       child: Card(
                         child: ListTile(
                           onTap: () async {
@@ -111,15 +140,15 @@ class _StoreMyPageState extends State<StoreMyPage> {
                 ),
               ),
               Container(
-                margin: EdgeInsets.all(10),
-                padding: EdgeInsets.all(5),
+                margin: EdgeInsets.all(size.width * 0.01),
+                padding: EdgeInsets.all(size.width * 0.01),
                 alignment: Alignment.centerLeft,
                 child: Text(
                   '쇼핑',
                   style: TextStyle(color: Color(0xFF9EE1E5), fontSize: 17),
                 ),
               ),
-              FlatButton(
+              /*FlatButton(
                 onPressed: () {
                   _dialogNotImplement();
                 },
@@ -141,7 +170,9 @@ class _StoreMyPageState extends State<StoreMyPage> {
                   ),
                 ),
               ),
+              */
               FlatButton(
+                padding: EdgeInsets.all(size.width * 0.015),
                 onPressed: () {
                   Navigator.push(
                       context,
@@ -151,8 +182,8 @@ class _StoreMyPageState extends State<StoreMyPage> {
                               )));
                 },
                 child: Container(
-                  margin: EdgeInsets.all(10),
-                  padding: EdgeInsets.all(5),
+                  margin: EdgeInsets.all(size.width * 0.01),
+                  padding: EdgeInsets.all(size.width * 0.01),
                   child: Row(
                     children: [
                       Icon(Icons.delivery_dining,
@@ -165,10 +196,10 @@ class _StoreMyPageState extends State<StoreMyPage> {
                   ),
                 ),
               ),
-              dividerForContents(),
+              dividerForContents(size),
               Container(
-                margin: EdgeInsets.all(10),
-                padding: EdgeInsets.all(5),
+                margin: EdgeInsets.all(size.width * 0.01),
+                padding: EdgeInsets.all(size.width * 0.01),
                 child: Row(
                   children: [
                     Text(
@@ -179,6 +210,7 @@ class _StoreMyPageState extends State<StoreMyPage> {
                 ),
               ),
               FlatButton(
+                padding: EdgeInsets.all(size.width * 0.015),
                 onPressed: () {
                   Navigator.push(
                       context,
@@ -188,8 +220,8 @@ class _StoreMyPageState extends State<StoreMyPage> {
                               )));
                 },
                 child: Container(
-                  margin: EdgeInsets.all(10),
-                  padding: EdgeInsets.all(5),
+                  margin: EdgeInsets.all(size.width * 0.01),
+                  padding: EdgeInsets.all(size.width * 0.01),
                   child: Row(
                     children: [
                       Icon(Icons.chat,
@@ -202,10 +234,10 @@ class _StoreMyPageState extends State<StoreMyPage> {
                   ),
                 ),
               ),
-              dividerForContents(),
+              dividerForContents(size),
               Container(
-                margin: EdgeInsets.all(10),
-                padding: EdgeInsets.all(5),
+                margin: EdgeInsets.all(size.width * 0.01),
+                padding: EdgeInsets.all(size.width * 0.01),
                 child: Row(
                   children: [
                     Text(
@@ -215,7 +247,7 @@ class _StoreMyPageState extends State<StoreMyPage> {
                   ],
                 ),
               ),
-              FlatButton(
+              /*FlatButton(
                 onPressed: () {
                   _dialogNotImplement();
                 },
@@ -235,7 +267,9 @@ class _StoreMyPageState extends State<StoreMyPage> {
                   ),
                 ),
               ),
+               */
               FlatButton(
+                padding: EdgeInsets.all(size.width * 0.015),
                 onPressed: () {
                   Navigator.push(
                       context,
@@ -245,8 +279,8 @@ class _StoreMyPageState extends State<StoreMyPage> {
                               )));
                 },
                 child: Container(
-                  margin: EdgeInsets.all(10),
-                  padding: EdgeInsets.all(5),
+                  margin: EdgeInsets.all(size.width * 0.01),
+                  padding: EdgeInsets.all(size.width * 0.01),
                   child: Row(
                     children: [
                       Icon(Icons.headset_mic_outlined,
@@ -262,10 +296,10 @@ class _StoreMyPageState extends State<StoreMyPage> {
               if (data.user.isAdmin)
                 Column(
                   children: [
-                    dividerForContents(),
+                    dividerForContents(size),
                     Container(
-                      margin: EdgeInsets.all(10),
-                      padding: EdgeInsets.all(5),
+                      margin: EdgeInsets.all(size.width * 0.01),
+                      padding: EdgeInsets.all(size.width * 0.01),
                       child: Row(
                         children: [
                           Text(
@@ -276,7 +310,7 @@ class _StoreMyPageState extends State<StoreMyPage> {
                         ],
                       ),
                     ),
-                    FlatButton(
+                    /* FlatButton(
                       onPressed: () {
                         _dialogNotImplement();
                       },
@@ -297,7 +331,9 @@ class _StoreMyPageState extends State<StoreMyPage> {
                         ),
                       ),
                     ),
-                    FlatButton(
+
+                    */
+                    /*FlatButton(
                       onPressed: () {
                         _dialogNotImplement();
                       },
@@ -318,7 +354,10 @@ class _StoreMyPageState extends State<StoreMyPage> {
                         ),
                       ),
                     ),
+
+                     */
                     FlatButton(
+                      padding: EdgeInsets.all(size.width * 0.015),
                       onPressed: () {
                         Navigator.push(
                             context,
@@ -328,8 +367,8 @@ class _StoreMyPageState extends State<StoreMyPage> {
                                     )));
                       },
                       child: Container(
-                        margin: EdgeInsets.all(10),
-                        padding: EdgeInsets.all(5),
+                        margin: EdgeInsets.all(size.width * 0.01),
+                        padding: EdgeInsets.all(size.width * 0.01),
                         child: Row(
                           children: [
                             Icon(Icons.timer,
@@ -346,7 +385,7 @@ class _StoreMyPageState extends State<StoreMyPage> {
                         ),
                       ),
                     ),
-                    FlatButton(
+                    /*FlatButton(
                       onPressed: () {
                         _dialogNotImplement();
                       },
@@ -367,7 +406,9 @@ class _StoreMyPageState extends State<StoreMyPage> {
                         ),
                       ),
                     ),
+                     */
                     FlatButton(
+                      padding: EdgeInsets.all(size.width * 0.015),
                       onPressed: () {
                         Navigator.push(
                             context,
@@ -377,8 +418,8 @@ class _StoreMyPageState extends State<StoreMyPage> {
                                     )));
                       },
                       child: Container(
-                        margin: EdgeInsets.all(10),
-                        padding: EdgeInsets.all(5),
+                        margin: EdgeInsets.all(size.width * 0.01),
+                        padding: EdgeInsets.all(size.width * 0.01),
                         child: Row(
                           children: [
                             Icon(Icons.chat,
@@ -402,11 +443,11 @@ class _StoreMyPageState extends State<StoreMyPage> {
     );
   }
 
-  Widget dividerForContents() {
+  Widget dividerForContents(Size size) {
     return Divider(
       color: Color(0xFF9EE1E5),
-      indent: 15,
-      endIndent: 15,
+      indent: size.width * 0.04,
+      endIndent: size.width * 0.04,
       thickness: 2,
     );
   }
