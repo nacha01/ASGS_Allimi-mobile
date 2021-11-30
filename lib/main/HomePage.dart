@@ -47,7 +47,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
   final nameHolder = TextEditingController();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool isWebLoading = true;
-
+  bool _isAndroid = true;
   @override
   void initState() {
     super.initState();
@@ -55,6 +55,11 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
     _numberOfTabs = 4;
     tabController = TabController(vsync: this, length: _numberOfTabs);
     _scrollViewController = ScrollController();
+    if (Platform.isAndroid) {
+      _isAndroid = true;
+    } else if (Platform.isIOS) {
+      _isAndroid = false;
+    }
   }
 
   @override
@@ -643,8 +648,9 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                               MaterialPageRoute(
                                   builder: (context) => WebViewPage(
                                         title: '학교 행사',
-                                        baseUrl:
-                                            'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030200&searchMasterSid=4',
+                                        baseUrl: _isAndroid
+                                            ? 'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030200&searchMasterSid=4'
+                                            : 'http://nacha01.dothome.co.kr/',
                                       )));
                         },
                       ),
@@ -660,8 +666,9 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                               MaterialPageRoute(
                                   builder: (context) => WebViewPage(
                                         title: '학습 자료',
-                                        baseUrl:
-                                            'http://www.asgs.hs.kr/home/formError.do?code=NONE_LEVEL&menugrp=040300&gm=http%3A%2F%2Fgm7.goeia.go.kr&siteKey=QzlWVUd0ZVZHdFR1R3I3QXlpeHgzNDI1YVRkQk5sT09LbWhZSWlnbjA5bz0%3D',
+                                        baseUrl: _isAndroid
+                                            ? 'http://www.asgs.hs.kr/home/formError.do?code=NONE_LEVEL&menugrp=040300&gm=http%3A%2F%2Fgm7.goeia.go.kr&siteKey=QzlWVUd0ZVZHdFR1R3I3QXlpeHgzNDI1YVRkQk5sT09LbWhZSWlnbjA5bz0%3D'
+                                            : 'http://nacha01.dothome.co.kr/',
                                       )));
                         },
                       ),
@@ -768,110 +775,113 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
           autocorrect: true,
         ));
   }
-}
 
-String numberWithComma(int param) {
-  return NumberFormat('###,###,###,###').format(param).replaceAll(' ', '');
-}
+  String numberWithComma(int param) {
+    return NumberFormat('###,###,###,###').format(param).replaceAll(' ', '');
+  }
 
-Widget ink(BuildContext context, String title, IconData icon, String url) {
-  return InkWell(
-      child: Column(
-        children: <Widget>[
-          Icon(
-            icon,
-            size: 50,
-          ),
-          Text(
-            title,
-            style: TextStyle(fontSize: 12),
-          )
-        ],
-      ),
-      onTap: () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => WebViewPage(
-                      title: title,
-                      baseUrl: url,
-                    )));
-      });
-}
-
-Widget belowBox(
-    {BuildContext context,
-    String title,
-    String organizer,
-    String imageUrl,
-    String siteUrl,
-    @required String upTitle}) {
-  double percentBar = 166;
-  return Container(
-    height: 150,
-    width: 170,
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        GestureDetector(
-          onTap: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => WebViewPage(
-                          title: title,
-                          baseUrl: siteUrl,
-                        )));
-          },
-          child: Stack(
-            alignment: Alignment.topLeft,
-            children: <Widget>[
-              Image(
-                height: 80,
-                width: 300,
-                image: AssetImage(
-                  imageUrl,
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.all(3),
-                color: Color(0xFF646464),
-                child: Text(
-                  upTitle,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.all(7),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              RichText(
-                overflow: TextOverflow.ellipsis,
-                strutStyle: StrutStyle(fontSize: 12.0),
-                text: TextSpan(
-                    style: TextStyle(color: Colors.black), text: title),
-              ),
-              Text(organizer, style: TextStyle(color: Color(0xFF8D8D8D))),
-            ],
-          ),
-        ),
-        Row(
+  Widget ink(BuildContext context, String title, IconData icon, String url) {
+    return InkWell(
+        child: Column(
           children: <Widget>[
-            Container(
-              height: 10,
-              width: percentBar,
-              color: Colors.blue,
+            Icon(
+              icon,
+              size: 50,
             ),
+            Text(
+              title,
+              style: TextStyle(fontSize: 12),
+            )
           ],
         ),
-      ],
-    ),
-  );
+        onTap: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => WebViewPage(
+                        title: title,
+                        baseUrl:
+                            _isAndroid ? url : 'http://nacha01.dothome.co.kr/',
+                      )));
+        });
+  }
+
+  Widget belowBox(
+      {BuildContext context,
+      String title,
+      String organizer,
+      String imageUrl,
+      String siteUrl,
+      @required String upTitle}) {
+    double percentBar = 166;
+    return Container(
+      height: 150,
+      width: 170,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => WebViewPage(
+                            title: title,
+                            baseUrl: _isAndroid
+                                ? siteUrl
+                                : 'http://nacha01.dothome.co.kr/',
+                          )));
+            },
+            child: Stack(
+              alignment: Alignment.topLeft,
+              children: <Widget>[
+                Image(
+                  height: 80,
+                  width: 300,
+                  image: AssetImage(
+                    imageUrl,
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.all(3),
+                  color: Color(0xFF646464),
+                  child: Text(
+                    upTitle,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.all(7),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                RichText(
+                  overflow: TextOverflow.ellipsis,
+                  strutStyle: StrutStyle(fontSize: 12.0),
+                  text: TextSpan(
+                      style: TextStyle(color: Colors.black), text: title),
+                ),
+                Text(organizer, style: TextStyle(color: Color(0xFF8D8D8D))),
+              ],
+            ),
+          ),
+          Row(
+            children: <Widget>[
+              Container(
+                height: 10,
+                width: percentBar,
+                color: Colors.blue,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 }
