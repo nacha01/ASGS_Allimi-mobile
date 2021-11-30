@@ -62,7 +62,6 @@ class _AnnouncePageState extends State<AnnouncePage> {
     final response = await http.get(uri + '?anID=$anID');
 
     if (response.statusCode == 200) {
-      print(response.body);
       String result = utf8
           .decode(response.bodyBytes)
           .replaceAll(
@@ -359,7 +358,7 @@ class _AnnouncePageState extends State<AnnouncePage> {
     return GestureDetector(
       onTap: () async {
         int renew = await _increaseViewCountRequest(announce.announceID);
-        Navigator.push(
+        var res = await Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) => DetailAnnouncePage(
@@ -368,6 +367,9 @@ class _AnnouncePageState extends State<AnnouncePage> {
                       isNew: isNew,
                       newView: renew,
                     )));
+        if (res) {
+          await _getAnnounceRequest();
+        }
       },
       child: Container(
         width: size.width * 0.88,
