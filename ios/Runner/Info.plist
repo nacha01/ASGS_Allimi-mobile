@@ -50,14 +50,12 @@
 		<key>NSAllowsArbitraryLoadsInWebContent</key>
 		<true/>
 	</dict>
-	<key>NSHumanReadableCopyright</key>
-	<string></string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>위치정보 권한이 필요합니다. (항상 위치정보를 수신합니다.)</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>갤러리에 접근하기위한 권한이 필요합니다.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>카메라에 접근하기위한 권한이 필요합니다.</string>
+	<key>NSHumanReadableCopyright</key>
+	<string></string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>갤러리에 접근하기위한 권한이 필요합니다.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>

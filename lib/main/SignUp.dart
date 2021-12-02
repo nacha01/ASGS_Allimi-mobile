@@ -56,7 +56,6 @@ class _SignUpPageState extends State<SignUpPage> {
 
     if (response.statusCode == 200) {
       String result = utf8.decode(response.bodyBytes);
-
       if (result.contains('PRIMARY') && result.contains('Duplicate entry')) {
         showDialog(
             context: context,
@@ -97,7 +96,6 @@ class _SignUpPageState extends State<SignUpPage> {
               '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
               '')
           .trim();
-
       _terminateScreen();
       Navigator.pop(context);
       Navigator.pushReplacement(
