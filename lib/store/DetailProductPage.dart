@@ -5,6 +5,7 @@ import 'package:asgshighschool/data/product_data.dart';
 import 'package:asgshighschool/data/user_data.dart';
 import 'package:asgshighschool/store/CartPage.dart';
 import 'package:asgshighschool/store/OrderPage.dart';
+import 'package:asgshighschool/store/ReservationPage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -288,7 +289,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                   (widget.product.stockCount - 5) < 0
                       ? Container(
                           child: Text(
-                            '재고가 부족합니다.',
+                            '재고가 없습니다.',
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 15),
                           ),
@@ -503,10 +504,44 @@ class _DetailProductPageState extends State<DetailProductPage> {
                   padding: EdgeInsets.all(0),
                   onPressed: () {
                     if (widget.product.stockCount - 5 < 1) {
-                      Fluttertoast.showToast(
-                          msg: '상품의 재고가 없어 구매가 불가능합니다.',
-                          gravity: ToastGravity.BOTTOM,
-                          toastLength: Toast.LENGTH_SHORT);
+                      // Fluttertoast.showToast(
+                      //     msg: '상품의 재고가 없어 구매가 불가능합니다.',
+                      //     gravity: ToastGravity.BOTTOM,
+                      //     toastLength: Toast.LENGTH_SHORT);
+                      showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                                title: Text(
+                                  '재고 없음',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                content: Text(
+                                    '현재 상품의 재고가 없어 예약만 가능합니다. 예약하러 가시겠습니까?'),
+                                actions: [
+                                  FlatButton(
+                                      onPressed: () {
+                                        Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    ReservationPage()));
+                                      },
+                                      child: Text(
+                                        '예',
+                                        style:
+                                            TextStyle(color: Colors.lightBlue),
+                                      )),
+                                  FlatButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: Text(
+                                        '아니오',
+                                        style:
+                                            TextStyle(color: Colors.deepOrange),
+                                      ))
+                                ],
+                              ));
                       return;
                     } else {
                       setState(() {
@@ -520,9 +555,11 @@ class _DetailProductPageState extends State<DetailProductPage> {
                     padding: EdgeInsets.all(size.width * 0.025),
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(8),
-                        color: Colors.blueAccent),
+                        color: widget.product.stockCount - 5 < 1
+                            ? Colors.deepOrange
+                            : Colors.blueAccent),
                     child: Text(
-                      '구매하기',
+                      widget.product.stockCount - 5 < 1 ? '예약하기' : '구매하기',
                       style: TextStyle(
                           fontWeight: FontWeight.bold, color: Colors.white),
                     ),
