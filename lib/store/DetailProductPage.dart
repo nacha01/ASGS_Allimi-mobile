@@ -17,8 +17,10 @@ import 'package:provider/provider.dart';
 // 상품의 재고는 실제 재고보다 5개 작게 보여준다. 2021/09/21
 class DetailProductPage extends StatefulWidget {
   DetailProductPage({this.product, this.user});
+
   final Product product;
   final User user;
+
   @override
   _DetailProductPageState createState() => _DetailProductPageState();
 }
@@ -524,7 +526,10 @@ class _DetailProductPageState extends State<DetailProductPage> {
                                             context,
                                             MaterialPageRoute(
                                                 builder: (context) =>
-                                                    ReservationPage()));
+                                                    ReservationPage(
+                                                      user: widget.user,
+                                                      product: widget.product,
+                                                    )));
                                       },
                                       child: Text(
                                         '예',
