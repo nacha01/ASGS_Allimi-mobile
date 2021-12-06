@@ -62,6 +62,35 @@ class _ReservationPageState extends State<ReservationPage> {
     }
   }
 
+  /// 일반 숫자에 ,를 붙여서 직관적인 가격을 보이게 하는 작업
+  /// @param : 직관적인 가격을 보여줄 실제 int 가격[price]
+  /// @return : 직관적인 가격 문자열
+  String _formatPrice(int price) {
+    String p = price.toString();
+    String newFormat = '';
+    int count = 0;
+    for (int i = p.length - 1; i >= 0; --i) {
+      if ((count + 1) % 4 == 0) {
+        newFormat += ',';
+        ++i;
+      } else
+        newFormat += p[i];
+      ++count;
+    }
+    return _reverseString(newFormat);
+  }
+
+  /// 문자열을 뒤집는 작업
+  /// @param : 뒤집고 싶은 문자열[str]
+  /// @return : 뒤집은 문자열
+  String _reverseString(String str) {
+    String newStr = '';
+    for (int i = str.length - 1; i >= 0; --i) {
+      newStr += str[i];
+    }
+    return newStr;
+  }
+
   @override
   void initState() {
     _counterController.text = _counter.toString();
@@ -92,6 +121,9 @@ class _ReservationPageState extends State<ReservationPage> {
             child: SingleChildScrollView(
               child: Column(
                 children: [
+                  SizedBox(
+                    height: size.height * 0.01,
+                  ),
                   Padding(
                     padding: EdgeInsets.all(size.width * 0.02),
                     child: Row(
@@ -103,8 +135,7 @@ class _ReservationPageState extends State<ReservationPage> {
                         ),
                         Text(
                           '${widget.product.prodName}',
-                          style:
-                              TextStyle(color: Colors.blueAccent, fontSize: 18),
+                          style: TextStyle(color: Colors.green, fontSize: 18),
                         ),
                         Text('] 예약하기', style: TextStyle(fontSize: 18)),
                       ],
@@ -192,6 +223,22 @@ class _ReservationPageState extends State<ReservationPage> {
                     ],
                   ),
                   SizedBox(
+                    height: size.height * 0.01,
+                  ),
+                  Card(
+                    child: ListTile(
+                      leading: Text(
+                        '선 결제 금액',
+                        textAlign: TextAlign.center,
+                      ),
+                      title: Center(
+                          child: Text(
+                        '${_formatPrice(widget.product.price * _counter)}원',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      )),
+                    ),
+                  ),
+                  SizedBox(
                     height: size.height * 0.02,
                   ),
                   Divider(),
@@ -202,47 +249,114 @@ class _ReservationPageState extends State<ReservationPage> {
                         Text(
                           '안내 사항',
                           style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 15),
+                              fontWeight: FontWeight.bold, fontSize: 16),
                         ),
                       ],
                     ),
                   ),
-                  Row(
-                    children: [
-                      Text('예약 기능은 '),
-                      Text(
-                        '선결제',
-                        style: TextStyle(
-                            color: Colors.red, fontWeight: FontWeight.bold),
-                      ),
-                      Text('를 통해 이루어집니다.')
-                    ],
+                  Padding(
+                    padding: EdgeInsets.all(size.width * 0.02),
+                    child: Row(
+                      children: [
+                        Text(
+                          '※ 예약 기능은 ',
+                          style: TextStyle(fontSize: 15),
+                        ),
+                        Text(
+                          '선결제',
+                          style: TextStyle(
+                              color: Colors.red,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15),
+                        ),
+                        Text('를 통해 이루어집니다.', style: TextStyle(fontSize: 15))
+                      ],
+                    ),
                   ),
-                  Column(
-                    children: [
-                      Text('예약 후 상품의 재고가 입고하게 되면 '),
-                      Text('예약 완료 처리 기준에 따라 처리가 됩니다.'),
-                      Text('완료 처리가 되면 예약자에게 입고되었다는 알람 메세지를 전송합니다.')
-                    ],
+                  Padding(
+                    padding: EdgeInsets.all(size.width * 0.02),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('* 예약 후 상품의 재고가 입고하게 되면 '),
+                        Row(
+                          children: [
+                            Text(
+                              "  '예약 완료 처리 기준'",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.green),
+                            ),
+                            Text('에 따라 처리가 됩니다.')
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                  Text('입고한 재고의 수량에 따라 예약 알람 메세지를 전달되지 않을 수 있습니다. '),
+                  Padding(
+                    padding: EdgeInsets.all(size.width * 0.02),
+                    child: Text("* 완료 처리가 되면 예약자에게 입고되었다는 '예약 알람 메세지'를 전송합니다."),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(size.width * 0.02),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              '※ 입고한 재고의 수량에 따라 ',
+                              style: TextStyle(
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12),
+                            ),
+                            Text("'예약 알람 메세지'",
+                                style: TextStyle(
+                                    color: Colors.teal,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12,
+                                    decoration: TextDecoration.underline)),
+                          ],
+                        ),
+                        Text('가 전송되지 않을 수 있습니다.',
+                            style: TextStyle(
+                                color: Colors.red,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12))
+                      ],
+                    ),
+                  ),
                   Divider(),
                   Padding(
                     padding: EdgeInsets.all(size.width * 0.02),
                     child: Row(
                       children: [
                         Text(
-                          '예약 처리 기준',
+                          '예약 완료 처리 기준 (상품 수령 기준)',
                           style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 15),
+                              fontWeight: FontWeight.bold, fontSize: 16),
                         ),
                       ],
                     ),
                   ),
-                  Text('예약 완료 처리에 대한 기준은 입고한 총 수량에 따릅니다.'),
-                  Text('총 수량에서 최대한 많은 사람이 완료 처리가 되도록 할당합니다. '),
-                  Text(
-                      '총 수량에서 각 예약자들의 예약 수량에 따라 완료 처리될 사람들을 우선적으로 구하고, 구한 사람들 중 예약한 순서대로 처리됩니다.'),
+                  Padding(
+                    padding: EdgeInsets.all(size.width * 0.02),
+                    child: Text('* 예약 완료 처리에 대한 기준은 입고한 총 수량에 따릅니다.'),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(size.width * 0.02),
+                    child: Text('* 총 수량에서 최대한 많은 사람이 완료 처리가 되도록 할당합니다. '),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(size.width * 0.02),
+                    child: Text(
+                        '* 총 수량에서 각 예약자들의 예약 수량에 따라 완료 처리될 사람들을 우선적으로 선별합니다. '),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(size.width * 0.02),
+                    child: Text('* 선별된 사람들은 선별된 사람들끼리 예약한 순서대로 처리됩니다.'),
+                  ),
                   Row(
                     children: [
                       FlatButton(
@@ -256,16 +370,25 @@ class _ReservationPageState extends State<ReservationPage> {
                                           CrossAxisAlignment.start,
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        Text('A라는 사람이 상품을 5개 예약.'),
-                                        Text('B라는 사람이 상품을 10개 예약.'),
-                                        Text('C라는 사람이 상품을 3개 예약.\n'),
-                                        Text('이 상황에서 상품이 8개 입고.\n'),
                                         Text(
-                                            '총 재고(8개)에서 최대한 많은 예약자들을 수용하기 위해서\n '),
+                                          '첫째로 A라는 사람이 상품을 5개 예약.',
+                                          style: TextStyle(fontSize: 13),
+                                        ),
+                                        Text('둘째로 B라는 사람이 상품을 10개 예약.',
+                                            style: TextStyle(fontSize: 13)),
+                                        Text('셋째로 C라는 사람이 상품을 3개 예약.\n',
+                                            style: TextStyle(fontSize: 13)),
+                                        Text('위의 상황에서 상품이 8개 입고.\n',
+                                            style: TextStyle(fontSize: 13)),
                                         Text(
-                                            '8개 중에서 5개를 A에 3개를 C에 할당하는 것이 최대 효율이므로\n'),
-                                        Text('A와 C를 선택\n'),
-                                        Text('선택한 예약자들을 순서대로 예약 완료 처리\n'),
+                                            '현재 총 재고(8개)에서 최대한 많은 예약자들을 수용하기 위해서\n ',
+                                            style: TextStyle(fontSize: 13)),
+                                        Text(
+                                            '8개 중에서 5개를 A에 3개를 C에 할당하는 것이 최대 효율이므로 A와 C를 선택\n',
+                                            style: TextStyle(fontSize: 13)),
+                                        Text(
+                                            '선택한 예약자들을 순서대로 예약 완료 처리\n(즉, B를 제외한 나머지를 순서대로 처리)\n',
+                                            style: TextStyle(fontSize: 14)),
                                         Text(
                                           'A → C',
                                           style: TextStyle(
@@ -300,31 +423,30 @@ class _ReservationPageState extends State<ReservationPage> {
                       ),
                     ],
                   ),
-                  FlatButton(
-                    onPressed: () {
-                      setState(() {
-                        _isAgreed = !_isAgreed;
-                      });
-                    },
-                    child: Row(
-                      children: [
-                        Icon(
-                          _isAgreed
-                              ? Icons.check_box
-                              : Icons.check_box_outlined,
-                          color: Colors.grey,
-                        ),
-                        Text(' 위 내용을 확인했습니다.')
-                      ],
-                    ),
-                  ),
                 ],
               ),
             ),
           ),
           FlatButton(
+            onPressed: () {
+              setState(() {
+                _isAgreed = !_isAgreed;
+              });
+            },
+            child: Row(
+              children: [
+                Icon(
+                  _isAgreed ? Icons.check_box : Icons.check_box_outlined,
+                  color: _isAgreed ? Colors.blueAccent : Colors.grey,
+                ),
+                Text(' 위 내용을 확인했습니다.')
+              ],
+            ),
+          ),
+          FlatButton(
               padding: EdgeInsets.all(0),
               onPressed: () async {
+                if (!_isAgreed) return;
                 var r1 = await _registerReservation();
                 if (!r1) return;
                 var r2 = await _addOrderDetailRequest();
@@ -357,7 +479,7 @@ class _ReservationPageState extends State<ReservationPage> {
                 padding: EdgeInsets.all(size.width * 0.025),
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
-                    color: Colors.blueAccent),
+                    color: _isAgreed ? Colors.blueAccent : Colors.grey),
                 child: Text(
                   '예약 및 선결제하기',
                   style: TextStyle(

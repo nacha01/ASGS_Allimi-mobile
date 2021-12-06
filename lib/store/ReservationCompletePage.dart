@@ -9,6 +9,7 @@ class ReservationCompletePage extends StatefulWidget {
 class _ReservationCompletePageState extends State<ReservationCompletePage> {
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFF9EE1E5),
@@ -24,7 +25,13 @@ class _ReservationCompletePageState extends State<ReservationCompletePage> {
               color: Colors.black,
             )),
       ),
-      body: Center(),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+
+          ],
+        ),
+      ),
     );
   }
 }
