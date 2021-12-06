@@ -26,7 +26,7 @@ class StoreMainPage extends StatefulWidget {
 }
 
 class StoreMainPageState extends State<StoreMainPage> {
-  static int currentNav = 0;
+  static int currentNav = 1;
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +53,7 @@ class StoreMainPageState extends State<StoreMainPage> {
             var selected = await showMenu(
                 context: context,
                 position: RelativeRect.fromSize(
-                    Offset(0, size.height * 0.75) & Size(0, 0), Size(0, 0)),
+                    Offset(0, size.height * 0.7) & Size(0, 0), Size(0, 0)),
                 items: [
                   PopupMenuItem(
                     child: Text(

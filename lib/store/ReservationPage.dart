@@ -471,7 +471,12 @@ class _ReservationPageState extends State<ReservationPage> {
                 Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => ReservationCompletePage()));
+                        builder: (context) => ReservationCompletePage(
+                              user: widget.user,
+                              product: widget.product,
+                              count: _counter,
+                              orderID: _generatedOID,
+                            )));
               },
               child: Container(
                 alignment: Alignment.center,

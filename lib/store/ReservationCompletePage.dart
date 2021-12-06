@@ -1,8 +1,17 @@
 import 'dart:ui';
 
+import 'package:asgshighschool/data/product_data.dart';
+import 'package:asgshighschool/data/user_data.dart';
 import 'package:flutter/material.dart';
 
 class ReservationCompletePage extends StatefulWidget {
+  final User user;
+  final int count;
+  final Product product;
+  final String orderID;
+
+  ReservationCompletePage({this.user, this.product, this.count, this.orderID});
+
   @override
   _ReservationCompletePageState createState() =>
       _ReservationCompletePageState();
@@ -43,6 +52,23 @@ class _ReservationCompletePageState extends State<ReservationCompletePage> {
             Divider(
               thickness: 0.5,
             ),
+            SizedBox(
+              height: size.height * 0.02,
+            ),
+            Text(
+              '예약번호(주문번호) ${widget.orderID}',
+              style: TextStyle(
+                  fontWeight: FontWeight.bold, color: Colors.lightBlue),
+            ),
+            SizedBox(
+              height: size.height * 0.02,
+            ),
+            Text('예약 현황 및 상세 정보는 '),
+            Text("'마이페이지' → '예약 현황",
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red,
+                    fontSize: 15))
           ],
         ),
       ),
