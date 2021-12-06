@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
+
 import 'HomePage.dart';
 import 'SignUp.dart';
 import 'package:asgshighschool/WebView.dart';
@@ -256,10 +258,6 @@ class _SignInPageState extends State<SignInPage> {
         appBar: AppBar(
           centerTitle: true,
           title: Text('로그인 하기'),
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () => Navigator.pop(context),
-          ),
         ),
         body: Container(
           color: _logging ? Colors.grey[700] : Color(0x00000000),
@@ -364,91 +362,96 @@ class _SignInPageState extends State<SignInPage> {
                           ],
                         ),
                         SizedBox(height: 10.0),
-                        RaisedButton(
-                          /////////
-                          onPressed: () async {
-                            if (_idController.text.isEmpty ||
-                                _passwordController.text.isEmpty) {
-                              showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return AlertDialog(
-                                      content: Text('내용을 입력하세요'),
-                                      actions: [
-                                        FlatButton(
-                                            onPressed: () =>
-                                                Navigator.pop(context),
-                                            child: Text('확인'))
-                                      ],
-                                    );
-                                  });
-                              return;
-                            }
-                            _pref.setString(
-                                'uid', _idController.text.toString());
-                            _pref.setString('password',
-                                _passwordController.text.toString());
-                            _pref.setBool('checked', _isChecked);
-                            try {
-                              setState(() {
-                                _loading = true;
-                              });
-                              var result = await _requestLogin();
-                              if (result == null) {
-                                showDialog(
-                                    context: context,
-                                    builder: (context) => AlertDialog(
-                                          title: Text('로그인 에러'),
-                                          content: Text('입력한 정보가 맞지 않습니다!'),
-                                        ));
-                                return;
-                              } else {
-                                result.isAdmin = await _judgeIsAdminAccount();
-                                if (result.isAdmin) {
-                                  result.adminKey = _key;
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            RaisedButton(
+                              /////////
+                              onPressed: () async {
+                                if (_idController.text.isEmpty ||
+                                    _passwordController.text.isEmpty) {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return AlertDialog(
+                                          content: Text('내용을 입력하세요'),
+                                          actions: [
+                                            FlatButton(
+                                                onPressed: () =>
+                                                    Navigator.pop(context),
+                                                child: Text('확인'))
+                                          ],
+                                        );
+                                      });
+                                  return;
                                 }
-                                Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => HomePage(
-                                              user: result,
-                                            )));
-                              }
-                              _loading = false;
-                            } catch (e) {
-                              print(e.toString());
-                            }
-                          },
-                          color: Colors.orangeAccent,
-                          child:
-                              Text('로그인 하기', style: TextStyle(fontSize: 17.0)),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20.0)),
+                                _pref.setString(
+                                    'uid', _idController.text.toString());
+                                _pref.setString('password',
+                                    _passwordController.text.toString());
+                                _pref.setBool('checked', _isChecked);
+                                try {
+                                  setState(() {
+                                    _loading = true;
+                                  });
+                                  var result = await _requestLogin();
+                                  if (result == null) {
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) => AlertDialog(
+                                              title: Text('로그인 에러'),
+                                              content: Text('입력한 정보가 맞지 않습니다!'),
+                                            ));
+                                    return;
+                                  } else {
+                                    result.isAdmin =
+                                        await _judgeIsAdminAccount();
+                                    if (result.isAdmin) {
+                                      result.adminKey = _key;
+                                    }
+                                    Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => HomePage(
+                                                  user: result,
+                                                )));
+                                  }
+                                  _loading = false;
+                                } catch (e) {
+                                  print(e.toString());
+                                }
+                              },
+                              color: Colors.orangeAccent,
+                              child: Text('로그인 하기',
+                                  style: TextStyle(fontSize: 17.0)),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20.0)),
+                            ),
+                            RaisedButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => SignUpPage(
+                                            token: widget.token,
+                                          )),
+                                );
+                              },
+                              color: Colors.orangeAccent,
+                              child: Text('회원가입하러 가기 ',
+                                  style: TextStyle(fontSize: 17.0)),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20.0)),
+                            ),
+                          ],
                         ),
-                        SizedBox(height: 20.0),
-                        RaisedButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => SignUpPage(
-                                        token: widget.token,
-                                      )),
-                            );
-                          },
-                          color: Colors.orangeAccent,
-                          child: Text('회원가입하러 가기 ',
-                              style: TextStyle(fontSize: 17.0)),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20.0)),
-                        ),
-                        FlatButton(
-                            onPressed: () async {
-                              print(widget.token);
-                              await _postRequest(widget.token);
-                            },
-                            child: Text('Show Push Message')),
-                        Text(_messageText)
+                        // FlatButton(
+                        //     onPressed: () async {
+                        //       print(widget.token);
+                        //       await _postRequest(widget.token);
+                        //     },
+                        //     child: Text('Show Push Message')),
+                        // Text(_messageText)
                       ],
                     ),
                   ),
