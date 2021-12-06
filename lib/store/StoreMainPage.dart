@@ -90,6 +90,11 @@ class StoreMainPageState extends State<StoreMainPage> {
                               user: widget.user,
                             )));
                 break;
+              default:
+                setState(() {
+                  currentNav = 1;
+                });
+                break;
             }
           }
         },

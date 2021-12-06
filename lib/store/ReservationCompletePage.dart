@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
 class ReservationCompletePage extends StatefulWidget {
@@ -28,7 +30,19 @@ class _ReservationCompletePageState extends State<ReservationCompletePage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-
+            SizedBox(
+              height: size.height * 0.03,
+            ),
+            Text(
+              '예약이 성공적으로 완료되었습니다.',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(
+              height: size.height * 0.02,
+            ),
+            Divider(
+              thickness: 0.5,
+            ),
           ],
         ),
       ),
