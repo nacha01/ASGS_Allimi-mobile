@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:asgshighschool/data/exist_cart.dart';
 import 'package:asgshighschool/data/user_data.dart';
+import 'package:asgshighschool/main/GameListPage.dart';
 import 'package:asgshighschool/store/AnnouncePage.dart';
 import 'package:asgshighschool/store/CartPage.dart';
 import 'package:asgshighschool/store/StoreHomePage.dart';
@@ -10,6 +11,7 @@ import 'package:asgshighschool/storeAdmin/QRScannerPage.dart';
 import 'package:badges/badges.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
 import '../data/product_data.dart';
@@ -43,14 +45,63 @@ class StoreMainPageState extends State<StoreMainPage> {
       body: SafeArea(child: getWidgetAccordingIndex(currentNav, size)),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentNav,
-        onTap: (index) {
+        onTap: (index) async {
           setState(() {
             currentNav = index;
           });
+          if (index == 0) {
+            var selected = await showMenu(
+                context: context,
+                position: RelativeRect.fromSize(
+                    Offset(0, size.height * 0.75) & Size(0, 0), Size(0, 0)),
+                items: [
+                  PopupMenuItem(
+                    child: Text(
+                      '알리미',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    value: 1,
+                  ),
+                  PopupMenuItem(
+                    child: Text('두루두루',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    value: 2,
+                  ),
+                  PopupMenuItem(
+                    child: Text('게임',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    value: 3,
+                  )
+                ]);
+            switch (selected) {
+              case 1: // 알리미
+                Navigator.pop(context);
+                break;
+              case 2: // 두루두루
+                setState(() {
+                  currentNav = 1;
+                });
+                break;
+              case 3: // 게임
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => GameListPage(
+                              user: widget.user,
+                            )));
+                break;
+            }
+          }
         },
         selectedItemColor: Colors.blue,
         unselectedItemColor: Colors.black,
         items: [
+          BottomNavigationBarItem(
+              icon: Icon(
+                Icons.menu,
+                color: Colors.green,
+              ),
+              label: '이동 메뉴'),
           BottomNavigationBarItem(
             icon: Icon(
               Icons.home,
@@ -88,13 +139,19 @@ class StoreMainPageState extends State<StoreMainPage> {
           product: widget.product,
           existCart: widget.existCart,
         );
-      case 1: // 장바구니
+      case 1: // 메인 홈
+        return StoreHomePage(
+          user: widget.user,
+          product: widget.product,
+          existCart: widget.existCart,
+        );
+      case 2: // 장바구니
         return CartPage(user: widget.user);
-      case 2: // 알림
+      case 3: // 알림
         return AnnouncePage(
           user: widget.user,
         );
-      case 3: // 마이페이지
+      case 4: // 마이페이지
         return StoreMyPage(
           user: widget.user,
         );
