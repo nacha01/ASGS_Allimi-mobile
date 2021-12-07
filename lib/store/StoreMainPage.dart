@@ -27,10 +27,33 @@ class StoreMainPage extends StatefulWidget {
 
 class StoreMainPageState extends State<StoreMainPage> {
   static int currentNav = 1;
+  var globalKey = GlobalKey();
+  double _getWidth() {
+    try {
+      final RenderBox renderBox =
+          globalKey.currentContext.findRenderObject() as RenderBox;
+      final Size size = renderBox.size;
+      return size.width;
+    } catch (e) {
+      setState(() {});
+    }
+  }
+
+  double _getHeight() {
+    try {
+      final RenderBox renderBox =
+          globalKey.currentContext.findRenderObject() as RenderBox;
+      final Size size = renderBox.size;
+      return size.height;
+    } catch (e) {
+      setState(() {});
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
+    final mediaQuery = MediaQuery.of(context);
     var data = Provider.of<ExistCart>(context);
     return Scaffold(
       floatingActionButton: widget.user.isAdmin
@@ -46,6 +69,8 @@ class StoreMainPageState extends State<StoreMainPage> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentNav,
         onTap: (index) async {
+          print(kBottomNavigationBarHeight);
+          print(size.height);
           setState(() {
             currentNav = index;
           });
@@ -53,9 +78,17 @@ class StoreMainPageState extends State<StoreMainPage> {
             var selected = await showMenu(
                 context: context,
                 position: RelativeRect.fromSize(
-                    Offset(0, size.height * 0.7) & Size(0, 0), Size(0, 0)),
+                    Offset(
+                            0,
+                            size.height -
+                                kBottomNavigationBarHeight -
+                                size.height * 0.19) &
+                        Size(0, size.height * 0.18),
+                    Size(size.width, size.height)),
                 items: [
                   PopupMenuItem(
+                    height: size.height * 0.06,
+                    key: globalKey,
                     child: Text(
                       '알리미',
                       style: TextStyle(fontWeight: FontWeight.bold),
@@ -63,11 +96,13 @@ class StoreMainPageState extends State<StoreMainPage> {
                     value: 1,
                   ),
                   PopupMenuItem(
+                    height: size.height * 0.06,
                     child: Text('두루두루',
                         style: TextStyle(fontWeight: FontWeight.bold)),
                     value: 2,
                   ),
                   PopupMenuItem(
+                    height: size.height * 0.06,
                     child: Text('게임',
                         style: TextStyle(fontWeight: FontWeight.bold)),
                     value: 3,
