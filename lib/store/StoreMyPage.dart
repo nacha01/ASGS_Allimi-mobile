@@ -5,6 +5,7 @@ import 'package:asgshighschool/data/user_data.dart';
 import 'package:asgshighschool/store/InquirePage.dart';
 import 'package:asgshighschool/store/MyQnAPage.dart';
 import 'package:asgshighschool/store/OrderStatePage.dart';
+import 'package:asgshighschool/store/ReservationStatePage.dart';
 import 'package:asgshighschool/store/UpdateUserPage.dart';
 import 'package:asgshighschool/storeAdmin/OrderListPage.dart';
 import 'package:asgshighschool/storeAdmin/QnAListPage.dart';
@@ -192,6 +193,31 @@ class _StoreMyPageState extends State<StoreMyPage> {
                         width: size.width * 0.03,
                       ),
                       Text('주문 현황', style: TextStyle(fontSize: 19))
+                    ],
+                  ),
+                ),
+              ),
+              FlatButton(
+                padding: EdgeInsets.all(size.width * 0.015),
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => ReservationStatePage(
+                                user: widget.user,
+                              )));
+                },
+                child: Container(
+                  margin: EdgeInsets.all(size.width * 0.01),
+                  padding: EdgeInsets.all(size.width * 0.01),
+                  child: Row(
+                    children: [
+                      Icon(Icons.event_available_outlined,
+                          color: Colors.grey, size: size.width * 0.1),
+                      SizedBox(
+                        width: size.width * 0.03,
+                      ),
+                      Text('예약 현황', style: TextStyle(fontSize: 19))
                     ],
                   ),
                 ),
