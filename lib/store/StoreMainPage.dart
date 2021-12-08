@@ -84,6 +84,10 @@ class StoreMainPageState extends State<StoreMainPage> {
                                 kBottomNavigationBarHeight -
                                 size.height * 0.19) &
                         Size(0, size.height * 0.18),
+                    /*
+                      (0, 전체 높이 - (bottomBar 높이 + 0.01) - 팝업메뉴 높이) 좌표 기준
+                      가로 : 0, 세로 : 전체 높이의 18%(팝업메뉴 높이 → 6% * 3)인 사각형 공간에 배치
+                     */
                     Size(size.width, size.height)),
                 items: [
                   PopupMenuItem(
