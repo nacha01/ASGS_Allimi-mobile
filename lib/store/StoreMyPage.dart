@@ -458,6 +458,31 @@ class _StoreMyPageState extends State<StoreMyPage> {
                         ),
                       ),
                     ),
+                    FlatButton(
+                      padding: EdgeInsets.all(size.width * 0.015),
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => QnAListPage(
+                                      user: widget.user,
+                                    )));
+                      },
+                      child: Container(
+                        margin: EdgeInsets.all(size.width * 0.01),
+                        padding: EdgeInsets.all(size.width * 0.01),
+                        child: Row(
+                          children: [
+                            Icon(Icons.event_note,
+                                color: Colors.grey, size: size.width * 0.1),
+                            SizedBox(
+                              width: size.width * 0.03,
+                            ),
+                            Text('예약 목록', style: TextStyle(fontSize: 19))
+                          ],
+                        ),
+                      ),
+                    ),
                   ],
                 )
               else

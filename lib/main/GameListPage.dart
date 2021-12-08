@@ -98,7 +98,7 @@ class _GameListPageState extends State<GameListPage> {
                       borderRadius: BorderRadius.circular(6),
                       color: Colors.orange),
                   child: IconButton(
-                      onPressed: record, icon: Icon(Icons.military_tech))),
+                      onPressed: record, icon: Icon(Icons.emoji_events_rounded))),
               Container(
                 width: size.width * 0.27,
                 alignment: Alignment.center,
