@@ -172,7 +172,7 @@ class _OrderStatePageState extends State<OrderStatePage> {
         children: [
           Container(
             width: size.width,
-            height: size.height * 0.2,
+            height: size.height * 0.05,
             child: Column(
               children: [],
             ),
