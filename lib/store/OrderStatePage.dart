@@ -177,10 +177,6 @@ class _OrderStatePageState extends State<OrderStatePage> {
               children: [],
             ),
           ),
-          Divider(
-            thickness: 2,
-            color: Color(0xFF9EE1E5),
-          ),
           Expanded(
               child: ListView.builder(
             itemBuilder: (context, index) {

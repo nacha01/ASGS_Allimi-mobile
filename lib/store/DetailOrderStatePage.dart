@@ -152,7 +152,7 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
         centerTitle: true,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: EdgeInsets.all(size.width * 0.02),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

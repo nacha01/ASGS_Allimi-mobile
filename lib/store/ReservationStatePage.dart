@@ -55,6 +55,7 @@ class _ReservationStatePageState extends State<ReservationStatePage> {
           _notCompleteList.add(_reservationList[i]);
         }
       }
+      print(_reservationList);
       setState(() {});
       return true;
     } else {
@@ -166,7 +167,7 @@ class _ReservationStatePageState extends State<ReservationStatePage> {
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(width: 1, color: Colors.black),
                       color: int.parse(data['resvState']) == 1
-                          ? Colors.red
+                          ? Colors.deepOrangeAccent
                           : (int.parse(data['orderState']) == 3 &&
                                   int.parse(data['resvState']) == 2)
                               ? Colors.lightGreen
