@@ -161,7 +161,7 @@ class _ReservationStatePageState extends State<ReservationStatePage> {
               children: [
                 Container(
                   alignment: Alignment.center,
-                  width: size.width * 0.25,
+                  width: size.width * 0.2,
                   padding: EdgeInsets.all(size.width * 0.01),
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
@@ -180,17 +180,32 @@ class _ReservationStatePageState extends State<ReservationStatePage> {
                             ? '수령 완료'
                             : '수령 준비',
                     style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold),
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12),
                   ),
                 ),
-                SizedBox(
-                  width: size.width * 0.03,
+                Container(
+                  alignment: Alignment.center,
+                  width: size.width * 0.18,
+                  padding: EdgeInsets.all(size.width * 0.01),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(width: 1, color: Colors.black),
+                      color: int.parse(data['orderState']) == 0
+                          ? Colors.redAccent
+                          : Colors.teal),
+                  child: Text(
+                    int.parse(data['orderState']) == 0 ? '미결제' : '결제완료',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12),
+                  ),
                 ),
                 Text(
                   '예약 번호 ${data['oID']}',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                 )
               ],
             ),

@@ -116,7 +116,7 @@ class _DetailReservationStatePageState
                 ),
                 Row(
                   children: [
-                    Text('예약 상태 ',
+                    Text('예약 상태  ',
                         style: TextStyle(fontWeight: FontWeight.bold)),
                     Text(
                       '[${int.parse(widget.data['resvState']) == 1 ? '예약 중' : (int.parse(widget.data['orderState']) == 3 && int.parse(widget.data['resvState']) == 2) ? '수령 완료' : '수령 준비'}]',
@@ -129,6 +129,23 @@ class _DetailReservationStatePageState
                                   ? Colors.lightGreen
                                   : Colors.blueAccent),
                     )
+                  ],
+                ),
+                SizedBox(
+                  height: size.height * 0.015,
+                ),
+                Row(
+                  children: [
+                    Text('결제 상태  ',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text(
+                        '[${int.parse(widget.data['orderState']) == 0 ? '미결제' : '결제 완료'}]',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: int.parse(widget.data['orderState']) == 0
+                              ? Colors.redAccent
+                              : Colors.teal,
+                        ))
                   ],
                 ),
                 SizedBox(
@@ -208,11 +225,25 @@ class _DetailReservationStatePageState
                           ),
                         ),
                       )
-                    : Center(
-                        child: QrImage(
-                        data: widget.data['oID'],
-                        size: 250,
-                      )),
+                    : (int.parse(widget.data['orderState']) == 0)
+                        ? Center(
+                            child: Padding(
+                              padding: EdgeInsets.all(size.width * 0.01),
+                              child: Text(
+                                '아직 결제되지 않은 상태입니다. \n\n 결제하시면, 관리자가 확인 후 "결제완료" 상태로 전환됩니다. ',
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.redAccent),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          )
+                        : Center(
+                            child: QrImage(
+                            data: widget.data['oID'],
+                            size: 250,
+                          )),
                 Divider(
                   thickness: 0.5,
                 ),

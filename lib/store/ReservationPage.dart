@@ -34,7 +34,7 @@ class _ReservationPageState extends State<ReservationPage> {
       'uid': widget.user.uid,
       'oDate': DateTime.now().toString(),
       'price': (widget.product.price * _counter).toString(),
-      'oState': '1',
+      'oState': '0',
       'recvMethod': '0',
       'pay': '0',
       'option': '',
@@ -228,7 +228,7 @@ class _ReservationPageState extends State<ReservationPage> {
                   Card(
                     child: ListTile(
                       leading: Text(
-                        '선 결제 금액',
+                        '결제 금액',
                         textAlign: TextAlign.center,
                       ),
                       title: Center(
@@ -254,7 +254,7 @@ class _ReservationPageState extends State<ReservationPage> {
                       ],
                     ),
                   ),
-                  Padding(
+                  /*Padding(
                     padding: EdgeInsets.all(size.width * 0.02),
                     child: Row(
                       children: [
@@ -273,6 +273,7 @@ class _ReservationPageState extends State<ReservationPage> {
                       ],
                     ),
                   ),
+                   */
                   Padding(
                     padding: EdgeInsets.all(size.width * 0.02),
                     child: Column(
@@ -486,7 +487,7 @@ class _ReservationPageState extends State<ReservationPage> {
                     borderRadius: BorderRadius.circular(8),
                     color: _isAgreed ? Colors.blueAccent : Colors.grey),
                 child: Text(
-                  '예약 및 선결제하기',
+                  '예약하기',
                   style: TextStyle(
                       fontWeight: FontWeight.bold, color: Colors.white),
                 ),

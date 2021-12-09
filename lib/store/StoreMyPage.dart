@@ -9,6 +9,7 @@ import 'package:asgshighschool/store/ReservationStatePage.dart';
 import 'package:asgshighschool/store/UpdateUserPage.dart';
 import 'package:asgshighschool/storeAdmin/OrderListPage.dart';
 import 'package:asgshighschool/storeAdmin/QnAListPage.dart';
+import 'package:asgshighschool/storeAdmin/ReservationListPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -192,7 +193,7 @@ class _StoreMyPageState extends State<StoreMyPage> {
                       SizedBox(
                         width: size.width * 0.03,
                       ),
-                      Text('주문 현황', style: TextStyle(fontSize: 19))
+                      Text('내 주문 현황', style: TextStyle(fontSize: 19))
                     ],
                   ),
                 ),
@@ -217,7 +218,7 @@ class _StoreMyPageState extends State<StoreMyPage> {
                       SizedBox(
                         width: size.width * 0.03,
                       ),
-                      Text('예약 현황', style: TextStyle(fontSize: 19))
+                      Text('내 예약 현황', style: TextStyle(fontSize: 19))
                     ],
                   ),
                 ),
@@ -255,7 +256,7 @@ class _StoreMyPageState extends State<StoreMyPage> {
                       SizedBox(
                         width: size.width * 0.03,
                       ),
-                      Text('문의 내역', style: TextStyle(fontSize: 19))
+                      Text('내 문의 내역', style: TextStyle(fontSize: 19))
                     ],
                   ),
                 ),
@@ -464,7 +465,7 @@ class _StoreMyPageState extends State<StoreMyPage> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => QnAListPage(
+                                builder: (context) => ReservationListPage(
                                       user: widget.user,
                                     )));
                       },

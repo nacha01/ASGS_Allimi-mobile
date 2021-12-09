@@ -120,13 +120,28 @@ class _ReservationCompletePageState extends State<ReservationCompletePage> {
             SizedBox(
               height: size.height * 0.02,
             ),
-            QrImage(
+            /*QrImage(
               data: widget.orderID,
               size: 190,
+            ),
+             */
+            Center(
+              child: Padding(
+                padding: EdgeInsets.all(size.width * 0.01),
+                child: Text(
+                  '결제(계좌이체 송금등) 처리가 되면 QR 코드가 부여됩니다.',
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.redAccent),
+                  textAlign: TextAlign.center,
+                ),
+              ),
             ),
             SizedBox(
               height: size.height * 0.01,
             ),
+            Divider(),
             Padding(
               padding: EdgeInsets.all(size.width * 0.03),
               child: Text(
