@@ -87,6 +87,35 @@ class _ReservationListPageState extends State<ReservationListPage> {
     }
   }
 
+  /// 일반 숫자에 ,를 붙여서 직관적인 가격을 보이게 하는 작업
+  /// @param : 직관적인 가격을 보여줄 실제 int 가격[price]
+  /// @return : 직관적인 가격 문자열
+  String _formatPrice(int price) {
+    String p = price.toString();
+    String newFormat = '';
+    int count = 0;
+    for (int i = p.length - 1; i >= 0; --i) {
+      if ((count + 1) % 4 == 0) {
+        newFormat += ',';
+        ++i;
+      } else
+        newFormat += p[i];
+      ++count;
+    }
+    return _reverseString(newFormat);
+  }
+
+  /// 문자열을 뒤집는 작업
+  /// @param : 뒤집고 싶은 문자열[str]
+  /// @return : 뒤집은 문자열
+  String _reverseString(String str) {
+    String newStr = '';
+    for (int i = str.length - 1; i >= 0; --i) {
+      newStr += str[i];
+    }
+    return newStr;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -296,8 +325,8 @@ class _ReservationListPageState extends State<ReservationListPage> {
           children: [
             Container(
               alignment: Alignment.center,
-              width: size.width * 0.13,
-              height: size.height * 0.05,
+              width: size.width * 0.15,
+              height: size.height * 0.07,
               padding: EdgeInsets.all(size.width * 0.01),
               child: Text(
                 int.parse(data['orderState']) == 0 ? '미결제' : '결제 완료',
@@ -305,7 +334,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
-                    fontSize: 11),
+                    fontSize: 10),
               ),
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
@@ -319,8 +348,8 @@ class _ReservationListPageState extends State<ReservationListPage> {
             ),
             Container(
               alignment: Alignment.center,
-              width: size.width * 0.13,
-              height: size.height * 0.05,
+              width: size.width * 0.15,
+              height: size.height * 0.07,
               padding: EdgeInsets.all(size.width * 0.01),
               child: Text(
                   int.parse(data['resvState']) == 1
@@ -333,7 +362,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
-                      fontSize: 11)),
+                      fontSize: 10)),
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(width: 1, color: Colors.black),
@@ -370,8 +399,11 @@ class _ReservationListPageState extends State<ReservationListPage> {
                     height: size.height * 0.01,
                   ),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
+                      SizedBox(
+                        width: size.width * 0.05,
+                      ),
                       Text('예약자: ',
                           style: TextStyle(
                               fontSize: 12, fontWeight: FontWeight.bold)),
@@ -380,18 +412,36 @@ class _ReservationListPageState extends State<ReservationListPage> {
                               color: Colors.green,
                               fontSize: 12,
                               fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+                  SizedBox(
+                    height: size.height * 0.008,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            ' [${_categoryReverseMap[int.parse(data['detail'][0]['pInfo']['category'])]}]',
+                            style: TextStyle(
+                                color: Colors.grey[500], fontSize: 13),
+                          ),
+                          Text(' ${data['detail'][0]['pInfo']['pName']} ',
+                              style: TextStyle(
+                                  fontSize: 12, fontWeight: FontWeight.bold)),
+                          Text('${data['detail'][0]['quantity']}개',
+                              style: TextStyle(fontSize: 13)),
+                        ],
+                      ),
                       SizedBox(
                         width: size.width * 0.01,
                       ),
                       Text(
-                        ' [${_categoryReverseMap[int.parse(data['detail'][0]['pInfo']['category'])]}]',
-                        style: TextStyle(color: Colors.grey[500], fontSize: 13),
+                        '총 금액 ${_formatPrice(int.parse(data['detail'][0]['quantity']) * int.parse(data['detail'][0]['pInfo']['price']))}원',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 13),
                       ),
-                      Text(' ${data['detail'][0]['pInfo']['pName']} ',
-                          style: TextStyle(
-                              fontSize: 12, fontWeight: FontWeight.bold)),
-                      Text('${data['detail'][0]['quantity']}개',
-                          style: TextStyle(fontSize: 13))
                     ],
                   )
                 ],
