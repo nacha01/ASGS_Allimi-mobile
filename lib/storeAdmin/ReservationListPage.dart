@@ -174,6 +174,32 @@ class _ReservationListPageState extends State<ReservationListPage> {
   Widget _itemTileForTime(Map data, Size size, int index) {
     return FlatButton(
       onPressed: () {
+        if (int.parse(data['orderState']) == 3 &&
+            int.parse(data['resvState']) == 2) {
+          showDialog(
+              context: this.context,
+              builder: (context) => AlertDialog(
+                    title: Text('결제 전환 불가'),
+                    content: Text(
+                      '이미 상품을 수령한 예약 정보입니다. 결제 전환이 불가합니다.',
+                      style: TextStyle(
+                          color: Colors.red,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15),
+                      textAlign: TextAlign.center,
+                    ),
+                    actions: [
+                      FlatButton(
+                          padding: EdgeInsets.all(0),
+                          onPressed: () => Navigator.pop(context),
+                          child: Text(
+                            '확인',
+                            style: TextStyle(color: Colors.blue),
+                          )),
+                    ],
+                  ));
+          return;
+        }
         if (int.parse(data['orderState']) == 0) {
           showDialog(
               context: this.context,
