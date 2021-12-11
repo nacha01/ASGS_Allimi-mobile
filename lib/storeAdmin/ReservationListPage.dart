@@ -2,8 +2,10 @@ import 'dart:convert';
 import 'dart:ui';
 
 import 'package:asgshighschool/data/user_data.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 
 class ReservationListPage extends StatefulWidget {
@@ -23,6 +25,8 @@ class _ReservationListPageState extends State<ReservationListPage> {
     3: '문구류',
     4: '핸드메이드'
   };
+  Map<int, Map> _productCountMap = Map();
+  List<ProductCount> _pcList = [];
   Future<bool> _getAllReservationData() async {
     String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_getAllReservation.php';
@@ -46,6 +50,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
               json.decode(_reservationListForTime[i]['detail'][j]['pInfo']);
         }
       }
+      _processProductCount();
       setState(() {});
       print(_reservationListForTime);
       return true;
@@ -114,6 +119,48 @@ class _ReservationListPageState extends State<ReservationListPage> {
       newStr += str[i];
     }
     return newStr;
+  }
+
+  void _processProductCount() {
+    for (int i = 0; i < _reservationListForTime.length; ++i) {
+      if (_productCountMap.containsKey(
+          int.parse(_reservationListForTime[i]['detail'][0]['oPID']))) {
+        _productCountMap[
+                int.parse(_reservationListForTime[i]['detail'][0]['oPID'])]
+            ['count']++;
+      } else {
+        _productCountMap[
+            int.parse(_reservationListForTime[i]['detail'][0]['oPID'])] = {
+          'count': 1
+        };
+        _productCountMap[
+                    int.parse(_reservationListForTime[i]['detail'][0]['oPID'])]
+                ['pName'] =
+            _reservationListForTime[i]['detail'][0]['pInfo']['pName'];
+        _productCountMap[
+                    int.parse(_reservationListForTime[i]['detail'][0]['oPID'])]
+                ['category'] =
+            _reservationListForTime[i]['detail'][0]['pInfo']['category'];
+        _productCountMap[
+                    int.parse(_reservationListForTime[i]['detail'][0]['oPID'])]
+                ['price'] =
+            _reservationListForTime[i]['detail'][0]['pInfo']['price'];
+        _productCountMap[
+                    int.parse(_reservationListForTime[i]['detail'][0]['oPID'])]
+                ['imgUrl'] =
+            _reservationListForTime[i]['detail'][0]['pInfo']['imgUrl'];
+      }
+    }
+    print(_productCountMap);
+    _pcList = _productCountMap.entries
+        .map((e) => ProductCount(
+            e.key,
+            e.value['count'],
+            e.value['pName'].toString(),
+            int.parse(e.value['category']),
+            int.parse(e.value['price']),
+            e.value['imgUrl'].toString()))
+        .toList();
   }
 
   @override
@@ -194,7 +241,18 @@ class _ReservationListPageState extends State<ReservationListPage> {
                   },
                   itemCount: _reservationListForTime.length,
                 ))
-              : SizedBox()
+              : Expanded(
+                  child: GridView.builder(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      mainAxisSpacing: size.height * 0.02,
+                      crossAxisSpacing: size.width * 0.01),
+                  itemCount: _pcList.length,
+                  itemBuilder: (context, index) {
+                    return _itemTileForProduct(_pcList[index], size);
+                  },
+                  padding: EdgeInsets.all(size.width * 0.02),
+                ))
         ],
       ),
     );
@@ -386,12 +444,34 @@ class _ReservationListPageState extends State<ReservationListPage> {
                             fontWeight: FontWeight.bold,
                             color: Colors.blueGrey),
                       ),
-                      Text(
-                        _formatDateTimeForToday(data['oDate']),
-                        style: TextStyle(
-                            color: Colors.redAccent,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 13),
+                      GestureDetector(
+                        onTap: () {
+                          showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                    content: Text(
+                                      data['oDate'],
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    actions: [
+                                      FlatButton(
+                                        onPressed: () => Navigator.pop(context),
+                                        child: Text('확인'),
+                                        padding: EdgeInsets.all(0),
+                                      )
+                                    ],
+                                  ));
+                        },
+                        child: Text(
+                          _formatDateTimeForToday(data['oDate']),
+                          style: TextStyle(
+                              color: Colors.redAccent,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                              decoration: TextDecoration.underline),
+                        ),
                       )
                     ],
                   ),
@@ -452,4 +532,82 @@ class _ReservationListPageState extends State<ReservationListPage> {
       ),
     );
   }
+
+  Widget _itemTileForProduct(ProductCount data, Size size) {
+    return Container(
+      padding: EdgeInsets.all(size.width * 0.015),
+      width: size.width * 0.48,
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(3),
+          border: Border.all(width: 0.5, color: Colors.black)),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    '[${_categoryReverseMap[data.category]}] ',
+                    style: TextStyle(color: Colors.grey, fontSize: 12),
+                  ),
+                  Text(
+                    data.name,
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Icon(
+                    Icons.person,
+                    color: Colors.grey,
+                  ),
+                  Text(
+                    '  ${data.count}',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                  )
+                ],
+              )
+            ],
+          ),
+          Divider(
+            thickness: 1,
+          ),
+          Expanded(
+            child: CachedNetworkImage(
+              imageUrl: data.imgUrl,
+              fit: BoxFit.fill,
+              width: size.width * 0.5,
+              filterQuality: FilterQuality.medium,
+              progressIndicatorBuilder: (context, url, progress) => Center(
+                child: CircularProgressIndicator(
+                  value: progress.progress,
+                ),
+              ),
+              errorWidget: (context, url, error) {
+                return Container(
+                    alignment: Alignment.center,
+                    color: Colors.grey[400],
+                    child: Text('No Image'));
+                //placeholder 추가하기 -> 로고로
+              },
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class ProductCount {
+  int pid;
+  int count;
+  String name;
+  int category;
+  int price;
+  String imgUrl;
+
+  ProductCount(
+      this.pid, this.count, this.name, this.category, this.price, this.imgUrl);
 }
