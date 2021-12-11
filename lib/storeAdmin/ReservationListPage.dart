@@ -547,8 +547,8 @@ class _ReservationListPageState extends State<ReservationListPage> {
           borderRadius: BorderRadius.circular(3),
           border: Border.all(width: 0.5, color: Colors.black)),
       child: FlatButton(
-        onPressed: () {
-          Navigator.push(
+        onPressed: () async {
+          var res = await Navigator.push(
               context,
               MaterialPageRoute(
                   builder: (context) => AdminDetailReservation(
@@ -556,6 +556,9 @@ class _ReservationListPageState extends State<ReservationListPage> {
                         productCount: data,
                         reservationList: _reservationListForTime,
                       )));
+          if (res) {
+            await _getAllReservationData();
+          }
         },
         padding: EdgeInsets.all(0),
         child: Column(

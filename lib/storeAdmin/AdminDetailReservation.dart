@@ -4,6 +4,8 @@ import 'package:asgshighschool/data/user_data.dart';
 import 'package:asgshighschool/storeAdmin/ReservationListPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
 
 class AdminDetailReservation extends StatefulWidget {
   final List reservationList;
@@ -16,6 +18,8 @@ class AdminDetailReservation extends StatefulWidget {
 
 class _AdminDetailReservationState extends State<AdminDetailReservation> {
   List _productReservationList = [];
+  int _newCount = 0;
+  TextEditingController _countController = TextEditingController();
   void _preProcessing() {
     for (int i = 0; i < widget.reservationList.length; ++i) {
       if (widget.productCount.pid ==
@@ -24,8 +28,22 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
         _productReservationList.add(widget.reservationList[i]);
       }
     }
-    print(_productReservationList);
     _productReservationList = List.from(_productReservationList.reversed);
+    _newCount = int.parse(
+        _productReservationList[0]['detail'][0]['pInfo']['stockCount']);
+    setState(() {});
+  }
+
+  Future<bool> _updateNewCount() async {
+    String url =
+        'http://nacha01.dothome.co.kr/sin/arlimi_updateProductCountForResv.php?pid=${widget.productCount.pid.toString() + '&count=' + _countController.text}';
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   /// 등록된 날짜와 오늘의 날짜를 비교해서 어느 정도 차이가 있는지에 대한 문자열을 반환하는 작업
@@ -87,81 +105,228 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color(0xFF9EE1E5),
-        title: Text(
-          '[${widget.productCount.name}] 예약 정보',
-          style: TextStyle(
-              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 14),
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pop(context);
+        return false;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Color(0xFF9EE1E5),
+          title: Text(
+            '[${widget.productCount.name}] 예약 정보',
+            style: TextStyle(
+                color: Colors.black, fontWeight: FontWeight.bold, fontSize: 14),
+          ),
+          centerTitle: true,
+          leading: IconButton(
+              onPressed: () => Navigator.pop(context, true),
+              icon: Icon(
+                Icons.arrow_back,
+                color: Colors.black,
+              )),
         ),
-        centerTitle: true,
-        leading: IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: Icon(
-              Icons.arrow_back,
-              color: Colors.black,
-            )),
-      ),
-      body: Column(
-        children: [
-          Text('* 상품 정보'),
-          Row(
-            children: [
-              Text('현재 재고'),
-              Text(
-                  ' ${_productReservationList[0]['detail'][0]['pInfo']['stockCount']}개'),
-            ],
-          ),
-          Row(
-            children: [
-              Text('가격'),
-              Text(
-                  ' ${_formatPrice(int.parse(_productReservationList[0]['detail'][0]['pInfo']['price']))}원')
-            ],
-          ),
-          Expanded(
-              child: ListView.builder(
-            itemBuilder: (context, index) {
-              return _personDataTile(_productReservationList[index], size);
-            },
-            itemCount: _productReservationList.length,
-          )),
-          Container(
-            child: FlatButton(
-              onPressed: int.parse(_productReservationList[0]['detail'][0]
-                          ['pInfo']['stockCount']) <
-                      1
-                  ? null
-                  : () {
-                      if (int.parse(_productReservationList[0]['detail'][0]
-                              ['pInfo']['stockCount']) <
-                          1) {
-                        print('아직 재고 없음');
-                        return;
-                      }
-                    },
-              child: Text(
-                '자동 예약 알림 전송하기',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 13),
+        body: Column(
+          children: [
+            SizedBox(
+              height: size.height * 0.01,
+            ),
+            Padding(
+              padding: EdgeInsets.all(size.width * 0.01),
+              child: Row(
+                children: [
+                  Text(
+                    '*상품 정보',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                  ),
+                ],
               ),
             ),
-            width: size.width * 0.5,
-            height: size.height * 0.05,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(width: 1, color: Colors.black),
-                color: int.parse(_productReservationList[0]['detail'][0]
-                            ['pInfo']['stockCount']) <
-                        1
-                    ? Colors.grey
-                    : Colors.lightBlue),
-          )
-        ],
+            Padding(
+              padding: EdgeInsets.all(size.width * 0.02),
+              child: Row(
+                children: [
+                  Text(
+                    '현재 재고',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    ' $_newCount개',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(
+                    width: size.width * 0.03,
+                  ),
+                ],
+              ),
+            ),
+            Row(
+              children: [
+                Text(
+                  '* 재고 수정하기',
+                  style:
+                      TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(
+                  width: size.width * 0.01,
+                ),
+                Container(
+                  width: size.width * 0.18,
+                  child: TextField(
+                    controller: _countController,
+                    textAlign: TextAlign.center,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  ),
+                ),
+                SizedBox(
+                  width: size.width * 0.01,
+                ),
+                Container(
+                  width: size.width * 0.23,
+                  height: size.height * 0.04,
+                  child: FlatButton(
+                    onPressed: () {
+                      showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                                title: Text('재고 수정'),
+                                content: Text('정말로 수정하시겠습니까?'),
+                                actions: [
+                                  FlatButton(
+                                      onPressed: () async {
+                                        await _updateNewCount();
+                                        setState(() {
+                                          _newCount =
+                                              int.parse(_countController.text);
+                                        });
+                                        Navigator.pop(context);
+                                      },
+                                      child: Text('예')),
+                                  FlatButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: Text('아니오'))
+                                ],
+                              ));
+                    },
+                    child: Text(
+                      '수정하기',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12),
+                    ),
+                  ),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                      border: Border.all(width: 1, color: Colors.black),
+                      borderRadius: BorderRadius.circular(9),
+                      color: Colors.green),
+                ),
+              ],
+            ),
+            Padding(
+              padding: EdgeInsets.all(size.width * 0.02),
+              child: Row(
+                children: [
+                  Text(
+                    '가격',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    ' ${_formatPrice(int.parse(_productReservationList[0]['detail'][0]['pInfo']['price']))}원',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  )
+                ],
+              ),
+            ),
+            Divider(
+              thickness: 1,
+            ),
+            Expanded(
+                child: ListView.builder(
+              itemBuilder: (context, index) {
+                return _personDataTile(_productReservationList[index], size);
+              },
+              itemCount: _productReservationList.length,
+            )),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Container(
+                  margin: EdgeInsets.all(size.width * 0.01),
+                  child: FlatButton(
+                    onPressed: int.parse(_productReservationList[0]['detail'][0]
+                                ['pInfo']['stockCount']) <
+                            1
+                        ? null
+                        : () {
+                            if (int.parse(_productReservationList[0]['detail']
+                                    [0]['pInfo']['stockCount']) <
+                                1) {
+                              print('아직 재고 없음');
+                              return;
+                            }
+                          },
+                    child: Text(
+                      '시뮬레이션',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13),
+                    ),
+                  ),
+                  width: size.width * 0.35,
+                  height: size.height * 0.05,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(width: 1, color: Colors.black),
+                      color: int.parse(_productReservationList[0]['detail'][0]
+                                  ['pInfo']['stockCount']) <
+                              1
+                          ? Colors.grey
+                          : Colors.deepOrange),
+                ),
+                Container(
+                  margin: EdgeInsets.all(size.width * 0.01),
+                  child: FlatButton(
+                    onPressed: int.parse(_productReservationList[0]['detail'][0]
+                                ['pInfo']['stockCount']) <
+                            1
+                        ? null
+                        : () {
+                            if (int.parse(_productReservationList[0]['detail']
+                                    [0]['pInfo']['stockCount']) <
+                                1) {
+                              print('아직 재고 없음');
+                              return;
+                            }
+                          },
+                    child: Text(
+                      '자동 예약 알림 전송하기',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13),
+                    ),
+                  ),
+                  width: size.width * 0.5,
+                  height: size.height * 0.05,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(width: 1, color: Colors.black),
+                      color: int.parse(_productReservationList[0]['detail'][0]
+                                  ['pInfo']['stockCount']) <
+                              1
+                          ? Colors.grey
+                          : Colors.lightBlue),
+                ),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
