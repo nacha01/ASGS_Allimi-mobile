@@ -42,6 +42,8 @@ class _ReservationListPageState extends State<ReservationListPage> {
           .trim();
       List map1st = json.decode(result);
       _reservationListForTime.clear();
+      _pcList.clear();
+      _productCountMap = Map();
       for (int i = 0; i < map1st.length; ++i) {
         _reservationListForTime.add(json.decode(map1st[i]));
         for (int j = 0; j < _reservationListForTime[i]['detail'].length; ++j) {
@@ -130,8 +132,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
         _productCountMap[
                 int.parse(_reservationListForTime[i]['detail'][0]['oPID'])]
             ['count']++;
-      } else if(int.parse(_reservationListForTime[i]['orderState']) != 0){
-
+      } else if (int.parse(_reservationListForTime[i]['orderState']) != 0) {
         _productCountMap[
             int.parse(_reservationListForTime[i]['detail'][0]['oPID'])] = {
           'count': 1
@@ -263,7 +264,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
 
   Widget _itemTileForTime(Map data, Size size, int index) {
     return FlatButton(
-      onPressed: () {
+      onPressed: () async {
         if (int.parse(data['orderState']) == 3 &&
             int.parse(data['resvState']) == 2) {
           showDialog(
@@ -291,7 +292,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
           return;
         }
         if (int.parse(data['orderState']) == 0) {
-          showDialog(
+          await showDialog(
               context: this.context,
               builder: (context) => AlertDialog(
                     title: Text('결제 전환'),
@@ -331,8 +332,9 @@ class _ReservationListPageState extends State<ReservationListPage> {
                           ))
                     ],
                   ));
+          await _getAllReservationData();
         } else {
-          showDialog(
+          await showDialog(
               context: this.context,
               builder: (context) => AlertDialog(
                     title: Text('결제 전환'),
@@ -372,6 +374,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
                           ))
                     ],
                   ));
+          await _getAllReservationData();
         }
       },
       padding: EdgeInsets.all(0),
