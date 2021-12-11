@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:ui';
 
 import 'package:asgshighschool/data/user_data.dart';
+import 'package:asgshighschool/storeAdmin/AdminDetailReservation.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -124,11 +125,13 @@ class _ReservationListPageState extends State<ReservationListPage> {
   void _processProductCount() {
     for (int i = 0; i < _reservationListForTime.length; ++i) {
       if (_productCountMap.containsKey(
-          int.parse(_reservationListForTime[i]['detail'][0]['oPID']))) {
+              int.parse(_reservationListForTime[i]['detail'][0]['oPID'])) &&
+          int.parse(_reservationListForTime[i]['orderState']) != 0) {
         _productCountMap[
                 int.parse(_reservationListForTime[i]['detail'][0]['oPID'])]
             ['count']++;
-      } else {
+      } else if(int.parse(_reservationListForTime[i]['orderState']) != 0){
+
         _productCountMap[
             int.parse(_reservationListForTime[i]['detail'][0]['oPID'])] = {
           'count': 1
@@ -540,61 +543,76 @@ class _ReservationListPageState extends State<ReservationListPage> {
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(3),
           border: Border.all(width: 0.5, color: Colors.black)),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Text(
-                    '[${_categoryReverseMap[data.category]}] ',
-                    style: TextStyle(color: Colors.grey, fontSize: 12),
-                  ),
-                  Text(
-                    data.name,
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  Icon(
-                    Icons.person,
-                    color: Colors.grey,
-                  ),
-                  Text(
-                    '  ${data.count}',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-                  )
-                ],
-              )
-            ],
-          ),
-          Divider(
-            thickness: 1,
-          ),
-          Expanded(
-            child: CachedNetworkImage(
-              imageUrl: data.imgUrl,
-              fit: BoxFit.fill,
-              width: size.width * 0.5,
-              filterQuality: FilterQuality.medium,
-              progressIndicatorBuilder: (context, url, progress) => Center(
-                child: CircularProgressIndicator(
-                  value: progress.progress,
+      child: FlatButton(
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => AdminDetailReservation(
+                        user: widget.user,
+                        productCount: data,
+                        reservationList: _reservationListForTime,
+                      )));
+        },
+        padding: EdgeInsets.all(0),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      '[${_categoryReverseMap[data.category]}] ',
+                      style: TextStyle(color: Colors.grey, fontSize: 12),
+                    ),
+                    Text(
+                      data.name,
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                    ),
+                  ],
                 ),
-              ),
-              errorWidget: (context, url, error) {
-                return Container(
-                    alignment: Alignment.center,
-                    color: Colors.grey[400],
-                    child: Text('No Image'));
-                //placeholder 추가하기 -> 로고로
-              },
+                Row(
+                  children: [
+                    Icon(
+                      Icons.person,
+                      color: Colors.grey,
+                    ),
+                    Text(
+                      '  ${data.count}',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                    )
+                  ],
+                )
+              ],
             ),
-          )
-        ],
+            Divider(
+              thickness: 1,
+            ),
+            Expanded(
+              child: CachedNetworkImage(
+                imageUrl: data.imgUrl,
+                fit: BoxFit.fill,
+                width: size.width * 0.5,
+                filterQuality: FilterQuality.medium,
+                progressIndicatorBuilder: (context, url, progress) => Center(
+                  child: CircularProgressIndicator(
+                    value: progress.progress,
+                  ),
+                ),
+                errorWidget: (context, url, error) {
+                  return Container(
+                      alignment: Alignment.center,
+                      color: Colors.grey[400],
+                      child: Text('No Image'));
+                  //placeholder 추가하기 -> 로고로
+                },
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
