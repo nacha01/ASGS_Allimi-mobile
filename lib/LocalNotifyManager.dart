@@ -87,12 +87,12 @@ class LocalNotifyManager {
         // icon: '@mipmap/ic_launcher',
         //영상 13분
         //largeIcon: DrawableResourceAndroidBitmap('icon_large_notification')
-        timeoutAfter: 5000,
-        enableLights: true);
+        enableLights: true,
+    );
     var iosChannel =
         IOSNotificationDetails(/* sound: 'notification_sound.mp3' */);
     var platformChannel =
-        NotificationDetails(android: androidChannel, iOS: iosChannel);
+        NotificationDetails(android: androidChannel, iOS: iosChannel,);
     await flutterLocalNotificationsPlugin.schedule(0, 'schedul Test Title',
         'schedul Test body', scheduleNotificationDataTime, platformChannel,
         payload: 'New PayLoad');

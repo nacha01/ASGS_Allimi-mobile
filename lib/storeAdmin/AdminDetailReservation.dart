@@ -1,7 +1,10 @@
+import 'dart:convert';
 import 'dart:ui';
 
+import 'package:asgshighschool/LocalNotifyManager.dart';
 import 'package:asgshighschool/data/user_data.dart';
 import 'package:asgshighschool/storeAdmin/ReservationListPage.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -22,6 +25,8 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
   List<int> _indexList = [];
   bool _simulationOn = false;
   TextEditingController _countController = TextEditingController();
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+
   void _preProcessing() {
     for (int i = 0; i < widget.reservationList.length; ++i) {
       if (widget.productCount.pid ==
@@ -42,6 +47,23 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<bool> _sendPushMessage(Map data) async {
+    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_sendPushForResv.php';
+    print(data['token']);
+    final response = await http.post(url, body: <String, String>{
+      'token': data['token'],
+      'title': '[두루두루 상품 입고]',
+      'message': '예약하신 "${widget.productCount.name}" 상품이 입고되었습니다.\n 상품 수령바랍니다.'
+    });
+
+    if (response.statusCode == 200) {
+      print(response.body);
       return true;
     } else {
       return false;
@@ -102,6 +124,37 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
   void initState() {
     _preProcessing();
     super.initState();
+    _firebaseMessaging.configure(
+      onMessage: (Map<String, dynamic> message) async {
+        localNotifyManager.showNotification(message['notification']["title"],
+            message["notification"]["body"].toString(), message);
+      },
+      onLaunch: (Map<String, dynamic> message) async {
+        print("onLaunch: $message");
+      },
+      onResume: (Map<String, dynamic> message) async {
+        print("onResume: $message");
+      },
+    );
+    _firebaseMessaging.requestNotificationPermissions(
+        const IosNotificationSettings(sound: true, badge: true, alert: true));
+
+
+    _firebaseMessaging.onIosSettingsRegistered
+        .listen((IosNotificationSettings settings) {
+      print("Settings registered: $settings");
+    });
+    localNotifyManager.setOnNotificationClick(onNotificationClick);
+    localNotifyManager.setOnNotificationReceive(onNotificationReceive);
+  }
+
+  onNotificationClick(String payload) {
+    print(payload);
+    Map message = json.decode(payload);
+  }
+
+  onNotificationReceive(ReceiveNotification notification) {
+    print('notification Receive : ${notification.id}');
   }
 
   @override
@@ -317,12 +370,18 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
                                 ['pInfo']['stockCount']) <
                             1
                         ? null
-                        : () {
+                        : () async {
                             if (int.parse(_productReservationList[0]['detail']
                                     [0]['pInfo']['stockCount']) <
                                 1) {
                               print('아직 재고 없음');
                               return;
+                            }
+                            if (_simulationOn) {
+                              for (int i = 0; i < _indexList.length; ++i) {
+                                await _sendPushMessage(
+                                    _productReservationList[_indexList[i]]);
+                              }
                             }
                           },
                     child: Text(
