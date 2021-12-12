@@ -159,6 +159,7 @@ class _SignInPageState extends State<SignInPage> {
             MaterialPageRoute(
                 builder: (context) => HomePage(
                       user: result,
+                 token: widget.token,
                     )));
       }
     }

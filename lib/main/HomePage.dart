@@ -28,12 +28,10 @@ final List<String> imgList = [
 ];
 
 class HomePage extends StatefulWidget {
-  HomePage({
-    Key key,
-    this.user,
-  }) : super(key: key);
+  HomePage({Key key, this.user, this.token}) : super(key: key);
   static const routeName = '/home';
   final User user;
+  final String token;
 
   @override
   HomePageState createState() => HomePageState();
@@ -52,6 +50,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     //getMainImage();
+    _checkUserToken();
     _numberOfTabs = 4;
     tabController = TabController(vsync: this, length: _numberOfTabs);
     _scrollViewController = ScrollController();
@@ -67,6 +66,17 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
     _scrollViewController.dispose();
     tabController.dispose();
     super.dispose();
+  }
+
+  Future<bool> _checkUserToken() async {
+    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_checkUserToken.php';
+    final response = await http.post(url,
+        body: <String, String>{'uid': widget.user.uid, 'token': widget.token});
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   void getMainImage() async {
