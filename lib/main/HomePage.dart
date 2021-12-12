@@ -50,7 +50,6 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     //getMainImage();
-    _checkUserToken();
     _numberOfTabs = 4;
     tabController = TabController(vsync: this, length: _numberOfTabs);
     _scrollViewController = ScrollController();
@@ -481,6 +480,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         tabController.index = 0;
                         var res = await _checkExistCart();
                         data.setExistCart(res);
+                        await _checkUserToken();
                         providedUser.setNewUser(widget.user);
                         Navigator.push(
                             context,

@@ -159,7 +159,7 @@ class _SignInPageState extends State<SignInPage> {
             MaterialPageRoute(
                 builder: (context) => HomePage(
                       user: result,
-                 token: widget.token,
+                      token: widget.token,
                     )));
       }
     }
@@ -415,6 +415,7 @@ class _SignInPageState extends State<SignInPage> {
                                         MaterialPageRoute(
                                             builder: (context) => HomePage(
                                                   user: result,
+                                                  token: widget.token,
                                                 )));
                                   }
                                   _loading = false;
