@@ -54,7 +54,8 @@ class LocalNotifyManager {
     });
   }
 
-  Future<void> showNotification(String head, String body, Map<String, dynamic> data) async {
+  Future<void> showNotification(
+      String head, String body, Map<String, dynamic> data) async {
     var androidChannel = AndroidNotificationDetails(
         'CHANNEL_ID', 'CHENNEL_NAME', 'CHANNEL_DESCRIPTION',
         importance: Importance.max,
@@ -75,24 +76,29 @@ class LocalNotifyManager {
   }
 
   Future<void> scheduleNotification() async {
-    var scheduleNotificationDataTime = DateTime.now().add(Duration(seconds: 10));
+    var scheduleNotificationDataTime =
+        DateTime.now().add(Duration(seconds: 10));
 
     var androidChannel = AndroidNotificationDetails(
-        'CHANNEL_ID', 'CHENNEL_NAME', 'CHANNEL_DESCRIPTION',
-        importance: Importance.max,
-        priority: Priority.high,
-        playSound: true,
-        //만일 필요하다면 넣어라
-        // sound: RawResourceAndroidNotificationSound('notification_sound'), //my sound
-        // icon: '@mipmap/ic_launcher',
-        //영상 13분
-        //largeIcon: DrawableResourceAndroidBitmap('icon_large_notification')
-        enableLights: true,
+      'CHANNEL_ID', 'CHENNEL_NAME', 'CHANNEL_DESCRIPTION',
+      importance: Importance.max,
+      priority: Priority.high,
+      playSound: true,
+      //만일 필요하다면 넣어라
+      // sound: RawResourceAndroidNotificationSound('notification_sound'), //my sound
+      // icon: '@mipmap/ic_launcher',
+      //영상 13분
+      //largeIcon: DrawableResourceAndroidBitmap('icon_large_notification')
+      enableLights: true,
     );
-    var iosChannel =
-        IOSNotificationDetails(/* sound: 'notification_sound.mp3' */);
-    var platformChannel =
-        NotificationDetails(android: androidChannel, iOS: iosChannel,);
+    var iosChannel = IOSNotificationDetails(
+        /* sound: 'notification_sound.mp3' */ presentAlert: true,
+        presentBadge: true,
+        presentSound: true);
+    var platformChannel = NotificationDetails(
+      android: androidChannel,
+      iOS: iosChannel,
+    );
     await flutterLocalNotificationsPlugin.schedule(0, 'schedul Test Title',
         'schedul Test body', scheduleNotificationDataTime, platformChannel,
         payload: 'New PayLoad');
