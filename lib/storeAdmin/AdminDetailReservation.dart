@@ -19,6 +19,8 @@ class AdminDetailReservation extends StatefulWidget {
 class _AdminDetailReservationState extends State<AdminDetailReservation> {
   List _productReservationList = [];
   int _newCount = 0;
+  List<int> _indexList = [];
+  bool _simulationOn = false;
   TextEditingController _countController = TextEditingController();
   void _preProcessing() {
     for (int i = 0; i < widget.reservationList.length; ++i) {
@@ -107,7 +109,7 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
     final size = MediaQuery.of(context).size;
     return WillPopScope(
       onWillPop: () async {
-        Navigator.pop(context);
+        Navigator.pop(context, true);
         return false;
       },
       child: Scaffold(
@@ -147,12 +149,12 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
               child: Row(
                 children: [
                   Text(
-                    '현재 재고',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    '- 현재 재고',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                   ),
                   Text(
                     ' $_newCount개',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                   ),
                   SizedBox(
                     width: size.width * 0.03,
@@ -230,12 +232,12 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
               child: Row(
                 children: [
                   Text(
-                    '가격',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    '- 가격',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                   ),
                   Text(
                     ' ${_formatPrice(int.parse(_productReservationList[0]['detail'][0]['pInfo']['price']))}원',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                   )
                 ],
               ),
@@ -246,7 +248,8 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
             Expanded(
                 child: ListView.builder(
               itemBuilder: (context, index) {
-                return _personDataTile(_productReservationList[index], size);
+                return _personDataTile(_productReservationList[index], size,
+                    _indexList.contains(index));
               },
               itemCount: _productReservationList.length,
             )),
@@ -264,14 +267,33 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
                             if (int.parse(_productReservationList[0]['detail']
                                     [0]['pInfo']['stockCount']) <
                                 1) {
-                              print('아직 재고 없음');
                               return;
+                            }
+                            setState(() {
+                              _simulationOn = !_simulationOn;
+                            });
+                            if (_simulationOn) {
+                              int tmp = _newCount;
+                              _indexList.clear();
+                              for (int i = 0;
+                                  i < _productReservationList.length;
+                                  ++i) {
+                                if (tmp >=
+                                    int.parse(_productReservationList[i]
+                                        ['detail'][0]['quantity'])) {
+                                  tmp -= int.parse(_productReservationList[i]
+                                      ['detail'][0]['quantity']);
+                                  _indexList.add(i);
+                                }
+                              }
+                            } else {
+                              _indexList.clear();
                             }
                           },
                     child: Text(
-                      '시뮬레이션',
+                      '시뮬레이션 ${_simulationOn ? 'off' : 'on'}',
                       style: TextStyle(
-                          color: Colors.white,
+                          color: _simulationOn ? Colors.black : Colors.white,
                           fontWeight: FontWeight.bold,
                           fontSize: 13),
                     ),
@@ -331,14 +353,15 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
     );
   }
 
-  Widget _personDataTile(Map data, Size size) {
+  Widget _personDataTile(Map data, Size size, bool containAllocate) {
     return Container(
       width: size.width,
       padding: EdgeInsets.all(size.width * 0.015),
       margin: EdgeInsets.all(size.width * 0.008),
       decoration: BoxDecoration(
           border: Border.all(width: 1.5, color: Colors.black),
-          borderRadius: BorderRadius.circular(6)),
+          borderRadius: BorderRadius.circular(6),
+          color: containAllocate ? Colors.deepOrange[200] : Colors.white),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
@@ -363,7 +386,10 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
           Text('${data['detail'][0]['quantity']}개',
               style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
           Text('${_formatDateTimeForToday(data['oDate'])}',
-              style: TextStyle(fontSize: 11, color: Colors.deepOrange))
+              style: TextStyle(
+                  fontSize: 11,
+                  color: Colors.blueAccent,
+                  fontWeight: FontWeight.bold))
         ],
       ),
     );

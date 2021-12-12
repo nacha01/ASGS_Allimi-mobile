@@ -235,6 +235,18 @@ class _ReservationListPageState extends State<ReservationListPage> {
               ),
             ],
           ),
+          Padding(
+            padding: EdgeInsets.all(size.width * 0.02),
+            child: Text(
+              "* '시간순'의 경우 모든 예약 정보들을 보여주며 결제 처리를 담당",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.all(size.width * 0.02),
+            child: Text("* '상품별'의 경우 '결제 완료' 상태인 예약 정보들만 상품별로 보여주며 예약 처리를 담당",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+          ),
           Divider(),
           _isOrderTime
               ? Expanded(
