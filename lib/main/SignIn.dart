@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 
@@ -70,13 +71,15 @@ class _SignInPageState extends State<SignInPage> {
         print("onResume: $message");
       },
     );
-    _firebaseMessaging.requestNotificationPermissions(
-        const IosNotificationSettings(sound: true, badge: true, alert: true));
+    if(Platform.isIOS) {
+      _firebaseMessaging.requestNotificationPermissions(
+          const IosNotificationSettings(sound: true, badge: true, alert: true));
 
-    _firebaseMessaging.onIosSettingsRegistered
-        .listen((IosNotificationSettings settings) {
-      print("Settings registered: $settings");
-    });
+      _firebaseMessaging.onIosSettingsRegistered
+          .listen((IosNotificationSettings settings) {
+        print("Settings registered: $settings");
+      });
+    }
     localNotifyManager.setOnNotificationClick(onNotificationClick);
     localNotifyManager.setOnNotificationReceive(onNotificationReceive);
     _loadLoginInfo();

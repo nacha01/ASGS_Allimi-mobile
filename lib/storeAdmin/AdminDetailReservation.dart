@@ -328,6 +328,8 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
                             if (_simulationOn) {
                               int tmp = _newCount;
                               _indexList.clear();
+
+                            // 순서대로 처리하다가 개수 안맞으면 다음 사람으로 넘어가기
                               for (int i = 0;
                                   i < _productReservationList.length;
                                   ++i) {
