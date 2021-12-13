@@ -139,6 +139,11 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
             message["notification"]["body"].toString(), message);
         print("onResume: $message");
       },
+      onBackgroundMessage: (Map<String, dynamic> message) async {
+        localNotifyManager.showNotification(message['notification']["title"],
+            message["notification"]["body"].toString(), message);
+        print("onBackground: $message");
+      }
     );
     _firebaseMessaging.requestNotificationPermissions(
         const IosNotificationSettings(sound: true, badge: true, alert: true));
