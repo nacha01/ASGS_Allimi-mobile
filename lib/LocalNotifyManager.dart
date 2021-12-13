@@ -92,9 +92,7 @@ class LocalNotifyManager {
       enableLights: true,
     );
     var iosChannel = IOSNotificationDetails(
-        /* sound: 'notification_sound.mp3' */ presentAlert: true,
-        presentBadge: true,
-        presentSound: true);
+        /* sound: 'notification_sound.mp3' */ );
     var platformChannel = NotificationDetails(
       android: androidChannel,
       iOS: iosChannel,
