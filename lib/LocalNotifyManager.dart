@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'dart:io' show Platform;
@@ -61,6 +62,8 @@ class LocalNotifyManager {
         importance: Importance.max,
         priority: Priority.high,
         playSound: true,
+        fullScreenIntent: true,
+        styleInformation: BigTextStyleInformation(body),
         //만일 필요하다면 넣어라
         // sound: RawResourceAndroidNotificationSound('notification_sound'), //my sound
         // icon: '@mipmap/ic_launcher',
@@ -92,7 +95,7 @@ class LocalNotifyManager {
       enableLights: true,
     );
     var iosChannel = IOSNotificationDetails(
-        /* sound: 'notification_sound.mp3' */ );
+        /* sound: 'notification_sound.mp3' */);
     var platformChannel = NotificationDetails(
       android: androidChannel,
       iOS: iosChannel,
