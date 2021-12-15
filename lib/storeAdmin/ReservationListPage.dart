@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:asgshighschool/data/user_data.dart';
 import 'package:asgshighschool/storeAdmin/AdminDetailReservation.dart';
+import 'package:asgshighschool/storeAdmin/QrReservationPage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -128,11 +129,15 @@ class _ReservationListPageState extends State<ReservationListPage> {
     for (int i = 0; i < _reservationListForTime.length; ++i) {
       if (_productCountMap.containsKey(
               int.parse(_reservationListForTime[i]['detail'][0]['oPID'])) &&
-          int.parse(_reservationListForTime[i]['orderState']) != 0) {
+          int.parse(_reservationListForTime[i]['orderState']) != 0 &&
+          !(int.parse(_reservationListForTime[i]['orderState']) == 2 &&
+              int.parse(_reservationListForTime[i]['resvState']) == 2)) {
         _productCountMap[
                 int.parse(_reservationListForTime[i]['detail'][0]['oPID'])]
             ['count']++;
-      } else if (int.parse(_reservationListForTime[i]['orderState']) != 0) {
+      } else if (int.parse(_reservationListForTime[i]['orderState']) != 0 &&
+          !(int.parse(_reservationListForTime[i]['orderState']) == 2 &&
+              int.parse(_reservationListForTime[i]['resvState']) == 2)) {
         _productCountMap[
             int.parse(_reservationListForTime[i]['detail'][0]['oPID'])] = {
           'count': 1
@@ -191,6 +196,21 @@ class _ReservationListPageState extends State<ReservationListPage> {
               Icons.arrow_back,
               color: Colors.black,
             )),
+        actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => QrReservationPage(
+                              user: widget.user,
+                            )));
+              },
+              icon: Icon(
+                Icons.qr_code_scanner,
+                color: Colors.black,
+              ))
+        ],
       ),
       body: Column(
         children: [

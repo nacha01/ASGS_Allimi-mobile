@@ -8,6 +8,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 
 class AdminDetailReservation extends StatefulWidget {
@@ -31,7 +32,9 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
     for (int i = 0; i < widget.reservationList.length; ++i) {
       if (widget.productCount.pid ==
               int.parse(widget.reservationList[i]['detail'][0]['oPID']) &&
-          int.parse(widget.reservationList[i]['orderState']) != 0) {
+          int.parse(widget.reservationList[i]['orderState']) != 0 &&
+          !(int.parse(widget.reservationList[i]['orderState']) == 2 &&
+              int.parse(widget.reservationList[i]['resvState']) == 2)) {
         _productReservationList.add(widget.reservationList[i]);
       }
     }
@@ -41,9 +44,9 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
     setState(() {});
   }
 
-  Future<bool> _updateNewCount() async {
+  Future<bool> _updateNewCount(int count) async {
     String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_updateProductCountForResv.php?pid=${widget.productCount.pid.toString() + '&count=' + _countController.text}';
+        'http://nacha01.dothome.co.kr/sin/arlimi_updateProductCountForResv.php?pid=${widget.productCount.pid.toString() + '&count=$count'}';
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -62,6 +65,17 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
       'message': '예약하신 "${widget.productCount.name}" 상품이 입고되었습니다.\n 상품 수령바랍니다.'
     });
 
+    if (response.statusCode == 200) {
+      print(response.body);
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<bool> _convertOrderState(String oid) async {
+    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_convertState.php';
+    final response = await http.get(url + '?oid=$oid');
     if (response.statusCode == 200) {
       print(response.body);
       return true;
@@ -124,6 +138,7 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
   void initState() {
     _preProcessing();
     super.initState();
+    print(widget.reservationList);
     _firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) async {
         localNotifyManager.showNotification(message['notification']["title"],
@@ -139,11 +154,9 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
             message["notification"]["body"].toString(), message);
         print("onResume: $message");
       },
-
     );
     _firebaseMessaging.requestNotificationPermissions(
         const IosNotificationSettings(sound: true, badge: true, alert: true));
-
 
     _firebaseMessaging.onIosSettingsRegistered
         .listen((IosNotificationSettings settings) {
@@ -255,7 +268,8 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
                                 actions: [
                                   FlatButton(
                                       onPressed: () async {
-                                        await _updateNewCount();
+                                        await _updateNewCount(
+                                            int.parse(_countController.text));
                                         setState(() {
                                           _newCount =
                                               int.parse(_countController.text);
@@ -318,13 +332,15 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
                   margin: EdgeInsets.all(size.width * 0.01),
                   child: FlatButton(
                     onPressed: int.parse(_productReservationList[0]['detail'][0]
-                                ['pInfo']['stockCount']) <
-                            1
+                                    ['pInfo']['stockCount']) <
+                                1 ||
+                            _newCount < 1
                         ? null
                         : () {
                             if (int.parse(_productReservationList[0]['detail']
-                                    [0]['pInfo']['stockCount']) <
-                                1) {
+                                        [0]['pInfo']['stockCount']) <
+                                    1 ||
+                                _newCount < 1) {
                               return;
                             }
                             setState(() {
@@ -334,7 +350,7 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
                               int tmp = _newCount;
                               _indexList.clear();
 
-                            // 순서대로 처리하다가 개수 안맞으면 다음 사람으로 넘어가기
+                              // 순서대로 처리하다가 개수 안맞으면 다음 사람으로 넘어가기
                               for (int i = 0;
                                   i < _productReservationList.length;
                                   ++i) {
@@ -365,8 +381,9 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(width: 1, color: Colors.black),
                       color: int.parse(_productReservationList[0]['detail'][0]
-                                  ['pInfo']['stockCount']) <
-                              1
+                                      ['pInfo']['stockCount']) <
+                                  1 ||
+                              _newCount < 1
                           ? Colors.grey
                           : Colors.deepOrange),
                 ),
@@ -374,21 +391,60 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
                   margin: EdgeInsets.all(size.width * 0.01),
                   child: FlatButton(
                     onPressed: int.parse(_productReservationList[0]['detail'][0]
-                                ['pInfo']['stockCount']) <
-                            1
+                                    ['pInfo']['stockCount']) <
+                                1 ||
+                            _newCount < 1
                         ? null
                         : () async {
                             if (int.parse(_productReservationList[0]['detail']
                                     [0]['pInfo']['stockCount']) <
                                 1) {
-                              print('아직 재고 없음');
                               return;
                             }
+                            if (_indexList.length < 1) {
+                              showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                        buttonPadding: EdgeInsets.all(0),
+                                        shape: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                        title: Text('예약 처리 불가능'),
+                                        content: Text(
+                                          '선택된 예약자가 없습니다!',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        actions: [
+                                          FlatButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context),
+                                            child: Text(
+                                              '확인',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                            padding: EdgeInsets.all(0),
+                                          )
+                                        ],
+                                      ));
+                              return;
+                            }
+                            int sum = 0;
                             if (_simulationOn) {
                               for (int i = 0; i < _indexList.length; ++i) {
                                 await _sendPushMessage(
                                     _productReservationList[_indexList[i]]);
+                                sum += int.parse(
+                                    _productReservationList[_indexList[i]]
+                                        ['detail'][0]['quantity']);
+                                await _convertOrderState(
+                                    _productReservationList[_indexList[i]]
+                                        ['oID']);
                               }
+                              await _updateNewCount(_newCount - sum);
                             }
                           },
                     child: Text(
@@ -405,11 +461,14 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(width: 1, color: Colors.black),
-                      color: int.parse(_productReservationList[0]['detail'][0]
-                                  ['pInfo']['stockCount']) <
-                              1
-                          ? Colors.grey
-                          : Colors.lightBlue),
+                      color: _simulationOn
+                          ? int.parse(_productReservationList[0]['detail'][0]
+                                          ['pInfo']['stockCount']) <
+                                      1 ||
+                                  _newCount < 1
+                              ? Colors.grey
+                              : Colors.lightBlue
+                          : Colors.grey),
                 ),
               ],
             )
