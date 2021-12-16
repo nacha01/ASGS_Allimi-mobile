@@ -1,8 +1,13 @@
+import 'dart:convert';
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:asgshighschool/data/user_data.dart';
+import 'package:asgshighschool/storeAdmin/FinalReservationPage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:http/http.dart' as http;
 
 class QrReservationPage extends StatefulWidget {
   final User user;
@@ -15,6 +20,37 @@ class _QrReservationPageState extends State<QrReservationPage> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   Barcode result;
   QRViewController controller;
+  List _readyStateResvList = [];
+  bool _isUsed = false;
+
+  Future<bool> _getReservationQRState() async {
+    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getQrForResv.php';
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      String result = utf8
+          .decode(response.bodyBytes)
+          .replaceAll(
+              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+              '')
+          .trim();
+      _readyStateResvList.clear();
+      List map1st = json.decode(result);
+      for (int i = 0; i < map1st.length; ++i) {
+        _readyStateResvList.add(json.decode(map1st[i]));
+        for (int j = 0; j < _readyStateResvList[i]['detail'].length; ++j) {
+          _readyStateResvList[i]['detail'][j] =
+              json.decode(_readyStateResvList[i]['detail'][j]);
+          _readyStateResvList[i]['detail'][j]['pInfo'] =
+              json.decode(_readyStateResvList[i]['detail'][j]['pInfo']);
+        }
+      }
+      print(_readyStateResvList);
+      return true;
+    } else {
+      return false;
+    }
+  }
 
   @override
   void reassemble() {
@@ -32,27 +68,140 @@ class _QrReservationPageState extends State<QrReservationPage> {
   }
 
   @override
+  void initState() {
+    _getReservationQRState();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color(0xFF9EE1E5),
-        title: Text(
-          '예약 QR Reader',
-          style: TextStyle(
-              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 14),
+    final size = MediaQuery.of(context).size;
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pop(context, true);
+        return false;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Color(0xFF9EE1E5),
+          title: Text(
+            '예약 QR Reader',
+            style: TextStyle(
+                color: Colors.black, fontWeight: FontWeight.bold, fontSize: 14),
+          ),
+          centerTitle: true,
+          leading: IconButton(
+              onPressed: () => Navigator.pop(context, true),
+              icon: Icon(
+                Icons.arrow_back,
+                color: Colors.black,
+              )),
         ),
-        centerTitle: true,
-        leading: IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: Icon(
-              Icons.arrow_back,
-              color: Colors.black,
-            )),
-      ),
-      body: Column(
-        children: [
-          Expanded(flex: 2, child: _buildQrView(context)),
-        ],
+        body: Column(
+          children: [
+            Expanded(flex: 2, child: _buildQrView(context)),
+            Expanded(
+                flex: 1,
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: size.height * 0.02,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Row(
+                          children: [
+                            Container(
+                              margin: EdgeInsets.all(3),
+                              width: size.width * 0.14,
+                              height: size.height * 0.07,
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                      width: 0.5, color: Colors.black26),
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Color(0xFF9EE1E5)),
+                              child: IconButton(
+                                iconSize: size.width * 0.08,
+                                padding: EdgeInsets.all(0),
+                                onPressed: () async {
+                                  await controller?.toggleFlash();
+                                  setState(() {});
+                                },
+                                icon: Icon(
+                                  Icons.flash_on,
+                                  color: Colors.orangeAccent,
+                                ),
+                              ),
+                            ),
+                            Container(
+                              margin: EdgeInsets.all(3),
+                              width: size.width * 0.14,
+                              height: size.height * 0.07,
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                      width: 0.5, color: Colors.black26),
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Color(0xFF9EE1E5)),
+                              child: IconButton(
+                                padding: EdgeInsets.all(0),
+                                onPressed: () async {
+                                  await controller?.flipCamera();
+                                  setState(() {});
+                                },
+                                icon: Icon(Icons.flip_camera_android),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Container(
+                              margin: EdgeInsets.all(3),
+                              width: size.width * 0.14,
+                              height: size.height * 0.07,
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                      width: 0.5, color: Colors.black26),
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Color(0xFF9EE1E5)),
+                              child: IconButton(
+                                padding: EdgeInsets.all(0),
+                                onPressed: () async {
+                                  await controller?.pauseCamera();
+                                },
+                                icon: Icon(Icons.pause),
+                              ),
+                            ),
+                            Container(
+                              margin: EdgeInsets.all(3),
+                              width: size.width * 0.14,
+                              height: size.height * 0.07,
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                      width: 0.5, color: Colors.black26),
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Color(0xFF9EE1E5)),
+                              child: IconButton(
+                                padding: EdgeInsets.all(0),
+                                onPressed: () async {
+                                  await controller?.resumeCamera();
+                                },
+                                icon: Icon(Icons.play_arrow),
+                              ),
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: size.height * 0.015,
+                    ),
+                  ],
+                ))
+          ],
+        ),
       ),
     );
   }
@@ -80,8 +229,48 @@ class _QrReservationPageState extends State<QrReservationPage> {
 
   void _onQRViewCreated(QRViewController controller) {
     this.controller = controller;
-    controller.scannedDataStream.listen((scanData) {
+    controller.scannedDataStream.listen((scanData) async {
       result = scanData;
+      if (!_isUsed) {
+        _isUsed = true;
+        for (int i = 0; i < _readyStateResvList.length; ++i) {
+          if (_readyStateResvList[i]['oID'] == result.code) {
+            print('find');
+            var res = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => FinalReservationPage(
+                          user: widget.user,
+                          data: _readyStateResvList[i],
+                        )));
+            if (res) {
+              _getReservationQRState();
+              _isUsed = false;
+            }
+            return;
+          }
+        }
+        showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+                  title: Text('예약 인증 실패'),
+                  content: Text(
+                    'QR 코드에 해당하는 예약 정보를 찾지 못했습니다!',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  actions: [
+                    FlatButton(
+                        onPressed: () {
+                          _isUsed = false;
+                          Navigator.pop(context);
+                        },
+                        child: Text(
+                          '확인',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ))
+                  ],
+                ));
+      }
     });
   }
 

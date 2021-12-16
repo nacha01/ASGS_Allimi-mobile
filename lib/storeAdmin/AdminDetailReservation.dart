@@ -33,8 +33,9 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
       if (widget.productCount.pid ==
               int.parse(widget.reservationList[i]['detail'][0]['oPID']) &&
           int.parse(widget.reservationList[i]['orderState']) != 0 &&
-          !(int.parse(widget.reservationList[i]['orderState']) == 2 &&
-              int.parse(widget.reservationList[i]['resvState']) == 2)) {
+          (int.parse(widget.reservationList[i]['orderState']) >= 1 &&
+              int.parse(widget.reservationList[i]['orderState']) < 3 &&
+              int.parse(widget.reservationList[i]['resvState']) == 1)) {
         _productReservationList.add(widget.reservationList[i]);
       }
     }

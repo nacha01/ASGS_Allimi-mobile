@@ -29,6 +29,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
   };
   Map<int, Map> _productCountMap = Map();
   List<ProductCount> _pcList = [];
+
   Future<bool> _getAllReservationData() async {
     String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_getAllReservation.php';
@@ -56,7 +57,6 @@ class _ReservationListPageState extends State<ReservationListPage> {
       }
       _processProductCount();
       setState(() {});
-      print(_reservationListForTime);
       return true;
     } else {
       return false;
@@ -67,7 +67,6 @@ class _ReservationListPageState extends State<ReservationListPage> {
     String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_updateOrderState.php?${'oid=' + oid + '&state=' + state}';
     final response = await http.get(url);
-
     if (response.statusCode == 200) {
       return true;
     } else {
@@ -130,14 +129,16 @@ class _ReservationListPageState extends State<ReservationListPage> {
       if (_productCountMap.containsKey(
               int.parse(_reservationListForTime[i]['detail'][0]['oPID'])) &&
           int.parse(_reservationListForTime[i]['orderState']) != 0 &&
-          !(int.parse(_reservationListForTime[i]['orderState']) == 2 &&
-              int.parse(_reservationListForTime[i]['resvState']) == 2)) {
+          (int.parse(_reservationListForTime[i]['orderState']) >= 1 &&
+              int.parse(_reservationListForTime[i]['orderState']) < 3 &&
+              int.parse(_reservationListForTime[i]['resvState']) == 1)) {
         _productCountMap[
                 int.parse(_reservationListForTime[i]['detail'][0]['oPID'])]
             ['count']++;
       } else if (int.parse(_reservationListForTime[i]['orderState']) != 0 &&
-          !(int.parse(_reservationListForTime[i]['orderState']) == 2 &&
-              int.parse(_reservationListForTime[i]['resvState']) == 2)) {
+          (int.parse(_reservationListForTime[i]['orderState']) >= 1 &&
+              int.parse(_reservationListForTime[i]['orderState']) < 3 &&
+              int.parse(_reservationListForTime[i]['resvState']) == 1)) {
         _productCountMap[
             int.parse(_reservationListForTime[i]['detail'][0]['oPID'])] = {
           'count': 1
@@ -198,13 +199,16 @@ class _ReservationListPageState extends State<ReservationListPage> {
             )),
         actions: [
           IconButton(
-              onPressed: () {
-                Navigator.push(
+              onPressed: () async {
+                var res = await Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => QrReservationPage(
                               user: widget.user,
                             )));
+                if (res) {
+                  await _getAllReservationData();
+                }
               },
               icon: Icon(
                 Icons.qr_code_scanner,
