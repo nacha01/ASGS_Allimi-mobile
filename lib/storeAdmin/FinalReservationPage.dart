@@ -5,6 +5,7 @@ import 'package:asgshighschool/data/user_data.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
@@ -117,6 +118,14 @@ class _FinalReservationPageState extends State<FinalReservationPage> {
                     ),
                     SizedBox(
                       height: size.height * 0.015,
+                    ),
+                    Text(
+                      " *하단의 '최종 수령 완료 처리하기' 버튼은 예약자에게 실제로 예약된 상품을 수령한 후 사용하는 버튼입니다.",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red,
+                          fontSize: 13),
+                      textAlign: TextAlign.center,
                     ),
                     Divider(),
                     Column(
