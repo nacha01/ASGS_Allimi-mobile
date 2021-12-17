@@ -449,7 +449,7 @@ class _StoreMyPageState extends State<StoreMyPage> {
                         padding: EdgeInsets.all(size.width * 0.01),
                         child: Row(
                           children: [
-                            Icon(Icons.chat,
+                            Icon(Icons.mark_chat_unread,
                                 color: Colors.grey, size: size.width * 0.1),
                             SizedBox(
                               width: size.width * 0.03,
