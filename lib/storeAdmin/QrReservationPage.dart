@@ -198,6 +198,14 @@ class _QrReservationPageState extends State<QrReservationPage> {
                     SizedBox(
                       height: size.height * 0.015,
                     ),
+                    Padding(
+                      padding: EdgeInsets.all(size.width * 0.02),
+                      child: Text(
+                        '예약 QR 코드를 찍으십시오',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 17),
+                      ),
+                    )
                   ],
                 ))
           ],

@@ -114,20 +114,36 @@ class _ReservationStatePageState extends State<ReservationStatePage> {
             ],
           ),
           _isChecked
-              ? Expanded(
-                  child: ListView.builder(
-                  itemBuilder: (context, index) {
-                    return _itemTile(_notCompleteList[index], size);
-                  },
-                  itemCount: _notCompleteList.length,
-                ))
-              : Expanded(
-                  child: ListView.builder(
-                  itemBuilder: (context, index) {
-                    return _itemTile(_reservationList[index], size);
-                  },
-                  itemCount: _reservationList.length,
-                ))
+              ? _notCompleteList.length != 0
+                  ? Expanded(
+                      child: ListView.builder(
+                      itemBuilder: (context, index) {
+                        return _itemTile(_notCompleteList[index], size);
+                      },
+                      itemCount: _notCompleteList.length,
+                    ))
+                  : Expanded(
+                      child: Center(
+                      child: Text('예약한 내역이 없습니다.',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 15)),
+                    ))
+              : _reservationList.length != 0
+                  ? Expanded(
+                      child: ListView.builder(
+                      itemBuilder: (context, index) {
+                        return _itemTile(_reservationList[index], size);
+                      },
+                      itemCount: _reservationList.length,
+                    ))
+                  : Expanded(
+                      child: Center(
+                      child: Text(
+                        '예약한 내역이 없습니다.',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 15),
+                      ),
+                    ))
         ],
       ),
     );

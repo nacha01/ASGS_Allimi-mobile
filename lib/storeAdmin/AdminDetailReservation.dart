@@ -222,11 +222,11 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
                 children: [
                   Text(
                     '- 현재 재고',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
                   Text(
                     ' $_newCount개',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
                   SizedBox(
                     width: size.width * 0.03,
@@ -302,6 +302,16 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
             ),
             Padding(
               padding: EdgeInsets.all(size.width * 0.02),
+              child: Text(
+                '※ 재고 수정의 경우 입고한 경우 새로운 재고를 입력할 때 사용됩니다.',
+                style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.all(size.width * 0.02),
               child: Row(
                 children: [
                   Text(
@@ -368,7 +378,7 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
                             }
                           },
                     child: Text(
-                      '시뮬레이션 ${_simulationOn ? 'off' : 'on'}',
+                      '예약자 선별 ${_simulationOn ? '끄기' : '켜기'}',
                       style: TextStyle(
                           color: _simulationOn ? Colors.black : Colors.white,
                           fontWeight: FontWeight.bold,
@@ -489,33 +499,54 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
           borderRadius: BorderRadius.circular(6),
           color: containAllocate ? Colors.deepOrange[200] : Colors.white),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          Icon(
-            Icons.person,
-            color: Colors.grey,
+          Container(
+            width: size.width * 0.5,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Icon(
+                  Icons.person,
+                  color: Colors.grey,
+                ),
+                Text(
+                  '예약 번호',
+                  style: TextStyle(fontSize: 10),
+                ),
+                Text('${data['oID']}',
+                    style:
+                        TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+                SizedBox(
+                  width: size.width * 0.01,
+                ),
+              ],
+            ),
           ),
-          Text(
-            '예약 번호',
-            style: TextStyle(fontSize: 10),
+          Expanded(
+            child: Center(
+              child: Text('${data['name']}',
+                  style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green)),
+            ),
           ),
-          Text('${data['oID']}',
-              style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
-          SizedBox(
-            width: size.width * 0.01,
+          Container(
+            width: size.width * 0.23,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('${data['detail'][0]['quantity']}개',
+                    style:
+                        TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                Text('${_formatDateTimeForToday(data['oDate'])}',
+                    style: TextStyle(
+                        fontSize: 11,
+                        color: Colors.blueAccent,
+                        fontWeight: FontWeight.bold))
+              ],
+            ),
           ),
-          Text('${data['name']}',
-              style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.green)),
-          Text('${data['detail'][0]['quantity']}개',
-              style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
-          Text('${_formatDateTimeForToday(data['oDate'])}',
-              style: TextStyle(
-                  fontSize: 11,
-                  color: Colors.blueAccent,
-                  fontWeight: FontWeight.bold))
         ],
       ),
     );

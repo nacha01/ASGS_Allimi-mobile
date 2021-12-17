@@ -260,6 +260,9 @@ class _ReservationListPageState extends State<ReservationListPage> {
               ),
             ],
           ),
+          Divider(
+            thickness: 1,
+          ),
           Padding(
             padding: EdgeInsets.all(size.width * 0.02),
             child: Text(
@@ -270,31 +273,44 @@ class _ReservationListPageState extends State<ReservationListPage> {
           Padding(
             padding: EdgeInsets.all(size.width * 0.02),
             child: Text(
-                "* '상품별'의 경우 '결제 완료' 상태인 예약 정보들만 상품별로 보여주며 예약 처리를 담당 (※ 수령 완료된 예약 제외) \n * 푸시 메세지를 보냈다면 → 결제 완료이면서 수령 준비 상태",
+                "* '상품별'의 경우 '결제 완료' 상태인 예약 정보들만 상품별로 보여주며 예약 처리를 담당 (※ 수령 완료된 예약 제외) \n\n * 푸시 메세지를 보냈다면 → '결제 완료'이면서 '수령 준비' 상태",
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
           ),
           Divider(),
           _isOrderTime
-              ? Expanded(
-                  child: ListView.builder(
-                  itemBuilder: (context, index) {
-                    return _itemTileForTime(
-                        _reservationListForTime[index], size, index);
-                  },
-                  itemCount: _reservationListForTime.length,
-                ))
-              : Expanded(
-                  child: GridView.builder(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      mainAxisSpacing: size.height * 0.02,
-                      crossAxisSpacing: size.width * 0.01),
-                  itemCount: _pcList.length,
-                  itemBuilder: (context, index) {
-                    return _itemTileForProduct(_pcList[index], size);
-                  },
-                  padding: EdgeInsets.all(size.width * 0.02),
-                ))
+              ? _reservationListForTime.length != 0
+                  ? Expanded(
+                      child: ListView.builder(
+                      itemBuilder: (context, index) {
+                        return _itemTileForTime(
+                            _reservationListForTime[index], size, index);
+                      },
+                      itemCount: _reservationListForTime.length,
+                    ))
+                  : Expanded(
+                      child: Center(
+                          child: Text(
+                      '예약된 내역이 없습니다!',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    )))
+              : _pcList.length != 0
+                  ? Expanded(
+                      child: GridView.builder(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          mainAxisSpacing: size.height * 0.02,
+                          crossAxisSpacing: size.width * 0.01),
+                      itemCount: _pcList.length,
+                      itemBuilder: (context, index) {
+                        return _itemTileForProduct(_pcList[index], size);
+                      },
+                      padding: EdgeInsets.all(size.width * 0.02),
+                    ))
+                  : Expanded(
+                      child: Center(
+                      child: Text('예약 처리할 목록이 없습니다!',
+                          style: TextStyle(fontWeight: FontWeight.bold)),
+                    ))
         ],
       ),
     );
