@@ -385,7 +385,7 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
                           fontSize: 13),
                     ),
                   ),
-                  width: size.width * 0.35,
+                  width: size.width * 0.37,
                   height: size.height * 0.05,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
