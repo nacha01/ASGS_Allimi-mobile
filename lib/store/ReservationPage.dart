@@ -328,6 +328,42 @@ class _ReservationPageState extends State<ReservationPage> {
                       ],
                     ),
                   ),
+                  Padding(
+                    padding: EdgeInsets.all(size.width * 0.02),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('* 예약 후 "예약 취소"는 결제하기 전에서만 가능합니다.'),
+                        Row(
+                          children: [
+                            Text(
+                              '결제를 마친 상태에서 예약 취소 및 환불을 원하시면 ',
+                              style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.grey),
+                            ),
+                            Text(
+                              "'문의하기'",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.green,
+                                  fontSize: 10),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Text('에서 문의 바랍니다.',
+                                style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.grey))
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
                   Divider(),
                   Padding(
                     padding: EdgeInsets.all(size.width * 0.02),
