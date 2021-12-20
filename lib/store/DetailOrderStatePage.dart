@@ -295,7 +295,7 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
                   ? Padding(
                       padding: EdgeInsets.all(size.width * 0.04),
                       child: Text(
-                        '장소 : ' + widget.order['location'],
+                        '장소 : ${widget.order['location'] == null ? '' : widget.order['location']}',
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 17,
