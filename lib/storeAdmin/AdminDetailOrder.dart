@@ -223,7 +223,7 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
                     ? Padding(
                         padding: EdgeInsets.all(size.width * 0.04),
                         child: Text(
-                          '장소 : ' + widget.data['location'],
+                          '장소 : ${widget.data['location'] == null ? '' : widget.data['location']}',
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 19,
