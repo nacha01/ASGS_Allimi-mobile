@@ -954,7 +954,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
                         msg: message,
                         toastLength: Toast.LENGTH_SHORT,
                         gravity: ToastGravity.BOTTOM);
-                    Navigator.pop(context);
+                    Navigator.pop(context, true);
                   },
                 ),
               ),

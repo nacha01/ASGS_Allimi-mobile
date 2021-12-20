@@ -130,10 +130,10 @@ class _DetailProductPageState extends State<DetailProductPage> {
                   ),
                   Container(
                       width: size.width * 0.9,
-                      height: size.height * 0.5,
+                      height: size.width * 0.9 * 1.4,
                       child: CachedNetworkImage(
                         imageUrl: widget.product.imgUrl1,
-                        fit: BoxFit.fill,
+                        fit: BoxFit.cover,
                         progressIndicatorBuilder: (context, string, progress) =>
                             Center(child: CircularProgressIndicator()),
                       )),

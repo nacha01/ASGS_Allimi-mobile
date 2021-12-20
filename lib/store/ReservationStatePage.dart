@@ -228,10 +228,11 @@ class _ReservationStatePageState extends State<ReservationStatePage> {
             SizedBox(
               height: size.height * 0.01,
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Wrap(
+              spacing: size.width * 0.09,
               children: [
                 Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
                       '[${_categoryReverseMap[int.parse(data['detail'][0]['pInfo']['category'])]}]',
@@ -253,7 +254,7 @@ class _ReservationStatePageState extends State<ReservationStatePage> {
                   style: TextStyle(fontSize: 13, color: Colors.grey),
                 )
               ],
-            )
+            ),
           ],
         ),
       ),

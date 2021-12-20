@@ -1555,6 +1555,7 @@ class _StoreHomePageState extends State<StoreHomePage>
                                                       showToast(
                                                           '삭제가 완료되었습니다. 목록을 새로고침 바랍니다.',
                                                           false);
+                                                      await _getProducts();
                                                     } else {
                                                       Navigator.pop(ctx);
                                                       showToast('삭제에 실패하였습니다!!',
@@ -1598,9 +1599,9 @@ class _StoreHomePageState extends State<StoreHomePage>
                     // 가로 : 세로 비율 어떻게?
                     // 현재 1:1
                     width: size.width * 0.4,
-                    height: size.width * 0.4,
+                    height: size.width * 0.4 * 1.4,
                     imageUrl: imgUrl,
-                    fit: BoxFit.fill,
+                    fit: BoxFit.cover,
                     progressIndicatorBuilder: (context, url, progress) =>
                         Center(
                       child: CircularProgressIndicator(

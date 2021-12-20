@@ -557,25 +557,23 @@ class _ReservationListPageState extends State<ReservationListPage> {
                   SizedBox(
                     height: size.height * 0.008,
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  Wrap(
+                    spacing: size.width * 0.05,
                     children: [
                       Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
                             ' [${_categoryReverseMap[int.parse(data['detail'][0]['pInfo']['category'])]}]',
                             style: TextStyle(
-                                color: Colors.grey[500], fontSize: 13),
+                                color: Colors.grey[500], fontSize: 11),
                           ),
                           Text(' ${data['detail'][0]['pInfo']['pName']} ',
                               style: TextStyle(
                                   fontSize: 12, fontWeight: FontWeight.bold)),
-                          Text('${data['detail'][0]['quantity']}개',
-                              style: TextStyle(fontSize: 13)),
+                          Text('  ${data['detail'][0]['quantity']}개',
+                              style: TextStyle(fontSize: 12)),
                         ],
-                      ),
-                      SizedBox(
-                        width: size.width * 0.01,
                       ),
                       Text(
                         '총 금액 ${_formatPrice(int.parse(data['detail'][0]['quantity']) * int.parse(data['detail'][0]['pInfo']['price']))}원',
@@ -583,7 +581,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
                             fontWeight: FontWeight.bold, fontSize: 13),
                       ),
                     ],
-                  )
+                  ),
                 ],
               ),
             ),
@@ -617,36 +615,39 @@ class _ReservationListPageState extends State<ReservationListPage> {
         padding: EdgeInsets.all(0),
         child: Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Wrap(
               children: [
                 Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
                       '[${_categoryReverseMap[data.category]}] ',
-                      style: TextStyle(color: Colors.grey, fontSize: 12),
+                      style: TextStyle(color: Colors.grey, fontSize: 11),
                     ),
                     Text(
                       data.name,
                       style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 11),
                     ),
                   ],
                 ),
                 Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
                       Icons.person,
                       color: Colors.grey,
+                      size: 18,
                     ),
                     Text(
-                      '  ${data.count}',
+                      ' ${data.count}',
                       style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 11),
                     )
                   ],
-                )
+                ),
               ],
+              spacing: size.width * 0.13,
             ),
             Divider(
               thickness: 1,
@@ -654,8 +655,8 @@ class _ReservationListPageState extends State<ReservationListPage> {
             Expanded(
               child: CachedNetworkImage(
                 imageUrl: data.imgUrl,
-                fit: BoxFit.fill,
-                width: size.width * 0.5,
+                width: size.width * 0.35,
+                fit: BoxFit.cover,
                 filterQuality: FilterQuality.medium,
                 progressIndicatorBuilder: (context, url, progress) => Center(
                   child: CircularProgressIndicator(

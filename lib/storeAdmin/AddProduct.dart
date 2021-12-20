@@ -591,9 +591,9 @@ class _AddingProductPageState extends State<AddingProductPage> {
                               ? imageLoadLayout(size)
                               : Image.file(
                                   File(_mainImage.path),
-                                  fit: BoxFit.fill,
+                                  fit: BoxFit.cover,
                                   width: size.width * 0.9,
-                                  height: size.height * 0.5,
+                                  height: size.width * 0.9 * 1.4,
                                 ),
                           SizedBox(
                             height: 10,
@@ -678,9 +678,9 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                     ? imageLoadLayout(size)
                                     : Image.file(
                                         File(_subImage1.path),
-                                        fit: BoxFit.fill,
-                                        width: size.width * 0.92,
-                                        height: size.height * 0.46,
+                                        fit: BoxFit.cover,
+                                        width: size.width * 0.9,
+                                        height: size.width * 0.9 * 1.4,
                                       ),
                                 SizedBox(
                                   height: 10,
@@ -766,9 +766,9 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                     ? imageLoadLayout(size)
                                     : Image.file(
                                         File(_subImage2.path),
-                                        fit: BoxFit.fill,
-                                        width: size.width * 0.92,
-                                        height: size.height * 0.6,
+                                        fit: BoxFit.cover,
+                                        width: size.width * 0.9,
+                                        height: size.width * 0.9 * 1.4,
                                       ),
                                 SizedBox(
                                   height: 10,
@@ -1168,8 +1168,8 @@ class _AddingProductPageState extends State<AddingProductPage> {
 
   Widget imageLoadLayout(Size size) {
     return Container(
-        width: size.width * 0.92,
-        height: size.height * 0.6,
+        width: size.width * 0.9,
+        height: size.width * 0.9 * 1.4,
         child: Text(
           '이미지를 불러와주세요',
           style: TextStyle(color: Colors.grey[400]),

@@ -317,19 +317,19 @@ class _CartPageState extends State<CartPage> {
           BoxDecoration(border: Border.all(width: 0.5, color: Colors.grey)),
       width: size.width,
       height: size.height * 0.2,
-      padding: EdgeInsets.all(4),
-      margin: EdgeInsets.all(2),
+      padding: EdgeInsets.all(size.width * 0.02),
+      margin: EdgeInsets.all(size.width * 0.006),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           Container(
-            height: size.height * 0.2 * 0.8,
-            width: size.width * 0.25,
+            height: size.height * 0.3 * 1.4,
+            width: size.width * 0.3,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: CachedNetworkImage(
                 imageUrl: cartItem['imgUrl1'],
-                fit: BoxFit.fill,
+                fit: BoxFit.cover,
                 progressIndicatorBuilder: (context, string, progress) => Center(
                   child: CircularProgressIndicator(
                     value: progress.progress,
