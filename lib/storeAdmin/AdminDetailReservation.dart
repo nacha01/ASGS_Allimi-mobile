@@ -28,6 +28,7 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
   TextEditingController _countController = TextEditingController();
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
+  /// 넘겨받은 모든 예약 정보들 중에서 예약 처리가 필요한 예약 데이터만 분류하는 전처리 작업
   void _preProcessing() {
     for (int i = 0; i < widget.reservationList.length; ++i) {
       if (widget.productCount.pid ==
@@ -45,6 +46,9 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
     setState(() {});
   }
 
+  /// 현재 상품의 재고를 변경하는 요청
+  /// @param : 수정하고자 하는 상품의 수량 값
+  /// @return : 업데이트 성공 여부
   Future<bool> _updateNewCount(int count) async {
     String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_updateProductCountForResv.php?pid=${widget.productCount.pid.toString() + '&count=$count'}';
@@ -57,6 +61,9 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
     }
   }
 
+  /// @parameter 로부터 받은 데이터를 바탕으로 해당 유저(토큰)에게 push notification 을 보내는 요청
+  /// @param : 예약 데이터(유저 정보 포함한)
+  /// @return : 보낸 여부
   Future<bool> _sendPushMessage(Map data) async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_sendPushForResv.php';
     print(data['token']);
@@ -74,6 +81,7 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
     }
   }
 
+  /// push notification 을 보냄에 따라 '수령 준비' 상태로 변경하기 위해 주문 DB의 orderState 의 값을 2로 변경을 요청하는 작업
   Future<bool> _convertOrderState(String oid) async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_convertState.php';
     final response = await http.get(url + '?oid=$oid');

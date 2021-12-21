@@ -30,6 +30,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
   Map<int, Map> _productCountMap = Map();
   List<ProductCount> _pcList = [];
 
+  /// 모든 예약 데이터를 가져오는 요청
   Future<bool> _getAllReservationData() async {
     String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_getAllReservation.php';
@@ -63,6 +64,9 @@ class _ReservationListPageState extends State<ReservationListPage> {
     }
   }
 
+  /// 특정 예약 데이터의 '주문 상태'를 변경하는 요청을 하는 작업
+  /// @param : 예약 ID, 변경할 상태
+  /// @return : 업데이트 성공 여부
   Future<bool> _updateOrderState(String oid, String state) async {
     String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_updateOrderState.php?${'oid=' + oid + '&state=' + state}';
@@ -124,6 +128,8 @@ class _ReservationListPageState extends State<ReservationListPage> {
     return newStr;
   }
 
+  /// 모든 예약 정보들을 담은 리스트들을 상품별로 보여주기 위해
+  /// 상품별로 예약된 수와 관련 데이터를 함께 분류해서 새로운 리스트에 추가하는 작업
   void _processProductCount() {
     for (int i = 0; i < _reservationListForTime.length; ++i) {
       if (_productCountMap.containsKey(

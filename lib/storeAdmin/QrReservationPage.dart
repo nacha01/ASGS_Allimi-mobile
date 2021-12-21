@@ -23,6 +23,8 @@ class _QrReservationPageState extends State<QrReservationPage> {
   List _readyStateResvList = [];
   bool _isUsed = false;
 
+  /// QR 코드로 예약 처리를 하기 위한 해당 예약 정보들을 요청하는 작업
+  /// orderState == 2 && resvState == 2 인 데이터만 포함
   Future<bool> _getReservationQRState() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getQrForResv.php';
     final response = await http.get(url);

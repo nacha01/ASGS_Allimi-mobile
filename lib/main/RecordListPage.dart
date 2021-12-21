@@ -30,6 +30,7 @@ class _RecordListPageState extends State<RecordListPage> {
     _getRankingListOnGameCode();
   }
 
+  /// 기억력 게임에 대한 모든 유저의 기록을 가져오는 요청
   Future<void> _getRankingListOnGameCode() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getRankOnMemory.php';
     final response = await http.get(url);
@@ -52,6 +53,8 @@ class _RecordListPageState extends State<RecordListPage> {
     }
   }
 
+  /// 랭킹 리스트들 중에서 본인의 인덱스를 찾는 함수
+  /// @return : 리스트에서 본인에 해당하는 인덱스 정수 값
   int _findMyIndexInRankList() {
     for (int i = 0; i < _rankList.length; ++i) {
       if (_rankList[i]['nickname'] == widget.user.nickName) {
@@ -61,6 +64,7 @@ class _RecordListPageState extends State<RecordListPage> {
     return -1;
   }
 
+  /// TOP 3에 해당하는 유저들의 순위 텍스트 색깔 부여하는 함수
   Color _getTop3TextColor(int index) {
     switch (index) {
       case 0:
