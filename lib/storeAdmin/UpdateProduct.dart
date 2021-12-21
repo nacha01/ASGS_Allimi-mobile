@@ -536,7 +536,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
                       width: size.width * 0.7,
                       height: size.height * 0.07,
                       controller: _productDiscountController,
-                      formatType: false)
+                      formatType: true)
                 ],
               ),
               SizedBox(
@@ -648,8 +648,8 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
                             Image.network(
                               widget.product.imgUrl1,
                               width: size.width * 0.9,
-                              height: size.height * 0.45,
-                              fit: BoxFit.fill,
+                              height: size.width * 0.9 * 1.4,
+                              fit: BoxFit.cover,
                               errorBuilder: (context, object, tract) {
                                 return Text(
                                   '이미지를 불러오는데 실패하였습니다!',
@@ -665,9 +665,9 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
                           ? imageLoadLayout(size)
                           : Image.file(
                               File(_mainImage.path),
-                              fit: BoxFit.fill,
+                              fit: BoxFit.cover,
                               width: size.width * 0.9,
-                              height: size.height * 0.45,
+                              height: size.width * 0.9 * 1.4,
                             ),
                   SizedBox(
                     height: 10,
@@ -747,9 +747,9 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
                             ? imageLoadLayout(size)
                             : Image.file(
                                 File(_subImage1.path),
-                                fit: BoxFit.fill,
+                                fit: BoxFit.cover,
                                 width: size.width * 0.9,
-                                height: size.height * 0.45,
+                                height: size.width * 0.9 * 1.4,
                               ),
                         SizedBox(
                           height: 10,
@@ -830,9 +830,9 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
                             ? imageLoadLayout(size)
                             : Image.file(
                                 File(_subImage2.path),
-                                fit: BoxFit.fill,
+                                fit: BoxFit.cover,
                                 width: size.width * 0.9,
-                                height: size.height * 0.45,
+                                height: size.width * 0.9 * 1.4,
                               ),
                         SizedBox(
                           height: 10,
@@ -892,43 +892,43 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
                   ),
                   onPressed: () async {
                     if (_productNameController.text.isEmpty) {
-                      showErrorDialog();
+                      showErrorDialog('상품명 미입력');
                       return;
                     }
                     if (_productExplainController.text.isEmpty) {
-                      showErrorDialog();
+                      showErrorDialog('상품 설명 미입력');
                       return;
                     }
                     if (_productCountController.text.isEmpty) {
-                      showErrorDialog();
+                      showErrorDialog('재고 미입력');
                       return;
                     }
                     if (_productPriceController.text.isEmpty) {
-                      showErrorDialog();
+                      showErrorDialog('가격 미입력');
                       return;
                     }
                     if (_productDiscountController.text.isNotEmpty) {
                       try {
                         var a = double.parse(_productDiscountController.text);
                       } catch (e) {
-                        showErrorDialog();
+                        showErrorDialog('할인율 형식 오류');
                         return;
                       }
                     }
                     if (_useSub1 && _subImage1 == null) {
-                      showErrorDialog();
+                      showErrorDialog('추가 이미지1 미설정');
                       return;
                     }
                     if (_useSub2 && _subImage2 == null) {
-                      showErrorDialog();
+                      showErrorDialog('추가 이미지2 미설정');
                       return;
                     }
                     if (int.parse(_productCountController.text) < 0) {
-                      showErrorDialog();
+                      showErrorDialog('재고가 음수');
                       return;
                     }
                     if (int.parse(_productPriceController.text) < 0) {
-                      showErrorDialog();
+                      showErrorDialog('가격이 음수');
                       return;
                     }
                     var result = await _doUpdateForProduct();
@@ -988,11 +988,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
         readOnly: isReadOnly,
         textAlign: TextAlign.center,
         keyboardType: formatType ? TextInputType.number : TextInputType.text,
-        inputFormatters: [
-          formatType
-              ? FilteringTextInputFormatter.digitsOnly
-              : FilteringTextInputFormatter.singleLineFormatter
-        ],
+        inputFormatters: [FilteringTextInputFormatter.singleLineFormatter],
         decoration: InputDecoration(border: InputBorder.none),
         maxLines: null,
         maxLength: maxCharNum,
@@ -1037,12 +1033,12 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
             BoxDecoration(border: Border.all(width: 5, color: Colors.grey)));
   }
 
-  void showErrorDialog() {
+  void showErrorDialog(String errorLocation) {
     showDialog(
         context: context,
         builder: (context) => AlertDialog(
               title: Text('문제 발생'),
-              content: Text('입력사항을 재확인 바랍니다'),
+              content: Text('입력사항을 재확인 바랍니다.\n[$errorLocation]'),
               actions: [
                 FlatButton(
                     onPressed: () => Navigator.pop(context), child: Text('확인'))

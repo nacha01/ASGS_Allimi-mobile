@@ -473,7 +473,7 @@ class _ReservationPageState extends State<ReservationPage> {
             child: Row(
               children: [
                 Icon(
-                  _isAgreed ? Icons.check_box : Icons.check_box_outlined,
+                  _isAgreed ? Icons.check_box : Icons.check_box_outline_blank,
                   color: _isAgreed ? Colors.blueAccent : Colors.grey,
                 ),
                 Text(' 위 내용을 확인했습니다.')

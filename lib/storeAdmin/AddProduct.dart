@@ -221,12 +221,12 @@ class _AddingProductPageState extends State<AddingProductPage> {
   }
 
   /// 문제 발생 시 에러 메세지를 띄워주는 dialog
-  void _showErrorDialog() {
+  void _showErrorDialog(String errorLocation) {
     showDialog(
         context: context,
         builder: (context) => AlertDialog(
               title: Text('문제 발생'),
-              content: Text('입력사항을 재확인 바랍니다'),
+              content: Text('입력사항을 재확인 바랍니다.\n[$errorLocation]'),
               actions: [
                 FlatButton(
                     onPressed: () => Navigator.pop(context), child: Text('확인'))
@@ -834,39 +834,39 @@ class _AddingProductPageState extends State<AddingProductPage> {
                           ),
                           onPressed: () {
                             if (_productNameController.text.isEmpty) {
-                              _showErrorDialog();
+                              _showErrorDialog('상품명 미입력');
                               return;
                             }
                             if (_productExplainController.text.isEmpty) {
-                              _showErrorDialog();
+                              _showErrorDialog('상품 설명 미입력');
                               return;
                             }
                             if (_productCountController.text.isEmpty) {
-                              _showErrorDialog();
+                              _showErrorDialog('재고 미입력');
                               return;
                             }
                             if (_productPriceController.text.isEmpty) {
-                              _showErrorDialog();
+                              _showErrorDialog('가격 미입력');
                               return;
                             }
                             if (_mainImage == null) {
-                              _showErrorDialog();
+                              _showErrorDialog('대표 이미지 미설정');
                               return;
                             }
                             if (_useSub1 && _subImage1 == null) {
-                              _showErrorDialog();
+                              _showErrorDialog('추가 이미지1 미설정');
                               return;
                             }
                             if (_useSub2 && _subImage2 == null) {
-                              _showErrorDialog();
+                              _showErrorDialog('추가 이미지2 미설정');
                               return;
                             }
                             if (int.parse(_productCountController.text) < 0) {
-                              _showErrorDialog();
+                              _showErrorDialog('재고가 음수');
                               return;
                             }
                             if (int.parse(_productPriceController.text) < 0) {
-                              _showErrorDialog();
+                              _showErrorDialog('가격이 음수');
                               return;
                             }
                             setState(() {
