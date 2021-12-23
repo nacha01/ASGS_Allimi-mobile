@@ -660,7 +660,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                         title: '학교 행사',
                                         baseUrl: _isAndroid
                                             ? 'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030200&searchMasterSid=4'
-                                            : 'http://nacha01.dothome.co.kr/school/redirect_18.php?menugrp=030200&searchMasterSid=4',
+                                            : 'http://nacha01.dothome.co.kr/school/redirect_19.php?menugrp=030200&searchMasterSid=4',
                                       )));
                         },
                       ),
@@ -678,7 +678,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                         title: '학습 자료',
                                         baseUrl: _isAndroid
                                             ? 'http://www.asgs.hs.kr/home/formError.do?code=NONE_LEVEL&menugrp=040300&gm=http%3A%2F%2Fgm7.goeia.go.kr&siteKey=QzlWVUd0ZVZHdFR1R3I3QXlpeHgzNDI1YVRkQk5sT09LbWhZSWlnbjA5bz0%3D'
-                                            : 'http://nacha01.dothome.co.kr/school/redirect_18.php?code=NONE_LEVEL&menugrp=040300&gm=http%3A%2F%2Fgm7.goeia.go.kr&siteKey=QzlWVUd0ZVZHdFR1R3I3QXlpeHgzNDI1YVRkQk5sT09LbWhZSWlnbjA5bz0%3D',
+                                            : 'http://nacha01.dothome.co.kr/school/redirect_19.php?code=NONE_LEVEL&menugrp=040300&gm=http%3A%2F%2Fgm7.goeia.go.kr&siteKey=QzlWVUd0ZVZHdFR1R3I3QXlpeHgzNDI1YVRkQk5sT09LbWhZSWlnbjA5bz0%3D',
                                       )));
                         },
                       ),
@@ -696,7 +696,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                         title: '안산강서고 급식 메뉴',
                                         baseUrl: _isAndroid
                                             ? 'http://www.asgs.hs.kr/meal/formList.do?menugrp=040801'
-                                            : 'http://nacha01.dothome.co.kr/school/redirect_18.php?menugrp=040801',
+                                            : 'http://nacha01.dothome.co.kr/school/redirect_19.php?menugrp=040801',
                                       )));
                         },
                       ),
@@ -813,7 +813,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         title: title,
                         baseUrl: _isAndroid
                             ? url
-                            : 'http://nacha01.dothome.co.kr/school/redirect_18.php?${url.split('?')[1]}',
+                            : 'http://nacha01.dothome.co.kr/school/redirect_19.php?${url.split('?')[1]}',
                       )));
         });
   }
@@ -841,7 +841,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             title: title,
                             baseUrl: _isAndroid
                                 ? siteUrl
-                                : 'http://nacha01.dothome.co.kr/school/redirect_18.php?${siteUrl.split('?')[1]}',
+                                : 'http://nacha01.dothome.co.kr/school/redirect_19.php?${siteUrl.split('?')[1]}',
                           )));
             },
             child: Stack(
