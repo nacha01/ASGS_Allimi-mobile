@@ -25,6 +25,8 @@ class _ReservationPageState extends State<ReservationPage> {
   bool _isAgreed = false;
   String _generatedOID;
 
+  /// 최종적으로 예약을 등록하는 요청
+  /// @return : 등록 성공 여부
   Future<bool> _registerReservation() async {
     String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_registerReservation.php';

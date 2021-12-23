@@ -15,8 +15,8 @@ class ReservationStatePage extends StatefulWidget {
 }
 
 class _ReservationStatePageState extends State<ReservationStatePage> {
-  List _reservationList = [];
-  List _notCompleteList = [];
+  List _reservationList = []; // 모든 예약 정보를 담은 json 리스트 (수령 완료 포함)
+  List _notCompleteList = []; // 아직 완료처리가 되지 않은 예약 정보를 담은 json 리스트
   final _categoryReverseMap = {
     0: '음식류',
     1: '간식류',
@@ -26,6 +26,8 @@ class _ReservationStatePageState extends State<ReservationStatePage> {
   };
   bool _isChecked = true;
 
+  /// 해당 사용자에 대한 모든 예약 정보를 가져오는 요청
+  /// 중간 과정으로 예약 완료 처리된 데이터를 구분하고 파싱하는 작업
   Future<bool> _getReservationFromUser() async {
     String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_getOneResv.php?uid=${widget.user.uid}';

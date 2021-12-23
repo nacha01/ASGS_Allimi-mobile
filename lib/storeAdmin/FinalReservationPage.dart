@@ -26,6 +26,7 @@ class _FinalReservationPageState extends State<FinalReservationPage> {
     4: '핸드메이드'
   };
 
+  /// 실제로 상품을 예약자에게 수령하고 난 뒤, '수령 완료' 상태로 변경하기 위한 요청
   Future<bool> _convertFinishedState() async {
     String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_updateOrderFinal.php?oid=${widget.data['oID']}';
@@ -45,6 +46,7 @@ class _FinalReservationPageState extends State<FinalReservationPage> {
     }
   }
 
+  /// 현재 페이지를 종료하는 함수
   void _terminateScreen() {
     Navigator.pop(this.context, true);
   }

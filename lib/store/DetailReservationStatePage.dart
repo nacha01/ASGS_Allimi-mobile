@@ -71,6 +71,8 @@ class _DetailReservationStatePageState
     return newStr;
   }
 
+  /// 아직 미결제된 예약 정보에 대해서 예약 취소를 요청하는 작업
+  /// @return : 삭제 성공 여부
   Future<bool> _cancelReservation() async {
     String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_cancelReservation.php?oid=${widget.data['oID']}';
@@ -90,6 +92,7 @@ class _DetailReservationStatePageState
     }
   }
 
+  /// 현재 페이지를 종료하는 함수
   void _terminateScreen() {
     Navigator.pop(context, true);
   }
