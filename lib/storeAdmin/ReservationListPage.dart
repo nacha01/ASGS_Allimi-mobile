@@ -84,6 +84,30 @@ class _ReservationListPageState extends State<ReservationListPage> {
     }
   }
 
+  Future<bool> _updateReservationCurrentCount(
+      String pid, String quantity) async {
+    String url =
+        'http://nacha01.dothome.co.kr/sin/arlimi_updateResvCurrent.php';
+    final response = await http.post(url, body: <String, String>{
+      'pid': pid,
+      'count': quantity,
+      'operation': 'sub'
+    });
+
+    if (response.statusCode == 200) {
+      String result = utf8
+          .decode(response.bodyBytes)
+          .replaceAll(
+              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+              '')
+          .trim();
+      if (result != '1') return false;
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   /// 특정 예약 데이터의 '주문 상태'를 변경하는 요청을 하는 작업
   /// @param : 예약 ID, 변경할 상태
   /// @return : 업데이트 성공 여부
@@ -359,7 +383,15 @@ class _ReservationListPageState extends State<ReservationListPage> {
                           var res = await _forceCancellationForReservation(
                               data['oID']);
                           if (res) {
-                            Fluttertoast.showToast(msg: '성공적으로 예약이 삭제되었습니다.');
+                            var r = await _updateReservationCurrentCount(
+                                data['detail'][0]['pInfo']['pid'],
+                                data['detail'][0]['quantity']);
+                            if (r) {
+                              Fluttertoast.showToast(msg: '성공적으로 예약이 삭제되었습니다.');
+                            } else {
+                              Fluttertoast.showToast(
+                                  msg: '[Error] 예약 수령 변경에 실패');
+                            }
                             await _getAllReservationData();
                           } else {
                             Fluttertoast.showToast(msg: '예약 삭제에 실패하였습니다!');
