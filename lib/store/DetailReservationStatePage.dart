@@ -92,6 +92,29 @@ class _DetailReservationStatePageState
     }
   }
 
+  Future<bool> _updateReservationCurrentCount() async {
+    String url =
+        'http://nacha01.dothome.co.kr/sin/arlimi_cancelReservation.php';
+    final response = await http.post(url, body: <String, String>{
+      'pid': widget.data['detail'][0]['pInfo']['pid'],
+      'count': widget.data['detail'][0]['quantity'],
+      'operation': 'sub'
+    });
+
+    if (response.statusCode == 200) {
+      String result = utf8
+          .decode(response.bodyBytes)
+          .replaceAll(
+              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+              '')
+          .trim();
+      if (result != '1') return false;
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   /// 현재 페이지를 종료하는 함수
   void _terminateScreen() {
     Navigator.pop(context, true);
@@ -452,8 +475,15 @@ class _DetailReservationStatePageState
                                         onPressed: () async {
                                           var res = await _cancelReservation();
                                           if (res) {
-                                            Fluttertoast.showToast(
-                                                msg: '성공적으로 예약 취소가 완료되었습니다.');
+                                            var r =
+                                                await _updateReservationCurrentCount();
+                                            if (r) {
+                                              Fluttertoast.showToast(
+                                                  msg: '성공적으로 예약 취소가 완료되었습니다.');
+                                            } else {
+                                              Fluttertoast.showToast(
+                                                  msg: '[Error] 예약 수량 업데이트 실패');
+                                            }
                                           } else {
                                             Fluttertoast.showToast(
                                                 msg: '예약 취소에 실패하였습니다!');

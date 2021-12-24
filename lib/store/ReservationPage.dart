@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:ui';
 
 import 'package:asgshighschool/data/product_data.dart';
@@ -5,6 +6,8 @@ import 'package:asgshighschool/data/user_data.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
 import 'ReservationCompletePage.dart';
@@ -24,6 +27,8 @@ class _ReservationPageState extends State<ReservationPage> {
   int _counter = 1;
   bool _isAgreed = false;
   String _generatedOID;
+  TextEditingController _countController = TextEditingController();
+  Map _initResvCount;
 
   /// 최종적으로 예약을 등록하는 요청
   /// @return : 등록 성공 여부
@@ -44,6 +49,78 @@ class _ReservationPageState extends State<ReservationPage> {
     });
     if (response.statusCode == 200) {
       return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<bool> _setReservationCountLimit() async {
+    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_resvLimit.php';
+    int value = int.parse(_countController.text) < 0 &&
+            int.parse(_countController.text) != -1
+        ? -1
+        : int.parse(_countController.text);
+    final response = await http.post(url, body: <String, String>{
+      'pid': widget.product.prodID.toString(),
+      'max_count': value.toString()
+    });
+
+    if (response.statusCode == 200) {
+      String result = utf8
+          .decode(response.bodyBytes)
+          .replaceAll(
+              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+              '')
+          .trim();
+
+      if (result == 'UPDATE1' || result == 'INSERT1') {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+
+  Future<bool> _getReservationCurrent() async {
+    String url =
+        'http://nacha01.dothome.co.kr/sin/arlimi_getResvCount.php?pid=${widget.product.prodID.toString()}';
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      String result = utf8
+          .decode(response.bodyBytes)
+          .replaceAll(
+              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+              '')
+          .trim();
+      _initResvCount = json.decode(result);
+      _countController.text = _initResvCount['max_count'];
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<bool> _updateReservationCurrent() async {
+    String url =
+        'http://nacha01.dothome.co.kr/sin/arlimi_updateResvCurrent.php';
+    final response = await http.post(url, body: <String, String>{
+      'pid': widget.product.prodID.toString(),
+      'count': _counterController.text,
+      'operation': 'add'
+    });
+
+    if (response.statusCode == 200) {
+      String result = utf8
+          .decode(response.bodyBytes)
+          .replaceAll(
+              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+              '')
+          .trim();
+      if (result == '1') return true;
+      return false;
     } else {
       return false;
     }
@@ -97,6 +174,7 @@ class _ReservationPageState extends State<ReservationPage> {
   void initState() {
     _counterController.text = _counter.toString();
     super.initState();
+    _getReservationCurrent();
   }
 
   @override
@@ -144,7 +222,90 @@ class _ReservationPageState extends State<ReservationPage> {
                     ),
                   ),
                   SizedBox(
-                    height: size.height * 0.02,
+                    height: size.height * 0.01,
+                  ),
+                  widget.user.isAdmin
+                      ? Container(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: size.width * 0.04),
+                          decoration: BoxDecoration(
+                              border: Border.all(width: 1, color: Colors.black),
+                              borderRadius: BorderRadius.circular(8),
+                              color: Colors.redAccent),
+                          child: FlatButton(
+                            padding: EdgeInsets.all(0),
+                            onPressed: () {
+                              showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                        title: Text('최대 예약 수량 설정'),
+                                        content: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Text('수량 : '),
+                                                Container(
+                                                  child: TextField(
+                                                    controller:
+                                                        _countController,
+                                                    textAlign: TextAlign.center,
+                                                    keyboardType:
+                                                        TextInputType.number,
+                                                  ),
+                                                  width: size.width * 0.2,
+                                                ),
+                                              ],
+                                            ),
+                                            SizedBox(
+                                              height: size.height * 0.015,
+                                            ),
+                                            Text(
+                                              '* 제한을 두지 않을 경우에는 -1을 입력해주세요. (제한 없음 = -1)',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 12,
+                                                  color: Colors.deepOrange),
+                                            )
+                                          ],
+                                        ),
+                                        actions: [
+                                          FlatButton(
+                                              onPressed: () =>
+                                                  Navigator.pop(context),
+                                              child: Text('취소')),
+                                          FlatButton(
+                                              onPressed: () async {
+                                                var res =
+                                                    await _setReservationCountLimit();
+                                                if (res) {
+                                                  Fluttertoast.showToast(
+                                                      msg:
+                                                          '수량 제한 설정이 완료되었습니다.');
+                                                } else {
+                                                  Fluttertoast.showToast(
+                                                      msg: '수량 제한에 실패하였습니다!');
+                                                }
+                                                Navigator.pop(context);
+                                              },
+                                              child: Text('설정'))
+                                        ],
+                                      ));
+                            },
+                            child: Text(
+                              '[관리자] 예약 가능한 최대 수량 설정하기',
+                              style: TextStyle(
+                                  color: Colors.grey[200],
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12),
+                            ),
+                          ),
+                        )
+                      : SizedBox(),
+                  SizedBox(
+                    height: size.height * 0.01,
                   ),
                   Divider(
                     thickness: 1,
@@ -486,11 +647,33 @@ class _ReservationPageState extends State<ReservationPage> {
               padding: EdgeInsets.all(0),
               onPressed: () async {
                 if (!_isAgreed) return;
+                await _getReservationCurrent();
+                if (int.parse(_initResvCount['max_count']) != -1 &&
+                    int.parse(_initResvCount['cur_count']) +
+                            int.parse(_counterController.text) >
+                        int.parse(_initResvCount['max_count'])) {
+                  await showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                            title: Text('예약 불가'),
+                            content: Text(
+                              '예약 가능한 최대 개수를 초과하는 예약 수량입니다! (${(int.parse(_initResvCount['cur_count']) + int.parse(_counterController.text)) - int.parse(_initResvCount['max_count'])}개 초과)',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            actions: [
+                              FlatButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: Text('확인'))
+                            ],
+                          ));
+                  return;
+                }
                 var r1 = await _registerReservation();
                 if (!r1) return;
                 var r2 = await _addOrderDetailRequest();
                 if (!r2) return;
-
+                var r3 = await _updateReservationCurrent();
+                if (!r3) return;
                 /* 결제하는 과정 */
 
                 await showDialog(
