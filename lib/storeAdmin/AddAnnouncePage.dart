@@ -317,7 +317,7 @@ class _AddAnnouncePageState extends State<AddAnnouncePage> {
                                   await _updateAnnounceRequest(providedUser);
                               if (res) {
                                 showToastMessage('공지사항 수정에 성공하였습니다.');
-                                Navigator.pop(context);
+                                Navigator.pop(context, _updatedAnnounceObj);
                               } else {
                                 showToastMessage('공지사항 수정에 실패하였습니다.');
                               }

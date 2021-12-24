@@ -144,40 +144,58 @@ class _QnAListPageState extends State<QnAListPage> {
               ],
             ),
             _isChecked
-                ? Expanded(
-                    child: ListView.builder(
-                    itemBuilder: (context, index) {
-                      return _itemTile(
-                          _noneQnAList[index]['qTitle'],
-                          _noneQnAList[index]['qUID'],
-                          _noneQnAList[index]['qDate'],
-                          _categoryMap[
-                              int.parse(_noneQnAList[index]['qCategory'])],
-                          int.parse(_noneQnAList[index]['isAnswer']) == 1
-                              ? true
-                              : false,
-                          _noneQnAList[index],
-                          size);
-                    },
-                    itemCount: _noneQnAList.length,
-                  ))
-                : Expanded(
-                    child: ListView.builder(
-                    itemBuilder: (context, index) {
-                      return _itemTile(
-                          _qnaDateList[index]['qTitle'],
-                          _qnaDateList[index]['qUID'],
-                          _qnaDateList[index]['qDate'],
-                          _categoryMap[
-                              int.parse(_qnaDateList[index]['qCategory'])],
-                          int.parse(_qnaDateList[index]['isAnswer']) == 1
-                              ? true
-                              : false,
-                          _qnaDateList[index],
-                          size);
-                    },
-                    itemCount: _qnaDateList.length,
-                  ))
+                ? _noneQnAList.length == 0
+                    ? Expanded(
+                        child: Center(
+                        child: Text(
+                          '업로드된 문의 글이 없습니다!',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
+                      ))
+                    : Expanded(
+                        child: ListView.builder(
+                        itemBuilder: (context, index) {
+                          return _itemTile(
+                              _noneQnAList[index]['qTitle'],
+                              _noneQnAList[index]['qUID'],
+                              _noneQnAList[index]['qDate'],
+                              _categoryMap[
+                                  int.parse(_noneQnAList[index]['qCategory'])],
+                              int.parse(_noneQnAList[index]['isAnswer']) == 1
+                                  ? true
+                                  : false,
+                              _noneQnAList[index],
+                              size);
+                        },
+                        itemCount: _noneQnAList.length,
+                      ))
+                : _qnaDateList.length == 0
+                    ? Expanded(
+                        child: Center(
+                        child: Text(
+                          '업로드된 문의 글이 없습니다!',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
+                      ))
+                    : Expanded(
+                        child: ListView.builder(
+                        itemBuilder: (context, index) {
+                          return _itemTile(
+                              _qnaDateList[index]['qTitle'],
+                              _qnaDateList[index]['qUID'],
+                              _qnaDateList[index]['qDate'],
+                              _categoryMap[
+                                  int.parse(_qnaDateList[index]['qCategory'])],
+                              int.parse(_qnaDateList[index]['isAnswer']) == 1
+                                  ? true
+                                  : false,
+                              _qnaDateList[index],
+                              size);
+                        },
+                        itemCount: _qnaDateList.length,
+                      ))
           ],
         ),
       ),

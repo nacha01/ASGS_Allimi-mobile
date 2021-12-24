@@ -55,7 +55,7 @@ class _DetailAnnouncePageState extends State<DetailAnnouncePage> {
 
   /// 현재 페이지를 강제종료하는 작업
   void _terminateScreen({bool isDelete = false}) {
-    Navigator.pop(context, isDelete);
+    Navigator.pop(context, true);
   }
 
   /// parameter의 ID를 가진 공지사항 데이터에 대해 삭제 요청하는 작업
@@ -84,7 +84,7 @@ class _DetailAnnouncePageState extends State<DetailAnnouncePage> {
     final size = MediaQuery.of(context).size;
     return WillPopScope(
       onWillPop: () async {
-        Navigator.pop(context, false);
+        Navigator.pop(context, true);
         return false;
       },
       child: Scaffold(
@@ -100,7 +100,7 @@ class _DetailAnnouncePageState extends State<DetailAnnouncePage> {
               Icons.arrow_back,
               color: Colors.black,
             ),
-            onPressed: () => Navigator.pop(context, false),
+            onPressed: () => Navigator.pop(context, true),
           ),
           actions: [
             widget.user.isAdmin

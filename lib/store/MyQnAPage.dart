@@ -72,19 +72,29 @@ class _MyQnAPageState extends State<MyQnAPage> {
           SizedBox(
             height: size.height * 0.08,
           ),
-          Expanded(
-              child: ListView.builder(
-            itemBuilder: (context, index) {
-              return _itemTile(
-                  _qnaList[index]['qTitle'],
-                  _qnaList[index]['qDate'],
-                  _categoryMap[int.parse(_qnaList[index]['qCategory'])],
-                  int.parse(_qnaList[index]['isAnswer']) == 1 ? true : false,
-                  size,
-                  _qnaList[index]);
-            },
-            itemCount: _qnaList.length,
-          ))
+          _qnaList.length == 0
+              ? Expanded(
+                  child: Center(
+                  child: Text(
+                    '문의 내역이 없습니다!',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                ))
+              : Expanded(
+                  child: ListView.builder(
+                  itemBuilder: (context, index) {
+                    return _itemTile(
+                        _qnaList[index]['qTitle'],
+                        _qnaList[index]['qDate'],
+                        _categoryMap[int.parse(_qnaList[index]['qCategory'])],
+                        int.parse(_qnaList[index]['isAnswer']) == 1
+                            ? true
+                            : false,
+                        size,
+                        _qnaList[index]);
+                  },
+                  itemCount: _qnaList.length,
+                ))
         ],
       ),
     );
