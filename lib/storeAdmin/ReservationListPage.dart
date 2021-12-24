@@ -8,6 +8,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
 class ReservationListPage extends StatefulWidget {
@@ -59,6 +60,25 @@ class _ReservationListPageState extends State<ReservationListPage> {
       _processProductCount();
       setState(() {});
       return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<bool> _forceCancellationForReservation(String oid) async {
+    String url =
+        'http://nacha01.dothome.co.kr/sin/arlimi_cancelReservation.php?${'oid=' + oid + '&pm=A'}';
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      String result = utf8
+          .decode(response.bodyBytes)
+          .replaceAll(
+              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+              '')
+          .trim();
+      if (result == '1') return true;
+      return false;
     } else {
       return false;
     }
@@ -324,6 +344,35 @@ class _ReservationListPageState extends State<ReservationListPage> {
 
   Widget _itemTileForTime(Map data, Size size, int index) {
     return FlatButton(
+      onLongPress: () async {
+        await showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+                  title: Text('[관리자] 예약 강제 취소'),
+                  content: Text(
+                    '정말 해당 예약 [${data['oID']}]을 강제로 취소(삭제)하시겠습니까?',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  ),
+                  actions: [
+                    FlatButton(
+                        onPressed: () async {
+                          var res = await _forceCancellationForReservation(
+                              data['oID']);
+                          if (res) {
+                            Fluttertoast.showToast(msg: '성공적으로 예약이 삭제되었습니다.');
+                            await _getAllReservationData();
+                          } else {
+                            Fluttertoast.showToast(msg: '예약 삭제에 실패하였습니다!');
+                          }
+                          Navigator.pop(context);
+                        },
+                        child: Text('예')),
+                    FlatButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text('아니오'))
+                  ],
+                ));
+      },
       onPressed: () async {
         if (int.parse(data['orderState']) == 3 &&
             int.parse(data['resvState']) == 2) {

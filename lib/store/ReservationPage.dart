@@ -287,6 +287,9 @@ class _ReservationPageState extends State<ReservationPage> {
                                                 } else {
                                                   Fluttertoast.showToast(
                                                       msg: '수량 제한에 실패하였습니다!');
+                                                  _countController.text =
+                                                      _initResvCount[
+                                                          'max_count'];
                                                 }
                                                 Navigator.pop(context);
                                               },

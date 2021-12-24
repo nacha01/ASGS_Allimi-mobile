@@ -75,7 +75,7 @@ class _DetailReservationStatePageState
   /// @return : 삭제 성공 여부
   Future<bool> _cancelReservation() async {
     String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_cancelReservation.php?oid=${widget.data['oID']}';
+        'http://nacha01.dothome.co.kr/sin/arlimi_cancelReservation.php?oid=${widget.data['oID']}&pm=N';
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
