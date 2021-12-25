@@ -69,8 +69,10 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   Future<bool> _checkUserToken() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_checkUserToken.php';
-    final response = await http.post(url,
-        body: <String, String>{'uid': widget.user.uid, 'token': widget.token});
+    final response = await http.post(url, body: <String, String>{
+      'uid': widget.user.uid,
+      'token': widget.user.token
+    });
     if (response.statusCode == 200) {
       return true;
     } else {

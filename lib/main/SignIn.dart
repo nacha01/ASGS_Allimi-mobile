@@ -193,8 +193,8 @@ class _SignInPageState extends State<SignInPage> {
     http.Response response = await http.post(uri, headers: <String, String>{
       'Content-Type': 'application/x-www-form-urlencoded',
     }, body: <String, String>{
-      'uid': _idController.text.toString(),
-      'pw': _passwordController.text.toString(),
+      'uid': _idRegisterController.text.toString(),
+      'pw': _passwordRegisterController.text.toString(),
       'token': widget.token,
       'name': _nameController.text.toString(),
       'nickname': _nickNameController.text.toString(),
@@ -227,6 +227,7 @@ class _SignInPageState extends State<SignInPage> {
                             if (res.isAdmin) {
                               res.adminKey = _key;
                             }
+                            Navigator.pop(context);
                             Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
@@ -246,7 +247,7 @@ class _SignInPageState extends State<SignInPage> {
 
   Future<User> _getUserData() async {
     String uri =
-        'http://nacha01.dothome.co.kr/sin/arlimi_login.php?uid=${_idController.text}&pw=${_passwordController.text}';
+        'http://nacha01.dothome.co.kr/sin/arlimi_login.php?uid=${_idRegisterController.text}&pw=${_passwordRegisterController.text}';
     final response = await http.get(uri, headers: <String, String>{
       'Content-Type': 'application/x-www-form-urlencoded'
     });
@@ -343,8 +344,8 @@ class _SignInPageState extends State<SignInPage> {
                     textScaleFactor: _isLogin ? 1.2 : 1.1,
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  width: size.width * 0.25,
-                  height: size.height * 0.07,
+                  width: size.width * 0.26,
+                  height: size.height * 0.08,
                   alignment: Alignment.center,
                   color: _isLogin ? Colors.white : Colors.lightBlue[100],
                 ),
@@ -362,8 +363,8 @@ class _SignInPageState extends State<SignInPage> {
                       textAlign: TextAlign.center,
                       textScaleFactor: _isLogin ? 1.1 : 1.2,
                       style: TextStyle(fontWeight: FontWeight.bold)),
-                  width: size.width * 0.35,
-                  height: size.height * 0.07,
+                  width: size.width * 0.37,
+                  height: size.height * 0.08,
                   alignment: Alignment.center,
                   color: _isLogin ? Colors.lightBlue[100] : Colors.white,
                 ),
@@ -376,7 +377,7 @@ class _SignInPageState extends State<SignInPage> {
               Expanded(
                   child: Container(
                 color: Colors.indigo,
-                height: size.height * 0.07,
+                height: size.height * 0.08,
                 child: SizedBox(),
               ))
             ],
@@ -393,7 +394,7 @@ class _SignInPageState extends State<SignInPage> {
     return SingleChildScrollView(
       child: Container(
         width: size.width,
-        height: size.height * 0.93,
+        height: size.height * 0.92,
         decoration: BoxDecoration(
             gradient: LinearGradient(
           colors: [Colors.white, Colors.white, Colors.lightBlue[100]],
@@ -412,7 +413,7 @@ class _SignInPageState extends State<SignInPage> {
               textAlign: TextAlign.center,
             ),
             SizedBox(
-              height: size.width * 0.2,
+              height: size.width * 0.15,
             ),
             Container(
               padding: EdgeInsets.all(size.width * 0.03),
@@ -548,7 +549,7 @@ class _SignInPageState extends State<SignInPage> {
     return SingleChildScrollView(
       child: Container(
         width: size.width,
-        height: size.height * 0.93,
+        height: size.height * 0.92,
         decoration: BoxDecoration(
             gradient: LinearGradient(
           colors: [Colors.white, Colors.white, Colors.lightBlue[100]],
@@ -567,7 +568,7 @@ class _SignInPageState extends State<SignInPage> {
               textAlign: TextAlign.center,
             ),
             SizedBox(
-              height: size.width * 0.2,
+              height: size.width * 0.15,
             ),
             Container(
               padding: EdgeInsets.all(size.width * 0.03),
@@ -633,6 +634,7 @@ class _SignInPageState extends State<SignInPage> {
                       controller: _passwordRegisterController,
                       cursorColor: Colors.black,
                       onChanged: (value) {},
+                      obscureText: true,
                       decoration: InputDecoration(
                           hintText: '비밀번호',
                           hintStyle: TextStyle(color: Colors.grey)),
@@ -683,7 +685,7 @@ class _SignInPageState extends State<SignInPage> {
                             ));
                     return;
                   }
-                  if (_passwordController.text.toString().length < 6) {
+                  if (_passwordRegisterController.text.toString().length < 6) {
                     showDialog(
                         context: context,
                         builder: (context) => AlertDialog(
@@ -696,7 +698,7 @@ class _SignInPageState extends State<SignInPage> {
                             ));
                     return;
                   }
-                  if (_idController.text.toString().length < 4) {
+                  if (_idRegisterController.text.toString().length < 4) {
                     showDialog(
                         context: context,
                         builder: (context) => AlertDialog(
@@ -734,7 +736,7 @@ class _SignInPageState extends State<SignInPage> {
                                   : SizedBox(
                                       height: 0.0,
                                     ),
-                              Text('ID : ${_idController.text}',
+                              Text('ID : ${_idRegisterController.text}',
                                   style:
                                       TextStyle(fontWeight: FontWeight.bold)),
                               Text('닉네임 : ${_nickNameController.text}',
