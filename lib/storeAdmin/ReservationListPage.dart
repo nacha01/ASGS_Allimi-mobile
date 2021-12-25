@@ -28,6 +28,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
     3: '문구류',
     4: '핸드메이드'
   };
+  final statusList = ['재학생', '학부모', '교사', '졸업생', '기타'];
   Map<int, Map> _productCountMap = Map();
   List<ProductCount> _pcList = [];
 
@@ -105,6 +106,24 @@ class _ReservationListPageState extends State<ReservationListPage> {
       return true;
     } else {
       return false;
+    }
+  }
+
+  Future<User> _getUserInformation(String uid) async {
+    String url =
+        'http://nacha01.dothome.co.kr/sin/arlimi_getOneUser.php?uid=$uid';
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      String result = utf8
+          .decode(response.bodyBytes)
+          .replaceAll(
+              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+              '')
+          .trim();
+      return User.fromJson(json.decode(result));
+    } else {
+      return null;
     }
   }
 
@@ -634,11 +653,58 @@ class _ReservationListPageState extends State<ReservationListPage> {
                       Text('예약자: ',
                           style: TextStyle(
                               fontSize: 12, fontWeight: FontWeight.bold)),
-                      Text('${data['name']}',
-                          style: TextStyle(
-                              color: Colors.green,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold)),
+                      GestureDetector(
+                        onTap: () async {
+                          var user = await _getUserInformation(data['uid']);
+                          showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                    title: Text('예약자 정보'),
+                                    content: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          '아이디 : ${user.uid}',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        Text('이름 : ${user.name}',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold)),
+                                        Text(
+                                            '신분 : ${statusList[user.identity - 1]}',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold)),
+                                        Text(
+                                            '학번 : ${user.studentId == null || user.studentId == '' ? 'X' : user.studentId}',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold)),
+                                        Text('닉네임 : ${user.nickName}',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold))
+                                      ],
+                                    ),
+                                    actions: [
+                                      FlatButton(
+                                        onPressed: () => Navigator.pop(context),
+                                        child: Text('확인',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.blueAccent)),
+                                        padding: EdgeInsets.all(0),
+                                      )
+                                    ],
+                                  ));
+                        },
+                        child: Text('${data['name']}',
+                            style: TextStyle(
+                                color: Colors.green,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                decoration: TextDecoration.underline)),
+                      ),
                     ],
                   ),
                   SizedBox(

@@ -1,10 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 
 import 'HomePage.dart';
-import 'SignUp.dart';
 import 'package:asgshighschool/WebView.dart';
 import '../data/user_data.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -12,7 +15,6 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import '../LocalNotifyManager.dart';
-////////////////// Login PAGE ////////////////////////////
 
 class SignInPage extends StatefulWidget {
   SignInPage({Key key, this.token}) : super(key: key);
@@ -22,56 +24,58 @@ class SignInPage extends StatefulWidget {
 }
 
 class _SignInPageState extends State<SignInPage> {
-  bool _loading = false;
-  String email = '';
-  String password = '';
-  bool _isChecked = false;
-  bool _logging = false;
   TextEditingController _idController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
+  TextEditingController _nameController = TextEditingController();
+  TextEditingController _gradeController = TextEditingController();
+  TextEditingController _idRegisterController = TextEditingController();
+  TextEditingController _passwordRegisterController = TextEditingController();
+  TextEditingController _nickNameController = TextEditingController();
   SharedPreferences _pref;
-  double _opacity = 1.0;
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
-  String _messageText = "default";
   String _key;
+  bool _isLogin = true;
+  bool _isChecked = false;
+
+  final _statusList = ['재학생', '학부모', '교사', '졸업생', '기타'];
+  final _statusMap = {'재학생': 1, '학부모': 2, '교사': 3, '졸업생': 4, '기타': 5};
+  var _selectedValue = '재학생';
+
+  bool isTwoRow() {
+    if (_selectedValue == '재학생' || _selectedValue == '학부모') {
+      return true;
+    } else if (_selectedValue == '교사' ||
+        _selectedValue == '졸업생' ||
+        _selectedValue == '기타') {
+      return false;
+    }
+    return true;
+  }
+
   @override
   void initState() {
     super.initState();
 
     _firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) async {
-        setState(() {
-          _messageText = "Push Messaging message: $message Messageeeeeeeeeee";
-        });
-        print("onMessage: $message");
-
         localNotifyManager.showNotification(message['notification']["title"],
             message["notification"]["body"].toString(), message);
-
         String screenLoc = message['data']['screen'];
-
         selectLocation(screenLoc);
+        print("onMessage: $message");
       },
       onLaunch: (Map<String, dynamic> message) async {
         String screenLoc = message['data']['screen'];
-
         selectLocation(screenLoc);
-        setState(() {
-          _messageText = "Push Messaging message: $message Launchhhhhhhhh";
-        });
         print("onLaunch: $message");
       },
       onResume: (Map<String, dynamic> message) async {
         String screenLoc = message['data']['screen'];
-
         selectLocation(screenLoc);
-        setState(() {
-          _messageText = "Push Messaging message: $message Resumeeeeeeeeeeeeee";
-        });
         print("onResume: $message");
       },
     );
-    if(Platform.isIOS) {
+    if (Platform.isIOS) {
       _firebaseMessaging.requestNotificationPermissions(
           const IosNotificationSettings(sound: true, badge: true, alert: true));
 
@@ -157,6 +161,10 @@ class _SignInPageState extends State<SignInPage> {
                 ));
         return;
       } else {
+        result.isAdmin = await _judgeIsAdminAccount();
+        if (result.isAdmin) {
+          result.adminKey = _key;
+        }
         Navigator.pushReplacement(
             context,
             MaterialPageRoute(
@@ -179,18 +187,80 @@ class _SignInPageState extends State<SignInPage> {
                 )));
   }
 
-  Future _postRequest(String token) async {
-    String url = 'http://nacha01.dothome.co.kr/sin/push_send.php';
-    http.Response response =
-        await http.post(Uri.parse(url), headers: <String, String>{
+  Future<void> _postRegisterRequest() async {
+    Navigator.pop(context);
+    String uri = 'http://nacha01.dothome.co.kr/sin/arlimi_register.php';
+    http.Response response = await http.post(uri, headers: <String, String>{
       'Content-Type': 'application/x-www-form-urlencoded',
     }, body: <String, String>{
-      'user_token': widget.token,
-      'title': '제목',
-      'message': '테스트용 메세지'
+      'uid': _idController.text.toString(),
+      'pw': _passwordController.text.toString(),
+      'token': widget.token,
+      'name': _nameController.text.toString(),
+      'nickname': _nickNameController.text.toString(),
+      'identity': _statusMap[_selectedValue].toString(),
+      'student_id': isTwoRow() ? _gradeController.text.toString() : 'NULL'
     });
-    print('${response.statusCode}');
-    print(response.body);
+
+    if (response.statusCode == 200) {
+      String result = utf8.decode(response.bodyBytes);
+      if (result.contains('PRIMARY') && result.contains('Duplicate entry')) {
+        showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+                  title: Text('회원 가입 실패'),
+                  content: Text('이미 사용중인 아이디입니다!'),
+                ));
+      } else {
+        showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+                  title: Text('회원 가입 성공'),
+                  content: Text('성공적으로 회원가입이 되었습니다. \n메인 화면으로 이동합니다.'),
+                  actions: [
+                    FlatButton(
+                        onPressed: () async {
+                          var res = await _getUserData();
+                          if (res == null) {
+                          } else {
+                            res.isAdmin = await _judgeIsAdminAccount();
+                            if (res.isAdmin) {
+                              res.adminKey = _key;
+                            }
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => HomePage(
+                                          user: res,
+                                        )));
+                          }
+                        },
+                        child: Text('확인'))
+                  ],
+                ));
+      }
+    } else {
+      print('전송 실패');
+    }
+  }
+
+  Future<User> _getUserData() async {
+    String uri =
+        'http://nacha01.dothome.co.kr/sin/arlimi_login.php?uid=${_idController.text}&pw=${_passwordController.text}';
+    final response = await http.get(uri, headers: <String, String>{
+      'Content-Type': 'application/x-www-form-urlencoded'
+    });
+    if (response.statusCode == 200) {
+      String result = utf8
+          .decode(response.bodyBytes)
+          .replaceAll(
+              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+              '')
+          .trim();
+      return User.fromJson(json.decode(result));
+    } else {
+      return null;
+    }
   }
 
   Future<User> _requestLogin() async {
@@ -235,7 +305,6 @@ class _SignInPageState extends State<SignInPage> {
             '');
         body = body.replaceAll('ADMIN', '');
         _key = body.trim();
-        print(_key);
         return true;
       } else {
         return false;
@@ -257,213 +326,457 @@ class _SignInPageState extends State<SignInPage> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return Scaffold(
-        // resizeToAvoidBottomPadding: false,
-        appBar: AppBar(
-          centerTitle: true,
-          title: Text('로그인 하기'),
-        ),
-        body: Container(
-          color: _logging ? Colors.grey[700] : Color(0x00000000),
-          child: /*Indexed*/ Stack(
-            /*index: _logging ? 0 : 1,*/
+        body: SafeArea(
+      child: Column(
+        children: [
+          Row(
             children: [
-              Center(
-                child: _logging
-                    ? Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          CircularProgressIndicator(),
-                          Padding(
-                            padding: EdgeInsets.symmetric(vertical: 10),
-                          ),
-                          Text(
-                            '로그인 중입니다.',
-                            textScaleFactor: 1.3,
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      )
-                    : Stack(),
-              ),
-              Opacity(
-                opacity: _opacity,
-                child: SingleChildScrollView(
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          '이메일 방식으로 로그인하기',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 25),
-                        ),
-                        SizedBox(height: 50.0),
-                        Padding(
-                          padding: EdgeInsets.all(10.0),
-                          child: TextFormField(
-                            cursorColor: Colors.black,
-                            controller: _idController,
-                            style:
-                                TextStyle(fontSize: 18.0, color: Colors.black),
-                            decoration: InputDecoration(
-                              fillColor: Colors.orange.withOpacity(0.1),
-                              filled: true,
-                              border: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(20.0))),
-                              prefixIcon: Icon(Icons.account_circle),
-                              labelText: 'Email',
-                              labelStyle: TextStyle(
-                                fontSize: 16.0,
-                              ),
-                            ),
-                            onChanged: (value) {
-                              setState(() {
-                                email = value;
-                              });
-                            },
-                          ),
-                        ),
-                        SizedBox(height: 10.0),
-                        Padding(
-                          padding: EdgeInsets.all(10.0),
-                          child: TextFormField(
-                            controller: _passwordController,
-                            obscureText: true,
-                            cursorColor: Colors.black,
-                            style:
-                                TextStyle(fontSize: 18.0, color: Colors.black),
-                            decoration: InputDecoration(
-                              fillColor: Colors.orange.withOpacity(0.1),
-                              filled: true,
-                              border: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(20.0))),
-                              prefixIcon: Icon(Icons.vpn_key),
-                              labelText: 'Password',
-                              labelStyle: TextStyle(
-                                fontSize: 16.0,
-                              ),
-                            ),
-                            onChanged: (value) {
-                              setState(() {
-                                password = value;
-                              });
-                            },
-                          ),
-                        ),
-                        Row(
-                          children: [
-                            Checkbox(
-                                value: _isChecked,
-                                onChanged: (value) {
-                                  setState(() {
-                                    _isChecked = value;
-                                  });
-                                }),
-                            Text('자동 로그인')
-                          ],
-                        ),
-                        SizedBox(height: 10.0),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            RaisedButton(
-                              /////////
-                              onPressed: () async {
-                                if (_idController.text.isEmpty ||
-                                    _passwordController.text.isEmpty) {
-                                  showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return AlertDialog(
-                                          content: Text('내용을 입력하세요'),
-                                          actions: [
-                                            FlatButton(
-                                                onPressed: () =>
-                                                    Navigator.pop(context),
-                                                child: Text('확인'))
-                                          ],
-                                        );
-                                      });
-                                  return;
-                                }
-                                _pref.setString(
-                                    'uid', _idController.text.toString());
-                                _pref.setString('password',
-                                    _passwordController.text.toString());
-                                _pref.setBool('checked', _isChecked);
-                                try {
-                                  setState(() {
-                                    _loading = true;
-                                  });
-                                  var result = await _requestLogin();
-                                  if (result == null) {
-                                    showDialog(
-                                        context: context,
-                                        builder: (context) => AlertDialog(
-                                              title: Text('로그인 에러'),
-                                              content: Text('입력한 정보가 맞지 않습니다!'),
-                                            ));
-                                    return;
-                                  } else {
-                                    result.isAdmin =
-                                        await _judgeIsAdminAccount();
-                                    if (result.isAdmin) {
-                                      result.adminKey = _key;
-                                    }
-                                    Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => HomePage(
-                                                  user: result,
-                                                  token: widget.token,
-                                                )));
-                                  }
-                                  _loading = false;
-                                } catch (e) {
-                                  print(e.toString());
-                                }
-                              },
-                              color: Colors.orangeAccent,
-                              child: Text('로그인 하기',
-                                  style: TextStyle(fontSize: 17.0)),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20.0)),
-                            ),
-                            RaisedButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => SignUpPage(
-                                            token: widget.token,
-                                          )),
-                                );
-                              },
-                              color: Colors.orangeAccent,
-                              child: Text('회원가입하러 가기 ',
-                                  style: TextStyle(fontSize: 17.0)),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20.0)),
-                            ),
-                          ],
-                        ),
-                        // FlatButton(
-                        //     onPressed: () async {
-                        //       print(widget.token);
-                        //       await _postRequest(widget.token);
-                        //     },
-                        //     child: Text('Show Push Message')),
-                        // Text(_messageText)
-                      ],
-                    ),
+              FlatButton(
+                padding: EdgeInsets.all(0),
+                child: Container(
+                  padding: EdgeInsets.all(size.width * 0.01),
+                  child: Text(
+                    '로그인 하기\nLogin',
+                    textAlign: TextAlign.center,
+                    textScaleFactor: _isLogin ? 1.2 : 1.1,
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
+                  width: size.width * 0.25,
+                  height: size.height * 0.07,
+                  alignment: Alignment.center,
+                  color: _isLogin ? Colors.white : Colors.lightBlue[100],
                 ),
+                onPressed: () {
+                  setState(() {
+                    _isLogin = true;
+                  });
+                },
               ),
+              FlatButton(
+                padding: EdgeInsets.all(0),
+                child: Container(
+                  padding: EdgeInsets.all(size.width * 0.01),
+                  child: Text('회원가입 하기\nJoin Membership',
+                      textAlign: TextAlign.center,
+                      textScaleFactor: _isLogin ? 1.1 : 1.2,
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                  width: size.width * 0.35,
+                  height: size.height * 0.07,
+                  alignment: Alignment.center,
+                  color: _isLogin ? Colors.lightBlue[100] : Colors.white,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _isLogin = false;
+                  });
+                },
+              ),
+              Expanded(
+                  child: Container(
+                color: Colors.indigo,
+                height: size.height * 0.07,
+                child: SizedBox(),
+              ))
             ],
           ),
-        ));
+          _isLogin
+              ? Expanded(child: _loginTap(size))
+              : Expanded(child: _registerTap(size)),
+        ],
+      ),
+    ));
+  }
+
+  Widget _loginTap(Size size) {
+    return SingleChildScrollView(
+      child: Container(
+        width: size.width,
+        height: size.height * 0.93,
+        decoration: BoxDecoration(
+            gradient: LinearGradient(
+          colors: [Colors.white, Colors.white, Colors.lightBlue[100]],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        )),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            SizedBox(
+              height: size.width * 0.15,
+            ),
+            Text(
+              '안산강서고등학교 알리미\n\n로그인 하기',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(
+              height: size.width * 0.2,
+            ),
+            Container(
+              padding: EdgeInsets.all(size.width * 0.03),
+              width: size.width * 0.95,
+              height: size.height * 0.4,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                border: Border.all(width: 3, color: Colors.indigo),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Container(
+                    width: size.width * 0.85,
+                    child: TextField(
+                      controller: _idController,
+                      decoration: InputDecoration(
+                          fillColor: Colors.white,
+                          hintStyle: TextStyle(color: Colors.grey),
+                          hintText: '아이디를 입력하세요',
+                          icon: Icon(Icons.account_circle)),
+                    ),
+                  ),
+                  Container(
+                    width: size.width * 0.85,
+                    child: TextField(
+                      controller: _passwordController,
+                      decoration: InputDecoration(
+                          fillColor: Colors.white,
+                          hintStyle: TextStyle(color: Colors.grey),
+                          hintText: '비밀번호를 입력하세요',
+                          icon: Icon(Icons.vpn_key)),
+                      obscureText: true,
+                    ),
+                  ),
+                  FlatButton(
+                      onPressed: () {
+                        setState(() {
+                          _isChecked = !_isChecked;
+                        });
+                      },
+                      child: Row(
+                        children: [
+                          Icon(
+                            _isChecked
+                                ? Icons.check_box
+                                : Icons.check_box_outline_blank,
+                            color: Colors.blue,
+                          ),
+                          Text(' 자동 로그인')
+                        ],
+                      ))
+                ],
+              ),
+            ),
+            SizedBox(
+              height: size.height * 0.02,
+            ),
+            FlatButton(
+                onPressed: () async {
+                  if (_idController.text.isEmpty ||
+                      _passwordController.text.isEmpty) {
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            content: Text('내용을 입력하세요'),
+                            actions: [
+                              FlatButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: Text('확인'))
+                            ],
+                          );
+                        });
+                    return;
+                  }
+                  _pref.setString('uid', _idController.text.toString());
+                  _pref.setString(
+                      'password', _passwordController.text.toString());
+                  _pref.setBool('checked', _isChecked);
+
+                  try {
+                    var result = await _requestLogin();
+                    if (result == null) {
+                      showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                                title: Text('로그인 에러'),
+                                content: Text('입력한 정보가 맞지 않습니다!'),
+                              ));
+                      return;
+                    } else {
+                      result.isAdmin = await _judgeIsAdminAccount();
+                      if (result.isAdmin) {
+                        result.adminKey = _key;
+                      }
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => HomePage(
+                                    user: result,
+                                    token: widget.token,
+                                  )));
+                    }
+                  } catch (e) {
+                    print(e.toString());
+                  }
+                },
+                padding: EdgeInsets.all(size.width * 0.02),
+                highlightColor: Colors.blue[200],
+                child: Container(
+                  padding: EdgeInsets.all(size.width * 0.01),
+                  width: size.width * 0.4,
+                  decoration: BoxDecoration(
+                      border: Border.all(width: 2, color: Colors.black),
+                      borderRadius: BorderRadius.circular(6),
+                      color: Color(0xFF000066)),
+                  alignment: Alignment.center,
+                  child: Text(
+                    '로그인 하기\nLog in',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                ))
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _registerTap(Size size) {
+    return SingleChildScrollView(
+      child: Container(
+        width: size.width,
+        height: size.height * 0.93,
+        decoration: BoxDecoration(
+            gradient: LinearGradient(
+          colors: [Colors.white, Colors.white, Colors.lightBlue[100]],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        )),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            SizedBox(
+              height: size.width * 0.15,
+            ),
+            Text(
+              '안산강서고등학교 알리미\n\n회원가입 하기',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(
+              height: size.width * 0.2,
+            ),
+            Container(
+              padding: EdgeInsets.all(size.width * 0.03),
+              width: size.width * 0.95,
+              height: size.height * 0.5,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                border: Border.all(width: 3, color: Colors.indigo),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Container(
+                    child: DropdownButton(
+                      isExpanded: true,
+                      iconSize: 50,
+                      value: _selectedValue,
+                      items: _statusList.map((value) {
+                        return DropdownMenuItem(
+                          child: Text(value),
+                          value: value,
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedValue = value;
+                          if (_statusMap[_selectedValue] > 1) {
+                            _gradeController.text = '';
+                          }
+                        });
+                      },
+                    ),
+                  ),
+                  Container(
+                    width: size.width * 0.85,
+                    child: TextField(
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      keyboardType: TextInputType.number,
+                      controller: _gradeController,
+                      cursorColor: Colors.black,
+                      onChanged: (value) {},
+                      decoration: InputDecoration(
+                          hintText: '학번',
+                          hintStyle: TextStyle(
+                              color: isTwoRow() ? Colors.grey : Colors.red)),
+                      readOnly: !isTwoRow(),
+                    ),
+                  ),
+                  Container(
+                    width: size.width * 0.85,
+                    child: TextField(
+                      controller: _idRegisterController,
+                      cursorColor: Colors.black,
+                      onChanged: (value) {},
+                      decoration: InputDecoration(
+                          hintText: '아이디(ID)',
+                          hintStyle: TextStyle(color: Colors.grey)),
+                    ),
+                  ),
+                  Container(
+                    width: size.width * 0.85,
+                    child: TextField(
+                      controller: _passwordRegisterController,
+                      cursorColor: Colors.black,
+                      onChanged: (value) {},
+                      decoration: InputDecoration(
+                          hintText: '비밀번호',
+                          hintStyle: TextStyle(color: Colors.grey)),
+                    ),
+                  ),
+                  Container(
+                    width: size.width * 0.85,
+                    child: TextField(
+                      controller: _nameController,
+                      cursorColor: Colors.black,
+                      onChanged: (value) {},
+                      decoration: InputDecoration(
+                          hintText: '이름',
+                          hintStyle: TextStyle(color: Colors.grey)),
+                    ),
+                  ),
+                  Container(
+                    width: size.width * 0.85,
+                    child: TextField(
+                      controller: _nickNameController,
+                      cursorColor: Colors.black,
+                      onChanged: (value) {},
+                      decoration: InputDecoration(
+                          hintText: '닉네임',
+                          hintStyle: TextStyle(color: Colors.grey)),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(
+              height: size.height * 0.02,
+            ),
+            FlatButton(
+                onPressed: () async {
+                  if (_idRegisterController.text.isEmpty ||
+                      _nameController.text.isEmpty ||
+                      _nickNameController.text.isEmpty) {
+                    showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                              content: Text('입력하지 않은 정보가 있습니다!'),
+                              actions: [
+                                FlatButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: Text('확인'))
+                              ],
+                            ));
+                    return;
+                  }
+                  if (_passwordController.text.toString().length < 6) {
+                    showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                              content: Text('비밀번호를 6자리 이상 입력하세요!'),
+                              actions: [
+                                FlatButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: Text('확인'))
+                              ],
+                            ));
+                    return;
+                  }
+                  if (_idController.text.toString().length < 4) {
+                    showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                              content: Text('ID를 4자리 이상 입력하세요!'),
+                              actions: [
+                                FlatButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: Text('확인'))
+                              ],
+                            ));
+                    return;
+                  }
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '입력하신 내용이 맞습니까?\n',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              Text('그룹명 : $_selectedValue',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              Text('이름 : ${_nameController.text}',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              isTwoRow()
+                                  ? Text('학번 : ${_gradeController.text}',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold))
+                                  : SizedBox(
+                                      height: 0.0,
+                                    ),
+                              Text('ID : ${_idController.text}',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              Text('닉네임 : ${_nickNameController.text}',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                            ],
+                          ),
+                          actions: [
+                            FlatButton(
+                                onPressed: () async {
+                                  await _postRegisterRequest();
+                                },
+                                child: Text('예')),
+                            FlatButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                child: Text('아니오')),
+                          ],
+                        );
+                      });
+                },
+                padding: EdgeInsets.all(size.width * 0.02),
+                highlightColor: Colors.blue[200],
+                child: Container(
+                  padding: EdgeInsets.all(size.width * 0.01),
+                  width: size.width * 0.4,
+                  decoration: BoxDecoration(
+                      border: Border.all(width: 2, color: Colors.black),
+                      borderRadius: BorderRadius.circular(6),
+                      color: Color(0xFF000066)),
+                  alignment: Alignment.center,
+                  child: Text(
+                    '회원가입 하기\nJoin',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                ))
+          ],
+        ),
+      ),
+    );
   }
 }

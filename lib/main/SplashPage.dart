@@ -1,5 +1,6 @@
 // Script
 import 'dart:async';
+import 'dart:ui';
 import 'SignIn.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +24,7 @@ class _SplashPageState extends State<SplashPage> {
     loading();
   }
 
-  getToken(){
+  getToken() {
     _firebaseMessaging.getToken().then((String token) {
       assert(token != null);
       setState(() {
@@ -36,11 +37,15 @@ class _SplashPageState extends State<SplashPage> {
   loading() async {
     await Future.delayed(Duration(seconds: 1));
     setState(() {
-      _message = 'Network Connect...';
+      _message = '접속 중입니다...';
     });
     await getToken();
-    Navigator.pushReplacement(context,MaterialPageRoute(builder: (context)
-    => SignInPage(token: _token,)));
+    Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+            builder: (context) => SignInPage(
+                  token: _token,
+                )));
   }
 
   @override
@@ -55,10 +60,10 @@ class _SplashPageState extends State<SplashPage> {
             SizedBox(),
             Text(
               '안산강서고 알리미',
-              style: Theme.of(context)
-                  .textTheme
-                  .headline6
-                  .copyWith(color: Colors.white),
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 22,
+                  color: Colors.white),
             ),
             Text(
               '$_message',
