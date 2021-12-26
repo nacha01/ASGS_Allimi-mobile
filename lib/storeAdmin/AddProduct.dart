@@ -1,8 +1,13 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:async/async.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
@@ -52,7 +57,8 @@ class _AddingProductPageState extends State<AddingProductPage> {
 
   int _clickCount = 0;
   bool _isNotRegister = true;
-
+  bool _useOption = false;
+  int _index = 0;
   String _mainName;
   String _sub1Name;
   String _sub2Name;
@@ -77,6 +83,13 @@ class _AddingProductPageState extends State<AddingProductPage> {
       'http://nacha01.dothome.co.kr/sin/arlimi_productImage/';
 
   AsyncMemoizer<bool> _memoizer;
+
+  List<List<Widget>> _optionDetailList = [];
+  List<Widget> _optionCategoryList = [];
+  List<List<TextEditingController>> _detailTitleControllerList = [];
+  List<List<TextEditingController>> _detailPriceControllerList = [];
+  List<StreamController<List>> _streamControllerList = [];
+  List<TextEditingController> _optionCategoryControllerList = [];
 
   /// 갤러리에서 이미지를 가져오는 작업
   /// [index] = {0 : main, 1 : sub1, 2 : sub3}
@@ -298,7 +311,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                               height: size.height * 0.02,
                             ),
                             Text(
-                                '※ 추가 이미지는 필수가 아니며, 필요시 추가할 때는 이미지와 파일이름을 반드시 적어주세요. '),
+                                '※ 추가 이미지는 필수가 아니며, 필요시 추가할 때는 이미지를 반드시 추가해주세요. '),
                             SizedBox(
                               height: size.height * 0.02,
                             ),
@@ -536,6 +549,87 @@ class _AddingProductPageState extends State<AddingProductPage> {
                         height: 10,
                       ),
                       /*----------------------------------------------------*/
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _useOption = !_useOption;
+                          });
+                        },
+                        child: Container(
+                          width: size.width * 0.5,
+                          height: size.height * 0.05,
+                          alignment: Alignment.center,
+                          child: Text(
+                            _useOption ? '상품 옵션 삭제하기' : '상품 옵션 추가하기',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          decoration: BoxDecoration(
+                              color: Color(0xFF9EE1EF),
+                              borderRadius: BorderRadius.circular(8),
+                              border:
+                                  Border.all(width: 1, color: Colors.black)),
+                        ),
+                      ),
+                      SizedBox(
+                        height: size.height * 0.02,
+                      ),
+                      _useOption
+                          ? Column(
+                              children: [
+                                Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: _optionCategoryList,
+                                ),
+                                FlatButton(
+                                    onPressed: () {
+                                      _optionDetailList.add([]);
+                                      _detailTitleControllerList.add([]);
+                                      _detailPriceControllerList.add([]);
+                                      _optionCategoryControllerList
+                                          .add(TextEditingController());
+                                      _streamControllerList
+                                          .add(StreamController());
+                                      _optionCategoryList.add(
+                                          _optionCategoryLayout(
+                                              size, _index++));
+                                      setState(() {});
+                                    },
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: size.width * 0.01,
+                                          horizontal: size.width * 0.03),
+                                      decoration: BoxDecoration(
+                                          color: Colors.deepPurple,
+                                          border: Border.all(
+                                              width: 1, color: Colors.black),
+                                          borderRadius:
+                                              BorderRadius.circular(8)),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            Icons.add,
+                                            color: Colors.white,
+                                          ),
+                                          Text(
+                                            ' 카테고리 추가',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white),
+                                          )
+                                        ],
+                                      ),
+                                    )),
+                                Divider(
+                                  thickness: 2,
+                                  endIndent: 15,
+                                  indent: 15,
+                                ),
+                              ],
+                            )
+                          : SizedBox(),
                       Column(
                         children: [
                           Container(
@@ -553,7 +647,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                 borderRadius: BorderRadius.circular(8)),
                           ),
                           SizedBox(
-                            height: 15,
+                            height: size.height * 0.02,
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -1177,5 +1271,126 @@ class _AddingProductPageState extends State<AddingProductPage> {
         alignment: Alignment.center,
         decoration:
             BoxDecoration(border: Border.all(width: 5, color: Colors.grey)));
+  }
+
+  Widget _optionCategoryLayout(Size size, int index) {
+    return Column(
+      children: [
+        Container(
+          width: size.width * 0.94,
+          height: size.height * 0.05,
+          padding: EdgeInsets.all(size.width * 0.02),
+          decoration: BoxDecoration(
+              border: Border.all(width: 1, color: Colors.black),
+              borderRadius: BorderRadius.circular(6)),
+          child: Row(
+            children: [
+              Text(
+                '카테고리 이름 ',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Container(
+                width: size.width * 0.6,
+                child: TextField(
+                  controller: _optionCategoryControllerList[index],
+                  style: TextStyle(fontSize: 12),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
+          ),
+        ),
+        StreamBuilder<List>(
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return Column(
+                children: snapshot.data,
+              );
+            } else {
+              return SizedBox();
+            }
+          },
+          stream: _streamControllerList[index].stream,
+        ),
+        Row(
+          children: [
+            FlatButton(
+                onPressed: () {
+                  _detailPriceControllerList[index]
+                      .add(TextEditingController());
+                  _detailTitleControllerList[index]
+                      .add(TextEditingController());
+
+                  setState(() {
+                    _optionDetailList[index].add(_optionDetailLayout(size,
+                        index, _detailPriceControllerList[index].length - 1));
+                  });
+                  _streamControllerList[index].add(_optionDetailList[index]);
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                      horizontal: size.width * 0.03,
+                      vertical: size.width * 0.01),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(width: 1, color: Colors.black),
+                      color: Color(0xFF9EE1EF)),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.add),
+                      Text(
+                        ' 옵션 추가',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      )
+                    ],
+                  ),
+                )),
+          ],
+        ),
+        Divider(
+          thickness: 1.5,
+          indent: size.width * 0.02,
+          endIndent: size.width * 0.02,
+          color: Colors.deepOrange,
+        )
+      ],
+    );
+  }
+
+  Widget _optionDetailLayout(Size size, int cIndex, int dIndex) {
+    return Container(
+      padding: EdgeInsets.all(size.width * 0.01),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Text(
+            '* 옵션 이름',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          Container(
+            width: size.width * 0.4,
+            child: TextField(
+              controller: _detailTitleControllerList[cIndex][dIndex],
+              style: TextStyle(fontSize: 12),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          Text(
+            ' / ',
+            style: TextStyle(color: Colors.grey, fontSize: 17),
+          ),
+          Text('가격', style: TextStyle(fontWeight: FontWeight.bold)),
+          Container(
+            width: size.width * 0.2,
+            child: TextField(
+              controller: _detailPriceControllerList[cIndex][dIndex],
+              style: TextStyle(fontSize: 12),
+              textAlign: TextAlign.center,
+            ),
+          )
+        ],
+      ),
+    );
   }
 }
