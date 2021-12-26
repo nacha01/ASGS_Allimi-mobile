@@ -729,7 +729,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
                         ],
                       ),
                       Text(
-                        '총 금액 ${_formatPrice(int.parse(data['detail'][0]['quantity']) * int.parse(data['detail'][0]['pInfo']['price']))}원',
+                        '총 금액 ${_formatPrice(int.parse(data['totalPrice']))}원',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 13),
                       ),

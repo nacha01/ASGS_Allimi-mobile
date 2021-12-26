@@ -40,7 +40,10 @@ class _ReservationPageState extends State<ReservationPage> {
       'oid': _generatedOID,
       'uid': widget.user.uid,
       'oDate': DateTime.now().toString(),
-      'price': (widget.product.price * _counter).toString(),
+      'price': (widget.product.price *
+              (1 - (widget.product.discount / 100.0)) *
+              _counter)
+          .toString(),
       'oState': '0',
       'recvMethod': '0',
       'pay': '0',
@@ -399,7 +402,7 @@ class _ReservationPageState extends State<ReservationPage> {
                       ),
                       title: Center(
                           child: Text(
-                        '${_formatPrice(widget.product.price * _counter)}원',
+                        '${_formatPrice((widget.product.price * (1 - (widget.product.discount / 100.0)) * _counter).round())}원',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       )),
                     ),

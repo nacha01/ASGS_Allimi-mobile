@@ -350,9 +350,20 @@ class _DetailReservationStatePageState
                                 SizedBox(
                                   width: size.width * 0.05,
                                 ),
+                                Text(
+                                    '(총 금액 ${_formatPrice(int.parse(widget.data['totalPrice']))}원)',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold))
                               ],
                             ),
                           ],
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(size.width * 0.01),
+                        child: Text(
+                          '* 총 금액에는 할인된 금액이 포함되어있습니다.',
+                          style: TextStyle(color: Colors.grey, fontSize: 10),
                         ),
                       ),
                       SizedBox(
