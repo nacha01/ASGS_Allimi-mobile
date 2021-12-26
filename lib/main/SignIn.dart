@@ -344,10 +344,10 @@ class _SignInPageState extends State<SignInPage> {
                     textScaleFactor: _isLogin ? 1.2 : 1.1,
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  width: size.width * 0.26,
+                  width: size.width * 0.3,
                   height: size.height * 0.08,
                   alignment: Alignment.center,
-                  color: _isLogin ? Colors.white : Colors.lightBlue[100],
+                  color: _isLogin ? Color(0xFFF9F7F8) : Color(0xFFDAE2EF),
                 ),
                 onPressed: () {
                   setState(() {
@@ -363,10 +363,10 @@ class _SignInPageState extends State<SignInPage> {
                       textAlign: TextAlign.center,
                       textScaleFactor: _isLogin ? 1.1 : 1.2,
                       style: TextStyle(fontWeight: FontWeight.bold)),
-                  width: size.width * 0.37,
+                  width: size.width * 0.4,
                   height: size.height * 0.08,
                   alignment: Alignment.center,
-                  color: _isLogin ? Colors.lightBlue[100] : Colors.white,
+                  color: _isLogin ? Color(0xFFDAE2EF) : Color(0xFFF9F7F8),
                 ),
                 onPressed: () {
                   setState(() {
@@ -375,11 +375,12 @@ class _SignInPageState extends State<SignInPage> {
                 },
               ),
               Expanded(
-                  child: Container(
-                color: Colors.indigo,
-                height: size.height * 0.08,
-                child: SizedBox(),
-              ))
+                child: Container(
+                  color: Color(0xFF4072AF),
+                  height: size.height * 0.08,
+                  child: SizedBox(),
+                ),
+              )
             ],
           ),
           _isLogin
@@ -397,7 +398,7 @@ class _SignInPageState extends State<SignInPage> {
         height: size.height * 0.92,
         decoration: BoxDecoration(
             gradient: LinearGradient(
-          colors: [Colors.white, Colors.white, Colors.lightBlue[100]],
+          colors: [Color(0xFFF9F7F8), Color(0xFFF9F7F8), Colors.lightBlue[100]],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         )),
@@ -552,7 +553,7 @@ class _SignInPageState extends State<SignInPage> {
         height: size.height * 0.92,
         decoration: BoxDecoration(
             gradient: LinearGradient(
-          colors: [Colors.white, Colors.white, Colors.lightBlue[100]],
+          colors: [Color(0xFFF9F7F8), Color(0xFFF9F7F8), Colors.lightBlue[100]],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         )),
