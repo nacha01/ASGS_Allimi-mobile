@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 
@@ -193,6 +194,53 @@ class _AddingProductPageState extends State<AddingProductPage> {
     }
   }
 
+  Future<int> _registerOptionCategory(String optionCategory) async {
+    String url =
+        'http://nacha01.dothome.co.kr/sin/arlimi_registerOptionCategory.php';
+    final response = await http.post(url, body: <String, String>{
+      'pName': _productNameController.text,
+      'pInfo': _productExplainController.text,
+      'category': _categoryMap[_selectedCategory].toString(),
+      'price': _productPriceController.text,
+      'optionCategory': optionCategory
+    });
+
+    if (response.statusCode == 200) {
+      String result = utf8
+          .decode(response.bodyBytes)
+          .replaceAll(
+              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+              '')
+          .trim();
+      return int.parse(result);
+    } else {
+      return -1;
+    }
+  }
+
+  Future<bool> _registerOptionDetail(int pid, String optionCategory,
+      String optionName, String optionPrice) async {
+    String url =
+        'http://nacha01.dothome.co.kr/sin/arlimi_registerOptionDetail.php';
+    final response = await http.post(url, body: <String, String>{
+      'pid': pid.toString(),
+      'optionCategory': optionCategory,
+      'optionName': optionName,
+      'optionPrice': optionPrice
+    });
+    if (response.statusCode == 200) {
+      String result = utf8
+          .decode(response.bodyBytes)
+          .replaceAll(
+              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+              '')
+          .trim();
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   /// 최종적으로 상품을 등록하는 작업
   /// 먼저 대표이미지, 추가 이미지를 서버에 저장 요청
   /// 이를 바탕으로 최종으로 이미지 포함해서 정보와 같이 DB에 저장 요청
@@ -224,8 +272,27 @@ class _AddingProductPageState extends State<AddingProductPage> {
 
       var registerResult = await _postRequestForInsertProduct();
       if (!registerResult) return false;
+      await _addOptionCategory();
       return true;
     });
+  }
+
+  Future<void> _addOptionCategory() async {
+    for (int i = 0; i < _optionCategoryControllerList.length; ++i) {
+      var pid =
+          await _registerOptionCategory(_optionCategoryControllerList[i].text);
+      print(pid);
+      for (int j = 0; j < _optionDetailList[i].length; ++j) {
+        print(_optionCategoryControllerList[i].text +
+            _detailTitleControllerList[i][j].text +
+            _detailPriceControllerList[i][j].text);
+        await _registerOptionDetail(
+            pid,
+            _optionCategoryControllerList[i].text,
+            _detailTitleControllerList[i][j].text,
+            _detailPriceControllerList[i][j].text);
+      }
+    }
   }
 
   /// 정수 값의 날짜 혹은 시간을 두자리의 문자열로 formatting 하는 작업
@@ -553,6 +620,15 @@ class _AddingProductPageState extends State<AddingProductPage> {
                         onTap: () {
                           setState(() {
                             _useOption = !_useOption;
+                            if (!_useOption) {
+                              _optionDetailList.clear();
+                              _optionCategoryList.clear();
+                              _detailPriceControllerList.clear();
+                              _detailTitleControllerList.clear();
+                              _streamControllerList.clear();
+                              _optionCategoryControllerList.clear();
+                              _index = 0;
+                            }
                           });
                         },
                         child: Container(
@@ -562,11 +638,11 @@ class _AddingProductPageState extends State<AddingProductPage> {
                           child: Text(
                             _useOption ? '상품 옵션 삭제하기' : '상품 옵션 추가하기',
                             style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
                           ),
                           decoration: BoxDecoration(
-                              color: Color(0xFF9EE1EF),
+                              color: Color(0xFF9161E9),
                               borderRadius: BorderRadius.circular(8),
                               border:
                                   Border.all(width: 1, color: Colors.black)),
@@ -578,6 +654,12 @@ class _AddingProductPageState extends State<AddingProductPage> {
                       _useOption
                           ? Column(
                               children: [
+                                Divider(
+                                  thickness: 1.5,
+                                  indent: size.width * 0.02,
+                                  endIndent: size.width * 0.02,
+                                  color: Colors.deepOrange,
+                                ),
                                 Column(
                                   mainAxisSize: MainAxisSize.min,
                                   children: _optionCategoryList,
@@ -614,7 +696,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                             color: Colors.white,
                                           ),
                                           Text(
-                                            ' 카테고리 추가',
+                                            ' 옵션 추가',
                                             style: TextStyle(
                                                 fontWeight: FontWeight.bold,
                                                 color: Colors.white),
@@ -629,7 +711,11 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                 ),
                               ],
                             )
-                          : SizedBox(),
+                          : Divider(
+                              thickness: 2,
+                              endIndent: 15,
+                              indent: 15,
+                            ),
                       Column(
                         children: [
                           Container(
@@ -1284,9 +1370,10 @@ class _AddingProductPageState extends State<AddingProductPage> {
               border: Border.all(width: 1, color: Colors.black),
               borderRadius: BorderRadius.circular(6)),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Text(
-                '카테고리 이름 ',
+                '옵션 이름 /',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               Container(
@@ -1307,7 +1394,9 @@ class _AddingProductPageState extends State<AddingProductPage> {
                 children: snapshot.data,
               );
             } else {
-              return SizedBox();
+              return SizedBox(
+                height: size.height * 0.008,
+              );
             }
           },
           stream: _streamControllerList[index].stream,
@@ -1334,13 +1423,13 @@ class _AddingProductPageState extends State<AddingProductPage> {
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(width: 1, color: Colors.black),
-                      color: Color(0xFF9EE1EF)),
+                      color: Color(0xFF91EFAA)),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(Icons.add),
                       Text(
-                        ' 옵션 추가',
+                        ' 선택지 추가',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       )
                     ],
@@ -1365,7 +1454,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           Text(
-            '* 옵션 이름',
+            '* 선택지 이름',
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           Container(
@@ -1387,6 +1476,8 @@ class _AddingProductPageState extends State<AddingProductPage> {
               controller: _detailPriceControllerList[cIndex][dIndex],
               style: TextStyle(fontSize: 12),
               textAlign: TextAlign.center,
+              keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             ),
           )
         ],
