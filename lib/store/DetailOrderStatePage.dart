@@ -346,6 +346,7 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
               SizedBox(
                 height: size.height * 0.01,
               ),
+              /*
               Card(
                 child: Container(
                   height: size.height * 0.2,
@@ -389,6 +390,23 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
                     ],
                   ),
                 ),
+              ),
+
+               */
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Card(
+                    child: Padding(
+                      padding: EdgeInsets.all(size.width * 0.04),
+                      child: Text(
+                        '최종 결제 금액 ${_formatPrice(int.parse(widget.order['totalPrice']))}원',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                    ),
+                  ),
+                ],
               ),
               SizedBox(
                 height: size.height * 0.01,
