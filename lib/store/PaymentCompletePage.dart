@@ -192,10 +192,10 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
             SizedBox(
               height: size.height * 0.015,
             ),
-            QrImage(
-              data: widget.result['orderID'],
-              size: 190,
-            ),
+            // QrImage(
+            //   data: widget.result['orderID'],
+            //   size: 190,
+            // ),
             SizedBox(
               height: size.height * 0.02,
             ),

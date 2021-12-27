@@ -279,7 +279,7 @@ class _FinalReservationPageState extends State<FinalReservationPage> {
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 18),
-                                  ),w
+                                  ),
                                 ),
                               ),
                             ],
