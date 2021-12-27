@@ -13,11 +13,21 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 class OrderPage extends StatefulWidget {
-  OrderPage({this.direct, this.cart, this.productCount, this.user});
+  OrderPage(
+      {this.direct,
+      this.cart,
+      this.productCount,
+      this.user,
+      this.optionList,
+      this.selectList,
+      this.additionalPrice});
   final Product direct; // 바로 결제 시 그 단일 상품 하나
   final List<Map> cart; // 장바구니에서 결제시 장바구니 리스트 Map 데이터
   final int productCount; // 바로 결제시 상품의 개수
   final User user;
+  final List optionList;
+  final List selectList;
+  final int additionalPrice;
   @override
   _OrderPageState createState() => _OrderPageState();
 }
@@ -31,6 +41,9 @@ class _OrderPageState extends State<OrderPage> {
   bool _isCart = true;
   String _generatedOID;
   String _checkMessage;
+  bool _isSelected = false;
+  String _optionString = '';
+  int _additionalPrice = 0;
 
   @override
   void initState() {
@@ -40,6 +53,7 @@ class _OrderPageState extends State<OrderPage> {
     if (widget.cart == null) {
       _isCart = false;
     }
+    _preProcessForOptions();
     super.initState();
   }
 
@@ -51,11 +65,16 @@ class _OrderPageState extends State<OrderPage> {
       'oid': _generatedOID,
       'uid': widget.user.uid,
       'oDate': DateTime.now().toString(),
-      'price': (_getOriginTotalPrice() - _getTotalDiscount()).toString(),
+      'price': ((_getOriginTotalPrice() - _getTotalDiscount()) +
+              _additionalPrice * widget.productCount)
+          .toString(),
       'oState': '1', // 임시 설정
       'recvMethod': _receiveMethod == ReceiveMethod.DIRECT ? '0' : '1',
       'pay': '0', // 임시 설정
-      'option': _requestOptionController.text,
+      'option': _optionString +
+          (_requestOptionController.text.isEmpty
+              ? ''
+              : '\n\n' + _requestOptionController.text),
       'location': _receiveMethod == ReceiveMethod.DELIVERY
           ? _locationController.text
           : 'NULL'
@@ -80,6 +99,31 @@ class _OrderPageState extends State<OrderPage> {
     } else {
       return false;
     }
+  }
+
+  void _preProcessForOptions() {
+    for (int i = 0; i < widget.selectList.length; ++i) {
+      if (widget.selectList[i] != -1) {
+        _isSelected = true;
+        break;
+      }
+    }
+    if (!_isSelected) {
+      return;
+    }
+    _optionString += '[ 상품 옵션 : ';
+    for (int i = 0; i < widget.optionList.length; ++i) {
+      if (widget.selectList[i] != -1) {
+        _additionalPrice += int.parse(widget.optionList[i]['detail']
+            [widget.selectList[i]]['optionPrice']);
+        _optionString += widget.optionList[i]['optionCategory'] +
+            ' ' +
+            widget.optionList[i]['detail'][widget.selectList[i]]['optionName'] +
+            ' , ';
+      }
+    }
+    _optionString += ']';
+    setState(() {});
   }
 
   /// 최종적으로 주문을 등록하는 과정
@@ -247,12 +291,11 @@ class _OrderPageState extends State<OrderPage> {
             .round();
       }
     } else {
-      sum += ((widget.direct.price *
-                  (widget.direct.discount.toString() == '0.0'
-                      ? 0
-                      : widget.direct.discount / 100)) *
-              widget.productCount)
-          .round();
+      sum += (((widget.direct.price * widget.productCount) *
+              (widget.direct.discount.toString() == '0.0'
+                  ? 0
+                  : widget.direct.discount / 100.0)))
+          .floor();
     }
     return sum;
   }
@@ -295,7 +338,7 @@ class _OrderPageState extends State<OrderPage> {
             int.parse(widget.cart[i]['quantity']);
       }
     } else {
-      sum = widget.direct.price * widget.productCount;
+      sum = (widget.direct.price) * widget.productCount;
     }
     return sum;
   }
@@ -499,7 +542,7 @@ class _OrderPageState extends State<OrderPage> {
                               children: [
                                 Text('결제 금액'),
                                 Text(
-                                    '${_formatPrice(_getOriginTotalPrice())} 원')
+                                    '${_formatPrice(_getOriginTotalPrice() + _additionalPrice * widget.productCount)} 원')
                               ],
                             ),
                             Row(
@@ -524,7 +567,7 @@ class _OrderPageState extends State<OrderPage> {
                                       fontWeight: FontWeight.bold),
                                 ),
                                 Text(
-                                    '${_formatPrice(_getOriginTotalPrice() - _getTotalDiscount())} 원',
+                                    '${_formatPrice((_getOriginTotalPrice() - _getTotalDiscount()) + _additionalPrice * widget.productCount)} 원',
                                     style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold))
@@ -594,7 +637,11 @@ class _OrderPageState extends State<OrderPage> {
                       context,
                       MaterialPageRoute(
                           builder: (context) => PaymentCompletePage(
-                              result: {'orderID': _generatedOID})));
+                                result: {'orderID': _generatedOID},
+                                totalPrice: ((_getOriginTotalPrice() -
+                                        _getTotalDiscount()) +
+                                    _additionalPrice * widget.productCount),
+                              )));
                 }
               },
               child: Container(
@@ -606,7 +653,7 @@ class _OrderPageState extends State<OrderPage> {
                     color: Color(0xFF9EE1E5)),
                 width: size.width,
                 child: Text(
-                  '${_formatPrice(_getOriginTotalPrice() - _getTotalDiscount())} 원  결제하기',
+                  '${_formatPrice((_getOriginTotalPrice() - _getTotalDiscount()) + _additionalPrice * widget.productCount)} 원  결제하기',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),

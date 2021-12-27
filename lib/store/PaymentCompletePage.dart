@@ -3,12 +3,14 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:http/http.dart' as http;
 
 class PaymentCompletePage extends StatefulWidget {
-  PaymentCompletePage({this.result});
+  PaymentCompletePage({this.result, this.totalPrice});
   final Map result;
+  final int totalPrice;
   @override
   _PaymentCompletePageState createState() => _PaymentCompletePageState();
 }
@@ -50,6 +52,35 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
     } else {
       return false;
     }
+  }
+
+  /// 일반 숫자에 ,를 붙여서 직관적인 가격을 보이게 하는 작업
+  /// @param : 직관적인 가격을 보여줄 실제 int 가격[price]
+  /// @return : 직관적인 가격 문자열
+  String _formatPrice(int price) {
+    String p = price.toString();
+    String newFormat = '';
+    int count = 0;
+    for (int i = p.length - 1; i >= 0; --i) {
+      if ((count + 1) % 4 == 0) {
+        newFormat += ',';
+        ++i;
+      } else
+        newFormat += p[i];
+      ++count;
+    }
+    return _reverseString(newFormat);
+  }
+
+  /// 문자열을 뒤집는 작업
+  /// @param : 뒤집고 싶은 문자열[str]
+  /// @return : 뒤집은 문자열
+  String _reverseString(String str) {
+    String newStr = '';
+    for (int i = str.length - 1; i >= 0; --i) {
+      newStr += str[i];
+    }
+    return newStr;
   }
 
   @override
@@ -146,6 +177,20 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
             ),
             SizedBox(
               height: size.height * 0.02,
+            ),
+            SizedBox(
+              height: size.height * 0.015,
+            ),
+            Padding(
+              padding: EdgeInsets.all(size.width * 0.03),
+              child: Text(
+                '<카카오뱅크 79794096110, 예금주 이경희>\n 로 [${_formatPrice(widget.totalPrice)}원] 송금 바랍니다.',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.5),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            SizedBox(
+              height: size.height * 0.015,
             ),
             QrImage(
               data: widget.result['orderID'],

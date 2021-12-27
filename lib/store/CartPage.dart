@@ -238,7 +238,8 @@ class _CartPageState extends State<CartPage> {
                   child: Column(
                     children: [
                       //brief 설명 적는 곳
-                      Text('' /*이 페이지의 간략한 설명 적는 란*/)
+                      Text('' /*이 페이지의 간략한 설명 적는 란*/),
+                      Text('* 현재 장바구니 이용 시 상품 옵션을 사용할 수 없습니다!')
                     ],
                   ),
                 ),

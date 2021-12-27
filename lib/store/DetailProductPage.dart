@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:ui';
 
 import 'package:asgshighschool/data/exist_cart.dart';
@@ -37,6 +38,9 @@ class _DetailProductPageState extends State<DetailProductPage> {
   int _count = 1; // 버튼으로 누른 수량
   bool _isCart = false; // 장바구니에 담았는지 판단
   bool _isClicked = false; // 구매하기 버튼을 눌렀는지 판단
+  bool _hasOption = false; // 상품에 옵션이 있는지 판단
+  List _optionList = [];
+  List<int> _selectedOptionIndex = [];
 
   /// 일반 숫자에 ,를 붙여서 직관적인 가격을 보이게 하는 작업
   /// @param : 직관적인 가격을 보여줄 실제 int 가격[price]
@@ -91,10 +95,58 @@ class _DetailProductPageState extends State<DetailProductPage> {
     }
   }
 
+  Future<bool> _getOptionsForProduct() async {
+    String url =
+        'http://nacha01.dothome.co.kr/sin/arlimi_getProductOptions.php?pid=${widget.product.prodID}';
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      String result = utf8
+          .decode(response.bodyBytes)
+          .replaceAll(
+              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+              '')
+          .trim();
+      if (result == 'NO OPTION') {
+        _hasOption = false;
+      } else {
+        _hasOption = true;
+
+        List map = json.decode(result);
+
+        for (int i = 0; i < map.length; ++i) {
+          map[i] = json.decode(map[i]);
+          for (int j = 0; j < map[i]['detail'].length; ++j) {
+            map[i]['detail'][j] = json.decode(map[i]['detail'][j]);
+          }
+        }
+        _optionList = map;
+        for (int i = 0; i < _optionList.length; ++i) {
+          _selectedOptionIndex.add(-1);
+        }
+        setState(() {});
+      }
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  int _optionSummation() {
+    int sum = 0;
+    for (int i = 0; i < _optionList.length; ++i) {
+      if (_selectedOptionIndex[i] != -1) {
+        sum += int.parse(
+            _optionList[i]['detail'][_selectedOptionIndex[i]]['optionPrice']);
+      }
+    }
+    return sum;
+  }
+
   @override
   void initState() {
     super.initState();
     _isDiscountZero = widget.product.discount.toString() == '0.0';
+    _getOptionsForProduct();
   }
 
   @override
@@ -214,7 +266,6 @@ class _DetailProductPageState extends State<DetailProductPage> {
                         '${widget.product.prodInfo}',
                         textScaleFactor: 2,
                         style: TextStyle(),
-                        textAlign: TextAlign.center,
                       )),
                   SizedBox(
                     height: size.height * 0.03,
@@ -285,8 +336,32 @@ class _DetailProductPageState extends State<DetailProductPage> {
                             ),
                     )),
                   ),
+                  _hasOption
+                      ? Column(
+                          children: [
+                            Divider(),
+                            Padding(
+                              padding: EdgeInsets.all(size.width * 0.03),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    '상품 옵션',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Column(
+                              children: _optionCategoryList(_optionList, size),
+                            ),
+                            Divider(),
+                          ],
+                        )
+                      : SizedBox(),
                   SizedBox(
-                    height: size.height * 0.05,
+                    height: size.height * 0.02,
                   ),
                   (widget.product.stockCount - 5) < 0
                       ? Container(
@@ -351,13 +426,25 @@ class _DetailProductPageState extends State<DetailProductPage> {
                           ),
                         ),
                   SizedBox(
-                    height: size.height * 0.03,
+                    height: size.height * 0.01,
                   ),
                   Divider(
                     thickness: 1,
                     endIndent: 15,
                     indent: 15,
                   ),
+                  SizedBox(
+                    height: size.height * 0.03,
+                  ),
+                  Card(
+                      child: Container(
+                    padding: EdgeInsets.all(size.width * 0.03),
+                    child: Text(
+                      '※ 개당 총 가격 ${_formatPrice(((widget.product.price * (1 - (widget.product.discount / 100.0))) + _optionSummation()).round())}원',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    ),
+                  )),
                   SizedBox(
                     height: size.height * 0.03,
                   ),
@@ -477,6 +564,8 @@ class _DetailProductPageState extends State<DetailProductPage> {
                                         direct: widget.product,
                                         productCount: _count,
                                         cart: null,
+                                        optionList: _optionList,
+                                        selectList: _selectedOptionIndex,
                                       )));
                         },
                         child: Container(
@@ -490,7 +579,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                               Icon(Icons.payment_rounded,
                                   color: Colors.grey[300], size: 33),
                               Text(
-                                '${_formatPrice(((widget.product.price * (1 - (widget.product.discount / 100.0)) * _count)).round())}원 결제하기',
+                                '${_formatPrice((((widget.product.price * (1 - (widget.product.discount / 100.0)) + _optionSummation()) * _count)).round())}원 결제하기',
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: Colors.grey[300]),
@@ -529,6 +618,12 @@ class _DetailProductPageState extends State<DetailProductPage> {
                                                     ReservationPage(
                                                       user: widget.user,
                                                       product: widget.product,
+                                                      optionList: _hasOption
+                                                          ? _optionList
+                                                          : [],
+                                                      selectList: _hasOption
+                                                          ? _selectedOptionIndex
+                                                          : [],
                                                     )));
                                       },
                                       child: Text(
@@ -569,6 +664,87 @@ class _DetailProductPageState extends State<DetailProductPage> {
                           fontWeight: FontWeight.bold, color: Colors.white),
                     ),
                   ))
+        ],
+      ),
+    );
+  }
+
+  List<Widget> _optionCategoryList(List entire, Size size) {
+    List<Widget> tmp = [];
+    for (int i = 0; i < entire.length; ++i) {
+      tmp.add(_optionItemTile(entire[i], size, i));
+      tmp.add(SizedBox(
+        height: size.height * 0.03,
+      ));
+    }
+    return tmp;
+  }
+
+  Widget _optionItemTile(Map data, Size size, int index) {
+    return Container(
+      width: size.width,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Container(
+            alignment: Alignment.topCenter,
+            width: size.width * 0.35,
+            child: Text(
+              '| ${data['optionCategory']}',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+          ),
+          Expanded(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: _optionSelectList(data['detail'], size, index),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<Widget> _optionSelectList(List data, Size size, int cIndex) {
+    List<Widget> temp = [];
+    for (int i = 0; i < data.length; ++i) {
+      temp.add(_optionDetailSelectLayout(data[i], size, cIndex, i));
+    }
+    return temp;
+  }
+
+  Widget _optionDetailSelectLayout(
+      Map data, Size size, int cIndex, int dIndex) {
+    return FlatButton(
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      onPressed: () {
+        setState(() {
+          if (_selectedOptionIndex[cIndex] != dIndex) {
+            _selectedOptionIndex[cIndex] = dIndex;
+          } else {
+            _selectedOptionIndex[cIndex] = -1;
+          }
+        });
+      },
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            _selectedOptionIndex[cIndex] == dIndex
+                ? Icons.check_box
+                : Icons.check_box_outline_blank,
+            color: Colors.blueAccent,
+          ),
+          SizedBox(
+            width: size.width * 0.02,
+          ),
+          Expanded(
+              child: Text(
+            '${data['optionName']}',
+            style: TextStyle(fontSize: 13),
+          )),
+          Text('+${_formatPrice(int.parse(data['optionPrice']))}원')
         ],
       ),
     );

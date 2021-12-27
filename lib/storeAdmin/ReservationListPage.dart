@@ -287,6 +287,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
         ],
       ),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -336,13 +337,19 @@ class _ReservationListPageState extends State<ReservationListPage> {
             padding: EdgeInsets.all(size.width * 0.02),
             child: Text(
               "* '시간순'의 경우 모든 예약 정보들을 보여주며 결제 처리를 담당 ",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11),
             ),
           ),
           Padding(
             padding: EdgeInsets.all(size.width * 0.02),
             child: Text(
-                "* '상품별'의 경우 '결제 완료' 상태인 예약 정보들만 상품별로 보여주며 예약 처리를 담당 (※ 수령 완료된 예약 제외) \n\n * 푸시 메세지를 보냈다면 → '결제 완료'이면서 '수령 준비' 상태",
+                "* '상품별'의 경우 '결제 완료' 상태인 예약 정보들만 상품별로 보여주며 예약 처리를 담당 (※ 수령 완료된 예약 제외) \n* 푸시 메세지를 보냈다면 → '결제 완료'이면서 '수령 준비' 상태",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11)),
+          ),
+          Padding(
+            padding: EdgeInsets.all(size.width * 0.02),
+            child: Text(
+                "* '시간순'의 경우 \n예약번호 클릭 시 '요청사항 및 상품 옵션' 출력\n시간 클릭 시 '예약한 날짜' 출력\n이름 클릭 시 '예약자 정보' 출력\n클릭 시 '결제 전환'\n길게 클릭 시 '예약 강제 삭제' 요청 ",
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
           ),
           Divider(),
@@ -603,12 +610,51 @@ class _ReservationListPageState extends State<ReservationListPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Text(
-                        '예약 번호 ${data['oID']}',
-                        style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blueGrey),
+                      GestureDetector(
+                        onTap: () {
+                          showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                    title: Text(
+                                      '요청사항 및 상품 옵션 내역',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16),
+                                    ),
+                                    content: Padding(
+                                      padding:
+                                          EdgeInsets.all(size.width * 0.02),
+                                      child: Text(
+                                        data['options'] == null ||
+                                                data['options'] == ''
+                                            ? '없음'
+                                            : data['options'],
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                    actions: [
+                                      FlatButton(
+                                        onPressed: () => Navigator.pop(context),
+                                        child: Text(
+                                          '확인',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        materialTapTargetSize:
+                                            MaterialTapTargetSize.shrinkWrap,
+                                      )
+                                    ],
+                                  ));
+                        },
+                        child: Text(
+                          '예약 번호 ${data['oID']}',
+                          style: TextStyle(
+                              fontSize: 11.5,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blueGrey,
+                              decoration: TextDecoration.underline),
+                        ),
                       ),
                       GestureDetector(
                         onTap: () {
@@ -635,7 +681,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
                           style: TextStyle(
                               color: Colors.redAccent,
                               fontWeight: FontWeight.bold,
-                              fontSize: 13,
+                              fontSize: 12,
                               decoration: TextDecoration.underline),
                         ),
                       )

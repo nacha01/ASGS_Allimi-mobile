@@ -372,6 +372,35 @@ class _DetailReservationStatePageState
                       Divider(
                         thickness: 1,
                       ),
+                      SizedBox(
+                        height: size.height * 0.01,
+                      ),
+                      Text(
+                        '*요청사항 및 상품 옵션',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 13),
+                      ),
+                      SizedBox(
+                        height: size.height * 0.01,
+                      ),
+                      Container(
+                        padding: EdgeInsets.all(size.width * 0.03),
+                        width: size.width * 0.95,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            border:
+                                Border.all(width: 0.5, color: Colors.black)),
+                        child: Text(
+                          '${widget.data['options'] == null || widget.data['options'] == '' ? 'X' : widget.data['options']}',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      SizedBox(
+                        height: size.height * 0.02,
+                      ),
+                      Divider(
+                        thickness: 1,
+                      ),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [

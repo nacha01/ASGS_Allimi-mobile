@@ -10,8 +10,10 @@ class ReservationCompletePage extends StatefulWidget {
   final int count;
   final Product product;
   final String orderID;
+  final int totalPrice;
 
-  ReservationCompletePage({this.user, this.product, this.count, this.orderID});
+  ReservationCompletePage(
+      {this.user, this.product, this.count, this.orderID, this.totalPrice});
 
   @override
   _ReservationCompletePageState createState() =>
@@ -26,6 +28,36 @@ class _ReservationCompletePageState extends State<ReservationCompletePage> {
     3: '문구류',
     4: '핸드메이드'
   };
+
+  /// 일반 숫자에 ,를 붙여서 직관적인 가격을 보이게 하는 작업
+  /// @param : 직관적인 가격을 보여줄 실제 int 가격[price]
+  /// @return : 직관적인 가격 문자열
+  String _formatPrice(int price) {
+    String p = price.toString();
+    String newFormat = '';
+    int count = 0;
+    for (int i = p.length - 1; i >= 0; --i) {
+      if ((count + 1) % 4 == 0) {
+        newFormat += ',';
+        ++i;
+      } else
+        newFormat += p[i];
+      ++count;
+    }
+    return _reverseString(newFormat);
+  }
+
+  /// 문자열을 뒤집는 작업
+  /// @param : 뒤집고 싶은 문자열[str]
+  /// @return : 뒤집은 문자열
+  String _reverseString(String str) {
+    String newStr = '';
+    for (int i = str.length - 1; i >= 0; --i) {
+      newStr += str[i];
+    }
+    return newStr;
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -139,7 +171,18 @@ class _ReservationCompletePageState extends State<ReservationCompletePage> {
               ),
             ),
             SizedBox(
-              height: size.height * 0.01,
+              height: size.height * 0.015,
+            ),
+            Padding(
+              padding: EdgeInsets.all(size.width * 0.03),
+              child: Text(
+                '<카카오뱅크 79794096110, 예금주 이경희>\n 로 [${_formatPrice(widget.totalPrice)}원] 송금 바랍니다.',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.5),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            SizedBox(
+              height: size.height * 0.015,
             ),
             Divider(),
             Padding(

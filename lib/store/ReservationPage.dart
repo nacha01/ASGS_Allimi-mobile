@@ -13,22 +13,27 @@ import 'package:http/http.dart' as http;
 import 'ReservationCompletePage.dart';
 
 class ReservationPage extends StatefulWidget {
-  ReservationPage({this.product, this.user});
+  ReservationPage({this.product, this.user, this.optionList, this.selectList});
 
   final Product product;
   final User user;
-
+  final List optionList;
+  final List selectList;
   @override
   _ReservationPageState createState() => _ReservationPageState();
 }
 
 class _ReservationPageState extends State<ReservationPage> {
   TextEditingController _counterController = TextEditingController();
+  TextEditingController _requestOptionController = TextEditingController();
   int _counter = 1;
   bool _isAgreed = false;
   String _generatedOID;
   TextEditingController _countController = TextEditingController();
   Map _initResvCount;
+  int _additionalPrice = 0;
+  String _optionString = '';
+  bool _isSelected = false;
 
   /// 최종적으로 예약을 등록하는 요청
   /// @return : 등록 성공 여부
@@ -40,14 +45,18 @@ class _ReservationPageState extends State<ReservationPage> {
       'oid': _generatedOID,
       'uid': widget.user.uid,
       'oDate': DateTime.now().toString(),
-      'price': (widget.product.price *
-              (1 - (widget.product.discount / 100.0)) *
-              _counter)
-          .toString(),
+      'price':
+          ((widget.product.price * (1 - (widget.product.discount / 100.0)) +
+                      _additionalPrice) *
+                  _counter)
+              .toString(),
       'oState': '0',
       'recvMethod': '0',
       'pay': '0',
-      'option': '',
+      'option': _optionString +
+          (_requestOptionController.text.isEmpty
+              ? ''
+              : '\n\n${_requestOptionController.text}'),
       'resv': '1'
     });
     if (response.statusCode == 200) {
@@ -55,6 +64,30 @@ class _ReservationPageState extends State<ReservationPage> {
     } else {
       return false;
     }
+  }
+
+  void _preProcessForOptions() {
+    for (int i = 0; i < widget.selectList.length; ++i) {
+      if (widget.selectList[i] != -1) {
+        _isSelected = true;
+        break;
+      }
+    }
+    if (!_isSelected) {
+      return;
+    }
+    _optionString += '[ 상품 옵션 : ';
+    for (int i = 0; i < widget.optionList.length; ++i) {
+      if (widget.selectList[i] != -1) {
+        _additionalPrice += int.parse(widget.optionList[i]['detail']
+            [widget.selectList[i]]['optionPrice']);
+        _optionString += widget.optionList[i]['optionCategory'] +
+            ' ' +
+            widget.optionList[i]['detail'][widget.selectList[i]]['optionName'] +
+            ' , ';
+      }
+    }
+    _optionString += ']';
   }
 
   Future<bool> _setReservationCountLimit() async {
@@ -176,6 +209,7 @@ class _ReservationPageState extends State<ReservationPage> {
   @override
   void initState() {
     _counterController.text = _counter.toString();
+    _preProcessForOptions();
     super.initState();
     _getReservationCurrent();
   }
@@ -402,9 +436,68 @@ class _ReservationPageState extends State<ReservationPage> {
                       ),
                       title: Center(
                           child: Text(
-                        '${_formatPrice((widget.product.price * (1 - (widget.product.discount / 100.0)) * _counter).round())}원',
+                        '${_formatPrice(((widget.product.price * (1 - (widget.product.discount / 100.0)) + _additionalPrice) * _counter).round())}원',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       )),
+                    ),
+                  ),
+                  !_isSelected
+                      ? SizedBox()
+                      : Column(
+                          children: [
+                            Row(
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.all(size.width * 0.02),
+                                  child: Text('  * 상품 옵션 내역',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 12,
+                                          color: Colors.black54)),
+                                ),
+                              ],
+                            ),
+                            Text(
+                              _optionString,
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            )
+                          ],
+                        ),
+                  Divider(
+                    thickness: 0.5,
+                    indent: 5,
+                    endIndent: 5,
+                  ),
+                  SizedBox(
+                    height: size.height * 0.02,
+                  ),
+                  Row(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.all(size.width * 0.02),
+                        child: Text('  * 추가 요청 사항',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                                color: Colors.black54)),
+                      ),
+                    ],
+                  ),
+                  Center(
+                    child: Container(
+                      width: size.width * 0.9,
+                      decoration: BoxDecoration(
+                          border: Border.all(width: 1, color: Colors.black),
+                          borderRadius: BorderRadius.circular(5)),
+                      child: TextField(
+                        decoration: InputDecoration(
+                          hintText: ' 필요시 요청 사항을 입력하세요.',
+                          hintStyle: TextStyle(color: Colors.grey),
+                          border: InputBorder.none,
+                        ),
+                        controller: _requestOptionController,
+                        maxLines: null,
+                      ),
                     ),
                   ),
                   SizedBox(
@@ -700,6 +793,13 @@ class _ReservationPageState extends State<ReservationPage> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => ReservationCompletePage(
+                              totalPrice: ((widget.product.price *
+                                              (1 -
+                                                  (widget.product.discount /
+                                                      100.0)) +
+                                          _additionalPrice) *
+                                      _counter)
+                                  .round(),
                               user: widget.user,
                               product: widget.product,
                               count: _counter,
