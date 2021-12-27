@@ -323,7 +323,7 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
               child: Row(
                 children: [
                   Text(
-                    '- 가격',
+                    '- 정가',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                   ),
                   Text(

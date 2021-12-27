@@ -218,6 +218,32 @@ class _FinalReservationPageState extends State<FinalReservationPage> {
                         SizedBox(
                           height: size.height * 0.01,
                         ),
+                        Padding(
+                          padding: EdgeInsets.all(size.width * 0.01),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Text(
+                                    '요청사항 및 상품 옵션',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16),
+                                  ),
+                                ],
+                              ),
+                              Text('${widget.data['options']}',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                      color: Colors.blueGrey))
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          height: size.height * 0.01,
+                        ),
                         _productItemTile(size),
                         SizedBox(
                           height: size.height * 0.01,
@@ -232,7 +258,7 @@ class _FinalReservationPageState extends State<FinalReservationPage> {
                             child: CachedNetworkImage(
                               imageUrl: widget.data['detail'][0]['pInfo']
                                   ['imgUrl'],
-                              fit: BoxFit.fill,
+                              fit: BoxFit.cover,
                               progressIndicatorBuilder: (context, string,
                                       progress) =>
                                   Center(child: CircularProgressIndicator()),
@@ -246,14 +272,14 @@ class _FinalReservationPageState extends State<FinalReservationPage> {
                               Card(
                                 child: Container(
                                   padding: EdgeInsets.all(size.width * 0.04),
-                                  width: size.width * 0.4,
+                                  width: size.width * 0.6,
                                   alignment: Alignment.center,
                                   child: Text(
-                                    '총 ${_formatPrice(int.parse(widget.data['detail'][0]['quantity']) * int.parse(widget.data['detail'][0]['pInfo']['price']))}원',
+                                    '최종 금액 ${_formatPrice(int.parse(widget.data['totalPrice']))}원',
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 18),
-                                  ),
+                                  ),w
                                 ),
                               ),
                             ],
