@@ -324,8 +324,8 @@ class _CartPageState extends State<CartPage> {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           Container(
-            height: size.height * 0.3 * 1.4,
-            width: size.width * 0.3,
+            height: size.width * 0.23 * 1.4,
+            width: size.width * 0.23,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: CachedNetworkImage(
@@ -352,7 +352,7 @@ class _CartPageState extends State<CartPage> {
                     Text(
                       cartItem['prodName'],
                       style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 14.5),
                     ),
                     Text(
                       '  [${_categoryReverseMap[int.parse(cartItem['category'])]}]',
@@ -402,7 +402,7 @@ class _CartPageState extends State<CartPage> {
                       ),
                     ),
                     Container(
-                      width: size.width * 0.115,
+                      width: size.width * 0.11,
                       height: size.height * 0.05,
                       decoration: BoxDecoration(
                           color: Colors.black38,
@@ -461,18 +461,18 @@ class _CartPageState extends State<CartPage> {
                       },
                       icon: Icon(
                         Icons.clear,
-                        size: 28,
+                        size: 27,
                       ),
                     ),
                   ),
                 ),
                 Container(
-                    padding: EdgeInsets.all(8),
-                    margin: EdgeInsets.only(bottom: 5),
+                    padding: EdgeInsets.all(size.width * 0.01),
+                    margin: EdgeInsets.only(bottom: size.width * 0.008),
                     child: Text(
                       '${_formatPrice(_calculateTotalEachPrice(int.parse(cartItem['price']), double.parse(cartItem['discount']), _countList[index]))}원',
                       style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                     )),
               ],
             ),
