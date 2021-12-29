@@ -420,23 +420,33 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
 
   Widget _productItemLayout(Map productMap, int quantity, Size size) {
     return Container(
-      padding: EdgeInsets.all(10),
+      padding: EdgeInsets.all(size.width * 0.03),
       width: size.width,
-      height: size.height * 0.1,
-      margin: EdgeInsets.all(6),
+      margin: EdgeInsets.all(size.width * 0.01),
       decoration: BoxDecoration(
           border: Border.all(width: 0.8, color: Colors.grey),
           borderRadius: BorderRadius.circular(10)),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          Row(
-            children: [
-              Text(
-                '${productMap['pName'] + ' [' + _categoryReverseMap[int.parse(productMap['category'])]}]  $quantity개',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-              ),
-            ],
+          Align(
+            alignment: Alignment.topLeft,
+            child: Wrap(
+              children: [
+                Text(
+                  '${productMap['pName']}',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                ),
+                Text(
+                  ' [${_categoryReverseMap[int.parse(productMap['category'])]}] ',
+                  style: TextStyle(color: Colors.grey),
+                ),
+                Text(' $quantity개')
+              ],
+            ),
+          ),
+          SizedBox(
+            height: size.height * 0.01,
           ),
           Row(
             children: [
@@ -445,7 +455,7 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               SizedBox(
-                width: size.width * 0.05,
+                width: size.width * 0.03,
               ),
               double.parse(productMap['discount']).toString() == '0.0'
                   ? SizedBox()

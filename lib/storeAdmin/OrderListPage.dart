@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:asgshighschool/data/user_data.dart';
 import 'package:asgshighschool/storeAdmin/AdminDetailOrder.dart';
+import 'package:asgshighschool/storeAdmin/FullListPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -40,6 +41,24 @@ class _OrderListPageState extends State<OrderListPage> {
       return hourDiff.toString() + '시간 전';
     } else {
       return dayDiff.toString() + '일 전';
+    }
+  }
+
+  Future<User> _getUserInformation(String uid) async {
+    String url =
+        'http://nacha01.dothome.co.kr/sin/arlimi_getOneUser.php?uid=$uid';
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      String result = utf8
+          .decode(response.bodyBytes)
+          .replaceAll(
+              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+              '')
+          .trim();
+      return User.fromJson(json.decode(result));
+    } else {
+      return null;
     }
   }
 
@@ -109,8 +128,9 @@ class _OrderListPageState extends State<OrderListPage> {
       appBar: AppBar(
         backgroundColor: Color(0xFF9EE1E5),
         title: Text(
-          '실시간 주문 목록',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          '실시간 주문(구매) 목록',
+          style: TextStyle(
+              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
         ),
         centerTitle: true,
         leading: IconButton(
@@ -119,6 +139,27 @@ class _OrderListPageState extends State<OrderListPage> {
               Icons.arrow_back,
               color: Colors.black,
             )),
+        actions: [
+          IconButton(
+            onPressed: () async {
+              var res = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => FullListPage(
+                            user: widget.user,
+                            isResv: false,
+                          )));
+              if (res) {
+                await _getAllOrderData();
+              }
+            },
+            icon: Icon(
+              Icons.list_alt_rounded,
+              color: Colors.black,
+            ),
+            iconSize: 30,
+          )
+        ],
       ),
       body: Column(
         children: [
@@ -242,8 +283,60 @@ class _OrderListPageState extends State<OrderListPage> {
                   )
                 ],
               ),
-              Text('주문자 ID : $uid',
-                  style: TextStyle(fontWeight: FontWeight.bold)),
+              SizedBox(
+                height: size.height * 0.005,
+              ),
+              GestureDetector(
+                onTap: () async {
+                  var user = await _getUserInformation(uid);
+                  showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                            title: Text('예약자 정보'),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '아이디 : ${user.uid}',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                Text('이름 : ${user.name}',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold)),
+                                Text('신분 : ${statusList[user.identity - 1]}',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold)),
+                                Text(
+                                    '학번 : ${user.studentId == null || user.studentId == '' ? 'X' : user.studentId}',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold)),
+                                Text('닉네임 : ${user.nickName}',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold))
+                              ],
+                            ),
+                            actions: [
+                              FlatButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: Text('확인',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.blueAccent)),
+                                padding: EdgeInsets.all(0),
+                              )
+                            ],
+                          ));
+                },
+                child: Text('주문자 ID : $uid',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        decoration: TextDecoration.underline,
+                        color: Colors.teal)),
+              ),
+              SizedBox(
+                height: size.height * 0.005,
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

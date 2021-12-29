@@ -331,14 +331,25 @@ class _DetailReservationStatePageState
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            Row(
+                            Wrap(
+                              spacing: 0.05,
                               children: [
                                 Text(
-                                  '${widget.data['detail'][0]['pInfo']['pName'] + ' [' + _categoryReverseMap[int.parse(widget.data['detail'][0]['pInfo']['category'])]}]  ${widget.data['detail'][0]['quantity']}개',
+                                  '${widget.data['detail'][0]['pInfo']['pName']}',
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 15),
+                                      fontSize: 14),
                                 ),
+                                Text(
+                                    ' [${_categoryReverseMap[int.parse(widget.data['detail'][0]['pInfo']['category'])]}]',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14)),
+                                Text(
+                                    ' ${widget.data['detail'][0]['quantity']}개',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14))
                               ],
                             ),
                             Row(

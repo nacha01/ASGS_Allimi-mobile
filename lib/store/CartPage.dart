@@ -239,14 +239,18 @@ class _CartPageState extends State<CartPage> {
                     children: [
                       //brief 설명 적는 곳
                       Text('' /*이 페이지의 간략한 설명 적는 란*/),
-                      Text('* 현재 장바구니 이용 시 상품 옵션을 사용할 수 없습니다!')
+                      Padding(
+                        padding: EdgeInsets.all(size.width * 0.02),
+                        child: Text(
+                          '* 현재 장바구니 이용 시 상품 옵션을 사용할 수 없습니다!',
+                          style: TextStyle(
+                              color: Colors.grey,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12),
+                        ),
+                      )
                     ],
                   ),
-                ),
-                Divider(
-                  indent: 10,
-                  endIndent: 10,
-                  thickness: 1,
                 ),
                 SizedBox(
                   height: size.height * 0.01,
@@ -269,6 +273,10 @@ class _CartPageState extends State<CartPage> {
                             builder: (context) => OrderPage(
                                   cart: _cartProductList,
                                   user: widget.user,
+                                  optionList: [],
+                                  selectList: [],
+                                  additionalPrice: 0,
+                                  productCount: 0,
                                 )));
                     setState(() {
                       _getCartForUserRequest();
@@ -318,7 +326,7 @@ class _CartPageState extends State<CartPage> {
           BoxDecoration(border: Border.all(width: 0.5, color: Colors.grey)),
       width: size.width,
       height: size.height * 0.2,
-      padding: EdgeInsets.all(size.width * 0.02),
+      padding: EdgeInsets.all(size.width * 0.03),
       margin: EdgeInsets.all(size.width * 0.006),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -339,26 +347,29 @@ class _CartPageState extends State<CartPage> {
               ),
             ),
           ),
+          SizedBox(
+            width: size.width * 0.012,
+          ),
           Container(
-            // width: size.width * 0.5,
+            width: size.width * 0.5,
             alignment: Alignment.center,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               // crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
+                Align(
+                  alignment: Alignment.topLeft,
+                  child: Wrap(children: [
                     Text(
                       cartItem['prodName'],
                       style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 14.5),
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                     ),
                     Text(
                       '  [${_categoryReverseMap[int.parse(cartItem['category'])]}]',
-                      style: TextStyle(color: Colors.grey),
+                      style: TextStyle(color: Colors.grey, fontSize: 14),
                     )
-                  ],
+                  ]),
                 ),
                 Text('· 정가 : ${_formatPrice(int.parse(cartItem['price']))}원'),
                 double.parse(cartItem['discount']).toString() != '0.0'
@@ -431,50 +442,52 @@ class _CartPageState extends State<CartPage> {
               ],
             ),
           ),
-          Container(
-            // width: size.width * 0.2,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Expanded(
-                  child: Container(
-                    alignment: Alignment.topRight,
-                    child: IconButton(
-                      onPressed: () async {
-                        var result = await _deleteCartForUserRequest(
-                            int.parse(cartItem['cID']));
-                        if (result) {
-                          var res = await _getCartForUserRequest();
-                          if (_cartProductList.length == 0) {
-                            existCart.setExistCart(false);
+          Expanded(
+            child: Container(
+              // width: size.width * 0.2,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Expanded(
+                    child: Container(
+                      alignment: Alignment.topRight,
+                      child: IconButton(
+                        onPressed: () async {
+                          var result = await _deleteCartForUserRequest(
+                              int.parse(cartItem['cID']));
+                          if (result) {
+                            var res = await _getCartForUserRequest();
+                            if (_cartProductList.length == 0) {
+                              existCart.setExistCart(false);
+                            }
+                            Fluttertoast.showToast(
+                                msg: '장바구니에서 상품을 삭제하였습니다.',
+                                gravity: ToastGravity.BOTTOM,
+                                toastLength: Toast.LENGTH_SHORT);
+                          } else {
+                            Fluttertoast.showToast(
+                                msg: '장바구니에서 상품을 삭제하는데 실패했습니다!!',
+                                gravity: ToastGravity.BOTTOM,
+                                toastLength: Toast.LENGTH_SHORT);
                           }
-                          Fluttertoast.showToast(
-                              msg: '장바구니에서 상품을 삭제하였습니다.',
-                              gravity: ToastGravity.BOTTOM,
-                              toastLength: Toast.LENGTH_SHORT);
-                        } else {
-                          Fluttertoast.showToast(
-                              msg: '장바구니에서 상품을 삭제하는데 실패했습니다!!',
-                              gravity: ToastGravity.BOTTOM,
-                              toastLength: Toast.LENGTH_SHORT);
-                        }
-                      },
-                      icon: Icon(
-                        Icons.clear,
-                        size: 27,
+                        },
+                        icon: Icon(
+                          Icons.clear,
+                          size: 27,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                Container(
-                    padding: EdgeInsets.all(size.width * 0.01),
-                    margin: EdgeInsets.only(bottom: size.width * 0.008),
-                    child: Text(
-                      '${_formatPrice(_calculateTotalEachPrice(int.parse(cartItem['price']), double.parse(cartItem['discount']), _countList[index]))}원',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                    )),
-              ],
+                  Container(
+                      padding: EdgeInsets.all(size.width * 0.01),
+                      margin: EdgeInsets.only(bottom: size.width * 0.008),
+                      child: Text(
+                        '${_formatPrice(_calculateTotalEachPrice(int.parse(cartItem['price']), double.parse(cartItem['discount']), _countList[index]))}원',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 15),
+                      )),
+                ],
+              ),
             ),
           ),
         ],

@@ -218,41 +218,45 @@ class _OrderStatePageState extends State<OrderStatePage> {
       child: Container(
         padding: EdgeInsets.all(size.width * 0.02),
         width: size.width,
-        height: size.height * 0.15,
         decoration: BoxDecoration(
           border: Border.all(width: 0.5, color: Colors.black26),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  '주문번호 : ${orderJson['oID']}',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-                ),
-                Text(
-                  '${_formatForItemDate(orderJson['oDate'])}',
-                  style: TextStyle(color: Colors.black45),
-                )
-              ],
+            Padding(
+              padding: EdgeInsets.all(size.width * 0.01),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    '주문번호 : ${orderJson['oID']}',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                  ),
+                  Text(
+                    '${_formatForItemDate(orderJson['oDate'])}',
+                    style: TextStyle(color: Colors.black45),
+                  )
+                ],
+              ),
             ),
             SizedBox(
               height: size.height * 0.01,
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  '[${_categoryReverseMap[int.parse(orderJson['detail'][0]['pInfo']['category'])]}] ',
-                  style: TextStyle(color: Colors.grey),
-                ),
-                Text(
-                  ' ${_extractDetailProductText(orderJson['detail'])} ',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ],
+            Align(
+              alignment: Alignment.topLeft,
+              child: Wrap(
+                children: [
+                  Text(
+                    '[${_categoryReverseMap[int.parse(orderJson['detail'][0]['pInfo']['category'])]}] ',
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                  Text(
+                    ' ${_extractDetailProductText(orderJson['detail'])} ',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                  ),
+                ],
+              ),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

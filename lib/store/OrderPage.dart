@@ -102,6 +102,9 @@ class _OrderPageState extends State<OrderPage> {
   }
 
   void _preProcessForOptions() {
+    if (widget.selectList.length == 0) {
+      return;
+    }
     for (int i = 0; i < widget.selectList.length; ++i) {
       if (widget.selectList[i] != -1) {
         _isSelected = true;
@@ -295,7 +298,7 @@ class _OrderPageState extends State<OrderPage> {
               (widget.direct.discount.toString() == '0.0'
                   ? 0
                   : widget.direct.discount / 100.0)))
-          .floor();
+          .round();
     }
     return sum;
   }
@@ -415,13 +418,6 @@ class _OrderPageState extends State<OrderPage> {
                             _receiveMethod = value;
                           });
                         }),
-                    Text(
-                      ' * 수령 방식 선택',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
-                          color: Colors.black54),
-                    ),
                     RadioListTile(
                         subtitle: Text('요청하신 장소로 배달해드립니다.'),
                         title: Text('배달'),
@@ -542,7 +538,7 @@ class _OrderPageState extends State<OrderPage> {
                               children: [
                                 Text('결제 금액'),
                                 Text(
-                                    '${_formatPrice(_getOriginTotalPrice() + _additionalPrice * widget.productCount)} 원')
+                                    '${_formatPrice(_getOriginTotalPrice() + (widget.selectList.length != 0 ? _additionalPrice * widget.productCount : 0))} 원')
                               ],
                             ),
                             Row(
@@ -653,7 +649,7 @@ class _OrderPageState extends State<OrderPage> {
                     color: Color(0xFF9EE1E5)),
                 width: size.width,
                 child: Text(
-                  '${_formatPrice((_getOriginTotalPrice() - _getTotalDiscount()) + _additionalPrice * widget.productCount)} 원  결제하기',
+                  '${_formatPrice((_getOriginTotalPrice() - _getTotalDiscount()) + _additionalPrice * widget.productCount)} 원 결제 및 구매하기',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),

@@ -406,26 +406,29 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
           border: Border.all(width: 2, color: Colors.grey)),
       child: Column(
         children: [
-          Row(
-            children: [
-              Text(
-                '[${_categoryReverseMap[category]}] ',
-                style: TextStyle(
-                  color: Colors.black54,
+          Align(
+            alignment: Alignment.topLeft,
+            child: Wrap(
+              children: [
+                Text(
+                  '[${_categoryReverseMap[category]}] ',
+                  style: TextStyle(
+                    color: Colors.black54,
+                  ),
                 ),
-              ),
-              Text(
-                name,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-              ),
-              Text(
-                '  $quantity개',
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.deepOrange,
-                    fontSize: 15),
-              )
-            ],
+                Text(
+                  name,
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                ),
+                Text(
+                  '  $quantity개',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.deepOrange,
+                      fontSize: 15),
+                )
+              ],
+            ),
           ),
           SizedBox(
             height: size.height * 0.01,

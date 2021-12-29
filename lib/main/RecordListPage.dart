@@ -20,6 +20,8 @@ class RecordListPage extends StatefulWidget {
 class _RecordListPageState extends State<RecordListPage> {
   String _appBarTitle;
   List _rankList = [];
+  final statusList = ['재학생', '학부모', '교사', '졸업생', '기타'];
+
   @override
   void initState() {
     super.initState();
@@ -110,11 +112,68 @@ class _RecordListPageState extends State<RecordListPage> {
                           fontSize: 18),
                     ),
                     title: Center(
-                        child: Text(
-                      '${_rankList[index]['nickname']}',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontStyle: FontStyle.italic),
+                        child: GestureDetector(
+                      onTap: widget.user.isAdmin
+                          ? () {
+                              showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                        title: Text('예약자 정보'),
+                                        content: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              '아이디 : ${_rankList[index]['uid']}',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                            Text(
+                                                '이름 : ${_rankList[index]['name']}',
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold)),
+                                            Text(
+                                                '신분 : ${statusList[int.parse(_rankList[index]['identity']) - 1]}',
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold)),
+                                            Text(
+                                                '학번 : ${_rankList[index]['student_id'] == null || _rankList[index]['student_id'] == '' ? 'X' : _rankList[index]['student_id']}',
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold)),
+                                            Text(
+                                                '닉네임 : ${_rankList[index]['nickname']}',
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold))
+                                          ],
+                                        ),
+                                        actions: [
+                                          FlatButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context),
+                                            child: Text('확인',
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.blueAccent)),
+                                            padding: EdgeInsets.all(0),
+                                          )
+                                        ],
+                                      ));
+                            }
+                          : null,
+                      child: Text(
+                        '${_rankList[index]['nickname']}',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontStyle: FontStyle.italic,
+                            decoration: widget.user.isAdmin
+                                ? TextDecoration.underline
+                                : TextDecoration.none),
+                      ),
                     )),
                     trailing: Text(
                       '${_rankList[index]['record']}점',

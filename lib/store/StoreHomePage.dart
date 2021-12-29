@@ -1652,7 +1652,7 @@ class _StoreHomePageState extends State<StoreHomePage>
           ),
           Text(prodName,
               style: TextStyle(fontWeight: FontWeight.bold),
-              textAlign: TextAlign.start)
+              textAlign: TextAlign.center)
         ],
       ),
     );
@@ -1663,7 +1663,7 @@ class _StoreHomePageState extends State<StoreHomePage>
       onTap: () async {
         var res = await Navigator.push(context,
             MaterialPageRoute(builder: (context) => AddingProductPage()));
-        print(res);
+        // print(res);
         if (res) {
           await _getProducts();
         }

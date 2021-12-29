@@ -403,7 +403,7 @@ class _StoreMyPageState extends State<StoreMyPage> {
                             SizedBox(
                               width: size.width * 0.03,
                             ),
-                            Text('실시간 주문 현황 목록',
+                            Text('실시간 주문(구매) 현황 목록',
                                 style: TextStyle(
                                     fontSize: 19,
                                     fontWeight: FontWeight.bold,

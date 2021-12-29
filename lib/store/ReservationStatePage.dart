@@ -230,32 +230,35 @@ class _ReservationStatePageState extends State<ReservationStatePage> {
             SizedBox(
               height: size.height * 0.01,
             ),
-            Wrap(
-              spacing: size.width * 0.09,
-              children: [
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      '[${_categoryReverseMap[int.parse(data['detail'][0]['pInfo']['category'])]}]',
-                      style: TextStyle(color: Colors.grey[500], fontSize: 15),
-                    ),
-                    Text(
-                      ' ${data['detail'][0]['pInfo']['pName']} ',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                    ),
-                    Text(
-                      ' ${data['detail'][0]['quantity']}개',
-                      style: TextStyle(fontSize: 15),
-                    ),
-                  ],
-                ),
-                Text(
-                  '${data['oDate']}',
-                  style: TextStyle(fontSize: 13, color: Colors.grey),
-                )
-              ],
+            Align(
+              alignment: Alignment.topLeft,
+              child: Wrap(
+                spacing: size.width * 0.09,
+                children: [
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        '[${_categoryReverseMap[int.parse(data['detail'][0]['pInfo']['category'])]}]',
+                        style: TextStyle(color: Colors.grey[500], fontSize: 15),
+                      ),
+                      Text(
+                        ' ${data['detail'][0]['pInfo']['pName']} ',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 15),
+                      ),
+                      Text(
+                        ' ${data['detail'][0]['quantity']}개',
+                        style: TextStyle(fontSize: 15),
+                      ),
+                    ],
+                  ),
+                  Text(
+                    '${data['oDate']}',
+                    style: TextStyle(fontSize: 13, color: Colors.grey),
+                  )
+                ],
+              ),
             ),
           ],
         ),

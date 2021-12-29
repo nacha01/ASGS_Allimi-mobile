@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:asgshighschool/data/user_data.dart';
 import 'package:asgshighschool/storeAdmin/AdminDetailReservation.dart';
+import 'package:asgshighschool/storeAdmin/FullListPage.dart';
 import 'package:asgshighschool/storeAdmin/QrReservationPage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
@@ -283,7 +284,26 @@ class _ReservationListPageState extends State<ReservationListPage> {
               icon: Icon(
                 Icons.qr_code_scanner,
                 color: Colors.deepPurple,
-              ))
+              )),
+          IconButton(
+            onPressed: () async {
+              var res = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => FullListPage(
+                            user: widget.user,
+                            isResv: true,
+                          )));
+              if (res) {
+                await _getAllReservationData();
+              }
+            },
+            icon: Icon(
+              Icons.list_alt_rounded,
+              color: Colors.black,
+            ),
+            iconSize: 32,
+          )
         ],
       ),
       body: Column(
@@ -757,25 +777,22 @@ class _ReservationListPageState extends State<ReservationListPage> {
                     height: size.height * 0.008,
                   ),
                   Wrap(
-                    spacing: size.width * 0.05,
                     children: [
+                      Text(
+                        ' [${_categoryReverseMap[int.parse(data['detail'][0]['pInfo']['category'])]}]',
+                        style: TextStyle(color: Colors.grey[500], fontSize: 11),
+                      ),
+                      Text(' ${data['detail'][0]['pInfo']['pName']} ',
+                          style: TextStyle(
+                              fontSize: 12, fontWeight: FontWeight.bold)),
+                      Text('  ${data['detail'][0]['quantity']}개',
+                          style: TextStyle(fontSize: 12)),
                       Row(
                         mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            ' [${_categoryReverseMap[int.parse(data['detail'][0]['pInfo']['category'])]}]',
-                            style: TextStyle(
-                                color: Colors.grey[500], fontSize: 11),
-                          ),
-                          Text(' ${data['detail'][0]['pInfo']['pName']} ',
-                              style: TextStyle(
-                                  fontSize: 12, fontWeight: FontWeight.bold)),
-                          Text('  ${data['detail'][0]['quantity']}개',
-                              style: TextStyle(fontSize: 12)),
-                        ],
+                        children: [],
                       ),
                       Text(
-                        '총 금액 ${_formatPrice(int.parse(data['totalPrice']))}원',
+                        '  총 금액 ${_formatPrice(int.parse(data['totalPrice']))}원',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 13),
                       ),
@@ -811,42 +828,39 @@ class _ReservationListPageState extends State<ReservationListPage> {
             await _getAllReservationData();
           }
         },
-        padding: EdgeInsets.all(0),
+        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         child: Column(
           children: [
-            Wrap(
-              children: [
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      '[${_categoryReverseMap[data.category]}] ',
-                      style: TextStyle(color: Colors.grey, fontSize: 11),
-                    ),
-                    Text(
-                      data.name,
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 11),
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.person,
-                      color: Colors.grey,
-                      size: 18,
-                    ),
-                    Text(
-                      ' ${data.count}',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 11),
-                    )
-                  ],
-                ),
-              ],
-              spacing: size.width * 0.13,
+            Align(
+              alignment: Alignment.topLeft,
+              child: Wrap(
+                children: [
+                  Text(
+                    '[${_categoryReverseMap[data.category]}] ',
+                    style: TextStyle(color: Colors.grey, fontSize: 11),
+                  ),
+                  Text(
+                    data.name,
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11),
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.person,
+                        color: Colors.grey,
+                        size: 18,
+                      ),
+                      Text(
+                        ' ${data.count}',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 11),
+                      )
+                    ],
+                  ),
+                ],
+                spacing: size.width * 0.2,
+              ),
             ),
             Divider(
               thickness: 1,

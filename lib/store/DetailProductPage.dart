@@ -235,10 +235,14 @@ class _DetailProductPageState extends State<DetailProductPage> {
                   SizedBox(
                     height: size.height * 0.03,
                   ),
-                  Text(
-                    '${widget.product.prodName}',
-                    textScaleFactor: 3,
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                  Padding(
+                    padding: EdgeInsets.all(size.width * 0.01),
+                    child: Text(
+                      '${widget.product.prodName}',
+                      textScaleFactor: 2.5,
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.center,
+                    ),
                   ),
                   Text(
                     '[${_categoryReverseMap[widget.product.category]}]',
@@ -249,7 +253,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                     height: size.height * 0.03,
                   ),
                   Container(
-                      padding: EdgeInsets.all(8),
+                      padding: EdgeInsets.all(size.width * 0.06),
                       alignment: Alignment.center,
                       width: size.width * 0.9,
                       decoration: BoxDecoration(
@@ -265,7 +269,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                       child: Text(
                         '${widget.product.prodInfo}',
                         textScaleFactor: 2,
-                        style: TextStyle(),
+                        style: TextStyle(height: 1.3),
                       )),
                   SizedBox(
                     height: size.height * 0.03,

@@ -243,18 +243,17 @@ class _ReservationPageState extends State<ReservationPage> {
                   ),
                   Padding(
                     padding: EdgeInsets.all(size.width * 0.02),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    child: Wrap(
                       children: [
                         Text(
                           '상품 [',
-                          style: TextStyle(fontSize: 18),
+                          style: TextStyle(fontSize: 17),
                         ),
                         Text(
                           '${widget.product.prodName}',
-                          style: TextStyle(color: Colors.green, fontSize: 18),
+                          style: TextStyle(color: Colors.green, fontSize: 17),
                         ),
-                        Text('] 예약하기', style: TextStyle(fontSize: 18)),
+                        Text('] 예약하기', style: TextStyle(fontSize: 17)),
                       ],
                     ),
                   ),
