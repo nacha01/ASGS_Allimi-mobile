@@ -165,6 +165,7 @@ class _SignInPageState extends State<SignInPage> {
         if (result.isAdmin) {
           result.adminKey = _key;
         }
+        await _checkUserToken(_idController.text);
         Navigator.pushReplacement(
             context,
             MaterialPageRoute(
@@ -233,6 +234,7 @@ class _SignInPageState extends State<SignInPage> {
                                 MaterialPageRoute(
                                     builder: (context) => HomePage(
                                           user: res,
+                                          token: widget.token,
                                         )));
                           }
                         },
@@ -261,6 +263,17 @@ class _SignInPageState extends State<SignInPage> {
       return User.fromJson(json.decode(result));
     } else {
       return null;
+    }
+  }
+
+  Future<bool> _checkUserToken(String uid) async {
+    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_checkUserToken.php';
+    final response = await http
+        .post(url, body: <String, String>{'uid': uid, 'token': widget.token});
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
     }
   }
 
@@ -511,6 +524,7 @@ class _SignInPageState extends State<SignInPage> {
                       if (result.isAdmin) {
                         result.adminKey = _key;
                       }
+                      await _checkUserToken(_idController.text);
                       Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(

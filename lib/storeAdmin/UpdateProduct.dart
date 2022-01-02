@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 
@@ -23,6 +24,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
   var _productDiscountController = TextEditingController();
 
   var _cumulativeSellCount = TextEditingController();
+  var _reservationCountController = TextEditingController();
 
   PickedFile _mainImage;
   PickedFile _subImage1;
@@ -30,6 +32,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
 
   bool _isBest = false;
   bool _isNew = false;
+  bool _isReservation = false;
 
   bool _useSub1 = false;
   bool _useSub2 = false;
@@ -211,7 +214,58 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
     }
     var registerResult = await _updateProductRequest();
     if (!registerResult) return 500;
+
+    var limit = await _setReservationCountLimit();
+    if (!limit) return 500;
     return 200; // 성공 코드
+  }
+
+  Future<void> _getCountLimit() async {
+    String url =
+        'http://nacha01.dothome.co.kr/sin/arlimi_getResvCount.php?pid=${widget.product.prodID}';
+
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      String result = utf8
+          .decode(response.bodyBytes)
+          .replaceAll(
+              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+              '')
+          .trim();
+      var data = json.decode(result);
+      setState(() {
+        _reservationCountController.text = data['max_count'];
+      });
+    }
+  }
+
+  Future<bool> _setReservationCountLimit() async {
+    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_resvLimit.php';
+    int value = int.parse(_reservationCountController.text) < 0 &&
+            int.parse(_reservationCountController.text) != -1
+        ? -1
+        : int.parse(_reservationCountController.text);
+    final response = await http.post(url, body: <String, String>{
+      'pid': widget.product.prodID.toString(),
+      'max_count': value.toString()
+    });
+
+    if (response.statusCode == 200) {
+      String result = utf8
+          .decode(response.bodyBytes)
+          .replaceAll(
+              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+              '')
+          .trim();
+
+      if (result == 'UPDATE1' || result == 'INSERT1') {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
   }
 
   @override
@@ -225,6 +279,8 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
     _isNew = widget.product.isNew == 1 ? true : false;
     _cumulativeSellCount.text = widget.product.cumulBuyCount.toString();
     _productDiscountController.text = widget.product.discount.toString();
+    _isReservation = widget.product.isReservation;
+    _getCountLimit();
     super.initState();
   }
 
@@ -525,6 +581,99 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
               SizedBox(
                 height: 10,
               ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    margin: EdgeInsets.all(5),
+                    alignment: Alignment.center,
+                    width: size.width * 0.42,
+                    height: size.height * 0.06,
+                    child: Text(
+                      '*재고가 0일 때 처리',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    decoration: BoxDecoration(
+                        color: Color(0xFF9EE1E5),
+                        borderRadius: BorderRadius.circular(8)),
+                  ),
+                  Container(
+                    width: size.width * 0.22,
+                    child: CheckboxListTile(
+                        contentPadding: EdgeInsets.all(0),
+                        title: Text(
+                          '예약',
+                          style: TextStyle(
+                              fontSize: 12, fontWeight: FontWeight.bold),
+                        ),
+                        value: _isReservation,
+                        onChanged: (value) {
+                          setState(() {
+                            _isReservation = true;
+                          });
+                        }),
+                  ),
+                  Container(
+                    width: size.width * 0.22,
+                    child: CheckboxListTile(
+                        contentPadding: EdgeInsets.all(0),
+                        title: Text('품절',
+                            style: TextStyle(
+                                fontSize: 12, fontWeight: FontWeight.bold)),
+                        value: !_isReservation,
+                        onChanged: (value) {
+                          setState(() {
+                            _isReservation = false;
+                          });
+                        }),
+                  ),
+                ],
+              ),
+              Padding(
+                padding: EdgeInsets.all(size.width * 0.015),
+                child: Text(
+                  '* 재고가 0일 때 처리의 의미는 상품이 팔려서 재고가 0이 되었을 때 "품절"처리 할 것인가 아니면 "예약"을 받을 것인가에 대한 처리를 뜻합니다.',
+                  style: TextStyle(color: Colors.grey, fontSize: 10),
+                ),
+              ),
+              _isReservation
+                  ? Padding(
+                      padding: EdgeInsets.all(size.width * 0.02),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                '※ 예약 가능한 최대 수량 설정',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              Container(
+                                child: TextField(
+                                  textAlign: TextAlign.center,
+                                  controller: _reservationCountController,
+                                  keyboardType: TextInputType.number,
+                                ),
+                                width: size.width * 0.2,
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: size.height * 0.01,
+                          ),
+                          Text(
+                            '* 최대 수량을 -1로 설정할 경우 제한을 정하지 않는다는 뜻입니다.\n (제한 없음 = -1)',
+                            style: TextStyle(
+                                fontSize: 10,
+                                color: Colors.red,
+                                fontWeight: FontWeight.bold),
+                          )
+                        ],
+                      ),
+                    )
+                  : SizedBox(),
               Row(
                 children: [
                   titleLayoutWidget(

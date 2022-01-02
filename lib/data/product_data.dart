@@ -12,6 +12,7 @@ class Product {
   int _isBest;
   int _isNew;
   int _cumulBuyCount;
+  bool _isReservation;
 
   Product(
       this._prodID,
@@ -26,7 +27,8 @@ class Product {
       this._imgUrl3,
       this._isBest,
       this._isNew,
-      this._cumulBuyCount);
+      this._cumulBuyCount,
+      this._isReservation);
 
   Product.fromJson(Map<String, dynamic> json)
       : _prodID = int.parse(json['prodID']),
@@ -41,7 +43,8 @@ class Product {
         _imgUrl3 = json['imgUrl3'],
         _isBest = int.parse(json['isBest']),
         _isNew = int.parse(json['isNew']),
-        _cumulBuyCount = int.parse(json['cumulBuy']);
+        _cumulBuyCount = int.parse(json['cumulBuy']),
+        _isReservation = int.parse(json['empty']) == 1 ? true : false;
 
   int get prodID => _prodID;
 
@@ -61,6 +64,13 @@ class Product {
 
   set isNew(int value) {
     _isNew = value;
+  }
+
+
+  bool get isReservation => _isReservation;
+
+  set isReservation(bool value) {
+    _isReservation = value;
   }
 
   int get isBest => _isBest;

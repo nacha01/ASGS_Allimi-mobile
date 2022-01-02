@@ -15,7 +15,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
-// 상품의 재고는 실제 재고보다 5개 작게 보여준다. 2021/09/21
+/// 상품의 재고는 실제 재고보다 5개 작게 보여준다. 2021/09/21
+/// 위의 기능 철회. 2022/01/02 (online & offline 통합 재고관리 불가능)
+
 class DetailProductPage extends StatefulWidget {
   DetailProductPage({this.product, this.user});
 
@@ -285,7 +287,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                         ),
                         title: Center(
                           child: Text(
-                            '상품 재고 : ${(widget.product.stockCount - 5) < 0 ? 0 : (widget.product.stockCount - 5)}개',
+                            '상품 재고 : ${(widget.product.stockCount) < 0 ? 0 : (widget.product.stockCount)}개',
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 18),
                           ),
@@ -367,7 +369,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                   SizedBox(
                     height: size.height * 0.02,
                   ),
-                  (widget.product.stockCount - 5) < 0
+                  (widget.product.stockCount) <= 0
                       ? Container(
                           child: Text(
                             '재고가 없습니다.',
@@ -411,8 +413,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                                 height: size.height * 0.06,
                                 child: IconButton(
                                   onPressed: () {
-                                    if (_count <
-                                        widget.product.stockCount - 5) {
+                                    if (_count < widget.product.stockCount) {
                                       setState(() {
                                         ++_count;
                                       });
@@ -494,7 +495,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                     children: [
                       GestureDetector(
                         onTap: () async {
-                          if (_count < 1 || widget.product.stockCount - 5 < 1) {
+                          if (_count < 1 || widget.product.stockCount < 1) {
                             Fluttertoast.showToast(
                                 msg: '상품의 재고가 없어 장바구니에 담을 수 없습니다!',
                                 gravity: ToastGravity.BOTTOM,
@@ -553,7 +554,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          if (_count < 1 || widget.product.stockCount - 5 < 1) {
+                          if (_count < 1 || widget.product.stockCount < 1) {
                             Fluttertoast.showToast(
                                 msg: '상품의 재고가 없어 결제할 수가 없습니다!',
                                 gravity: ToastGravity.BOTTOM,
@@ -597,73 +598,81 @@ class _DetailProductPageState extends State<DetailProductPage> {
                 )
               : FlatButton(
                   padding: EdgeInsets.all(0),
-                  onPressed: () {
-                    if (widget.product.stockCount - 5 < 1) {
-                      // Fluttertoast.showToast(
-                      //     msg: '상품의 재고가 없어 구매가 불가능합니다.',
-                      //     gravity: ToastGravity.BOTTOM,
-                      //     toastLength: Toast.LENGTH_SHORT);
-                      showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                                title: Text(
-                                  '재고 없음',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                content: Text(
-                                    '현재 상품의 재고가 없어 예약만 가능합니다. 예약하러 가시겠습니까?'),
-                                actions: [
-                                  FlatButton(
-                                      onPressed: () {
-                                        Navigator.pushReplacement(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    ReservationPage(
-                                                      user: widget.user,
-                                                      product: widget.product,
-                                                      optionList: _hasOption
-                                                          ? _optionList
-                                                          : [],
-                                                      selectList: _hasOption
-                                                          ? _selectedOptionIndex
-                                                          : [],
-                                                    )));
-                                      },
-                                      child: Text(
-                                        '예',
-                                        style:
-                                            TextStyle(color: Colors.lightBlue),
-                                      )),
-                                  FlatButton(
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                      },
-                                      child: Text(
-                                        '아니오',
-                                        style:
-                                            TextStyle(color: Colors.deepOrange),
-                                      ))
-                                ],
-                              ));
-                      return;
-                    } else {
-                      setState(() {
-                        _isClicked = !_isClicked;
-                      });
-                    }
-                  },
+                  onPressed: widget.product.stockCount < 1 &&
+                          !widget.product.isReservation
+                      ? null
+                      : () {
+                          if (widget.product.stockCount < 1) {
+                            showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                      title: Text(
+                                        '재고 없음',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      content: Text(
+                                          '현재 상품의 재고가 없어 예약만 가능합니다. 예약하러 가시겠습니까?'),
+                                      actions: [
+                                        FlatButton(
+                                            onPressed: () {
+                                              Navigator.pushReplacement(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          ReservationPage(
+                                                            user: widget.user,
+                                                            product:
+                                                                widget.product,
+                                                            optionList:
+                                                                _hasOption
+                                                                    ? _optionList
+                                                                    : [],
+                                                            selectList: _hasOption
+                                                                ? _selectedOptionIndex
+                                                                : [],
+                                                          )));
+                                            },
+                                            child: Text(
+                                              '예',
+                                              style: TextStyle(
+                                                  color: Colors.lightBlue),
+                                            )),
+                                        FlatButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: Text(
+                                              '아니오',
+                                              style: TextStyle(
+                                                  color: Colors.deepOrange),
+                                            ))
+                                      ],
+                                    ));
+                            return;
+                          } else {
+                            setState(() {
+                              _isClicked = !_isClicked;
+                            });
+                          }
+                        },
                   child: Container(
                     alignment: Alignment.center,
                     width: size.width * 0.98,
                     padding: EdgeInsets.all(size.width * 0.025),
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(8),
-                        color: widget.product.stockCount - 5 < 1
-                            ? Colors.deepOrange
+                        color: widget.product.stockCount < 1
+                            ? !widget.product.isReservation
+                                ? Colors.grey
+                                : Colors.deepOrange
                             : Colors.blueAccent),
                     child: Text(
-                      widget.product.stockCount - 5 < 1 ? '예약하기' : '구매하기',
+                      widget.product.stockCount < 1
+                          ? !widget.product.isReservation
+                              ? '품절'
+                              : '예약하러 가기'
+                          : '구매하기',
                       style: TextStyle(
                           fontWeight: FontWeight.bold, color: Colors.white),
                     ),
