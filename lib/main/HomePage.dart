@@ -58,6 +58,38 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
     } else if (Platform.isIOS) {
       _isAndroid = false;
     }
+    tabController.addListener(() {
+      if (tabController.index == 1) {
+        _goDuruDuru();
+      } else if (tabController.index == 2) {
+        _goGame();
+      }
+    });
+  }
+
+  void _goDuruDuru() async {
+    var res = await _checkExistCart();
+    var data = Provider.of<ExistCart>(context, listen: false);
+    data.setExistCart(res);
+    var data2 = Provider.of<RenewUserData>(context, listen: false);
+    data2.setNewUser(widget.user);
+    await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => StoreSplashPage(
+                  user: widget.user,
+                )));
+    tabController.index = 0;
+  }
+
+  void _goGame() async {
+    await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => GameListPage(
+                  user: widget.user,
+                )));
+    tabController.index = 0;
   }
 
   @override

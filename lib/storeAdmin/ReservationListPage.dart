@@ -21,6 +21,7 @@ class ReservationListPage extends StatefulWidget {
 
 class _ReservationListPageState extends State<ReservationListPage> {
   bool _isOrderTime = true;
+  bool _isFinished = false;
   List _reservationListForTime = [];
   final _categoryReverseMap = {
     0: '음식류',
@@ -60,7 +61,9 @@ class _ReservationListPageState extends State<ReservationListPage> {
         }
       }
       _processProductCount();
-      setState(() {});
+      setState(() {
+        _isFinished = true;
+      });
       return true;
     } else {
       return false;
@@ -231,7 +234,6 @@ class _ReservationListPageState extends State<ReservationListPage> {
             _reservationListForTime[i]['detail'][0]['pInfo']['imgUrl'];
       }
     }
-    print(_productCountMap);
     _pcList = _productCountMap.entries
         .map((e) => ProductCount(
             e.key,
@@ -373,40 +375,52 @@ class _ReservationListPageState extends State<ReservationListPage> {
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
           ),
           Divider(),
-          _isOrderTime
-              ? _reservationListForTime.length != 0
-                  ? Expanded(
-                      child: ListView.builder(
-                      itemBuilder: (context, index) {
-                        return _itemTileForTime(
-                            _reservationListForTime[index], size, index);
-                      },
-                      itemCount: _reservationListForTime.length,
-                    ))
-                  : Expanded(
-                      child: Center(
-                          child: Text(
-                      '예약된 내역이 없습니다!',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    )))
-              : _pcList.length != 0
-                  ? Expanded(
-                      child: GridView.builder(
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          mainAxisSpacing: size.height * 0.02,
-                          crossAxisSpacing: size.width * 0.01),
-                      itemCount: _pcList.length,
-                      itemBuilder: (context, index) {
-                        return _itemTileForProduct(_pcList[index], size);
-                      },
-                      padding: EdgeInsets.all(size.width * 0.02),
-                    ))
-                  : Expanded(
-                      child: Center(
-                      child: Text('예약 처리할 목록이 없습니다!',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                    ))
+          _isFinished
+              ? _isOrderTime
+                  ? _reservationListForTime.length != 0
+                      ? Expanded(
+                          child: ListView.builder(
+                          itemBuilder: (context, index) {
+                            return _itemTileForTime(
+                                _reservationListForTime[index], size, index);
+                          },
+                          itemCount: _reservationListForTime.length,
+                        ))
+                      : Expanded(
+                          child: Center(
+                              child: Text(
+                          '예약된 내역이 없습니다!',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        )))
+                  : _pcList.length != 0
+                      ? Expanded(
+                          child: GridView.builder(
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  mainAxisSpacing: size.height * 0.02,
+                                  crossAxisSpacing: size.width * 0.01),
+                          itemCount: _pcList.length,
+                          itemBuilder: (context, index) {
+                            return _itemTileForProduct(_pcList[index], size);
+                          },
+                          padding: EdgeInsets.all(size.width * 0.02),
+                        ))
+                      : Expanded(
+                          child: Center(
+                          child: Text('예약 처리할 목록이 없습니다!',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                        ))
+              : Expanded(
+                  child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('불러오는 중..'),
+                      CircularProgressIndicator(),
+                    ],
+                  ),
+                ))
         ],
       ),
     );

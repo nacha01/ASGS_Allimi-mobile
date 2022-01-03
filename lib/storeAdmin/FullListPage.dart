@@ -17,6 +17,7 @@ class FullListPage extends StatefulWidget {
 class _FullListPageState extends State<FullListPage> {
   List _orderList = [];
   List _reservationList = [];
+  bool _isFinished = false;
   final _payState = ['미결제', '결제 완료'];
   final _reservationState = ['예약 중', '수령 준비', '수령 완료'];
   final _orderState = ['미결제', '결제 완료 및 미수령', '주문 처리 중', '결제완료 및 수령 완료'];
@@ -44,7 +45,9 @@ class _FullListPageState extends State<FullListPage> {
               json.decode(_reservationList[i]['detail'][j]['pInfo']);
         }
       }
-      setState(() {});
+      setState(() {
+        _isFinished = true;
+      });
       return true;
     } else {
       return false;
@@ -71,7 +74,9 @@ class _FullListPageState extends State<FullListPage> {
               json.decode(_orderList[i]['detail'][j]['pInfo']);
         }
       }
-      setState(() {});
+      setState(() {
+        _isFinished = true;
+      });
       return true;
     } else {
       return false;
@@ -174,18 +179,30 @@ class _FullListPageState extends State<FullListPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
               ),
             ),
-            Expanded(
-              child: ListView.builder(
-                itemBuilder: (context, index) => _itemEach(
-                    size,
-                    index,
-                    widget.isResv
-                        ? _reservationList[index]
-                        : _orderList[index]),
-                itemCount:
-                    widget.isResv ? _reservationList.length : _orderList.length,
-              ),
-            ),
+            _isFinished
+                ? Expanded(
+                    child: ListView.builder(
+                      itemBuilder: (context, index) => _itemEach(
+                          size,
+                          index,
+                          widget.isResv
+                              ? _reservationList[index]
+                              : _orderList[index]),
+                      itemCount: widget.isResv
+                          ? _reservationList.length
+                          : _orderList.length,
+                    ),
+                  )
+                : Expanded(
+                    child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text('불러오는 중..'),
+                        CircularProgressIndicator(),
+                      ],
+                    ),
+                  )),
           ],
         ),
       ),

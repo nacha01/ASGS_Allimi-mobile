@@ -45,6 +45,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
   List<int> _selectedOptionIndex = [];
   String _optionString = '';
   int _additionalPrice = 0;
+  String _errorMessage = '';
 
   /// 일반 숫자에 ,를 붙여서 직관적인 가격을 보이게 하는 작업
   /// @param : 직관적인 가격을 보여줄 실제 int 가격[price]
@@ -79,18 +80,20 @@ class _DetailProductPageState extends State<DetailProductPage> {
     if (!_hasOption) {
       return;
     }
-    _optionString += '[{${widget.product.prodName}} 상품 옵션 : ';
-    for (int i = 0; i < _optionList.length; ++i) {
-      if (_selectedOptionIndex[i] != -1) {
-        _additionalPrice += int.parse(
-            _optionList[i]['detail'][_selectedOptionIndex[i]]['optionPrice']);
-        _optionString += _optionList[i]['optionCategory'] +
-            '-' +
-            _optionList[i]['detail'][_selectedOptionIndex[i]]['optionName'] +
-            ' , ';
+    for (int j = 0; j < _count; ++j) {
+      _optionString += '[{${widget.product.prodName}} 상품 옵션 : ';
+      for (int i = 0; i < _optionList.length; ++i) {
+        if (_selectedOptionIndex[i] != -1) {
+          _additionalPrice += int.parse(
+              _optionList[i]['detail'][_selectedOptionIndex[i]]['optionPrice']);
+          _optionString += _optionList[i]['optionCategory'] +
+              '-' +
+              _optionList[i]['detail'][_selectedOptionIndex[i]]['optionName'] +
+              ' , ';
+        }
       }
+      _optionString += ']\n';
     }
-    _optionString += ']\n';
   }
 
   /// 상품을 장바구니에 추가하는 요청을 하는 작업
@@ -114,7 +117,10 @@ class _DetailProductPageState extends State<DetailProductPage> {
               '')
           .trim();
       print(replace);
-      if (replace != '1' && replace != 'Already Exists1') return false;
+      if (replace != '1' && replace != 'Already Exists1') {
+        _errorMessage = replace;
+        return false;
+      }
       return true;
     } else {
       return false;
@@ -538,10 +544,19 @@ class _DetailProductPageState extends State<DetailProductPage> {
                                   gravity: ToastGravity.BOTTOM,
                                   toastLength: Toast.LENGTH_SHORT);
                             } else {
-                              Fluttertoast.showToast(
-                                  msg: '장바구니에 추가하는데 문제가 발생했습니다!',
-                                  gravity: ToastGravity.BOTTOM,
-                                  toastLength: Toast.LENGTH_SHORT);
+                              showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                        title: Text('장바구니 추가 문제 발생'),
+                                        content: Text(
+                                            '장바구니에 상품을 추가하는데 문제가 발생했습니다!\n${_errorMessage.trim() == 'EXCESS' ? '→현재 장바구니에 존재하는 이 상품의 수량과 현재 지정한 수량의 합이 상품 재고를 초과했습니다.' : _errorMessage} '),
+                                        actions: [
+                                          FlatButton(
+                                              onPressed: () =>
+                                                  Navigator.pop(context),
+                                              child: Text('확인'))
+                                        ],
+                                      ));
                             }
                             setState(() {
                               _isCart = true;

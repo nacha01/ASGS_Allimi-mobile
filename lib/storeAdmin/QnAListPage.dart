@@ -21,6 +21,7 @@ class _QnAListPageState extends State<QnAListPage> {
   List<Map> _qnaDateList = [];
   List<Map> _noneQnAList = [];
   bool _isChecked = true;
+  bool _isFinished = false;
   Map _categoryMap = {0: '상품', 1: '교환/환불', 2: '계정', 3: '앱 이용', 4: '기타'};
 
   /// 등록된 날짜와 오늘의 날짜를 비교해서 어느 정도 차이가 있는지에 대한 문자열을 반환하는 작업
@@ -83,6 +84,7 @@ class _QnAListPageState extends State<QnAListPage> {
       }
       setState(() {
         _sortListOrderByTime();
+        _isFinished = true;
       });
       return true;
     } else {
@@ -143,59 +145,72 @@ class _QnAListPageState extends State<QnAListPage> {
                 )
               ],
             ),
-            _isChecked
-                ? _noneQnAList.length == 0
-                    ? Expanded(
-                        child: Center(
-                        child: Text(
-                          '업로드된 문의 글이 없습니다!',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 16),
-                        ),
-                      ))
-                    : Expanded(
-                        child: ListView.builder(
-                        itemBuilder: (context, index) {
-                          return _itemTile(
-                              _noneQnAList[index]['qTitle'],
-                              _noneQnAList[index]['qUID'],
-                              _noneQnAList[index]['qDate'],
-                              _categoryMap[
-                                  int.parse(_noneQnAList[index]['qCategory'])],
-                              int.parse(_noneQnAList[index]['isAnswer']) == 1
-                                  ? true
-                                  : false,
-                              _noneQnAList[index],
-                              size);
-                        },
-                        itemCount: _noneQnAList.length,
-                      ))
-                : _qnaDateList.length == 0
-                    ? Expanded(
-                        child: Center(
-                        child: Text(
-                          '업로드된 문의 글이 없습니다!',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 16),
-                        ),
-                      ))
-                    : Expanded(
-                        child: ListView.builder(
-                        itemBuilder: (context, index) {
-                          return _itemTile(
-                              _qnaDateList[index]['qTitle'],
-                              _qnaDateList[index]['qUID'],
-                              _qnaDateList[index]['qDate'],
-                              _categoryMap[
-                                  int.parse(_qnaDateList[index]['qCategory'])],
-                              int.parse(_qnaDateList[index]['isAnswer']) == 1
-                                  ? true
-                                  : false,
-                              _qnaDateList[index],
-                              size);
-                        },
-                        itemCount: _qnaDateList.length,
-                      ))
+            _isFinished
+                ? _isChecked
+                    ? _noneQnAList.length == 0
+                        ? Expanded(
+                            child: Center(
+                            child: Text(
+                              '업로드된 문의 글이 없습니다!',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 16),
+                            ),
+                          ))
+                        : Expanded(
+                            child: ListView.builder(
+                            itemBuilder: (context, index) {
+                              return _itemTile(
+                                  _noneQnAList[index]['qTitle'],
+                                  _noneQnAList[index]['qUID'],
+                                  _noneQnAList[index]['qDate'],
+                                  _categoryMap[int.parse(
+                                      _noneQnAList[index]['qCategory'])],
+                                  int.parse(_noneQnAList[index]['isAnswer']) ==
+                                          1
+                                      ? true
+                                      : false,
+                                  _noneQnAList[index],
+                                  size);
+                            },
+                            itemCount: _noneQnAList.length,
+                          ))
+                    : _qnaDateList.length == 0
+                        ? Expanded(
+                            child: Center(
+                            child: Text(
+                              '업로드된 문의 글이 없습니다!',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 16),
+                            ),
+                          ))
+                        : Expanded(
+                            child: ListView.builder(
+                            itemBuilder: (context, index) {
+                              return _itemTile(
+                                  _qnaDateList[index]['qTitle'],
+                                  _qnaDateList[index]['qUID'],
+                                  _qnaDateList[index]['qDate'],
+                                  _categoryMap[int.parse(
+                                      _qnaDateList[index]['qCategory'])],
+                                  int.parse(_qnaDateList[index]['isAnswer']) ==
+                                          1
+                                      ? true
+                                      : false,
+                                  _qnaDateList[index],
+                                  size);
+                            },
+                            itemCount: _qnaDateList.length,
+                          ))
+                : Expanded(
+                    child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text('불러오는 중..'),
+                        CircularProgressIndicator(),
+                      ],
+                    ),
+                  ))
           ],
         ),
       ),

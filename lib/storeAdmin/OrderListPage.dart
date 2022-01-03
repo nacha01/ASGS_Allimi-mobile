@@ -21,6 +21,7 @@ class _OrderListPageState extends State<OrderListPage> {
   List _orderList = [];
   List _noneList = [];
   bool _isChecked = true;
+  bool _isFinished = false;
   final statusList = ['재학생', '학부모', '교사', '졸업생', '기타'];
 
   /// 등록된 날짜와 오늘의 날짜를 비교해서 어느 정도 차이가 있는지에 대한 문자열을 반환하는 작업
@@ -89,7 +90,9 @@ class _OrderListPageState extends State<OrderListPage> {
           _noneList.add(_orderList[i]);
         }
       }
-      setState(() {});
+      setState(() {
+        _isFinished = true;
+      });
       return true;
     } else {
       return false;
@@ -187,53 +190,64 @@ class _OrderListPageState extends State<OrderListPage> {
             ],
           ),
           Divider(),
-          _isChecked
-              ? _noneList.length == 0
-                  ? Expanded(
-                      child: Center(
-                      child: Text(
-                        '업로드된 주문 내역이 없습니다!',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16),
-                      ),
-                    ))
-                  : Expanded(
-                      child: ListView.builder(
-                      itemBuilder: (context, index) {
-                        return _itemTile(
-                            _noneList[index]['oID'],
-                            _noneList[index]['uID'],
-                            int.parse(_noneList[index]['receiveMethod']),
-                            _noneList[index]['oDate'],
-                            int.parse(_noneList[index]['orderState']),
-                            _noneList[index],
-                            size);
-                      },
-                      itemCount: _noneList.length,
-                    ))
-              : _orderList.length == 0
-                  ? Expanded(
-                      child: Center(
-                      child: Text(
-                        '업로드 된 주문 내역이 없습니다!',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16),
-                      ),
-                    ))
-                  : Expanded(
-                      child: ListView.builder(
-                      itemBuilder: (context, index) {
-                        return _itemTile(
-                            _orderList[index]['oID'],
-                            _orderList[index]['uID'],
-                            int.parse(_orderList[index]['receiveMethod']),
-                            _orderList[index]['oDate'],
-                            int.parse(_orderList[index]['orderState']),
-                            _orderList[index],
-                            size);
-                      },
-                      itemCount: _orderList.length,
-                    ))
+          _isFinished
+              ? _isChecked
+                  ? _noneList.length == 0
+                      ? Expanded(
+                          child: Center(
+                          child: Text(
+                            '업로드된 주문 내역이 없습니다!',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 16),
+                          ),
+                        ))
+                      : Expanded(
+                          child: ListView.builder(
+                          itemBuilder: (context, index) {
+                            return _itemTile(
+                                _noneList[index]['oID'],
+                                _noneList[index]['uID'],
+                                int.parse(_noneList[index]['receiveMethod']),
+                                _noneList[index]['oDate'],
+                                int.parse(_noneList[index]['orderState']),
+                                _noneList[index],
+                                size);
+                          },
+                          itemCount: _noneList.length,
+                        ))
+                  : _orderList.length == 0
+                      ? Expanded(
+                          child: Center(
+                          child: Text(
+                            '업로드 된 주문 내역이 없습니다!',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 16),
+                          ),
+                        ))
+                      : Expanded(
+                          child: ListView.builder(
+                          itemBuilder: (context, index) {
+                            return _itemTile(
+                                _orderList[index]['oID'],
+                                _orderList[index]['uID'],
+                                int.parse(_orderList[index]['receiveMethod']),
+                                _orderList[index]['oDate'],
+                                int.parse(_orderList[index]['orderState']),
+                                _orderList[index],
+                                size);
+                          },
+                          itemCount: _orderList.length,
+                        ))
+              : Expanded(
+                  child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('불러오는 중..'),
+                      CircularProgressIndicator(),
+                    ],
+                  ),
+                ))
         ],
       ),
     );

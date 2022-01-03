@@ -399,10 +399,31 @@ class _CartPageState extends State<CartPage> {
                               Border.all(width: 1, color: Colors.grey[400])),
                       child: IconButton(
                         onPressed: () async {
-                          if (_countList[index] > 1) {
-                            setState(() {
-                              _countList[index]--;
-                            });
+                          if (cartItem['options'] == null ||
+                              cartItem['options'] == '') {
+                            if (_countList[index] > 1) {
+                              setState(() {
+                                _countList[index]--;
+                              });
+                            }
+                          } else {
+                            showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                      title: Text('장바구니 수량 줄이기 실패'),
+                                      content: Text(
+                                        '현재 서로 다른 상품 옵션을 갖는 상품이 존재합니다. 수량을 줄이려면 장바구니를 삭제하고 다시 추가해주세요.',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      actions: [
+                                        FlatButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context),
+                                            child: Text('확인'))
+                                      ],
+                                    ));
                           }
                         },
                         icon: Icon(Icons.remove),
