@@ -27,7 +27,7 @@ class OrderPage extends StatefulWidget {
   final User user;
   final List optionList;
   final List selectList;
-  final int additionalPrice;
+  final int additionalPrice; // 장바구니에서 결제시 모든 상품들의 상품 옵션의 총 가격
   @override
   _OrderPageState createState() => _OrderPageState();
 }
@@ -44,11 +44,13 @@ class _OrderPageState extends State<OrderPage> {
   bool _isSelected = false;
   String _optionString = '';
   int _additionalPrice = 0;
+  String _entireOptionForCart = '';
 
   @override
   void initState() {
     if (widget.direct == null) {
       _isCart = true;
+      _sumOptionStringForCart();
     }
     if (widget.cart == null) {
       _isCart = false;
@@ -71,10 +73,12 @@ class _OrderPageState extends State<OrderPage> {
       'oState': '1', // 임시 설정
       'recvMethod': _receiveMethod == ReceiveMethod.DIRECT ? '0' : '1',
       'pay': '0', // 임시 설정
-      'option': _optionString +
-          (_requestOptionController.text.isEmpty
-              ? ''
-              : '\n\n' + _requestOptionController.text),
+      'option': _isCart
+          ? _entireOptionForCart
+          : _optionString +
+              (_requestOptionController.text.isEmpty
+                  ? ''
+                  : '\n' + _requestOptionController.text),
       'location': _receiveMethod == ReceiveMethod.DELIVERY
           ? _locationController.text
           : 'NULL'
@@ -102,7 +106,7 @@ class _OrderPageState extends State<OrderPage> {
   }
 
   void _preProcessForOptions() {
-    if (widget.selectList.length == 0) {
+    if (widget.selectList == null || widget.selectList.length == 0) {
       return;
     }
     for (int i = 0; i < widget.selectList.length; ++i) {
@@ -114,19 +118,29 @@ class _OrderPageState extends State<OrderPage> {
     if (!_isSelected) {
       return;
     }
-    _optionString += '[ 상품 옵션 : ';
-    for (int i = 0; i < widget.optionList.length; ++i) {
-      if (widget.selectList[i] != -1) {
-        _additionalPrice += int.parse(widget.optionList[i]['detail']
-            [widget.selectList[i]]['optionPrice']);
-        _optionString += widget.optionList[i]['optionCategory'] +
-            ' ' +
-            widget.optionList[i]['detail'][widget.selectList[i]]['optionName'] +
-            ' , ';
+    for (int j = 0; j < widget.productCount; ++j) {
+      _optionString += '[ 상품 옵션 : ';
+      for (int i = 0; i < widget.optionList.length; ++i) {
+        if (widget.selectList[i] != -1) {
+          _additionalPrice += int.parse(widget.optionList[i]['detail']
+              [widget.selectList[i]]['optionPrice']);
+          _optionString += widget.optionList[i]['optionCategory'] +
+              ' ' +
+              widget.optionList[i]['detail'][widget.selectList[i]]
+                  ['optionName'] +
+              ' , ';
+        }
       }
+      _optionString += ']\n';
     }
-    _optionString += ']';
     setState(() {});
+  }
+
+  /// 장바구니의 경우에 각 상품의 옵션 텍스트를 합치는 기능
+  void _sumOptionStringForCart() {
+    for (int i = 0; i < widget.cart.length; ++i) {
+      _entireOptionForCart += widget.cart[i]['options'] + '\n';
+    }
   }
 
   /// 최종적으로 주문을 등록하는 과정
@@ -238,7 +252,7 @@ class _OrderPageState extends State<OrderPage> {
               '')
           .trim();
       Map p = json.decode(result);
-      if (widget.direct.stockCount > int.parse(p['stockCount']) - 5) {
+      if (widget.direct.stockCount >= int.parse(p['stockCount'])) {
         _checkMessage = '성공적으로 처리가 완료되었습니다.';
         return true;
       } else {
@@ -267,8 +281,8 @@ class _OrderPageState extends State<OrderPage> {
         checksum.add(json.decode(cartProduct[i]));
       }
       for (int i = 0; i < checksum.length; ++i) {
-        if (int.parse(widget.cart[i]['quantity']) >
-            (int.parse(checksum[i]['stockCount']) - 5)) {
+        if (int.parse(widget.cart[i]['quantity']) >=
+            (int.parse(checksum[i]['stockCount']))) {
           _checkMessage =
               '"${widget.cart[i]['prodName']}"상품의 선택 수량이 현재 재고보다 많습니다.';
           return false;
@@ -279,28 +293,6 @@ class _OrderPageState extends State<OrderPage> {
     } else {
       return false;
     }
-  }
-
-  /// 총 할인 금액을 구하는 작업
-  int _getTotalDiscount() {
-    int sum = 0;
-    if (_isCart) {
-      for (int i = 0; i < widget.cart.length; ++i) {
-        sum += ((int.parse(widget.cart[i]['price']) *
-                    (widget.cart[i]['discount'].toString() == '0.0'
-                        ? 0
-                        : double.parse(widget.cart[i]['discount']) / 100)) *
-                int.parse(widget.cart[i]['quantity']))
-            .round();
-      }
-    } else {
-      sum += (((widget.direct.price * widget.productCount) *
-              (widget.direct.discount.toString() == '0.0'
-                  ? 0
-                  : widget.direct.discount / 100.0)))
-          .round();
-    }
-    return sum;
   }
 
   /// 일반 숫자에 ,를 붙여서 직관적인 가격을 보이게 하는 작업
@@ -340,8 +332,32 @@ class _OrderPageState extends State<OrderPage> {
         sum += int.parse(widget.cart[i]['price']) *
             int.parse(widget.cart[i]['quantity']);
       }
+      sum += widget.additionalPrice;
     } else {
       sum = (widget.direct.price) * widget.productCount;
+      sum += _additionalPrice * widget.productCount;
+    }
+    return sum;
+  }
+
+  /// 총 할인 금액을 구하는 작업
+  int _getTotalDiscount() {
+    int sum = 0;
+    if (_isCart) {
+      for (int i = 0; i < widget.cart.length; ++i) {
+        sum += ((int.parse(widget.cart[i]['price']) *
+                    (widget.cart[i]['discount'].toString() == '0.0'
+                        ? 0
+                        : double.parse(widget.cart[i]['discount']) / 100)) *
+                int.parse(widget.cart[i]['quantity']))
+            .round();
+      }
+    } else {
+      sum += (((widget.direct.price * widget.productCount) *
+              (widget.direct.discount.toString() == '0.0'
+                  ? 0
+                  : widget.direct.discount / 100.0)))
+          .round();
     }
     return sum;
   }
@@ -518,6 +534,17 @@ class _OrderPageState extends State<OrderPage> {
                     SizedBox(
                       height: size.height * 0.03,
                     ),
+                    Text(' 상품 옵션',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                            color: Colors.black54)),
+                    Container(
+                      padding: EdgeInsets.all(size.width * 0.02),
+                      width: size.width * 0.95,
+                      child:
+                          Text(_isCart ? _entireOptionForCart : _optionString),
+                    ),
                     Divider(
                       thickness: 0.5,
                       indent: 5,
@@ -536,9 +563,18 @@ class _OrderPageState extends State<OrderPage> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text('결제 금액'),
+                                Row(
+                                  children: [
+                                    Text('결제 금액'),
+                                    Text(
+                                      '(상품 옵션 값 포함)',
+                                      style: TextStyle(
+                                          color: Colors.grey, fontSize: 10),
+                                    )
+                                  ],
+                                ),
                                 Text(
-                                    '${_formatPrice(_getOriginTotalPrice() + (widget.selectList.length != 0 ? _additionalPrice * widget.productCount : 0))} 원')
+                                    '${_formatPrice(_getOriginTotalPrice())} 원')
                               ],
                             ),
                             Row(
@@ -563,7 +599,7 @@ class _OrderPageState extends State<OrderPage> {
                                       fontWeight: FontWeight.bold),
                                 ),
                                 Text(
-                                    '${_formatPrice((_getOriginTotalPrice() - _getTotalDiscount()) + _additionalPrice * widget.productCount)} 원',
+                                    '${_formatPrice((_getOriginTotalPrice() - _getTotalDiscount()))} 원',
                                     style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold))
@@ -635,8 +671,7 @@ class _OrderPageState extends State<OrderPage> {
                           builder: (context) => PaymentCompletePage(
                                 result: {'orderID': _generatedOID},
                                 totalPrice: ((_getOriginTotalPrice() -
-                                        _getTotalDiscount()) +
-                                    _additionalPrice * widget.productCount),
+                                    _getTotalDiscount())),
                               )));
                 }
               },
@@ -649,7 +684,7 @@ class _OrderPageState extends State<OrderPage> {
                     color: Color(0xFF9EE1E5)),
                 width: size.width,
                 child: Text(
-                  '${_formatPrice((_getOriginTotalPrice() - _getTotalDiscount()) + _additionalPrice * widget.productCount)} 원 결제 및 구매하기',
+                  '${_formatPrice((_getOriginTotalPrice() - _getTotalDiscount()))} 원 결제 및 구매하기',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),

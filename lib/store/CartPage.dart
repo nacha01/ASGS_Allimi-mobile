@@ -41,6 +41,7 @@ class _CartPageState extends State<CartPage> {
   };
   List<int> _countList = [];
   bool _isLoading = true;
+  int _allAdditionalPrice = 0;
 
   /// 특정 유저에 대해 그 유저가 갖고 있는 장바구니 상품들을 가져오는 HTTP 요청
   /// @return : 요청 성공 여부
@@ -60,6 +61,7 @@ class _CartPageState extends State<CartPage> {
         _cartProductList.add(json.decode(cartProduct[i]));
       }
       _initCartCount();
+      _sumAllOptionPrice();
       setState(() {
         _isLoading = false;
       });
@@ -180,6 +182,14 @@ class _CartPageState extends State<CartPage> {
     }
   }
 
+  void _sumAllOptionPrice() {
+    _allAdditionalPrice = 0;
+    for (int i = 0; i < _cartProductList.length; ++i) {
+      _allAdditionalPrice += int.parse(_cartProductList[i]['optionPrice']);
+    }
+    setState(() {});
+  }
+
   @override
   void initState() {
     super.initState();
@@ -234,7 +244,6 @@ class _CartPageState extends State<CartPage> {
               children: [
                 Container(
                   width: size.width,
-                  height: size.height * 0.1,
                   child: Column(
                     children: [
                       //brief 설명 적는 곳
@@ -242,7 +251,7 @@ class _CartPageState extends State<CartPage> {
                       Padding(
                         padding: EdgeInsets.all(size.width * 0.02),
                         child: Text(
-                          '* 현재 장바구니 이용 시 상품 옵션을 사용할 수 없습니다!',
+                          '* 상품 옵션이 존재하는 상품의 경우 장바구니 페이지에서 수량 증가 시 어떤 옵션도 선택되지 않은 정가의 순수 상품이 추가 됩니다. \n* 서로 다른 옵션을 사용하고 싶으신 경우 상품 정보에서 옵션을 선택 후 "장바구니 담기"를 선택해주세요.',
                           style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.bold,
@@ -275,7 +284,7 @@ class _CartPageState extends State<CartPage> {
                                   user: widget.user,
                                   optionList: [],
                                   selectList: [],
-                                  additionalPrice: 0,
+                                  additionalPrice: _allAdditionalPrice,
                                   productCount: 0,
                                 )));
                     setState(() {
@@ -306,7 +315,7 @@ class _CartPageState extends State<CartPage> {
                           width: size.width * 0.05,
                         ),
                         Text(
-                          '${_formatPrice(_totalPrice())}원  결제하기',
+                          '${_formatPrice(_totalPrice() + _allAdditionalPrice)}원  결제하기',
                           style: TextStyle(fontWeight: FontWeight.bold),
                         )
                       ],
@@ -351,7 +360,7 @@ class _CartPageState extends State<CartPage> {
             width: size.width * 0.012,
           ),
           Container(
-            width: size.width * 0.5,
+            width: size.width * 0.45,
             alignment: Alignment.center,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -422,8 +431,8 @@ class _CartPageState extends State<CartPage> {
                       child: IconButton(
                         onPressed: () async {
                           if (_countList[index] <
-                              int.parse(_cartProductList[index]['stockCount']) -
-                                  5) {
+                              int.parse(
+                                  _cartProductList[index]['stockCount'])) {
                             setState(() {
                               _countList[index]++;
                             });
@@ -482,7 +491,7 @@ class _CartPageState extends State<CartPage> {
                       padding: EdgeInsets.all(size.width * 0.01),
                       margin: EdgeInsets.only(bottom: size.width * 0.008),
                       child: Text(
-                        '${_formatPrice(_calculateTotalEachPrice(int.parse(cartItem['price']), double.parse(cartItem['discount']), _countList[index]))}원',
+                        '${_formatPrice(_calculateTotalEachPrice(int.parse(cartItem['price']), double.parse(cartItem['discount']), _countList[index]) + int.parse(cartItem['optionPrice']))}원',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 15),
                       )),

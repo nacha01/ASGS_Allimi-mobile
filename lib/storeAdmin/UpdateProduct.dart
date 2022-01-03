@@ -165,7 +165,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
       'isNew': _isNew ? '1' : '0',
       'img1': _mainImage == null ? 'NOT' : serverImageUri + _mainName + '.jpg',
       'img2': _useSub1 ? serverImageUri + _sub1Name + '.jpg' : 'None',
-      'img3': _useSub2 ? serverImageUri + _sub2Name + '.jpg' : 'None'
+      'img3': _useSub2 ? serverImageUri + _sub2Name + '.jpg' : 'None',
     });
 
     if (response.statusCode == 200) {

@@ -56,7 +56,7 @@ class _ReservationPageState extends State<ReservationPage> {
       'option': _optionString +
           (_requestOptionController.text.isEmpty
               ? ''
-              : '\n\n${_requestOptionController.text}'),
+              : '\n${_requestOptionController.text}'),
       'resv': '1'
     });
     if (response.statusCode == 200) {
@@ -67,6 +67,9 @@ class _ReservationPageState extends State<ReservationPage> {
   }
 
   void _preProcessForOptions() {
+    if (widget.selectList == null) {
+      return;
+    }
     for (int i = 0; i < widget.selectList.length; ++i) {
       if (widget.selectList[i] != -1) {
         _isSelected = true;

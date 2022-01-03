@@ -1438,14 +1438,17 @@ class _StoreHomePageState extends State<StoreHomePage>
   Widget itemTile(String imgUrl, int price, String prodName, bool isWish,
       Product product, Size size) {
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
+      onTap: () async {
+        var res = await Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) => DetailProductPage(
                       user: widget.user,
                       product: product,
                     )));
+        if (res) {
+          await _getProducts();
+        }
       },
       onLongPress: () async {
         // 상품 수정 및 삭제 기능 -> 어드민 권한으로 동작

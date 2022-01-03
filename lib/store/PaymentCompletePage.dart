@@ -92,127 +92,135 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          color: Colors.black,
-          icon: Icon(
-            Icons.arrow_back,
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pop(context, true);
+        return false;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            onPressed: () {
+              Navigator.pop(context, true);
+            },
             color: Colors.black,
+            icon: Icon(
+              Icons.arrow_back,
+              color: Colors.black,
+            ),
           ),
+          backgroundColor: Color(0xFF9EE1E5),
+          title: Text(
+            '주문 완료',
+            style: TextStyle(
+                color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+          ),
+          centerTitle: true,
         ),
-        backgroundColor: Color(0xFF9EE1E5),
-        title: Text(
-          '주문 완료',
-          style: TextStyle(
-              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
-        ),
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            SizedBox(
-              height: size.height * 0.04,
-            ),
-            Text(
-              '주문이 성공적으로 완료되었습니다!',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(
-              height: size.height * 0.02,
-            ),
-            Divider(
-              thickness: 0.5,
-              indent: 3,
-              endIndent: 3,
-            ),
-            SizedBox(
-              height: size.height * 0.03,
-            ),
-            Text(
-              '주문번호 ${widget.result['orderID']}',
-              style: TextStyle(
-                  fontWeight: FontWeight.bold, color: Colors.lightBlue),
-            ),
-            SizedBox(
-              height: size.height * 0.02,
-            ),
-            Column(
-              children: _getProductList(size),
-            ),
-            SizedBox(
-              height: size.height * 0.02,
-            ),
-            Text(
-              '주문 현황 및 상세 정보는 ',
-              style: TextStyle(fontSize: 12),
-            ),
-            SizedBox(
-              height: size.height * 0.01,
-            ),
-            Text(
-              '마이페이지 → 주문 현황',
-              style: TextStyle(
-                  fontWeight: FontWeight.bold, color: Colors.red, fontSize: 15),
-            ),
-            SizedBox(
-              height: size.height * 0.01,
-            ),
-            Text(' 에서도 확인할 수 있습니다.', style: TextStyle(fontSize: 12)),
-            SizedBox(
-              height: size.height * 0.03,
-            ),
-            Divider(
-              thickness: 0.5,
-              indent: 3,
-              endIndent: 3,
-            ),
-            Text(
-              '주문 인증용 QR 코드',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            SizedBox(
-              height: size.height * 0.02,
-            ),
-            SizedBox(
-              height: size.height * 0.015,
-            ),
-            Padding(
-              padding: EdgeInsets.all(size.width * 0.03),
-              child: Text(
-                '<카카오뱅크 79794096110, 예금주 이경희>\n 로 [${_formatPrice(widget.totalPrice)}원] 송금 바랍니다.',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.5),
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              SizedBox(
+                height: size.height * 0.04,
+              ),
+              Text(
+                '주문이 성공적으로 완료되었습니다!',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(
+                height: size.height * 0.02,
+              ),
+              Divider(
+                thickness: 0.5,
+                indent: 3,
+                endIndent: 3,
+              ),
+              SizedBox(
+                height: size.height * 0.03,
+              ),
+              Text(
+                '주문번호 ${widget.result['orderID']}',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold, color: Colors.lightBlue),
+              ),
+              SizedBox(
+                height: size.height * 0.02,
+              ),
+              Column(
+                children: _getProductList(size),
+              ),
+              SizedBox(
+                height: size.height * 0.02,
+              ),
+              Text(
+                '주문 현황 및 상세 정보는 ',
+                style: TextStyle(fontSize: 12),
+              ),
+              SizedBox(
+                height: size.height * 0.01,
+              ),
+              Text(
+                '마이페이지 → 주문 현황',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red,
+                    fontSize: 15),
+              ),
+              SizedBox(
+                height: size.height * 0.01,
+              ),
+              Text(' 에서도 확인할 수 있습니다.', style: TextStyle(fontSize: 12)),
+              SizedBox(
+                height: size.height * 0.03,
+              ),
+              Divider(
+                thickness: 0.5,
+                indent: 3,
+                endIndent: 3,
+              ),
+              Text(
+                '주문 인증용 QR 코드',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              SizedBox(
+                height: size.height * 0.02,
+              ),
+              SizedBox(
+                height: size.height * 0.015,
+              ),
+              Padding(
+                padding: EdgeInsets.all(size.width * 0.03),
+                child: Text(
+                  '<카카오뱅크 79794096110, 예금주 이경희>\n 로 [${_formatPrice(widget.totalPrice)}원] 송금 바랍니다.',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.5),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              SizedBox(
+                height: size.height * 0.015,
+              ),
+              // QrImage(
+              //   data: widget.result['orderID'],
+              //   size: 190,
+              // ),
+              SizedBox(
+                height: size.height * 0.02,
+              ),
+              Divider(
+                thickness: 0.5,
+                indent: 3,
+                endIndent: 3,
+              ),
+              SizedBox(
+                height: size.height * 0.02,
+              ),
+              Text(
+                'QR 코드나 주문 번호는 본인이 주문을 했다는 것을 인증할 수 있는 수단으로써 상품을 수령하기 위해서는 반드시 필요한 것입니다.',
+                style: TextStyle(fontSize: 11, color: Colors.grey),
                 textAlign: TextAlign.center,
               ),
-            ),
-            SizedBox(
-              height: size.height * 0.015,
-            ),
-            // QrImage(
-            //   data: widget.result['orderID'],
-            //   size: 190,
-            // ),
-            SizedBox(
-              height: size.height * 0.02,
-            ),
-            Divider(
-              thickness: 0.5,
-              indent: 3,
-              endIndent: 3,
-            ),
-            SizedBox(
-              height: size.height * 0.02,
-            ),
-            Text(
-              'QR 코드나 주문 번호는 본인이 주문을 했다는 것을 인증할 수 있는 수단으로써 상품을 수령하기 위해서는 반드시 필요한 것입니다.',
-              style: TextStyle(fontSize: 11, color: Colors.grey),
-              textAlign: TextAlign.center,
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -221,23 +229,27 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
   Widget _productLayout(String name, int quantity, int category, Size size) {
     return Container(
       width: size.width * 0.8,
-      height: size.height * 0.06,
-      padding: EdgeInsets.all(8),
-      margin: EdgeInsets.all(4),
+      alignment: Alignment.center,
+      padding: EdgeInsets.all(size.width * 0.02),
+      margin: EdgeInsets.all(size.width * 0.008),
       decoration: BoxDecoration(
           border: Border.all(width: 0.8, color: Colors.black),
           borderRadius: BorderRadius.circular(12)),
-      child: Row(
-        children: [
-          Text(
-            '[${_categoryReverseMap[category]}]',
-            style: TextStyle(color: Colors.grey),
-          ),
-          Text(
-            ' $name $quantity개 ',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-        ],
+      child: Align(
+        alignment: Alignment.topLeft,
+        child: Wrap(
+          spacing: size.width * 0.01,
+          children: [
+            Text(
+              '[${_categoryReverseMap[category]}]',
+              style: TextStyle(color: Colors.grey),
+            ),
+            Text(
+              ' $name $quantity개 ',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
       ),
     );
   }

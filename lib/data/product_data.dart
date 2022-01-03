@@ -66,7 +66,6 @@ class Product {
     _isNew = value;
   }
 
-
   bool get isReservation => _isReservation;
 
   set isReservation(bool value) {

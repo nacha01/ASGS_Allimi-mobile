@@ -18,27 +18,20 @@ class AddingProductPage extends StatefulWidget {
   _AddingProductPageState createState() => _AddingProductPageState();
 }
 
-/// 어드민 전용 페이지
-///상품 추가 페이지
-///저장할 때 비밀번호로 어드민 DB에서 확인
-///직접적으로 추가하는 목록
+/// 상품 추가 페이지(어드민 전용 페이지)
 
 /*
 1. 제품 이름
 2. 제품 카테고리
 3. 가격
-4. 이미지 1,2,3 & 이미지 파일 이름
-5. 베스트인지?
-6. 새로운건지?
+4. 이미지 1,2,3
+5. 베스트인지
+6. 새로운건지
 7. 재고
 8. 제품 설명
+9. 재고가 0일 때 처리
+10. 상품 옵션
  */
-
-/// * later Additional functions
-///나중에 실사용될 때, 상품 등록할 때 어드민 계정으로 비밀번호로 재확인 - resolved
-/// 현재 글자수 보여주는 것 - resolved
-/// 파일 이름 확장자 통일 - resolved
-/// 상품 등록 성공한 화면에서 다시 되돌아오기?
 
 class _AddingProductPageState extends State<AddingProductPage> {
   var _productNameController = TextEditingController();
@@ -66,6 +59,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
   String _sub1Name;
   String _sub2Name;
   String pid = '';
+  String _errorText = '';
 
   final _categoryList = ['음식류', '간식류', '음료류', '문구류', '핸드메이드']; //드롭다운 아이템
   final _categoryMap = {
@@ -241,7 +235,10 @@ class _AddingProductPageState extends State<AddingProductPage> {
               '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
               '')
           .trim();
-      return true;
+      if (result == '1')
+        return true;
+      else
+        return false;
     } else {
       return false;
     }
@@ -252,6 +249,13 @@ class _AddingProductPageState extends State<AddingProductPage> {
   /// 이를 바탕으로 최종으로 이미지 포함해서 정보와 같이 DB에 저장 요청
   /// @return 모든 작업이 true를 리턴하면 true, 하나라도 false면 false
   /// ※ AsyncMemoizer 를 사용하여 FutureBuilder 의 반복을 방지
+  /// 등록 순서
+  /// 1. 메인 이미지 저장
+  /// 2. 서브 이미지1 저장
+  /// 3. 서브 이미지2 저장
+  /// 4. DB에 상품 추가
+  /// 5. DB에 옵션 추가
+  /// 6. DB에 예약 제한 수량 설정
   Future<bool> _doRegisterProduct() async {
     return this._memoizer.runOnce(() async {
       var now = DateTime.now();
@@ -263,24 +267,44 @@ class _AddingProductPageState extends State<AddingProductPage> {
       if (_useSub1) {
         _sub1Name = _prefix[_selectedCategory] + identified + 'A';
         var sub1Result = await _sendImageToServer(_subImage1, _sub1Name);
-        if (!sub1Result) return false;
+        if (!sub1Result) {
+          _errorText = '추가 이미지1 저장 실패';
+          return false;
+        }
       }
       if (_useSub2) {
         _sub2Name = _prefix[_selectedCategory] + identified + 'B';
         var sub2Result = await _sendImageToServer(
             _subImage2, _prefix[_selectedCategory] + identified + 'B');
-        if (!sub2Result) return false;
+        if (!sub2Result) {
+          _errorText = '추가 이미지2 저장 실패';
+          return false;
+        }
       }
       _mainName = _prefix[_selectedCategory] + identified;
       var mainResult = await _sendImageToServer(_mainImage, _mainName);
-      if (!mainResult) return false;
+      if (!mainResult) {
+        _errorText = '대표 이미지 저장 실패';
+        return false;
+      }
 
       var registerResult = await _postRequestForInsertProduct();
-      if (!registerResult) return false;
-      await _addOptionCategory();
+      if (!registerResult) {
+        _errorText = '상품 저장 실패';
+        return false;
+      }
+
+      var optionResult = await _addOptionCategory();
+      if (!optionResult) {
+        _errorText = '상품 옵션 설정 실패';
+        return false;
+      }
       if (_isReservation) {
         var limit = await _setReservationCountLimit();
-        if (!limit) return false;
+        if (!limit) {
+          _errorText = '예약 가능 최대 수량 설정 실패';
+          return false;
+        }
       }
       return true;
     });
@@ -313,21 +337,22 @@ class _AddingProductPageState extends State<AddingProductPage> {
     }
   }
 
-  Future<void> _addOptionCategory() async {
-    for (int i = 0; i < _optionCategoryControllerList.length; ++i) {
-      var pid =
-          await _registerOptionCategory(_optionCategoryControllerList[i].text);
-      print(pid);
-      for (int j = 0; j < _optionDetailList[i].length; ++j) {
-        print(_optionCategoryControllerList[i].text +
-            _detailTitleControllerList[i][j].text +
-            _detailPriceControllerList[i][j].text);
-        await _registerOptionDetail(
-            pid,
-            _optionCategoryControllerList[i].text,
-            _detailTitleControllerList[i][j].text,
-            _detailPriceControllerList[i][j].text);
+  Future<bool> _addOptionCategory() async {
+    try {
+      for (int i = 0; i < _optionCategoryControllerList.length; ++i) {
+        var pid = await _registerOptionCategory(
+            _optionCategoryControllerList[i].text);
+        for (int j = 0; j < _optionDetailList[i].length; ++j) {
+          var res = await _registerOptionDetail(
+              pid,
+              _optionCategoryControllerList[i].text,
+              _detailTitleControllerList[i][j].text,
+              _detailPriceControllerList[i][j].text);
+        }
       }
+      return true;
+    } catch (e) {
+      return false;
     }
   }
 
@@ -1285,7 +1310,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                       height: size.height * 0.03,
                                     ),
                                     Text(
-                                      '상품 등록에 문제가 발생하였습니다. \n재확인바랍니다.',
+                                      '상품 등록에 문제가 발생하였습니다. \n재확인바랍니다.\n{$_errorText}',
                                       style: TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold),
@@ -1367,7 +1392,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                     height: size.height * 0.03,
                                   ),
                                   Text(
-                                    '상품 등록에 문제가 발생하였습니다. \n[System Error]',
+                                    '상품 등록에 문제가 발생하였습니다. \n[System Error] \n{$_errorText}',
                                     style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold),

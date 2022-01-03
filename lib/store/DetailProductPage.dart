@@ -43,6 +43,8 @@ class _DetailProductPageState extends State<DetailProductPage> {
   bool _hasOption = false; // 상품에 옵션이 있는지 판단
   List _optionList = [];
   List<int> _selectedOptionIndex = [];
+  String _optionString = '';
+  int _additionalPrice = 0;
 
   /// 일반 숫자에 ,를 붙여서 직관적인 가격을 보이게 하는 작업
   /// @param : 직관적인 가격을 보여줄 실제 int 가격[price]
@@ -73,14 +75,36 @@ class _DetailProductPageState extends State<DetailProductPage> {
     return newStr;
   }
 
+  void _preProcessForOptions() {
+    if (!_hasOption) {
+      return;
+    }
+    _optionString += '[{${widget.product.prodName}} 상품 옵션 : ';
+    for (int i = 0; i < _optionList.length; ++i) {
+      if (_selectedOptionIndex[i] != -1) {
+        _additionalPrice += int.parse(
+            _optionList[i]['detail'][_selectedOptionIndex[i]]['optionPrice']);
+        _optionString += _optionList[i]['optionCategory'] +
+            '-' +
+            _optionList[i]['detail'][_selectedOptionIndex[i]]['optionName'] +
+            ' , ';
+      }
+    }
+    _optionString += ']\n';
+  }
+
   /// 상품을 장바구니에 추가하는 요청을 하는 작업
   /// @response : 성공 시, '1' or 'Already Exists1'
   Future<bool> _addCartProductRequest() async {
+    print(_optionString);
+    print(_additionalPrice);
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_addCart.php';
     final response = await http.post(url, body: <String, String>{
       'uid': widget.user.uid,
       'pid': widget.product.prodID.toString(),
-      'quantity': _count.toString()
+      'quantity': _count.toString(),
+      'optionString': _optionString,
+      'optionPrice': _additionalPrice.toString()
     });
 
     if (response.statusCode == 200) {
@@ -108,6 +132,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
               '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
               '')
           .trim();
+      print(result);
       if (result == 'NO OPTION') {
         _hasOption = false;
       } else {
@@ -503,6 +528,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                             return;
                           }
                           if (!_isCart) {
+                            _preProcessForOptions();
                             var result = await _addCartProductRequest();
                             print(result);
                             if (result) {
