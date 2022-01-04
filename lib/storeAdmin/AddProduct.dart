@@ -9,6 +9,7 @@ import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
@@ -824,6 +825,15 @@ class _AddingProductPageState extends State<AddingProductPage> {
                       _useOption
                           ? Column(
                               children: [
+                                Padding(
+                                  padding: EdgeInsets.all(size.width * 0.02),
+                                  child: Text(
+                                    '* 각 항목을 지우고 싶을 때는 반드시 마지막으로 추가한 항목부터 지워야합니다!',
+                                    style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
                                 Divider(
                                   thickness: 1.5,
                                   indent: size.width * 0.02,
@@ -834,46 +844,52 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                   mainAxisSize: MainAxisSize.min,
                                   children: _optionCategoryList,
                                 ),
-                                FlatButton(
-                                    onPressed: () {
-                                      _optionDetailList.add([]);
-                                      _detailTitleControllerList.add([]);
-                                      _detailPriceControllerList.add([]);
-                                      _optionCategoryControllerList
-                                          .add(TextEditingController());
-                                      _streamControllerList
-                                          .add(StreamController());
-                                      _optionCategoryList.add(
-                                          _optionCategoryLayout(
-                                              size, _index++));
-                                      setState(() {});
-                                    },
-                                    child: Container(
-                                      padding: EdgeInsets.symmetric(
-                                          vertical: size.width * 0.01,
-                                          horizontal: size.width * 0.03),
-                                      decoration: BoxDecoration(
-                                          color: Colors.deepPurple,
-                                          border: Border.all(
-                                              width: 1, color: Colors.black),
-                                          borderRadius:
-                                              BorderRadius.circular(8)),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Icon(
-                                            Icons.add,
-                                            color: Colors.white,
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    FlatButton(
+                                        onPressed: () {
+                                          _optionDetailList.add([]);
+                                          _detailTitleControllerList.add([]);
+                                          _detailPriceControllerList.add([]);
+                                          _optionCategoryControllerList
+                                              .add(TextEditingController());
+                                          _streamControllerList.add(
+                                              StreamController.broadcast());
+                                          _optionCategoryList.add(
+                                              _optionCategoryLayout(
+                                                  size, _index++));
+                                          setState(() {});
+                                        },
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: size.width * 0.01,
+                                              horizontal: size.width * 0.03),
+                                          decoration: BoxDecoration(
+                                              color: Colors.deepPurple,
+                                              border: Border.all(
+                                                  width: 1,
+                                                  color: Colors.black),
+                                              borderRadius:
+                                                  BorderRadius.circular(8)),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(
+                                                Icons.add,
+                                                color: Colors.white,
+                                              ),
+                                              Text(
+                                                ' 옵션 추가',
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.white),
+                                              )
+                                            ],
                                           ),
-                                          Text(
-                                            ' 옵션 추가',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.white),
-                                          )
-                                        ],
-                                      ),
-                                    )),
+                                        )),
+                                  ],
+                                ),
                                 Divider(
                                   thickness: 2,
                                   endIndent: 15,
@@ -1541,13 +1557,53 @@ class _AddingProductPageState extends State<AddingProductPage> {
               borderRadius: BorderRadius.circular(6)),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              IconButton(
+                onPressed: () {
+                  // if (_optionCategoryControllerList.length - 1 == index) {
+                  if (index > 0 && index >= _optionCategoryList.length - 1) {
+                    index = _optionCategoryList.length - 1;
+                  }
+                  print(index);
+                  setState(() {
+                    _optionCategoryControllerList[index].removeListener(() {});
+                    _optionCategoryControllerList.removeAt(index);
+                    _optionCategoryList.removeAt(index);
+                    _optionDetailList[index].clear();
+                    for (int i = 0; i < _optionDetailList[index].length; ++i) {
+                      _optionDetailList[index].removeAt(i);
+                      _detailTitleControllerList[index][i]
+                          .removeListener(() {});
+                      _detailPriceControllerList[index][i]
+                          .removeListener(() {});
+                      _detailTitleControllerList[index].removeAt(i);
+                      _detailTitleControllerList[index].removeAt(i);
+                    }
+                    _index--;
+                  });
+                  // _streamControllerList[index].sink.close();
+                  StreamSubscription sub;
+                  sub = _streamControllerList[index].stream.listen((event) {
+                    sub.cancel();
+                  });
+
+                  // } else {
+                  //   Fluttertoast.showToast(msg: '마지막으로 추가한 옵션이 아닙니다!');
+                  // }
+                },
+                icon: Icon(
+                  Icons.remove_circle,
+                  color: Colors.deepOrange,
+                ),
+                padding: EdgeInsets.all(0),
+              ),
               Text(
                 '옵션 이름 /',
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
               ),
               Container(
-                width: size.width * 0.6,
+                width: size.width * 0.5,
                 child: TextField(
                   controller: _optionCategoryControllerList[index],
                   style: TextStyle(fontSize: 12),
@@ -1623,12 +1679,38 @@ class _AddingProductPageState extends State<AddingProductPage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
+          IconButton(
+              padding: EdgeInsets.all(0),
+              onPressed: () {
+                setState(() {
+                  if (dIndex > 0 &&
+                      dIndex >= _optionDetailList[cIndex].length - 1) {
+                    dIndex = _optionDetailList[cIndex].length - 1;
+                  }
+                  // 리스트의 중간 인덱스 삭제 시, 리스트의 인덱스가 밀려(앞으로 당겨져오는?) dIndex 값과 현재 리스트의 인덱스가 불일치하게 됨.
+                  // 그래서 dIndex 의 값을 리스트의 마지막 인덱스 값으로 줘서 인덱스를 맞춰준다.
+                  // 위의 경우는 중간 인덱스 삭제 시, 그 뒤에 있던 인덱스들에만 해당한다. (앞에는 영향x)
+                  _optionDetailList[cIndex].removeAt(dIndex);
+                  _detailPriceControllerList[cIndex][dIndex]
+                      .removeListener(() {});
+                  _detailTitleControllerList[cIndex][dIndex]
+                      .removeListener(() {});
+
+                  _detailPriceControllerList[cIndex].removeAt(dIndex);
+                  _detailTitleControllerList[cIndex].removeAt(dIndex);
+                });
+                _streamControllerList[cIndex].add(_optionDetailList[cIndex]);
+              },
+              icon: Icon(
+                Icons.remove_circle,
+                color: Colors.red,
+              )),
           Text(
             '* 선택지 이름',
-            style: TextStyle(fontWeight: FontWeight.bold),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
           ),
           Container(
-            width: size.width * 0.4,
+            width: size.width * 0.3,
             child: TextField(
               controller: _detailTitleControllerList[cIndex][dIndex],
               style: TextStyle(fontSize: 12),
@@ -1639,7 +1721,8 @@ class _AddingProductPageState extends State<AddingProductPage> {
             ' / ',
             style: TextStyle(color: Colors.grey, fontSize: 17),
           ),
-          Text('가격', style: TextStyle(fontWeight: FontWeight.bold)),
+          Text('가격',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
           Container(
             width: size.width * 0.2,
             child: TextField(

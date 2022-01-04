@@ -58,13 +58,13 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
     } else if (Platform.isIOS) {
       _isAndroid = false;
     }
-    tabController.addListener(() {
-      if (tabController.index == 1) {
-        _goDuruDuru();
-      } else if (tabController.index == 2) {
-        _goGame();
-      }
-    });
+    // tabController.addListener(() {
+    //   if (tabController.index == 1) {
+    //     _goDuruDuru();
+    //   } else if (tabController.index == 2) {
+    //     _goGame();
+    //   }
+    // });
   }
 
   void _goDuruDuru() async {
@@ -548,7 +548,9 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   Widget movingToStorePage() {
-    return Stack();
+    return Stack(
+      children: [Center(child: Text('잠시만 기다려주세요. 화면 전환 대기 중...'))],
+    );
   }
 
   Widget movingToGamePage() {
