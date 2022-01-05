@@ -14,6 +14,18 @@ import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 
+List<List<Widget>> _optionDetailList = []; // 선택지 항목 위젯에 대한 2차원 리스트
+List<Widget> _optionCategoryList = []; // 옵션 항목 위젯에 대한 리스트
+List<List<TextEditingController>> _detailTitleControllerList =
+    []; // 선택지 이름 항목에 대한 텍스트 컨트롤러에 대한 2차원 리스트
+List<List<TextEditingController>> _detailPriceControllerList =
+    []; // 선택지 가격 항목에 대한 텍스트 컨트롤러에 대한 2차원 리스트
+List<StreamController<List>> _streamControllerList =
+    []; // 선택지 리스트의 변화를 감지해 위젯으로 보여주도록 하는 Stream 리스트
+List<TextEditingController> _optionCategoryControllerList =
+    []; // 옵션 항목에 대한 제목 텍스트 컨트롤러 리스트
+List<List<DetailWidget>> _classList = []; // 리스트의 인덱스와 위젯이 담겨있는 클래스를 담는 2차원 리스트
+
 class AddingProductPage extends StatefulWidget {
   @override
   _AddingProductPageState createState() => _AddingProductPageState();
@@ -82,13 +94,6 @@ class _AddingProductPageState extends State<AddingProductPage> {
       'http://nacha01.dothome.co.kr/sin/arlimi_productImage/';
 
   AsyncMemoizer<bool> _memoizer;
-
-  List<List<Widget>> _optionDetailList = [];
-  List<Widget> _optionCategoryList = [];
-  List<List<TextEditingController>> _detailTitleControllerList = [];
-  List<List<TextEditingController>> _detailPriceControllerList = [];
-  List<StreamController<List>> _streamControllerList = [];
-  List<TextEditingController> _optionCategoryControllerList = [];
 
   /// 갤러리에서 이미지를 가져오는 작업
   /// [index] = {0 : main, 1 : sub1, 2 : sub3}
@@ -381,6 +386,21 @@ class _AddingProductPageState extends State<AddingProductPage> {
     _memoizer = AsyncMemoizer();
     _reservationCountController.text = '-1';
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _optionDetailList.clear();
+    _optionCategoryList.clear();
+    _detailPriceControllerList.clear();
+    _detailTitleControllerList.clear();
+    _streamControllerList.clear();
+    _optionCategoryControllerList.clear();
+    _classList.clear();
+    // 전역변수는 페이지가 dispose 되어도 사라지지 않는 듯 하다.
+    // 다시 이 페이지로 들어올 때 위의 리스트들이 계속 존재함
+    // 그래서 페이지 종료될 때 강제로 아이템을 모두 지우도록 한다.
+    super.dispose();
   }
 
   @override
@@ -798,6 +818,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                               _detailTitleControllerList.clear();
                               _streamControllerList.clear();
                               _optionCategoryControllerList.clear();
+                              _classList.clear();
                               _index = 0;
                             }
                           });
@@ -828,7 +849,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                 Padding(
                                   padding: EdgeInsets.all(size.width * 0.02),
                                   child: Text(
-                                    '* 각 항목을 지우고 싶을 때는 반드시 마지막으로 추가한 항목부터 지워야합니다!',
+                                    '* 옵션 전체를 지울 경우에는 마지막으로 추가한 옵션부터 삭제 가능합니다',
                                     style: TextStyle(
                                         fontSize: 12,
                                         fontWeight: FontWeight.bold),
@@ -852,6 +873,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                           _optionDetailList.add([]);
                                           _detailTitleControllerList.add([]);
                                           _detailPriceControllerList.add([]);
+                                          _classList.add([]);
                                           _optionCategoryControllerList
                                               .add(TextEditingController());
                                           _streamControllerList.add(
@@ -1561,36 +1583,54 @@ class _AddingProductPageState extends State<AddingProductPage> {
             children: [
               IconButton(
                 onPressed: () {
-                  // if (_optionCategoryControllerList.length - 1 == index) {
-                  if (index > 0 && index >= _optionCategoryList.length - 1) {
-                    index = _optionCategoryList.length - 1;
-                  }
-                  print(index);
-                  setState(() {
-                    _optionCategoryControllerList[index].removeListener(() {});
-                    _optionCategoryControllerList.removeAt(index);
-                    _optionCategoryList.removeAt(index);
-                    _optionDetailList[index].clear();
-                    for (int i = 0; i < _optionDetailList[index].length; ++i) {
-                      _optionDetailList[index].removeAt(i);
-                      _detailTitleControllerList[index][i]
-                          .removeListener(() {});
-                      _detailPriceControllerList[index][i]
-                          .removeListener(() {});
-                      _detailTitleControllerList[index].removeAt(i);
-                      _detailTitleControllerList[index].removeAt(i);
+                  if (_optionCategoryControllerList.length - 1 == index) {
+                    // 선택한 인덱스가 마지막으로 추가한 인덱스인가?
+                    if (index > 0 && index >= _optionCategoryList.length - 1) {
+                      index = _optionCategoryList.length - 1;
                     }
-                    _index--;
-                  });
-                  // _streamControllerList[index].sink.close();
-                  StreamSubscription sub;
-                  sub = _streamControllerList[index].stream.listen((event) {
-                    sub.cancel();
-                  });
+                    setState(() {
+                      _optionCategoryControllerList[index].removeListener(
+                          () {}); // index 에 해당하는 제목 컨트롤러의 연결을 끊는다.
+                      _optionCategoryControllerList
+                          .removeAt(index); // index 에 해당하는 제목 컨트롤러 공간을 지운다.
+                      _optionCategoryList
+                          .removeAt(index); // index 에 해당하는 실제 옵션 위젯을 지운다.
 
-                  // } else {
-                  //   Fluttertoast.showToast(msg: '마지막으로 추가한 옵션이 아닙니다!');
-                  // }
+                      for (int i = 0;
+                          i < _optionDetailList[index].length;
+                          ++i) {
+                        _detailTitleControllerList[index][i]
+                            .removeListener(() {});
+                        _detailPriceControllerList[index][i]
+                            .removeListener(() {});
+                      }
+                      // 특정 옵션에 대해 모든 선택지에 대한 가격, 이름 컨트롤러의 연결을 끊는다.
+
+                      _optionDetailList[index]
+                          .clear(); // index 에 해당하는 옵션 리스트의 모든 선택지를 지운다.
+                      _detailTitleControllerList[index]
+                          .clear(); // index 에 해당하는 옵션 리스트의 제목 컨트롤러를 모두 비운다.
+                      _detailPriceControllerList[index]
+                          .clear(); // index 에 해당하는 옵션 리스트의 가격 컨트롤러를 모두 비운다.
+                      _optionDetailList
+                          .removeAt(index); // index 에 해당하는 실제 옵션 위젯을 지운다.
+                      _detailTitleControllerList.removeAt(
+                          index); // index 에 해당하는 옵션 리스트의 제목 컨트롤러의 공간을 지운다.
+                      _detailPriceControllerList.removeAt(
+                          index); // index 에 해당하는 옵션 리스트의 가격 컨트롤러의 공간을 지운다.
+                      _classList.removeAt(
+                          index); // index 에 해당하는 옵션 리스트의 동적 인덱스를 갖는 선택지 객체를 지운다.
+                      _index--; // 옵션 리스트의 index 를 하나 줄인다. (옵션 리스트의 동적 인덱스 역할)
+                    });
+                    StreamSubscription sub;
+                    sub = _streamControllerList[index].stream.listen((event) {
+                      sub.cancel(); // index 에 해당하는 옵션 리스트의 연결되어 있는 스트림 통로를 끊는다.
+                    });
+                    _streamControllerList
+                        .removeAt(index); // index 에 해당하는 옵션 리스트의 스트림 객체를 지운다.
+                  } else {
+                    Fluttertoast.showToast(msg: '마지막으로 추가한 옵션이 아닙니다!');
+                  }
                 },
                 icon: Icon(
                   Icons.remove_circle,
@@ -1631,16 +1671,23 @@ class _AddingProductPageState extends State<AddingProductPage> {
           children: [
             FlatButton(
                 onPressed: () {
-                  _detailPriceControllerList[index]
-                      .add(TextEditingController());
-                  _detailTitleControllerList[index]
-                      .add(TextEditingController());
+                  _detailPriceControllerList[index].add(
+                      TextEditingController()); // index 에 해당하는 옵션에 가격 컨트롤러 하나를 추가한다.
+                  _detailTitleControllerList[index].add(
+                      TextEditingController()); // index 에 해당하는 옵션에 이름 컨트롤러 하나를 추가한다.
 
                   setState(() {
-                    _optionDetailList[index].add(_optionDetailLayout(size,
-                        index, _detailPriceControllerList[index].length - 1));
+                    _classList[index].add(DetailWidget(
+                        _detailPriceControllerList[index].length -
+                            1)); // 리스트 마지막에 동적 인덱스를 갖는 선택지 객체를 추가한다.
                   });
-                  _streamControllerList[index].add(_optionDetailList[index]);
+                  _optionDetailList[index].add(_classList[index]
+                      .last
+                      .optionDetailLayout(size,
+                          index)); // 선택지 객체의 위젯을 _optionDetailList 에 추가한다.
+
+                  _streamControllerList[index].add(_optionDetailList[
+                      index]); // _optionDetailList[index]의 변화를 Stream 이 듣도록 추가한다.
                 },
                 child: Container(
                   padding: EdgeInsets.symmetric(
@@ -1672,8 +1719,26 @@ class _AddingProductPageState extends State<AddingProductPage> {
       ],
     );
   }
+}
 
-  Widget _optionDetailLayout(Size size, int cIndex, int dIndex) {
+/// 기존 방식은 optionDetailLayout() 함수가 멤버메소드로 존재했었는데
+/// 이 방식을 사용하면 parameter 로 넘겨주는 dIndex 값이 항상 고정이 되어있다. (dIndex 값은 한 옵션에서 여러 선택지 중 현재 위치한 인덱스를 의미)
+/// 하지만 자유자재로 원하는 인덱스에 해당하는 항목을 지우게 되면 dIndex 값도 그에 따라 변화해야 한다.
+/// → 지우려고 하는 인덱스의 다음 요소들 전부가 인덱스 값이 하나씩 줄어야 한다.
+/// 그렇지만 dIndex의 값이 고정되어 있기 때문에 그에 맞춰줘서 동적으로 dIndex 의 값을 바꿔야만 했었다.
+/// 하지만 다양한 방법을 시도했지만 실패했다.
+/// 결국에는 고정된 dIndex 값을(상수화된) 유동적으로 사용할 수 있도록(변수화된) 값으로 바꿔줘야 한다.
+/// 즉, 어디서든 dIndex 값을 해당 범위내에서 바꾸는 것이 가능하도록 해야하는 것이다.
+/// 그렇게 하기 위해서는 선택지에 해당하는 위젯과 dIndex 값이 동시에 갖고 있어야 하는데
+/// 이를 위해서 하나의 Class 를 만들어주도록 한다.
+/// 이러면 객체화 했을 때, 특정 인덱스가 삭제되면 변화해야할 나머지 선택지 객체의 멤버인 dIndex 로 접근해 값을 바꿀 수가 있게 되는 것이다.
+/// 추가로, 기존에 Widget Class 의 멤버로 있던 옵션 관련 리스트들을 전역 변수로 설정한다.
+/// 그래서 새로 생성한 Class 에서도 접근 가능하도록 한다.
+/// 그리고 이 클래스를 각 옵션에 대해서 사용하기 위해 2차원 리스트로 사용한다. List<List<Class>>
+class DetailWidget {
+  int dIndex;
+  DetailWidget(this.dIndex);
+  Widget optionDetailLayout(Size size, int cIndex) {
     return Container(
       padding: EdgeInsets.all(size.width * 0.01),
       child: Row(
@@ -1682,24 +1747,29 @@ class _AddingProductPageState extends State<AddingProductPage> {
           IconButton(
               padding: EdgeInsets.all(0),
               onPressed: () {
-                setState(() {
-                  if (dIndex > 0 &&
-                      dIndex >= _optionDetailList[cIndex].length - 1) {
-                    dIndex = _optionDetailList[cIndex].length - 1;
-                  }
-                  // 리스트의 중간 인덱스 삭제 시, 리스트의 인덱스가 밀려(앞으로 당겨져오는?) dIndex 값과 현재 리스트의 인덱스가 불일치하게 됨.
-                  // 그래서 dIndex 의 값을 리스트의 마지막 인덱스 값으로 줘서 인덱스를 맞춰준다.
-                  // 위의 경우는 중간 인덱스 삭제 시, 그 뒤에 있던 인덱스들에만 해당한다. (앞에는 영향x)
-                  _optionDetailList[cIndex].removeAt(dIndex);
-                  _detailPriceControllerList[cIndex][dIndex]
-                      .removeListener(() {});
-                  _detailTitleControllerList[cIndex][dIndex]
-                      .removeListener(() {});
+                for (int i = dIndex + 1; i < _classList[cIndex].length; ++i) {
+                  _classList[cIndex][i].dIndex -= 1;
+                }
+                // 현재 지우고자 하는 인덱스의 다음 모든 인덱스의 dIndex 값을 한자리 땡긴다.
 
-                  _detailPriceControllerList[cIndex].removeAt(dIndex);
-                  _detailTitleControllerList[cIndex].removeAt(dIndex);
-                });
-                _streamControllerList[cIndex].add(_optionDetailList[cIndex]);
+                _classList[cIndex]
+                    .removeAt(dIndex); // dIndex 에 해당하는 동적 인덱스를 갖는 선택지 객체를 지운다.
+
+                _optionDetailList[cIndex]
+                    .removeAt(dIndex); // dIndex 에 해당하는 실제 선택지 위젯을 지운다.
+
+                _detailPriceControllerList[cIndex][dIndex].removeListener(
+                    () {}); // 특정 옵션(cIndex 에 위치한)에 대한 dIndex 에 해당하는 가격 텍스트 컨트롤러의 연결을 끊는다.
+                _detailTitleControllerList[cIndex][dIndex].removeListener(
+                    () {}); // 특정 옵션(cIndex 에 위치한)에 대한 dIndex 에 해당하는 이름 텍스트 컨트롤러의 연결을 끊는다.
+
+                _detailPriceControllerList[cIndex].removeAt(
+                    dIndex); // 특정 옵션(cIndex 에 위치한) 가격 컨트롤러 리스트에서 dIndex 에 위치한 공간을 지운다.
+                _detailTitleControllerList[cIndex].removeAt(
+                    dIndex); // 특정 옵션(cIndex 에 위치한) 이름 컨트롤러 리스트에서 dIndex 에 위치한 공간을 지운다.
+
+                _streamControllerList[cIndex].add(_optionDetailList[
+                    cIndex]); // _optionDetailList[cIndex]의 변화를 스트림이 듣도록 추가한다.
               },
               icon: Icon(
                 Icons.remove_circle,
