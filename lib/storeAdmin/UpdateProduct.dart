@@ -260,9 +260,24 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
     var registerResult = await _updateProductRequest();
     if (!registerResult) return 500;
 
+    var optionResult = await _addOptionCategory();
+    if (!optionResult) return 500;
+
     var limit = await _setReservationCountLimit();
     if (!limit) return 500;
+
     return 200; // 성공 코드
+  }
+
+  Future<bool> _deleteAllOptions() async {
+    String url =
+        'http://nacha01.dothome.co.kr/sin/arlimi_deleteProductOptions.php?pid=${widget.product.prodID}';
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   Future<void> _getCountLimit() async {
@@ -346,6 +361,79 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
       await Future.delayed(Duration(milliseconds: 50));
       // 바로바로 스트림에 데이터를 전달하면 반응을 못하나... 그래서 나름의 딜레이를 주도록 한다.
       _streamControllerList[i].sink.add(_optionDetailList[i]);
+    }
+  }
+
+  Future<int> _registerOptionCategory(String optionCategory) async {
+    String url =
+        'http://nacha01.dothome.co.kr/sin/arlimi_registerOptionCategory.php';
+    final response = await http.post(url, body: <String, String>{
+      'pName': _productNameController.text,
+      'pInfo': _productExplainController.text,
+      'category': _categoryMap[_selectedCategory].toString(),
+      'price': _productPriceController.text,
+      'optionCategory': optionCategory
+    });
+
+    if (response.statusCode == 200) {
+      String result = utf8
+          .decode(response.bodyBytes)
+          .replaceAll(
+              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+              '')
+          .trim();
+      return int.parse(result);
+    } else {
+      return -1;
+    }
+  }
+
+  Future<bool> _registerOptionDetail(
+      String optionCategory, String optionName, String optionPrice) async {
+    String url =
+        'http://nacha01.dothome.co.kr/sin/arlimi_registerOptionDetail.php';
+    final response = await http.post(url, body: <String, String>{
+      'pid': widget.product.prodID.toString(),
+      'optionCategory': optionCategory,
+      'optionName': optionName,
+      'optionPrice': optionPrice
+    });
+    if (response.statusCode == 200) {
+      String result = utf8
+          .decode(response.bodyBytes)
+          .replaceAll(
+              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+              '')
+          .trim();
+      if (result == '1')
+        return true;
+      else
+        return false;
+    } else {
+      return false;
+    }
+  }
+
+  Future<bool> _addOptionCategory() async {
+    var deleteResult = await _deleteAllOptions();
+    if (deleteResult) {
+      try {
+        for (int i = 0; i < _optionCategoryControllerList.length; ++i) {
+          var pid = await _registerOptionCategory(
+              _optionCategoryControllerList[i].text);
+          for (int j = 0; j < _optionDetailList[i].length; ++j) {
+            var res = await _registerOptionDetail(
+                _optionCategoryControllerList[i].text,
+                _detailTitleControllerList[i][j].text,
+                _detailPriceControllerList[i][j].text);
+          }
+        }
+        return true;
+      } catch (e) {
+        return false;
+      }
+    } else {
+      return false;
     }
   }
 
@@ -1507,13 +1595,9 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
                 children: snapshot.data,
               );
             } else {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return CircularProgressIndicator();
-              } else {
-                return SizedBox(
-                  height: size.height * 0.008,
-                );
-              }
+              return SizedBox(
+                height: size.height * 0.008,
+              );
             }
           },
           stream: _streamControllerList[index].stream,
