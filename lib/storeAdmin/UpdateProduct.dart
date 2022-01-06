@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
@@ -8,6 +9,18 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
+
+List<List<Widget>> _optionDetailList = []; // 선택지 항목 위젯에 대한 2차원 리스트
+List<Widget> _optionCategoryList = []; // 옵션 항목 위젯에 대한 리스트
+List<List<TextEditingController>> _detailTitleControllerList =
+    []; // 선택지 이름 항목에 대한 텍스트 컨트롤러에 대한 2차원 리스트
+List<List<TextEditingController>> _detailPriceControllerList =
+    []; // 선택지 가격 항목에 대한 텍스트 컨트롤러에 대한 2차원 리스트
+List<StreamController<List>> _streamControllerList =
+    []; // 선택지 리스트의 변화를 감지해 위젯으로 보여주도록 하는 Stream 리스트
+List<TextEditingController> _optionCategoryControllerList =
+    []; // 옵션 항목에 대한 제목 텍스트 컨트롤러 리스트
+List<List<DetailWidget>> _classList = []; // 리스트의 인덱스와 위젯이 담겨있는 클래스를 담는 2차원 리스트
 
 class UpdatingProductPage extends StatefulWidget {
   UpdatingProductPage({this.product});
@@ -25,7 +38,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
 
   var _cumulativeSellCount = TextEditingController();
   var _reservationCountController = TextEditingController();
-
+  List _initOptionList = [];
   PickedFile _mainImage;
   PickedFile _subImage1;
   PickedFile _subImage2;
@@ -33,10 +46,12 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
   bool _isBest = false;
   bool _isNew = false;
   bool _isReservation = false;
+  bool _useOptions = false;
 
   bool _useSub1 = false;
   bool _useSub2 = false;
 
+  int _index = 0;
   int _clickCount = 0;
   bool _imageInitial = true;
 
@@ -166,6 +181,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
       'img1': _mainImage == null ? 'NOT' : serverImageUri + _mainName + '.jpg',
       'img2': _useSub1 ? serverImageUri + _sub1Name + '.jpg' : 'None',
       'img3': _useSub2 ? serverImageUri + _sub2Name + '.jpg' : 'None',
+      'empty': _isReservation ? '1' : '0'
     });
 
     if (response.statusCode == 200) {
@@ -176,6 +192,35 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
         return false;
       }
       return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<bool> _setReservationCountLimit() async {
+    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_resvLimit.php';
+    int value = int.parse(_reservationCountController.text) < 0 &&
+            int.parse(_reservationCountController.text) != -1
+        ? -1
+        : int.parse(_reservationCountController.text);
+    final response = await http.post(url, body: <String, String>{
+      'pid': widget.product.prodID.toString(),
+      'max_count': value.toString()
+    });
+
+    if (response.statusCode == 200) {
+      String result = utf8
+          .decode(response.bodyBytes)
+          .replaceAll(
+              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+              '')
+          .trim();
+
+      if (result == 'UPDATE1' || result == 'INSERT1') {
+        return true;
+      } else {
+        return false;
+      }
     } else {
       return false;
     }
@@ -239,16 +284,10 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
     }
   }
 
-  Future<bool> _setReservationCountLimit() async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_resvLimit.php';
-    int value = int.parse(_reservationCountController.text) < 0 &&
-            int.parse(_reservationCountController.text) != -1
-        ? -1
-        : int.parse(_reservationCountController.text);
-    final response = await http.post(url, body: <String, String>{
-      'pid': widget.product.prodID.toString(),
-      'max_count': value.toString()
-    });
+  Future<void> _getAllOptions() async {
+    String url =
+        'http://nacha01.dothome.co.kr/sin/arlimi_getProductOptions.php?pid=${widget.product.prodID}';
+    final response = await http.get(url);
 
     if (response.statusCode == 200) {
       String result = utf8
@@ -257,14 +296,56 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
               '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
               '')
           .trim();
-
-      if (result == 'UPDATE1' || result == 'INSERT1') {
-        return true;
+      if (result.contains('NO OPTION')) {
+        _useOptions = false;
       } else {
-        return false;
+        List map1st = json.decode(result);
+        for (int i = 0; i < map1st.length; ++i) {
+          map1st[i] = json.decode(map1st[i]);
+          for (int j = 0; j < map1st[i]['detail'].length; ++j) {
+            map1st[i]['detail'][j] = jsonDecode(map1st[i]['detail'][j]);
+          }
+        }
+        _initOptionList = map1st;
+        setState(() {
+          _useOptions = true;
+        });
+        _initialOptionSetting();
       }
-    } else {
-      return false;
+    }
+  }
+
+  void _initialOptionSetting() async {
+    final size = MediaQuery.of(context).size;
+    for (int i = 0; i < _initOptionList.length; ++i) {
+      _optionDetailList.add([]);
+      _detailTitleControllerList.add([]);
+      _detailPriceControllerList.add([]);
+      _classList.add([]);
+      _optionCategoryControllerList.add(TextEditingController());
+      _optionCategoryControllerList.last.text =
+          _initOptionList[i]['optionCategory'];
+      _streamControllerList.add(StreamController.broadcast());
+      _optionCategoryList.add(_optionCategoryLayout(size, _index++));
+      for (int j = 0; j < _initOptionList[i]['detail'].length; ++j) {
+        _detailPriceControllerList[i]
+            .add(TextEditingController()); // index 에 해당하는 옵션에 가격 컨트롤러 하나를 추가한다.
+        _detailPriceControllerList[i].last.text =
+            _initOptionList[i]['detail'][j]['optionPrice'];
+        _detailTitleControllerList[i]
+            .add(TextEditingController()); // index 에 해당하는 옵션에 이름 컨트롤러 하나를 추가한다.
+        _detailTitleControllerList[i].last.text =
+            _initOptionList[i]['detail'][j]['optionName'];
+        setState(() {
+          _classList[i].add(DetailWidget(_detailPriceControllerList[i].length -
+              1)); // 리스트 마지막에 동적 인덱스를 갖는 선택지 객체를 추가한다.
+        });
+        _optionDetailList[i].add(_classList[i].last.optionDetailLayout(
+            size, i)); // 선택지 객체의 위젯을 _optionDetailList 에 추가한다.
+      }
+      await Future.delayed(Duration(milliseconds: 50));
+      // 바로바로 스트림에 데이터를 전달하면 반응을 못하나... 그래서 나름의 딜레이를 주도록 한다.
+      _streamControllerList[i].sink.add(_optionDetailList[i]);
     }
   }
 
@@ -281,7 +362,23 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
     _productDiscountController.text = widget.product.discount.toString();
     _isReservation = widget.product.isReservation;
     _getCountLimit();
+    _getAllOptions();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _optionDetailList.clear();
+    _optionCategoryList.clear();
+    _detailPriceControllerList.clear();
+    _detailTitleControllerList.clear();
+    _streamControllerList.clear();
+    _optionCategoryControllerList.clear();
+    _classList.clear();
+    // 전역변수는 페이지가 dispose 되어도 사라지지 않는 듯 하다.
+    // 다시 이 페이지로 들어올 때 위의 리스트들이 계속 존재함
+    // 그래서 페이지 종료될 때 강제로 아이템을 모두 지우도록 한다.
+    super.dispose();
   }
 
   @override
@@ -634,7 +731,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
               Padding(
                 padding: EdgeInsets.all(size.width * 0.015),
                 child: Text(
-                  '* 재고가 0일 때 처리의 의미는 상품이 팔려서 재고가 0이 되었을 때 "품절"처리 할 것인가 아니면 "예약"을 받을 것인가에 대한 처리를 뜻합니다.',
+                  '* "재고가 0일 때 처리"의 의미는 상품이 팔려서 재고가 0이 되었을 때 "품절"처리 할 것인가 아니면 "예약"을 받을 것인가에 대한 처리를 뜻합니다.',
                   style: TextStyle(color: Colors.grey, fontSize: 10),
                 ),
               ),
@@ -674,6 +771,128 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
                       ),
                     )
                   : SizedBox(),
+              SizedBox(
+                height: 10,
+              ),
+              Divider(
+                thickness: 2,
+                endIndent: 15,
+                indent: 15,
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _useOptions = !_useOptions;
+                    if (!_useOptions) {
+                      _optionDetailList.clear();
+                      _optionCategoryList.clear();
+                      _detailPriceControllerList.clear();
+                      _detailTitleControllerList.clear();
+                      _streamControllerList.clear();
+                      _optionCategoryControllerList.clear();
+                      _classList.clear();
+                      _index = 0;
+                    }
+                  });
+                },
+                child: Container(
+                  width: size.width * 0.5,
+                  height: size.height * 0.05,
+                  alignment: Alignment.center,
+                  child: Text(
+                    _useOptions ? '상품 옵션 삭제하기' : '상품 옵션 추가하기',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.white),
+                  ),
+                  decoration: BoxDecoration(
+                      color: Color(0xFF9161E9),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(width: 1, color: Colors.black)),
+                ),
+              ),
+              SizedBox(
+                height: size.height * 0.02,
+              ),
+              _useOptions
+                  ? Column(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.all(size.width * 0.02),
+                          child: Text(
+                            '* 옵션 전체를 지울 경우에는 마지막으로 추가한 옵션부터 삭제 가능합니다',
+                            style: TextStyle(
+                                fontSize: 12, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        Divider(
+                          thickness: 1.5,
+                          indent: size.width * 0.02,
+                          endIndent: size.width * 0.02,
+                          color: Colors.deepOrange,
+                        ),
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: _optionCategoryList,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            FlatButton(
+                                onPressed: () {
+                                  _optionDetailList.add([]);
+                                  _detailTitleControllerList.add([]);
+                                  _detailPriceControllerList.add([]);
+                                  _classList.add([]);
+                                  _optionCategoryControllerList
+                                      .add(TextEditingController());
+                                  _streamControllerList
+                                      .add(StreamController.broadcast());
+                                  _optionCategoryList.add(
+                                      _optionCategoryLayout(size, _index++));
+                                  setState(() {});
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: size.width * 0.01,
+                                      horizontal: size.width * 0.03),
+                                  decoration: BoxDecoration(
+                                      color: Colors.deepPurple,
+                                      border: Border.all(
+                                          width: 1, color: Colors.black),
+                                      borderRadius: BorderRadius.circular(8)),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.add,
+                                        color: Colors.white,
+                                      ),
+                                      Text(
+                                        ' 옵션 추가',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white),
+                                      )
+                                    ],
+                                  ),
+                                )),
+                          ],
+                        ),
+                        Divider(
+                          thickness: 2,
+                          endIndent: 15,
+                          indent: 15,
+                        ),
+                      ],
+                    )
+                  : Divider(
+                      thickness: 2,
+                      endIndent: 15,
+                      indent: 15,
+                    ),
               Row(
                 children: [
                   titleLayoutWidget(
@@ -1193,5 +1412,250 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
                     onPressed: () => Navigator.pop(context), child: Text('확인'))
               ],
             ));
+  }
+
+  Widget _optionCategoryLayout(Size size, int index) {
+    return Column(
+      children: [
+        Container(
+          width: size.width * 0.94,
+          height: size.height * 0.05,
+          padding: EdgeInsets.all(size.width * 0.02),
+          decoration: BoxDecoration(
+              border: Border.all(width: 1, color: Colors.black),
+              borderRadius: BorderRadius.circular(6)),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              IconButton(
+                onPressed: () {
+                  if (_optionCategoryControllerList.length - 1 == index) {
+                    // 선택한 인덱스가 마지막으로 추가한 인덱스인가?
+                    if (index > 0 && index >= _optionCategoryList.length - 1) {
+                      index = _optionCategoryList.length - 1;
+                    }
+                    setState(() {
+                      _optionCategoryControllerList[index].removeListener(
+                          () {}); // index 에 해당하는 제목 컨트롤러의 연결을 끊는다.
+                      _optionCategoryControllerList
+                          .removeAt(index); // index 에 해당하는 제목 컨트롤러 공간을 지운다.
+                      _optionCategoryList
+                          .removeAt(index); // index 에 해당하는 실제 옵션 위젯을 지운다.
+
+                      for (int i = 0;
+                          i < _optionDetailList[index].length;
+                          ++i) {
+                        _detailTitleControllerList[index][i]
+                            .removeListener(() {});
+                        _detailPriceControllerList[index][i]
+                            .removeListener(() {});
+                      }
+                      // 특정 옵션에 대해 모든 선택지에 대한 가격, 이름 컨트롤러의 연결을 끊는다.
+
+                      _optionDetailList[index]
+                          .clear(); // index 에 해당하는 옵션 리스트의 모든 선택지를 지운다.
+                      _detailTitleControllerList[index]
+                          .clear(); // index 에 해당하는 옵션 리스트의 제목 컨트롤러를 모두 비운다.
+                      _detailPriceControllerList[index]
+                          .clear(); // index 에 해당하는 옵션 리스트의 가격 컨트롤러를 모두 비운다.
+                      _optionDetailList
+                          .removeAt(index); // index 에 해당하는 실제 옵션 위젯을 지운다.
+                      _detailTitleControllerList.removeAt(
+                          index); // index 에 해당하는 옵션 리스트의 제목 컨트롤러의 공간을 지운다.
+                      _detailPriceControllerList.removeAt(
+                          index); // index 에 해당하는 옵션 리스트의 가격 컨트롤러의 공간을 지운다.
+                      _classList.removeAt(
+                          index); // index 에 해당하는 옵션 리스트의 동적 인덱스를 갖는 선택지 객체를 지운다.
+                      _index--; // 옵션 리스트의 index 를 하나 줄인다. (옵션 리스트의 동적 인덱스 역할)
+                    });
+                    StreamSubscription sub;
+                    sub = _streamControllerList[index].stream.listen((event) {
+                      sub.cancel(); // index 에 해당하는 옵션 리스트의 연결되어 있는 스트림 통로를 끊는다.
+                    });
+                    _streamControllerList
+                        .removeAt(index); // index 에 해당하는 옵션 리스트의 스트림 객체를 지운다.
+                  } else {
+                    Fluttertoast.showToast(msg: '마지막으로 추가한 옵션이 아닙니다!');
+                  }
+                },
+                icon: Icon(
+                  Icons.remove_circle,
+                  color: Colors.deepOrange,
+                ),
+                padding: EdgeInsets.all(0),
+              ),
+              Text(
+                '옵션 이름 /',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+              ),
+              Container(
+                width: size.width * 0.5,
+                child: TextField(
+                  controller: _optionCategoryControllerList[index],
+                  style: TextStyle(fontSize: 12),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
+          ),
+        ),
+        StreamBuilder<List>(
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return Column(
+                children: snapshot.data,
+              );
+            } else {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return CircularProgressIndicator();
+              } else {
+                return SizedBox(
+                  height: size.height * 0.008,
+                );
+              }
+            }
+          },
+          stream: _streamControllerList[index].stream,
+        ),
+        Row(
+          children: [
+            FlatButton(
+                onPressed: () {
+                  _detailPriceControllerList[index].add(
+                      TextEditingController()); // index 에 해당하는 옵션에 가격 컨트롤러 하나를 추가한다.
+                  _detailTitleControllerList[index].add(
+                      TextEditingController()); // index 에 해당하는 옵션에 이름 컨트롤러 하나를 추가한다.
+
+                  setState(() {
+                    _classList[index].add(DetailWidget(
+                        _detailPriceControllerList[index].length -
+                            1)); // 리스트 마지막에 동적 인덱스를 갖는 선택지 객체를 추가한다.
+                  });
+                  _optionDetailList[index].add(_classList[index]
+                      .last
+                      .optionDetailLayout(size,
+                          index)); // 선택지 객체의 위젯을 _optionDetailList 에 추가한다.
+
+                  _streamControllerList[index].add(_optionDetailList[
+                      index]); // _optionDetailList[index]의 변화를 Stream 이 듣도록 추가한다.
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                      horizontal: size.width * 0.03,
+                      vertical: size.width * 0.01),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(width: 1, color: Colors.black),
+                      color: Color(0xFF91EFAA)),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.add),
+                      Text(
+                        ' 선택지 추가',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      )
+                    ],
+                  ),
+                )),
+          ],
+        ),
+        Divider(
+          thickness: 1.5,
+          indent: size.width * 0.02,
+          endIndent: size.width * 0.02,
+          color: Colors.deepOrange,
+        )
+      ],
+    );
+  }
+}
+
+/// 기존 방식은 optionDetailLayout() 함수가 멤버메소드로 존재했었는데
+/// 이 방식을 사용하면 parameter 로 넘겨주는 dIndex 값이 항상 고정이 되어있다. (dIndex 값은 한 옵션에서 여러 선택지 중 현재 위치한 인덱스를 의미)
+/// 하지만 자유자재로 원하는 인덱스에 해당하는 항목을 지우게 되면 dIndex 값도 그에 따라 변화해야 한다.
+/// → 지우려고 하는 인덱스의 다음 요소들 전부가 인덱스 값이 하나씩 줄어야 한다.
+/// 그렇지만 dIndex의 값이 고정되어 있기 때문에 그에 맞춰줘서 동적으로 dIndex 의 값을 바꿔야만 했었다.
+/// 하지만 다양한 방법을 시도했지만 실패했다.
+/// 결국에는 고정된 dIndex 값을(상수화된) 유동적으로 사용할 수 있도록(변수화된) 값으로 바꿔줘야 한다.
+/// 즉, 어디서든 dIndex 값을 해당 범위내에서 바꾸는 것이 가능하도록 해야하는 것이다.
+/// 그렇게 하기 위해서는 선택지에 해당하는 위젯과 dIndex 값이 동시에 갖고 있어야 하는데
+/// 이를 위해서 하나의 Class 를 만들어주도록 한다.
+/// 이러면 객체화 했을 때, 특정 인덱스가 삭제되면 변화해야할 나머지 선택지 객체의 멤버인 dIndex 로 접근해 값을 바꿀 수가 있게 되는 것이다.
+/// 추가로, 기존에 Widget Class 의 멤버로 있던 옵션 관련 리스트들을 전역 변수로 설정한다.
+/// 그래서 새로 생성한 Class 에서도 접근 가능하도록 한다.
+/// 그리고 이 클래스를 각 옵션에 대해서 사용하기 위해 2차원 리스트로 사용한다. List<List<Class>>
+class DetailWidget {
+  int dIndex;
+  DetailWidget(this.dIndex);
+  Widget optionDetailLayout(Size size, int cIndex) {
+    return Container(
+      padding: EdgeInsets.all(size.width * 0.01),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          IconButton(
+              padding: EdgeInsets.all(0),
+              onPressed: () {
+                for (int i = dIndex + 1; i < _classList[cIndex].length; ++i) {
+                  _classList[cIndex][i].dIndex -= 1;
+                }
+                // 현재 지우고자 하는 인덱스의 다음 모든 인덱스의 dIndex 값을 한자리 땡긴다.
+
+                _classList[cIndex]
+                    .removeAt(dIndex); // dIndex 에 해당하는 동적 인덱스를 갖는 선택지 객체를 지운다.
+
+                _optionDetailList[cIndex]
+                    .removeAt(dIndex); // dIndex 에 해당하는 실제 선택지 위젯을 지운다.
+
+                _detailPriceControllerList[cIndex][dIndex].removeListener(
+                    () {}); // 특정 옵션(cIndex 에 위치한)에 대한 dIndex 에 해당하는 가격 텍스트 컨트롤러의 연결을 끊는다.
+                _detailTitleControllerList[cIndex][dIndex].removeListener(
+                    () {}); // 특정 옵션(cIndex 에 위치한)에 대한 dIndex 에 해당하는 이름 텍스트 컨트롤러의 연결을 끊는다.
+
+                _detailPriceControllerList[cIndex].removeAt(
+                    dIndex); // 특정 옵션(cIndex 에 위치한) 가격 컨트롤러 리스트에서 dIndex 에 위치한 공간을 지운다.
+                _detailTitleControllerList[cIndex].removeAt(
+                    dIndex); // 특정 옵션(cIndex 에 위치한) 이름 컨트롤러 리스트에서 dIndex 에 위치한 공간을 지운다.
+
+                _streamControllerList[cIndex].add(_optionDetailList[
+                    cIndex]); // _optionDetailList[cIndex]의 변화를 스트림이 듣도록 추가한다.
+              },
+              icon: Icon(
+                Icons.remove_circle,
+                color: Colors.red,
+              )),
+          Text(
+            '* 선택지 이름',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+          ),
+          Container(
+            width: size.width * 0.3,
+            child: TextField(
+              controller: _detailTitleControllerList[cIndex][dIndex],
+              style: TextStyle(fontSize: 12),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          Text(
+            ' / ',
+            style: TextStyle(color: Colors.grey, fontSize: 17),
+          ),
+          Text('가격',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+          Container(
+            width: size.width * 0.2,
+            child: TextField(
+              controller: _detailPriceControllerList[cIndex][dIndex],
+              style: TextStyle(fontSize: 12),
+              textAlign: TextAlign.center,
+              keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            ),
+          )
+        ],
+      ),
+    );
   }
 }

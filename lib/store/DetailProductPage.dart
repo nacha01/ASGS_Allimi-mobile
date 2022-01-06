@@ -186,539 +186,550 @@ class _DetailProductPageState extends State<DetailProductPage> {
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
     var data = Provider.of<ExistCart>(context);
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          '상품 세부정보',
-          style: TextStyle(color: Colors.black, fontSize: 16),
-        ),
-        centerTitle: true,
-        elevation: 0,
-        backgroundColor: Color(0xFF9EE1E5),
-        leading: IconButton(
-          icon: Icon(
-            Icons.clear,
-            color: Colors.black,
-            size: 30,
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pop(context, true);
+        return false;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            '상품 세부정보',
+            style: TextStyle(color: Colors.black, fontSize: 16),
           ),
-          onPressed: () => Navigator.pop(context),
+          centerTitle: true,
+          elevation: 0,
+          backgroundColor: Color(0xFF9EE1E5),
+          leading: IconButton(
+            icon: Icon(
+              Icons.clear,
+              color: Colors.black,
+              size: 30,
+            ),
+            onPressed: () => Navigator.pop(context, true),
+          ),
         ),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: size.height * 0.02,
-                  ),
-                  Container(
-                      width: size.width * 0.9,
-                      height: size.width * 0.9 * 1.4,
-                      child: CachedNetworkImage(
-                        imageUrl: widget.product.imgUrl1,
-                        fit: BoxFit.cover,
-                        progressIndicatorBuilder: (context, string, progress) =>
-                            Center(child: CircularProgressIndicator()),
-                      )),
-                  Divider(
-                    thickness: 1,
-                    endIndent: 15,
-                    indent: 15,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      widget.product.isBest == 1
-                          ? Container(
-                              margin: EdgeInsets.symmetric(horizontal: 6),
-                              width: size.width * 0.16,
-                              height: size.height * 0.08,
-                              child: CircleAvatar(
-                                backgroundColor: Colors.greenAccent,
-                                child: Text(
-                                  'BEST MENU',
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            )
-                          : SizedBox(),
-                      widget.product.isNew == 1
-                          ? Container(
-                              margin: EdgeInsets.symmetric(horizontal: 6),
-                              width: size.width * 0.16,
-                              height: size.height * 0.08,
-                              child: CircleAvatar(
-                                backgroundColor: Colors.limeAccent,
-                                child: Text('NEW MENU',
-                                    textAlign: TextAlign.center),
-                              ),
-                            )
-                          : SizedBox(),
-                    ],
-                  ),
-                  widget.product.isBest == 1 || widget.product.isNew == 1
-                      ? Divider(
-                          thickness: 1,
-                          endIndent: 15,
-                          indent: 15,
-                        )
-                      : SizedBox(),
-                  SizedBox(
-                    height: size.height * 0.03,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.all(size.width * 0.01),
-                    child: Text(
-                      '${widget.product.prodName}',
-                      textScaleFactor: 2.5,
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                      textAlign: TextAlign.center,
+        body: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: size.height * 0.02,
                     ),
-                  ),
-                  Text(
-                    '[${_categoryReverseMap[widget.product.category]}]',
-                    textScaleFactor: 1.7,
-                    style: TextStyle(color: Colors.grey),
-                  ),
-                  SizedBox(
-                    height: size.height * 0.03,
-                  ),
-                  Container(
-                      padding: EdgeInsets.all(size.width * 0.06),
-                      alignment: Alignment.center,
-                      width: size.width * 0.9,
-                      decoration: BoxDecoration(
-                          border: Border.all(width: 2, color: Colors.black54),
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                                color: Colors.grey.withOpacity(0.2),
-                                spreadRadius: 5,
-                                blurRadius: 7,
-                                offset: Offset(0, 6))
-                          ]),
-                      child: Text(
-                        '${widget.product.prodInfo}',
-                        textScaleFactor: 2,
-                        style: TextStyle(height: 1.3),
-                      )),
-                  SizedBox(
-                    height: size.height * 0.03,
-                  ),
-                  Container(
-                    width: size.width * 0.85,
-                    child: Card(
-                      child: ListTile(
-                        leading: Icon(
-                          Icons.production_quantity_limits,
-                          size: 40,
-                          color: Colors.grey[700],
-                        ),
-                        title: Center(
-                          child: Text(
-                            '상품 재고 : ${(widget.product.stockCount) < 0 ? 0 : (widget.product.stockCount)}개',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 18),
-                          ),
-                        ),
-                      ),
+                    Container(
+                        width: size.width * 0.9,
+                        height: size.width * 0.9 * 1.4,
+                        child: CachedNetworkImage(
+                          imageUrl: widget.product.imgUrl1,
+                          fit: BoxFit.cover,
+                          progressIndicatorBuilder:
+                              (context, string, progress) =>
+                                  Center(child: CircularProgressIndicator()),
+                        )),
+                    Divider(
+                      thickness: 1,
+                      endIndent: 15,
+                      indent: 15,
                     ),
-                  ),
-                  SizedBox(
-                    height: size.height * 0.02,
-                  ),
-                  Container(
-                    width: size.width * 0.85,
-                    child: Card(
-                        child: ListTile(
-                      leading: Icon(
-                        Icons.attach_money,
-                        size: 40,
-                        color: Colors.green,
-                      ),
-                      title: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            '${_formatPrice(widget.product.price)}원',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                decoration: _isDiscountZero
-                                    ? TextDecoration.none
-                                    : TextDecoration.lineThrough,
-                                color:
-                                    _isDiscountZero ? Colors.black : Colors.red,
-                                fontSize: 19),
-                          ),
-                          _isDiscountZero
-                              ? Text('')
-                              : Text(
-                                  ' → ${_formatPrice((widget.product.price * (1 - (widget.product.discount / 100.0))).round())}원',
-                                  style: TextStyle(fontSize: 19),
-                                )
-                        ],
-                      ),
-                      subtitle: _isDiscountZero
-                          ? null
-                          : Center(
-                              child: Text(
-                                '${widget.product.discount}% 할인 중',
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16),
-                              ),
-                            ),
-                    )),
-                  ),
-                  _hasOption
-                      ? Column(
-                          children: [
-                            Divider(),
-                            Padding(
-                              padding: EdgeInsets.all(size.width * 0.03),
-                              child: Row(
-                                children: [
-                                  Text(
-                                    '상품 옵션',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Column(
-                              children: _optionCategoryList(_optionList, size),
-                            ),
-                            Divider(),
-                          ],
-                        )
-                      : SizedBox(),
-                  SizedBox(
-                    height: size.height * 0.02,
-                  ),
-                  (widget.product.stockCount) <= 0
-                      ? Container(
-                          child: Text(
-                            '재고가 없습니다.',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 15),
-                          ),
-                        )
-                      : Container(
-                          decoration: BoxDecoration(
-                              border: Border.all(width: 1, color: Colors.black),
-                              borderRadius: BorderRadius.circular(12)),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Container(
-                                width: size.width * 0.15,
-                                height: size.height * 0.06,
-                                child: IconButton(
-                                  onPressed: () {
-                                    if (_count > 1) {
-                                      setState(() {
-                                        --_count;
-                                      });
-                                    }
-                                  },
-                                  icon: Icon(Icons.remove),
-                                ),
-                              ),
-                              Container(
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        widget.product.isBest == 1
+                            ? Container(
+                                margin: EdgeInsets.symmetric(horizontal: 6),
                                 width: size.width * 0.16,
-                                height: size.height * 0.06,
-                                alignment: Alignment.center,
-                                child: Text(
-                                  '$_count',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                height: size.height * 0.08,
+                                child: CircleAvatar(
+                                  backgroundColor: Colors.greenAccent,
+                                  child: Text(
+                                    'BEST MENU',
+                                    textAlign: TextAlign.center,
+                                  ),
                                 ),
-                              ),
-                              Container(
-                                width: size.width * 0.15,
-                                height: size.height * 0.06,
-                                child: IconButton(
-                                  onPressed: () {
-                                    if (_count < widget.product.stockCount) {
-                                      setState(() {
-                                        ++_count;
-                                      });
-                                    } else {
-                                      Fluttertoast.showToast(
-                                          msg: '더 추가할 수 없습니다!',
-                                          gravity: ToastGravity.BOTTOM,
-                                          toastLength: Toast.LENGTH_SHORT);
-                                    }
-                                  },
-                                  icon: Icon(Icons.add),
+                              )
+                            : SizedBox(),
+                        widget.product.isNew == 1
+                            ? Container(
+                                margin: EdgeInsets.symmetric(horizontal: 6),
+                                width: size.width * 0.16,
+                                height: size.height * 0.08,
+                                child: CircleAvatar(
+                                  backgroundColor: Colors.limeAccent,
+                                  child: Text('NEW MENU',
+                                      textAlign: TextAlign.center),
                                 ),
-                              ),
-                            ],
+                              )
+                            : SizedBox(),
+                      ],
+                    ),
+                    widget.product.isBest == 1 || widget.product.isNew == 1
+                        ? Divider(
+                            thickness: 1,
+                            endIndent: 15,
+                            indent: 15,
+                          )
+                        : SizedBox(),
+                    SizedBox(
+                      height: size.height * 0.03,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(size.width * 0.01),
+                      child: Text(
+                        '${widget.product.prodName}',
+                        textScaleFactor: 2.5,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    Text(
+                      '[${_categoryReverseMap[widget.product.category]}]',
+                      textScaleFactor: 1.7,
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                    SizedBox(
+                      height: size.height * 0.03,
+                    ),
+                    Container(
+                        padding: EdgeInsets.all(size.width * 0.06),
+                        alignment: Alignment.center,
+                        width: size.width * 0.9,
+                        decoration: BoxDecoration(
+                            border: Border.all(width: 2, color: Colors.black54),
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                  color: Colors.grey.withOpacity(0.2),
+                                  spreadRadius: 5,
+                                  blurRadius: 7,
+                                  offset: Offset(0, 6))
+                            ]),
+                        child: Text(
+                          '${widget.product.prodInfo}',
+                          textScaleFactor: 2,
+                          style: TextStyle(height: 1.3),
+                        )),
+                    SizedBox(
+                      height: size.height * 0.03,
+                    ),
+                    Container(
+                      width: size.width * 0.85,
+                      child: Card(
+                        child: ListTile(
+                          leading: Icon(
+                            Icons.production_quantity_limits,
+                            size: 40,
+                            color: Colors.grey[700],
+                          ),
+                          title: Center(
+                            child: Text(
+                              '상품 재고 : ${(widget.product.stockCount) < 0 ? 0 : (widget.product.stockCount)}개',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 18),
+                            ),
                           ),
                         ),
-                  SizedBox(
-                    height: size.height * 0.01,
-                  ),
-                  Divider(
-                    thickness: 1,
-                    endIndent: 15,
-                    indent: 15,
-                  ),
-                  SizedBox(
-                    height: size.height * 0.03,
-                  ),
-                  Card(
-                      child: Container(
-                    padding: EdgeInsets.all(size.width * 0.03),
-                    child: Text(
-                      '※ 개당 총 가격 ${_formatPrice(((widget.product.price * (1 - (widget.product.discount / 100.0))) + _optionSummation()).round())}원',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                      ),
                     ),
-                  )),
-                  SizedBox(
-                    height: size.height * 0.03,
-                  ),
-                  widget.product.imgUrl2 == null
-                      ? SizedBox()
-                      : Container(
-                          width: size.width * 0.8,
-                          height: size.height * 0.4,
-                          child: CachedNetworkImage(
-                            imageUrl: widget.product.imgUrl2,
-                            fit: BoxFit.fill,
-                            progressIndicatorBuilder:
-                                (context, string, progress) =>
-                                    Center(child: CircularProgressIndicator()),
-                          )),
-                  SizedBox(
-                    height: size.height * 0.05,
-                  ),
-                  widget.product.imgUrl3 == null
-                      ? SizedBox()
-                      : Container(
-                          width: size.width * 0.8,
-                          height: size.height * 0.4,
-                          child: CachedNetworkImage(
-                            imageUrl: widget.product.imgUrl3,
-                            fit: BoxFit.fill,
-                            progressIndicatorBuilder:
-                                (context, string, progress) =>
-                                    Center(child: CircularProgressIndicator()),
-                          )),
-                  SizedBox(
-                    height: size.height * 0.05,
-                  ),
-                ],
+                    SizedBox(
+                      height: size.height * 0.02,
+                    ),
+                    Container(
+                      width: size.width * 0.85,
+                      child: Card(
+                          child: ListTile(
+                        leading: Icon(
+                          Icons.attach_money,
+                          size: 40,
+                          color: Colors.green,
+                        ),
+                        title: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              '${_formatPrice(widget.product.price)}원',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  decoration: _isDiscountZero
+                                      ? TextDecoration.none
+                                      : TextDecoration.lineThrough,
+                                  color: _isDiscountZero
+                                      ? Colors.black
+                                      : Colors.red,
+                                  fontSize: 19),
+                            ),
+                            _isDiscountZero
+                                ? Text('')
+                                : Text(
+                                    ' → ${_formatPrice((widget.product.price * (1 - (widget.product.discount / 100.0))).round())}원',
+                                    style: TextStyle(fontSize: 19),
+                                  )
+                          ],
+                        ),
+                        subtitle: _isDiscountZero
+                            ? null
+                            : Center(
+                                child: Text(
+                                  '${widget.product.discount}% 할인 중',
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16),
+                                ),
+                              ),
+                      )),
+                    ),
+                    _hasOption
+                        ? Column(
+                            children: [
+                              Divider(),
+                              Padding(
+                                padding: EdgeInsets.all(size.width * 0.03),
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      '상품 옵션',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Column(
+                                children:
+                                    _optionCategoryList(_optionList, size),
+                              ),
+                              Divider(),
+                            ],
+                          )
+                        : SizedBox(),
+                    SizedBox(
+                      height: size.height * 0.02,
+                    ),
+                    (widget.product.stockCount) <= 0
+                        ? Container(
+                            child: Text(
+                              '재고가 없습니다.',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 15),
+                            ),
+                          )
+                        : Container(
+                            decoration: BoxDecoration(
+                                border:
+                                    Border.all(width: 1, color: Colors.black),
+                                borderRadius: BorderRadius.circular(12)),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  width: size.width * 0.15,
+                                  height: size.height * 0.06,
+                                  child: IconButton(
+                                    onPressed: () {
+                                      if (_count > 1) {
+                                        setState(() {
+                                          --_count;
+                                        });
+                                      }
+                                    },
+                                    icon: Icon(Icons.remove),
+                                  ),
+                                ),
+                                Container(
+                                  width: size.width * 0.16,
+                                  height: size.height * 0.06,
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    '$_count',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                Container(
+                                  width: size.width * 0.15,
+                                  height: size.height * 0.06,
+                                  child: IconButton(
+                                    onPressed: () {
+                                      if (_count < widget.product.stockCount) {
+                                        setState(() {
+                                          ++_count;
+                                        });
+                                      } else {
+                                        Fluttertoast.showToast(
+                                            msg: '더 추가할 수 없습니다!',
+                                            gravity: ToastGravity.BOTTOM,
+                                            toastLength: Toast.LENGTH_SHORT);
+                                      }
+                                    },
+                                    icon: Icon(Icons.add),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                    SizedBox(
+                      height: size.height * 0.01,
+                    ),
+                    Divider(
+                      thickness: 1,
+                      endIndent: 15,
+                      indent: 15,
+                    ),
+                    SizedBox(
+                      height: size.height * 0.03,
+                    ),
+                    Card(
+                        child: Container(
+                      padding: EdgeInsets.all(size.width * 0.03),
+                      child: Text(
+                        '※ 개당 총 가격 ${_formatPrice(((widget.product.price * (1 - (widget.product.discount / 100.0))) + _optionSummation()).round())}원',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 15),
+                      ),
+                    )),
+                    SizedBox(
+                      height: size.height * 0.03,
+                    ),
+                    widget.product.imgUrl2 == null
+                        ? SizedBox()
+                        : Container(
+                            width: size.width * 0.8,
+                            height: size.height * 0.4,
+                            child: CachedNetworkImage(
+                              imageUrl: widget.product.imgUrl2,
+                              fit: BoxFit.fill,
+                              progressIndicatorBuilder: (context, string,
+                                      progress) =>
+                                  Center(child: CircularProgressIndicator()),
+                            )),
+                    SizedBox(
+                      height: size.height * 0.05,
+                    ),
+                    widget.product.imgUrl3 == null
+                        ? SizedBox()
+                        : Container(
+                            width: size.width * 0.8,
+                            height: size.height * 0.4,
+                            child: CachedNetworkImage(
+                              imageUrl: widget.product.imgUrl3,
+                              fit: BoxFit.fill,
+                              progressIndicatorBuilder: (context, string,
+                                      progress) =>
+                                  Center(child: CircularProgressIndicator()),
+                            )),
+                    SizedBox(
+                      height: size.height * 0.05,
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          _isClicked
-              ? Container(
-                  height: size.height * 0.06,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      GestureDetector(
-                        onTap: () async {
-                          if (_count < 1 || widget.product.stockCount < 1) {
-                            Fluttertoast.showToast(
-                                msg: '상품의 재고가 없어 장바구니에 담을 수 없습니다!',
-                                gravity: ToastGravity.BOTTOM,
-                                toastLength: Toast.LENGTH_SHORT);
-                            return;
-                          }
-                          if (!_isCart) {
-                            _preProcessForOptions();
-                            var result = await _addCartProductRequest();
-                            print(result);
-                            if (result) {
-                              data.setExistCart(true);
+            _isClicked
+                ? Container(
+                    height: size.height * 0.06,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        GestureDetector(
+                          onTap: () async {
+                            if (_count < 1 || widget.product.stockCount < 1) {
                               Fluttertoast.showToast(
-                                  msg: '장바구니에 추가되었습니다.',
+                                  msg: '상품의 재고가 없어 장바구니에 담을 수 없습니다!',
                                   gravity: ToastGravity.BOTTOM,
                                   toastLength: Toast.LENGTH_SHORT);
-                            } else {
-                              showDialog(
-                                  context: context,
-                                  builder: (context) => AlertDialog(
-                                        title: Text('장바구니 추가 문제 발생'),
-                                        content: Text(
-                                            '장바구니에 상품을 추가하는데 문제가 발생했습니다!\n${_errorMessage.trim() == 'EXCESS' ? '→현재 장바구니에 존재하는 이 상품의 수량과 현재 지정한 수량의 합이 상품 재고를 초과했습니다.' : _errorMessage} '),
-                                        actions: [
-                                          FlatButton(
-                                              onPressed: () =>
-                                                  Navigator.pop(context),
-                                              child: Text('확인'))
-                                        ],
-                                      ));
+                              return;
                             }
-                            setState(() {
-                              _isCart = true;
-                            });
-                          } else {
+                            if (!_isCart) {
+                              _preProcessForOptions();
+                              var result = await _addCartProductRequest();
+                              print(result);
+                              if (result) {
+                                data.setExistCart(true);
+                                Fluttertoast.showToast(
+                                    msg: '장바구니에 추가되었습니다.',
+                                    gravity: ToastGravity.BOTTOM,
+                                    toastLength: Toast.LENGTH_SHORT);
+                              } else {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                          title: Text('장바구니 추가 문제 발생'),
+                                          content: Text(
+                                              '장바구니에 상품을 추가하는데 문제가 발생했습니다!\n${_errorMessage.trim() == 'EXCESS' ? '→현재 장바구니에 존재하는 이 상품의 수량과 현재 지정한 수량의 합이 상품 재고를 초과했습니다.' : _errorMessage} '),
+                                          actions: [
+                                            FlatButton(
+                                                onPressed: () =>
+                                                    Navigator.pop(context),
+                                                child: Text('확인'))
+                                          ],
+                                        ));
+                              }
+                              setState(() {
+                                _isCart = true;
+                              });
+                            } else {
+                              Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => CartPage(
+                                            user: widget.user,
+                                            isFromDetail: true,
+                                          )));
+                            }
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(10),
+                            color: Color(0xFF9EE1E5),
+                            alignment: Alignment.center,
+                            width: size.width * 0.48,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Icon(
+                                  Icons.shopping_cart,
+                                  size: 33,
+                                ),
+                                Text(_isCart ? '장바구니로 이동' : '장바구니 담기',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: _isCart
+                                            ? Colors.indigo
+                                            : Colors.black))
+                              ],
+                            ),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            if (_count < 1 || widget.product.stockCount < 1) {
+                              Fluttertoast.showToast(
+                                  msg: '상품의 재고가 없어 결제할 수가 없습니다!',
+                                  gravity: ToastGravity.BOTTOM,
+                                  toastLength: Toast.LENGTH_SHORT);
+                              return;
+                            }
                             Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => CartPage(
+                                    builder: (context) => OrderPage(
                                           user: widget.user,
-                                          isFromDetail: true,
+                                          direct: widget.product,
+                                          productCount: _count,
+                                          cart: null,
+                                          optionList: _optionList,
+                                          selectList: _selectedOptionIndex,
                                         )));
-                          }
-                        },
-                        child: Container(
-                          padding: EdgeInsets.all(10),
-                          color: Color(0xFF9EE1E5),
-                          alignment: Alignment.center,
-                          width: size.width * 0.48,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              Icon(
-                                Icons.shopping_cart,
-                                size: 33,
-                              ),
-                              Text(_isCart ? '장바구니로 이동' : '장바구니 담기',
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(10),
+                            color: Colors.cyan[700],
+                            alignment: Alignment.center,
+                            width: size.width * 0.52,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Icon(Icons.payment_rounded,
+                                    color: Colors.grey[300], size: 33),
+                                Text(
+                                  '${_formatPrice((((widget.product.price * (1 - (widget.product.discount / 100.0)) + _optionSummation()) * _count)).round())}원 결제하기',
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      color: _isCart
-                                          ? Colors.indigo
-                                          : Colors.black))
-                            ],
+                                      color: Colors.grey[300]),
+                                )
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          if (_count < 1 || widget.product.stockCount < 1) {
-                            Fluttertoast.showToast(
-                                msg: '상품의 재고가 없어 결제할 수가 없습니다!',
-                                gravity: ToastGravity.BOTTOM,
-                                toastLength: Toast.LENGTH_SHORT);
-                            return;
-                          }
-                          Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => OrderPage(
-                                        user: widget.user,
-                                        direct: widget.product,
-                                        productCount: _count,
-                                        cart: null,
-                                        optionList: _optionList,
-                                        selectList: _selectedOptionIndex,
-                                      )));
-                        },
-                        child: Container(
-                          padding: EdgeInsets.all(10),
-                          color: Colors.cyan[700],
-                          alignment: Alignment.center,
-                          width: size.width * 0.52,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Icon(Icons.payment_rounded,
-                                  color: Colors.grey[300], size: 33),
-                              Text(
-                                '${_formatPrice((((widget.product.price * (1 - (widget.product.discount / 100.0)) + _optionSummation()) * _count)).round())}원 결제하기',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.grey[300]),
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              : FlatButton(
-                  padding: EdgeInsets.all(0),
-                  onPressed: widget.product.stockCount < 1 &&
-                          !widget.product.isReservation
-                      ? null
-                      : () {
-                          if (widget.product.stockCount < 1) {
-                            showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                      title: Text(
-                                        '재고 없음',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      content: Text(
-                                          '현재 상품의 재고가 없어 예약만 가능합니다. 예약하러 가시겠습니까?'),
-                                      actions: [
-                                        FlatButton(
-                                            onPressed: () {
-                                              Navigator.pushReplacement(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          ReservationPage(
-                                                            user: widget.user,
-                                                            product:
-                                                                widget.product,
-                                                            optionList:
-                                                                _hasOption
-                                                                    ? _optionList
-                                                                    : [],
-                                                            selectList: _hasOption
-                                                                ? _selectedOptionIndex
-                                                                : [],
-                                                          )));
-                                            },
-                                            child: Text(
-                                              '예',
-                                              style: TextStyle(
-                                                  color: Colors.lightBlue),
-                                            )),
-                                        FlatButton(
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                            },
-                                            child: Text(
-                                              '아니오',
-                                              style: TextStyle(
-                                                  color: Colors.deepOrange),
-                                            ))
-                                      ],
-                                    ));
-                            return;
-                          } else {
-                            setState(() {
-                              _isClicked = !_isClicked;
-                            });
-                          }
-                        },
-                  child: Container(
-                    alignment: Alignment.center,
-                    width: size.width * 0.98,
-                    padding: EdgeInsets.all(size.width * 0.025),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        color: widget.product.stockCount < 1
-                            ? !widget.product.isReservation
-                                ? Colors.grey
-                                : Colors.deepOrange
-                            : Colors.blueAccent),
-                    child: Text(
-                      widget.product.stockCount < 1
-                          ? !widget.product.isReservation
-                              ? '품절'
-                              : '예약하러 가기'
-                          : '구매하기',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.white),
+                      ],
                     ),
-                  ))
-        ],
+                  )
+                : FlatButton(
+                    padding: EdgeInsets.all(0),
+                    onPressed: widget.product.stockCount < 1 &&
+                            !widget.product.isReservation
+                        ? null
+                        : () {
+                            if (widget.product.stockCount < 1) {
+                              showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                        title: Text(
+                                          '재고 없음',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        content: Text(
+                                            '현재 상품의 재고가 없어 예약만 가능합니다. 예약하러 가시겠습니까?'),
+                                        actions: [
+                                          FlatButton(
+                                              onPressed: () {
+                                                Navigator.pushReplacement(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            ReservationPage(
+                                                              user: widget.user,
+                                                              product: widget
+                                                                  .product,
+                                                              optionList:
+                                                                  _hasOption
+                                                                      ? _optionList
+                                                                      : [],
+                                                              selectList: _hasOption
+                                                                  ? _selectedOptionIndex
+                                                                  : [],
+                                                            )));
+                                              },
+                                              child: Text(
+                                                '예',
+                                                style: TextStyle(
+                                                    color: Colors.lightBlue),
+                                              )),
+                                          FlatButton(
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                              child: Text(
+                                                '아니오',
+                                                style: TextStyle(
+                                                    color: Colors.deepOrange),
+                                              ))
+                                        ],
+                                      ));
+                              return;
+                            } else {
+                              setState(() {
+                                _isClicked = !_isClicked;
+                              });
+                            }
+                          },
+                    child: Container(
+                      alignment: Alignment.center,
+                      width: size.width * 0.98,
+                      padding: EdgeInsets.all(size.width * 0.025),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          color: widget.product.stockCount < 1
+                              ? !widget.product.isReservation
+                                  ? Colors.grey
+                                  : Colors.deepOrange
+                              : Colors.blueAccent),
+                      child: Text(
+                        widget.product.stockCount < 1
+                            ? !widget.product.isReservation
+                                ? '품절'
+                                : '예약하러 가기'
+                            : '구매하기',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, color: Colors.white),
+                      ),
+                    ))
+          ],
+        ),
       ),
     );
   }

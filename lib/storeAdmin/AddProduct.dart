@@ -753,7 +753,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                       Padding(
                         padding: EdgeInsets.all(size.width * 0.015),
                         child: Text(
-                          '* 재고가 0일 때 처리의 의미는 상품이 팔려서 재고가 0이 되었을 때 "품절"처리 할 것인가 아니면 "예약"을 받을 것인가에 대한 처리를 뜻합니다.',
+                          '* "재고가 0일 때 처리"의 의미는 상품이 팔려서 재고가 0이 되었을 때 "품절"처리 할 것인가 아니면 "예약"을 받을 것인가에 대한 처리를 뜻합니다.',
                           style: TextStyle(color: Colors.grey, fontSize: 10),
                         ),
                       ),
