@@ -1568,6 +1568,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
   }
 
   Widget _optionCategoryLayout(Size size, int index) {
+    print('rebuild');
     return Column(
       children: [
         Container(
@@ -1653,6 +1654,9 @@ class _AddingProductPageState extends State<AddingProductPage> {
             ],
           ),
         ),
+        Column(
+          children: _optionDetailList[index],
+        ),
         StreamBuilder<List>(
           builder: (context, snapshot) {
             if (snapshot.hasData) {
@@ -1677,6 +1681,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                       TextEditingController()); // index 에 해당하는 옵션에 이름 컨트롤러 하나를 추가한다.
 
                   setState(() {
+                    print('setState 호출 및 선택지 추가함');
                     _classList[index].add(DetailWidget(
                         _detailPriceControllerList[index].length -
                             1)); // 리스트 마지막에 동적 인덱스를 갖는 선택지 객체를 추가한다.
@@ -1688,6 +1693,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
 
                   _streamControllerList[index].add(_optionDetailList[
                       index]); // _optionDetailList[index]의 변화를 Stream 이 듣도록 추가한다.
+                  test(index);
                 },
                 child: Container(
                   padding: EdgeInsets.symmetric(
@@ -1718,6 +1724,13 @@ class _AddingProductPageState extends State<AddingProductPage> {
         )
       ],
     );
+  }
+
+  void test(int index) async {
+    int i=0;
+    await for (var value in _streamControllerList[index].stream) {
+      print('${i++}번째 $value');
+    }
   }
 }
 

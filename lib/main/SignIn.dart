@@ -151,6 +151,25 @@ class _SignInPageState extends State<SignInPage> {
       }
     });
     if (_isChecked) {
+      showDialog(
+          barrierDismissible: false,
+          context: (context),
+          builder: (context) => Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      '로그인 중입니다.',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 13,
+                          decoration: TextDecoration.none,
+                          fontWeight: FontWeight.normal),
+                    ),
+                    CircularProgressIndicator(),
+                  ],
+                ),
+              ));
       var result = await _requestLogin();
       if (result == null) {
         showDialog(
@@ -166,6 +185,7 @@ class _SignInPageState extends State<SignInPage> {
           result.adminKey = _key;
         }
         await _checkUserToken(_idController.text);
+        Navigator.pop(context);
         Navigator.pushReplacement(
             context,
             MaterialPageRoute(
@@ -510,6 +530,25 @@ class _SignInPageState extends State<SignInPage> {
                   _pref.setBool('checked', _isChecked);
 
                   try {
+                    showDialog(
+                        barrierDismissible: false,
+                        context: (context),
+                        builder: (context) => Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    '로그인 중입니다.',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 13,
+                                        decoration: TextDecoration.none,
+                                        fontWeight: FontWeight.normal),
+                                  ),
+                                  CircularProgressIndicator(),
+                                ],
+                              ),
+                            ));
                     var result = await _requestLogin();
                     if (result == null) {
                       showDialog(
@@ -525,6 +564,7 @@ class _SignInPageState extends State<SignInPage> {
                         result.adminKey = _key;
                       }
                       await _checkUserToken(_idController.text);
+                      Navigator.pop(context);
                       Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
