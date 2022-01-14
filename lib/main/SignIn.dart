@@ -593,7 +593,37 @@ class _SignInPageState extends State<SignInPage> {
                     style: TextStyle(
                         color: Colors.white, fontWeight: FontWeight.bold),
                   ),
-                ))
+                )),
+            SizedBox(
+              height: size.height * 0.09,
+            ),
+            Padding(
+              padding: EdgeInsets.all(size.width * 0.015),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  FlatButton(
+                    padding: EdgeInsets.all(0),
+                    onPressed: () {},
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.bug_report,
+                          color: Colors.green,
+                          size: 22,
+                        ),
+                        Text(
+                          '버그 제보하기',
+                          style: TextStyle(
+                              fontSize: 10, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            )
           ],
         ),
       ),
