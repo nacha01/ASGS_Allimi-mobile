@@ -767,7 +767,6 @@ class _StoreHomePageState extends State<StoreHomePage>
                         ),
                         Expanded(
                           child: Container(
-                            height: size.height * 1.07,
                             child: GridView.builder(
                                 itemCount: _searchProductLayoutList.length,
                                 gridDelegate:
@@ -1265,7 +1264,6 @@ class _StoreHomePageState extends State<StoreHomePage>
                       ),
                       Expanded(
                         child: Container(
-                          height: size.height * 1.07,
                           child: GridView.builder(
                               itemCount: _bestProductLayoutList.length,
                               gridDelegate:
@@ -1411,7 +1409,6 @@ class _StoreHomePageState extends State<StoreHomePage>
                       ),
                       Expanded(
                         child: Container(
-                          height: size.height * 1.07,
                           child: GridView.builder(
                               itemCount: _newProductLayoutList.length,
                               gridDelegate:
@@ -1625,7 +1622,7 @@ class _StoreHomePageState extends State<StoreHomePage>
             ),
           ),
           SizedBox(
-            height: 10,
+            height: size.height * 0.005,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -1651,7 +1648,7 @@ class _StoreHomePageState extends State<StoreHomePage>
             ],
           ),
           SizedBox(
-            height: 6,
+            height: size.height * 0.004,
           ),
           Text(prodName,
               style: TextStyle(fontWeight: FontWeight.bold),
@@ -1666,7 +1663,6 @@ class _StoreHomePageState extends State<StoreHomePage>
       onTap: () async {
         var res = await Navigator.push(context,
             MaterialPageRoute(builder: (context) => AddingProductPage()));
-        // print(res);
         if (res) {
           await _getProducts();
         }

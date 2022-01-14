@@ -561,7 +561,10 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
     return showDialog(
         context: context,
         builder: (context) => AlertDialog(
-              title: Text('정말로 종료하시겠습니까?'),
+              title: Text(
+                '정말로 종료하시겠습니까?',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
               actions: [
                 FlatButton(
                     onPressed: () {
@@ -569,10 +572,12 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       if (FirebaseAuth.instance != null)
                         FirebaseAuth.instance.signOut();
                     },
-                    child: Text('예')),
+                    child: Text('예',
+                        style: TextStyle(fontWeight: FontWeight.bold))),
                 FlatButton(
                     onPressed: () => Navigator.pop(context, false),
-                    child: Text('아니오'))
+                    child: Text('아니오',
+                        style: TextStyle(fontWeight: FontWeight.bold)))
               ],
             ));
   }

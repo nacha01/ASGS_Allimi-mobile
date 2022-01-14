@@ -172,11 +172,29 @@ class _SignInPageState extends State<SignInPage> {
               ));
       var result = await _requestLogin();
       if (result == null) {
+        Navigator.pop(context);
         showDialog(
             context: context,
             builder: (context) => AlertDialog(
-                  title: Text('로그인 에러'),
-                  content: Text('입력한 정보가 맞지 않습니다!'),
+                  title: Text(
+                    '로그인 실패',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  content: Text(
+                    '입력한 정보가 맞지 않습니다!',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  ),
+                  actions: [
+                    FlatButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text('확인',
+                          style: TextStyle(fontWeight: FontWeight.bold)),
+                      padding: EdgeInsets.all(0),
+                    )
+                  ],
                 ));
         return;
       } else {
@@ -229,15 +247,30 @@ class _SignInPageState extends State<SignInPage> {
         showDialog(
             context: context,
             builder: (context) => AlertDialog(
-                  title: Text('회원 가입 실패'),
-                  content: Text('이미 사용중인 아이디입니다!'),
+                  title: Text(
+                    '회원 가입 실패',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  content: Text('이미 사용중인 아이디입니다!',
+                      style:
+                          TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                  actions: [
+                    FlatButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text('확인',
+                            style: TextStyle(fontWeight: FontWeight.bold)))
+                  ],
                 ));
       } else {
         showDialog(
             context: context,
             builder: (context) => AlertDialog(
-                  title: Text('회원 가입 성공'),
-                  content: Text('성공적으로 회원가입이 되었습니다. \n메인 화면으로 이동합니다.'),
+                  title: Text('회원 가입 성공',
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  content: Text('성공적으로 회원가입이 되었습니다. 메인 화면으로 이동합니다.',
+                      style:
+                          TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                   actions: [
                     FlatButton(
                         onPressed: () async {
@@ -258,7 +291,8 @@ class _SignInPageState extends State<SignInPage> {
                                         )));
                           }
                         },
-                        child: Text('확인'))
+                        child: Text('확인',
+                            style: TextStyle(fontWeight: FontWeight.bold)))
                   ],
                 ));
       }
@@ -551,11 +585,33 @@ class _SignInPageState extends State<SignInPage> {
                             ));
                     var result = await _requestLogin();
                     if (result == null) {
+                      Navigator.pop(context);
                       showDialog(
                           context: context,
                           builder: (context) => AlertDialog(
-                                title: Text('로그인 에러'),
-                                content: Text('입력한 정보가 맞지 않습니다!'),
+                                actionsPadding: EdgeInsets.all(0),
+                                title: Text(
+                                  '로그인 실패',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                content: Text(
+                                  '입력한 정보가 맞지 않습니다!',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14),
+                                ),
+                                actions: [
+                                  FlatButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: Text('확인',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold)),
+                                    padding: EdgeInsets.all(0),
+                                  )
+                                ],
                               ));
                       return;
                     } else {
@@ -761,11 +817,18 @@ class _SignInPageState extends State<SignInPage> {
                     showDialog(
                         context: context,
                         builder: (context) => AlertDialog(
-                              content: Text('입력하지 않은 정보가 있습니다!'),
+                              content: Text('입력하지 않은 정보가 있습니다!',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14)),
                               actions: [
                                 FlatButton(
-                                    onPressed: () => Navigator.pop(context),
-                                    child: Text('확인'))
+                                  onPressed: () => Navigator.pop(context),
+                                  child: Text('확인',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold)),
+                                  padding: EdgeInsets.all(0),
+                                )
                               ],
                             ));
                     return;
@@ -774,11 +837,18 @@ class _SignInPageState extends State<SignInPage> {
                     showDialog(
                         context: context,
                         builder: (context) => AlertDialog(
-                              content: Text('비밀번호를 6자리 이상 입력하세요!'),
+                              content: Text('비밀번호를 6자리 이상 입력하세요!',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14)),
                               actions: [
                                 FlatButton(
-                                    onPressed: () => Navigator.pop(context),
-                                    child: Text('확인'))
+                                  onPressed: () => Navigator.pop(context),
+                                  child: Text('확인',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold)),
+                                  padding: EdgeInsets.all(0),
+                                )
                               ],
                             ));
                     return;
@@ -787,11 +857,18 @@ class _SignInPageState extends State<SignInPage> {
                     showDialog(
                         context: context,
                         builder: (context) => AlertDialog(
-                              content: Text('ID를 4자리 이상 입력하세요!'),
+                              content: Text('ID를 4자리 이상 입력하세요!',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14)),
                               actions: [
                                 FlatButton(
-                                    onPressed: () => Navigator.pop(context),
-                                    child: Text('확인'))
+                                  onPressed: () => Navigator.pop(context),
+                                  child: Text('확인',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold)),
+                                  padding: EdgeInsets.all(0),
+                                )
                               ],
                             ));
                     return;
@@ -818,9 +895,7 @@ class _SignInPageState extends State<SignInPage> {
                                   ? Text('학번 : ${_gradeController.text}',
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold))
-                                  : SizedBox(
-                                      height: 0.0,
-                                    ),
+                                  : SizedBox(),
                               Text('ID : ${_idRegisterController.text}',
                                   style:
                                       TextStyle(fontWeight: FontWeight.bold)),
@@ -834,12 +909,16 @@ class _SignInPageState extends State<SignInPage> {
                                 onPressed: () async {
                                   await _postRegisterRequest();
                                 },
-                                child: Text('예')),
+                                child: Text('예',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold))),
                             FlatButton(
                                 onPressed: () {
                                   Navigator.pop(context);
                                 },
-                                child: Text('아니오')),
+                                child: Text('아니오',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold))),
                           ],
                         );
                       });
