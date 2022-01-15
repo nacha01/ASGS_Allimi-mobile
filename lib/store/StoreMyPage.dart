@@ -11,6 +11,7 @@ import 'package:asgshighschool/storeAdmin/OrderListPage.dart';
 import 'package:asgshighschool/storeAdmin/PushNotificationPage.dart';
 import 'package:asgshighschool/storeAdmin/QnAListPage.dart';
 import 'package:asgshighschool/storeAdmin/ReservationListPage.dart';
+import 'package:asgshighschool/storeAdmin/StatisticsPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -506,6 +507,31 @@ class _StoreMyPageState extends State<StoreMyPage> {
                               width: size.width * 0.03,
                             ),
                             Text('푸시 알림 보내기', style: TextStyle(fontSize: 19))
+                          ],
+                        ),
+                      ),
+                    ),
+                    FlatButton(
+                      padding: EdgeInsets.all(size.width * 0.015),
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => StatisticsPage(
+                                      user: widget.user,
+                                    )));
+                      },
+                      child: Container(
+                        margin: EdgeInsets.all(size.width * 0.01),
+                        padding: EdgeInsets.all(size.width * 0.01),
+                        child: Row(
+                          children: [
+                            Icon(Icons.bar_chart,
+                                color: Colors.grey, size: size.width * 0.1),
+                            SizedBox(
+                              width: size.width * 0.03,
+                            ),
+                            Text('통계', style: TextStyle(fontSize: 19))
                           ],
                         ),
                       ),

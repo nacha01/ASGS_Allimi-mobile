@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:asgshighschool/main/ReportBugPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -36,7 +37,6 @@ class _SignInPageState extends State<SignInPage> {
   String _key;
   bool _isLogin = true;
   bool _isChecked = false;
-
   final _statusList = ['재학생', '학부모', '교사', '졸업생', '기타'];
   final _statusMap = {'재학생': 1, '학부모': 2, '교사': 3, '졸업생': 4, '기타': 5};
   var _selectedValue = '재학생';
@@ -154,22 +154,47 @@ class _SignInPageState extends State<SignInPage> {
       showDialog(
           barrierDismissible: false,
           context: (context),
-          builder: (context) => Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      '로그인 중입니다.',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 13,
-                          decoration: TextDecoration.none,
-                          fontWeight: FontWeight.normal),
-                    ),
-                    CircularProgressIndicator(),
-                  ],
-                ),
-              ));
+          builder: (context) {
+            if (!this.mounted) {
+              Future.delayed(Duration(seconds: 5), () {
+                Navigator.pop(context);
+                showDialog(
+                    context: context,
+                    builder: (c) => AlertDialog(
+                          title: Text(
+                            '요청시간 초과',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                          actions: [
+                            FlatButton(
+                              onPressed: () => Navigator.pop(c),
+                              child: Text('확인',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              padding: EdgeInsets.all(0),
+                            )
+                          ],
+                        ));
+              });
+            }
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    '로그인 중입니다.',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 13,
+                        decoration: TextDecoration.none,
+                        fontWeight: FontWeight.normal),
+                  ),
+                  CircularProgressIndicator(),
+                ],
+              ),
+            );
+          });
       var result = await _requestLogin();
       if (result == null) {
         Navigator.pop(context);
@@ -567,22 +592,47 @@ class _SignInPageState extends State<SignInPage> {
                     showDialog(
                         barrierDismissible: false,
                         context: (context),
-                        builder: (context) => Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    '로그인 중입니다.',
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 13,
-                                        decoration: TextDecoration.none,
-                                        fontWeight: FontWeight.normal),
-                                  ),
-                                  CircularProgressIndicator(),
-                                ],
-                              ),
-                            ));
+                        builder: (context) {
+                          if (!this.mounted) {
+                            Future.delayed(Duration(seconds: 5), () {
+                              Navigator.pop(context);
+                              showDialog(
+                                  context: context,
+                                  builder: (c) => AlertDialog(
+                                        title: Text('요청 시간 초과',
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold)),
+                                        actions: [
+                                          FlatButton(
+                                            onPressed: () => Navigator.pop(c),
+                                            child: Text('확인',
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold)),
+                                            padding: EdgeInsets.all(0),
+                                          )
+                                        ],
+                                      ));
+                            });
+                          }
+                          return Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  '로그인 중입니다.',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 13,
+                                      decoration: TextDecoration.none,
+                                      fontWeight: FontWeight.normal),
+                                ),
+                                CircularProgressIndicator(),
+                              ],
+                            ),
+                          );
+                        });
                     var result = await _requestLogin();
                     if (result == null) {
                       Navigator.pop(context);
@@ -660,7 +710,12 @@ class _SignInPageState extends State<SignInPage> {
                 children: [
                   FlatButton(
                     padding: EdgeInsets.all(0),
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ReportBugPage()));
+                    },
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
