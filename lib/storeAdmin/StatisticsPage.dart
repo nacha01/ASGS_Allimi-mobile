@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:asgshighschool/data/user_data.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
@@ -21,6 +22,10 @@ class _StatisticsPageState extends State<StatisticsPage> {
   String _endTime = '설정 없음';
   int _currentTap = 1;
   String _resultExplainText = '';
+  int _salesOption = 0; // 0 : 전체, 1 : 구매, 2 : 예약
+  final _salesTextList = ['전체', '구매', '예약'];
+  bool _isClicked = false;
+  String _salesValue = '';
 
   Future<bool> _getAllOrderDataInProduct() async {
     String url =
@@ -49,7 +54,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_statisticsSales.php';
     final response = await http.post(url, body: <String, String>{
       'start': _formatStartDateTime(),
-      'end': _formatEndDateTime()
+      'end': _formatEndDateTime(),
+      'option': _salesOption.toString()
     });
     if (response.statusCode == 200) {
       String result = utf8
@@ -59,6 +65,11 @@ class _StatisticsPageState extends State<StatisticsPage> {
               '')
           .trim();
       print(result);
+      if (result == '' || result == null) {
+        _salesValue = 'NO RESULT';
+      } else {
+        _salesValue = result;
+      }
       return true;
     } else {
       return false;
@@ -369,8 +380,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                                 setState(() {
                                   if (dateTime != null) {
                                     var diff = dateTime.difference(_startDate);
-                                    if (diff.inDays >= 0 &&
-                                        _startTime != '설정 없음') {
+                                    if (diff.inDays >= 0) {
                                       _endDate = dateTime;
                                     } else {
                                       Fluttertoast.showToast(
@@ -438,21 +448,180 @@ class _StatisticsPageState extends State<StatisticsPage> {
                 ],
               ),
             ),
-            FlatButton(
-                onPressed: () {
-                  _getAllOrderDataInProduct();
-                  _getTotalSales();
-                },
-                child: Text('버튼'))
+            Divider(
+              color: Colors.red,
+              thickness: 1,
+            ),
+            // FlatButton(
+            //     onPressed: () {
+            //       _getAllOrderDataInProduct();
+            //       _getTotalSales();
+            //     },
+            //     child: Text('버튼')),
+            _setLayoutAccordingToTap(size)
           ],
         ),
       ),
     );
   }
 
-  Widget _salesTapLayout() {}
+  Widget _salesTapLayout(Size size) {
+    return Column(
+      children: [
+        Divider(
+          height: 5,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            FlatButton(
+              onPressed: () {
+                setState(() {
+                  _salesOption = 0;
+                });
+              },
+              child: Row(
+                children: [
+                  Icon(
+                      _salesOption == 0
+                          ? Icons.check_box
+                          : Icons.check_box_outline_blank,
+                      color: Colors.blue),
+                  Text(
+                    ' 전체',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  )
+                ],
+              ),
+            ),
+            FlatButton(
+              onPressed: () {
+                setState(() {
+                  _salesOption = 1;
+                });
+              },
+              child: Row(
+                children: [
+                  Icon(
+                    _salesOption == 1
+                        ? Icons.check_box
+                        : Icons.check_box_outline_blank,
+                    color: Colors.blue,
+                  ),
+                  Text(' 구매', style: TextStyle(fontWeight: FontWeight.bold))
+                ],
+              ),
+            ),
+            FlatButton(
+              onPressed: () {
+                setState(() {
+                  _salesOption = 2;
+                });
+              },
+              child: Row(
+                children: [
+                  Icon(
+                      _salesOption == 2
+                          ? Icons.check_box
+                          : Icons.check_box_outline_blank,
+                      color: Colors.blue),
+                  Text(' 예약', style: TextStyle(fontWeight: FontWeight.bold))
+                ],
+              ),
+            ),
+          ],
+        ),
+        Divider(
+          height: 0,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            FlatButton(
+                onPressed: () async {
+                  await _getTotalSales();
+                  setState(() {
+                    _isClicked = true;
+                    _resultExplainText = _formatStartDateTime() +
+                        " ~ " +
+                        _formatEndDateTime() +
+                        "\n[${_salesTextList[_salesOption]}] 매출 통계";
+                  });
+                },
+                child: Container(
+                  child: Text(
+                    '조회하기',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.white),
+                  ),
+                  width: size.width * 0.3,
+                  alignment: Alignment.center,
+                  padding: EdgeInsets.symmetric(
+                      vertical: size.width * 0.02,
+                      horizontal: size.height * 0.01),
+                  decoration: BoxDecoration(
+                      border: Border.all(width: 0.5, color: Colors.black),
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(6)),
+                )),
+          ],
+        ),
+        _isClicked
+            ? Column(
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(size.width * 0.03),
+                    decoration: BoxDecoration(
+                        border: Border.all(width: 0.3, color: Colors.grey),
+                        borderRadius: BorderRadius.circular(4),
+                        color: Colors.orange[200]),
+                    child: Text(
+                      '$_resultExplainText',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Divider(
+                    thickness: 1,
+                  ),
+                  Card(
+                    child: Container(
+                      width: size.width * 0.9,
+                      height: size.height * 0.1,
+                      alignment: Alignment.center,
+                      child: Text(
+                        '${_salesValue == 'NO RESULT' ? _salesValue : _formatPrice(int.parse(_salesValue)) + '원'}',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 18),
+                      ),
+                    ),
+                  )
+                ],
+              )
+            : SizedBox(),
+      ],
+    );
+  }
 
-  Widget _productTapLayout() {}
+  Widget _productTapLayout(Size size) {
+    return SizedBox();
+  }
 
-  Widget _buyerTapLayout() {}
+  Widget _buyerTapLayout(Size size) {
+    return SizedBox();
+  }
+
+  Widget _setLayoutAccordingToTap(Size size) {
+    switch (_currentTap) {
+      case 1:
+        return _salesTapLayout(size);
+      case 2:
+        return _productTapLayout(size);
+      case 3:
+        return _buyerTapLayout(size);
+      default:
+        return SizedBox();
+    }
+  }
 }
