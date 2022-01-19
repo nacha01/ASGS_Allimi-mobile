@@ -26,6 +26,17 @@ class _StatisticsPageState extends State<StatisticsPage> {
   final _salesTextList = ['전체', '구매', '예약'];
   bool _isClicked = false;
   String _salesValue = '';
+  List _orderList = [];
+  List _reservationList = [];
+  Map<int, Map> _productCountMap = Map();
+  List<ProductCount> _countList = [];
+  final _categoryReverseMap = {
+    0: '음식류',
+    1: '간식류',
+    2: '음료류',
+    3: '문구류',
+    4: '핸드메이드'
+  };
 
   Future<bool> _getAllOrderDataInProduct() async {
     String url =
@@ -43,11 +54,86 @@ class _StatisticsPageState extends State<StatisticsPage> {
               '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
               '')
           .trim();
-      print(jsonDecode(result));
+      List map1st = jsonDecode(result);
+      for (int i = 0; i < map1st.length; ++i) {
+        map1st[i] = jsonDecode(map1st[i]);
+      }
+
+      setState(() {
+        _orderList = map1st;
+      });
       return true;
     } else {
       return false;
     }
+  }
+
+  Future<bool> _getAllReservationDataInProduct() async {
+    String url =
+        'http://nacha01.dothome.co.kr/sin/arlimi_statisticsProduct.php';
+    final response = await http.post(url, body: <String, String>{
+      'flag': '1',
+      'start': _formatStartDateTime(),
+      'end': _formatEndDateTime()
+    });
+
+    if (response.statusCode == 200) {
+      String result = utf8
+          .decode(response.bodyBytes)
+          .replaceAll(
+              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+              '')
+          .trim();
+      List map1st = jsonDecode(result);
+      for (int i = 0; i < map1st.length; ++i) {
+        map1st[i] = jsonDecode(map1st[i]);
+      }
+      setState(() {
+        _reservationList = map1st;
+      });
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  void _classifyProduct() {
+    for (int i = 0; i < _orderList.length; ++i) {
+      int pid = int.parse(_orderList[i]['pid']);
+      if (!_productCountMap.containsKey(pid)) {
+        _productCountMap[pid] = {
+          'order': 0,
+          'resv': 0,
+          'pName': _orderList[i]['pName'],
+          'category': _categoryReverseMap[int.parse(_orderList[i]['category'])]
+        };
+      }
+      if (_productCountMap[pid].containsKey('order')) {
+        _productCountMap[pid]['order'] = int.parse(_orderList[i]['quantity']);
+      }
+    }
+    for (int i = 0; i < _reservationList.length; ++i) {
+      int pid = int.parse(_reservationList[i]['pid']);
+      if (!_productCountMap.containsKey(pid)) {
+        _productCountMap[pid] = {
+          'order': 0,
+          'resv': 0,
+          'pName': _reservationList[i]['pName'],
+          'category':
+              _categoryReverseMap[int.parse(_reservationList[i]['category'])]
+        };
+      }
+      if (_productCountMap[pid].containsKey('resv')) {
+        _productCountMap[pid]['resv'] =
+            int.parse(_reservationList[i]['quantity']);
+      }
+    }
+    print(_productCountMap);
+    _countList = _productCountMap.entries
+        .map((e) => ProductCount(e.key, e.value['pName'], e.value['category'],
+            e.value['order'], e.value['resv']))
+        .toList();
+    _countList.sort((a, b) => a.pid.compareTo(b.pid));
   }
 
   Future<bool> _getTotalSales() async {
@@ -151,6 +237,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                 FlatButton(
                   onPressed: () {
                     setState(() {
+                      _isClicked = false;
                       _currentTap = 1;
                     });
                   },
@@ -170,6 +257,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                 FlatButton(
                   onPressed: () {
                     setState(() {
+                      _isClicked = false;
                       _currentTap = 2;
                     });
                   },
@@ -190,6 +278,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                     child: FlatButton(
                   onPressed: () {
                     setState(() {
+                      _isClicked = false;
                       _currentTap = 3;
                     });
                   },
@@ -605,7 +694,98 @@ class _StatisticsPageState extends State<StatisticsPage> {
   }
 
   Widget _productTapLayout(Size size) {
-    return SizedBox();
+    return Column(
+      children: [
+        FlatButton(
+            onPressed: () async {
+              await _getAllOrderDataInProduct();
+              await _getAllReservationDataInProduct();
+              _classifyProduct();
+              setState(() {
+                _isClicked = true;
+                _resultExplainText = _formatStartDateTime() +
+                    " ~ " +
+                    _formatEndDateTime() +
+                    "\n상품 통계";
+              });
+            },
+            child: Text('조회하기')),
+        _isClicked
+            ? Column(
+                children: [
+                  Divider(
+                    thickness: 1,
+                  ),
+                  Container(
+                    padding: EdgeInsets.all(size.width * 0.03),
+                    decoration: BoxDecoration(
+                        border: Border.all(width: 0.3, color: Colors.grey),
+                        borderRadius: BorderRadius.circular(4),
+                        color: Colors.orange[200]),
+                    child: Text(
+                      '$_resultExplainText',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Divider(
+                    thickness: 1,
+                  ),
+                ],
+              )
+            : SizedBox(),
+        Container(
+          padding: EdgeInsets.all(size.width * 0.01),
+          decoration:
+              BoxDecoration(border: Border.all(width: 1, color: Colors.black)),
+          child: Row(
+            children: [
+              Container(
+                child:
+                    Text('상품번호', style: TextStyle(fontWeight: FontWeight.bold)),
+                width: size.width * 0.18,
+                alignment: Alignment.center,
+              ),
+              Container(
+                child: Text('[카테고리] 상품이름',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+                width: size.width * 0.4,
+                alignment: Alignment.center,
+              ),
+              Container(
+                child:
+                    Text('구매수', style: TextStyle(fontWeight: FontWeight.bold)),
+                width: size.width * 0.18,
+                alignment: Alignment.center,
+              ),
+              Container(
+                child:
+                    Text('예약수', style: TextStyle(fontWeight: FontWeight.bold)),
+                width: size.width * 0.18,
+                alignment: Alignment.center,
+              )
+            ],
+          ),
+        ),
+        Container(
+          height: size.height * 0.4,
+          child: _countList.length == 0
+              ? Center(
+                  child: Text(
+                    'NO RESULT',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                )
+              : ListView.builder(
+                  itemBuilder: (context, index) {
+                    return _productItemLayout(_countList[index], size);
+                  },
+                  itemCount: _countList.length,
+                ),
+        )
+      ],
+    );
   }
 
   Widget _buyerTapLayout(Size size) {
@@ -624,4 +804,75 @@ class _StatisticsPageState extends State<StatisticsPage> {
         return SizedBox();
     }
   }
+
+  Widget _productItemLayout(ProductCount data, Size size) {
+    return Container(
+      width: size.width * 0.98,
+      padding: EdgeInsets.all(size.width * 0.02),
+      margin: EdgeInsets.all(size.width * 0.008),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(6),
+          border: Border.all(width: 0.5, color: Colors.grey)),
+      child: Row(
+        children: [
+          Container(
+            child: Text(
+              '${data.pid}',
+              style:
+                  TextStyle(fontWeight: FontWeight.bold, color: Colors.green),
+            ),
+            width: size.width * 0.13,
+          ),
+          Container(
+            width: size.width * 0.45,
+            child: Wrap(
+              children: [
+                Text(
+                  '[${data.category}] ',
+                  style: TextStyle(color: Colors.grey),
+                ),
+                Text(
+                  '${data.name}',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                )
+              ],
+            ),
+          ),
+          Container(
+            width: size.width * 0.15,
+            child: Column(
+              children: [
+                Text(
+                  '구매',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                Text('${data.orderCount}', style: TextStyle(color: Colors.red))
+              ],
+            ),
+          ),
+          Container(
+            width: size.width * 0.15,
+            child: Column(
+              children: [
+                Text('예약', style: TextStyle(fontWeight: FontWeight.bold)),
+                Text('${data.reservationCount}',
+                    style: TextStyle(color: Colors.red))
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class ProductCount {
+  int pid;
+  String name;
+  String category;
+  int orderCount;
+  int reservationCount;
+
+  ProductCount(this.pid, this.name, this.category, this.orderCount,
+      this.reservationCount);
 }
