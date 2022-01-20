@@ -20,17 +20,27 @@ class _StatisticsPageState extends State<StatisticsPage> {
   DateTime _endDate = DateTime.now().add(Duration(days: 1));
   String _startTime = '설정 없음';
   String _endTime = '설정 없음';
-  int _currentTap = 1;
-  String _resultExplainText = '';
-  int _salesOption = 0; // 0 : 전체, 1 : 구매, 2 : 예약
-  final _salesTextList = ['전체', '구매', '예약'];
-  bool _isClicked = false;
+  String _currentOrderQuery = '';
+  String _currentReservationQuery = '';
   String _salesValue = '';
+  String _resultExplainText = '';
+  int _currentTap = 1;
+  int _salesOption = 0; // 0 : 전체, 1 : 구매, 2 : 예약
+  bool _isClicked = false;
+  bool _noPayedOrder = true;
+  bool _noPayedResv = true;
+  bool _firstSelectionInOrder = true;
+  bool _secondSelectionInOrder = false;
+  bool _thirdSelectionInOrder = false;
+  bool _firstSelectionInResv = true;
+  bool _secondSelectionInResv = false;
+  bool _thirdSelectionInResv = false;
+  final List _salesTextList = ['전체', '구매', '예약'];
   List _orderList = [];
   List _reservationList = [];
-  Map<int, Map> _productCountMap = Map();
   List<ProductCount> _countList = [];
-  final _categoryReverseMap = {
+  Map<int, Map> _productCountMap = Map();
+  final Map<int, String> _categoryReverseMap = {
     0: '음식류',
     1: '간식류',
     2: '음료류',
@@ -41,10 +51,12 @@ class _StatisticsPageState extends State<StatisticsPage> {
   Future<bool> _getAllOrderDataInProduct() async {
     String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_statisticsProduct.php';
+    _currentOrderQuery = _getOrderQueryFromSetting();
     final response = await http.post(url, body: <String, String>{
       'flag': '0',
       'start': _formatStartDateTime(),
-      'end': _formatEndDateTime()
+      'end': _formatEndDateTime(),
+      'query': _currentOrderQuery
     });
 
     if (response.statusCode == 200) {
@@ -68,13 +80,100 @@ class _StatisticsPageState extends State<StatisticsPage> {
     }
   }
 
+  /// 2^3 = 8가지 경우
+  String _getReservationQueryFromSetting() {
+    // 미결제 시
+    if (!_noPayedResv) {
+      return 'orderState = 0 AND resv_state = 1';
+    }
+
+    // 단일 체크 시
+    if (_firstSelectionInResv &&
+        !_secondSelectionInResv &&
+        !_thirdSelectionInResv) {
+      return 'orderState = 1 AND resv_state = 1';
+    } else if (!_firstSelectionInResv &&
+        _secondSelectionInResv &&
+        !_thirdSelectionInResv) {
+      return 'orderState = 2 AND resv_state = 2';
+    } else if (!_firstSelectionInResv &&
+        !_secondSelectionInResv &&
+        _thirdSelectionInResv) {
+      return 'orderState = 3 AND resv_state = 2';
+    }
+
+    // 다중 체크 시
+    if (_firstSelectionInResv &&
+        _secondSelectionInResv &&
+        !_thirdSelectionInResv) {
+      return '(orderState >= 1 AND orderState <= 2) AND (resv_state >= 1 AND resv_state <= 2)';
+    } else if (!_firstSelectionInResv &&
+        _secondSelectionInResv &&
+        _thirdSelectionInResv) {
+      return '(orderState >= 2 AND orderState <= 2) AND resv_state = 2';
+    } else if (_firstSelectionInResv &&
+        !_secondSelectionInResv &&
+        _thirdSelectionInResv) {
+      return '(orderState = 1 AND resv_state = 1) OR (orderState = 3 AND resv_state = 2)';
+    } else if (_firstSelectionInResv &&
+        _secondSelectionInResv &&
+        _thirdSelectionInResv) {
+      return 'orderState >= 1 AND resv_state >= 1';
+    }
+    return 'orderState = 1 AND resv_state = 1';
+  }
+
+  /// 2^3 = 8가지 경우
+  String _getOrderQueryFromSetting() {
+    // 미결제 시
+    if (!_noPayedOrder) {
+      return 'orderState = 0 AND resv_state = 0';
+    }
+    // 단일 체크 시
+    if (_firstSelectionInOrder &&
+        !_secondSelectionInOrder &&
+        !_thirdSelectionInOrder) {
+      return 'orderState = 1 AND resv_state = 0';
+    } else if (!_firstSelectionInOrder &&
+        _secondSelectionInOrder &&
+        !_thirdSelectionInOrder) {
+      return 'orderState = 2 AND resv_state = 0';
+    } else if (!_firstSelectionInOrder &&
+        !_secondSelectionInOrder &&
+        _thirdSelectionInOrder) {
+      return 'orderState = 3 AND resv_state = 0';
+    }
+
+    // 다중 체크 시
+    if (_firstSelectionInOrder &&
+        _secondSelectionInOrder &&
+        !_thirdSelectionInOrder) {
+      return '(orderState >= 1 AND orderState <= 2) AND resv_state = 0';
+    } else if (!_firstSelectionInOrder &&
+        _secondSelectionInOrder &&
+        _thirdSelectionInOrder) {
+      return 'orderState >= 2 AND resv_state = 0';
+    } else if (_firstSelectionInOrder &&
+        !_secondSelectionInOrder &&
+        _thirdSelectionInOrder) {
+      return '(orderState = 1 AND resv_state = 0) OR (orderState = 3 AND resv_state = 0)';
+    } else if (_firstSelectionInOrder &&
+        _secondSelectionInOrder &&
+        _thirdSelectionInOrder) {
+      return 'orderState >= 1 AND resv_state = 0';
+    }
+    return 'orderState => 1 AND resv_state = 0';
+  }
+
   Future<bool> _getAllReservationDataInProduct() async {
     String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_statisticsProduct.php';
+    _currentReservationQuery = _getReservationQueryFromSetting();
     final response = await http.post(url, body: <String, String>{
       'flag': '1',
       'start': _formatStartDateTime(),
-      'end': _formatEndDateTime()
+      'end': _formatEndDateTime(),
+      'query': _currentReservationQuery
     });
 
     if (response.statusCode == 200) {
@@ -97,7 +196,24 @@ class _StatisticsPageState extends State<StatisticsPage> {
     }
   }
 
+  int _totalBuyCount() {
+    int sum = 0;
+    for (int i = 0; i < _countList.length; ++i) {
+      sum += _countList[i].orderCount;
+    }
+    return sum;
+  }
+
+  int _totalResvCount() {
+    int sum = 0;
+    for (int i = 0; i < _countList.length; ++i) {
+      sum += _countList[i].reservationCount;
+    }
+    return sum;
+  }
+
   void _classifyProduct() {
+    _productCountMap = Map();
     for (int i = 0; i < _orderList.length; ++i) {
       int pid = int.parse(_orderList[i]['pid']);
       if (!_productCountMap.containsKey(pid)) {
@@ -242,10 +358,11 @@ class _StatisticsPageState extends State<StatisticsPage> {
                     });
                   },
                   child: Container(
-                    height: size.height * 0.05,
+                    height: size.height * 0.04,
                     width: size.width * 0.3,
                     child: Text('매출 통계',
-                        style: TextStyle(fontWeight: FontWeight.bold)),
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 12)),
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
                         color:
@@ -263,9 +380,10 @@ class _StatisticsPageState extends State<StatisticsPage> {
                   },
                   child: Container(
                     child: Text('상품 통계',
-                        style: TextStyle(fontWeight: FontWeight.bold)),
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 12)),
                     width: size.width * 0.3,
-                    height: size.height * 0.05,
+                    height: size.height * 0.04,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
                         color:
@@ -285,9 +403,10 @@ class _StatisticsPageState extends State<StatisticsPage> {
                   child: Container(
                     child: Text(
                       '구매자 통계',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                     ),
-                    height: size.height * 0.05,
+                    height: size.height * 0.04,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
                         color:
@@ -299,19 +418,19 @@ class _StatisticsPageState extends State<StatisticsPage> {
               ],
             ),
             SizedBox(
-              height: size.height * 0.015,
+              height: size.height * 0.005,
             ),
             Container(
               padding: EdgeInsets.all(size.width * 0.015),
               width: size.width,
-              height: size.height * 0.07,
+              height: size.height * 0.06,
               margin: EdgeInsets.all(size.width * 0.005),
               decoration: BoxDecoration(
                   border: Border.all(width: 0.5, color: Colors.grey)),
               child: Row(
                 children: [
                   Container(
-                    height: size.height * 0.07,
+                    height: size.height * 0.06,
                     alignment: Alignment.center,
                     child: Text(
                       '시작 날짜',
@@ -322,14 +441,14 @@ class _StatisticsPageState extends State<StatisticsPage> {
                   ),
                   Container(
                     width: size.width * 0.45,
-                    height: size.height * 0.07,
+                    height: size.height * 0.06,
                     alignment: Alignment.center,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
                           width: size.width * 0.1,
-                          height: size.height * 0.045,
+                          height: size.height * 0.043,
                           decoration: BoxDecoration(
                               border: Border.all(width: 1, color: Colors.black),
                               borderRadius: BorderRadius.circular(4),
@@ -377,7 +496,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                         children: [
                           Container(
                             width: size.width * 0.1,
-                            height: size.height * 0.045,
+                            height: size.height * 0.043,
                             decoration: BoxDecoration(
                                 border:
                                     Border.all(width: 1, color: Colors.black),
@@ -419,14 +538,14 @@ class _StatisticsPageState extends State<StatisticsPage> {
             Container(
               padding: EdgeInsets.all(size.width * 0.015),
               width: size.width,
-              height: size.height * 0.07,
+              height: size.height * 0.06,
               margin: EdgeInsets.all(size.width * 0.005),
               decoration: BoxDecoration(
                   border: Border.all(width: 0.5, color: Colors.grey)),
               child: Row(
                 children: [
                   Container(
-                    height: size.height * 0.07,
+                    height: size.height * 0.06,
                     alignment: Alignment.center,
                     child: Text(
                       '종료 날짜',
@@ -437,14 +556,14 @@ class _StatisticsPageState extends State<StatisticsPage> {
                   ),
                   Container(
                     width: size.width * 0.45,
-                    height: size.height * 0.07,
+                    height: size.height * 0.06,
                     alignment: Alignment.center,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
                           width: size.width * 0.1,
-                          height: size.height * 0.045,
+                          height: size.height * 0.043,
                           decoration: BoxDecoration(
                               border: Border.all(width: 1, color: Colors.black),
                               borderRadius: BorderRadius.circular(4),
@@ -540,13 +659,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
             Divider(
               color: Colors.red,
               thickness: 1,
+              height: 10,
             ),
-            // FlatButton(
-            //     onPressed: () {
-            //       _getAllOrderDataInProduct();
-            //       _getTotalSales();
-            //     },
-            //     child: Text('버튼')),
             _setLayoutAccordingToTap(size)
           ],
         ),
@@ -680,7 +794,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                       height: size.height * 0.1,
                       alignment: Alignment.center,
                       child: Text(
-                        '${_salesValue == 'NO RESULT' ? _salesValue : _formatPrice(int.parse(_salesValue)) + '원'}',
+                        '${_salesValue == 'NO RESULT' ? '0원' : _formatPrice(int.parse(_salesValue)) + '원'}',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 18),
                       ),
@@ -696,28 +810,292 @@ class _StatisticsPageState extends State<StatisticsPage> {
   Widget _productTapLayout(Size size) {
     return Column(
       children: [
-        FlatButton(
-            onPressed: () async {
-              await _getAllOrderDataInProduct();
-              await _getAllReservationDataInProduct();
-              _classifyProduct();
-              setState(() {
-                _isClicked = true;
-                _resultExplainText = _formatStartDateTime() +
-                    " ~ " +
-                    _formatEndDateTime() +
-                    "\n상품 통계";
-              });
-            },
-            child: Text('조회하기')),
+        Container(
+          height: size.height * 0.06,
+          decoration:
+              BoxDecoration(border: Border.all(width: 0.3, color: Colors.grey)),
+          child: Row(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Text(
+                ' 구매 설정',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11),
+              ),
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    _noPayedOrder = false;
+                    _firstSelectionInOrder = false;
+                    _secondSelectionInOrder = false;
+                    _thirdSelectionInOrder = false;
+                  });
+                },
+                child: Row(
+                  children: [
+                    Icon(
+                      _noPayedOrder
+                          ? Icons.check_box_outline_blank
+                          : Icons.check_box,
+                      size: 18,
+                      color: _noPayedOrder ? Colors.grey : Colors.blue,
+                    ),
+                    Text(' 미결제',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 9,
+                            color: _noPayedOrder ? Colors.grey : Colors.black))
+                  ],
+                ),
+              ),
+              Container(
+                width: size.width * 0.005,
+                height: size.height * 0.03,
+                color: Colors.black,
+              ),
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    _noPayedOrder = true;
+                    _firstSelectionInOrder = !_firstSelectionInOrder;
+                  });
+                },
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      _firstSelectionInOrder
+                          ? Icons.check_box
+                          : Icons.check_box_outline_blank,
+                      size: 18,
+                      color: _noPayedOrder ? Colors.blue : Colors.grey,
+                    ),
+                    Text(' 결제 완료',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 9,
+                            color: _noPayedOrder ? Colors.black : Colors.grey))
+                  ],
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    _noPayedOrder = true;
+                    _secondSelectionInOrder = !_secondSelectionInOrder;
+                  });
+                },
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      _secondSelectionInOrder
+                          ? Icons.check_box
+                          : Icons.check_box_outline_blank,
+                      size: 18,
+                      color: _noPayedOrder ? Colors.blue : Colors.grey,
+                    ),
+                    Text(' 주문 처리 중',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 9,
+                            color: _noPayedOrder ? Colors.black : Colors.grey))
+                  ],
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    _noPayedOrder = true;
+                    _thirdSelectionInOrder = !_thirdSelectionInOrder;
+                  });
+                },
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      _thirdSelectionInOrder
+                          ? Icons.check_box
+                          : Icons.check_box_outline_blank,
+                      size: 18,
+                      color: _noPayedOrder ? Colors.blue : Colors.grey,
+                    ),
+                    Text(' 수령 완료',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 9,
+                            color: _noPayedOrder ? Colors.black : Colors.grey))
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        Container(
+          height: size.height * 0.06,
+          decoration:
+              BoxDecoration(border: Border.all(width: 0.3, color: Colors.grey)),
+          child: Row(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Text(
+                ' 예약 설정',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11),
+              ),
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    _noPayedResv = false;
+                    _firstSelectionInResv = false;
+                    _secondSelectionInResv = false;
+                    _thirdSelectionInResv = false;
+                  });
+                },
+                child: Row(
+                  children: [
+                    Icon(
+                      _noPayedResv
+                          ? Icons.check_box_outline_blank
+                          : Icons.check_box,
+                      size: 18,
+                      color: _noPayedResv ? Colors.grey : Colors.blue,
+                    ),
+                    Text(' 미결제',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 9,
+                            color: _noPayedResv ? Colors.grey : Colors.black))
+                  ],
+                ),
+              ),
+              Container(
+                width: size.width * 0.005,
+                height: size.height * 0.03,
+                color: Colors.black,
+              ),
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    _noPayedResv = true;
+                    _firstSelectionInResv = !_firstSelectionInResv;
+                  });
+                },
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      _firstSelectionInResv
+                          ? Icons.check_box
+                          : Icons.check_box_outline_blank,
+                      size: 19,
+                      color: _noPayedResv ? Colors.blue : Colors.grey,
+                    ),
+                    Text(' 예약 중',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 10,
+                          color: _noPayedResv ? Colors.black : Colors.grey,
+                        ))
+                  ],
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    _noPayedResv = true;
+                    _secondSelectionInResv = !_secondSelectionInResv;
+                  });
+                },
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      _secondSelectionInResv
+                          ? Icons.check_box
+                          : Icons.check_box_outline_blank,
+                      size: 19,
+                      color: _noPayedResv ? Colors.blue : Colors.grey,
+                    ),
+                    Text(' 예약 완료',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 10,
+                          color: _noPayedResv ? Colors.black : Colors.grey,
+                        ))
+                  ],
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    _noPayedResv = true;
+                    _thirdSelectionInResv = !_thirdSelectionInResv;
+                  });
+                },
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      _thirdSelectionInResv
+                          ? Icons.check_box
+                          : Icons.check_box_outline_blank,
+                      size: 19,
+                      color: _noPayedResv ? Colors.blue : Colors.grey,
+                    ),
+                    Text(' 수령 완료',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 10,
+                          color: _noPayedResv ? Colors.black : Colors.grey,
+                        ))
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            TextButton(
+                onPressed: () async {
+                  await _getAllOrderDataInProduct();
+                  await _getAllReservationDataInProduct();
+                  _classifyProduct();
+                  setState(() {
+                    _isClicked = true;
+                    _resultExplainText = _formatStartDateTime() +
+                        " ~ " +
+                        _formatEndDateTime() +
+                        "\n[주문 검색 조건] : ${_currentOrderQuery.replaceAll('orderState', '주문 상태').replaceAll('resv_state', '예약 상태')}\n[예약 검색 조건] : ${_currentReservationQuery.replaceAll('orderState', '주문 상태').replaceAll('resv_state', '예약 상태')}\n상품 통계";
+                  });
+                },
+                child: Container(
+                  child: Text(
+                    '조회하기',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13),
+                  ),
+                  width: size.width * 0.25,
+                  alignment: Alignment.center,
+                  padding: EdgeInsets.all(size.width * 0.015),
+                  decoration: BoxDecoration(
+                      border: Border.all(width: 1, color: Colors.black),
+                      borderRadius: BorderRadius.circular(6),
+                      color: Colors.red),
+                )),
+          ],
+        ),
         _isClicked
             ? Column(
                 children: [
                   Divider(
                     thickness: 1,
+                    height: 3,
                   ),
                   Container(
-                    padding: EdgeInsets.all(size.width * 0.03),
+                    padding: EdgeInsets.all(size.width * 0.025),
                     decoration: BoxDecoration(
                         border: Border.all(width: 0.3, color: Colors.grey),
                         borderRadius: BorderRadius.circular(4),
@@ -725,12 +1103,13 @@ class _StatisticsPageState extends State<StatisticsPage> {
                     child: Text(
                       '$_resultExplainText',
                       style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                       textAlign: TextAlign.center,
                     ),
                   ),
                   Divider(
                     thickness: 1,
+                    height: 8,
                   ),
                 ],
               )
@@ -783,7 +1162,49 @@ class _StatisticsPageState extends State<StatisticsPage> {
                   },
                   itemCount: _countList.length,
                 ),
-        )
+        ),
+        _isClicked
+            ? Container(
+                padding: EdgeInsets.all(size.width * 0.01),
+                decoration: BoxDecoration(
+                    border: Border.all(width: 0.2, color: Colors.black)),
+                child: Row(
+                  children: [
+                    Container(
+                      alignment: Alignment.center,
+                      child: Text(
+                        'Total',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                            color: Colors.red),
+                      ),
+                      width: size.width * 0.2,
+                    ),
+                    SizedBox(
+                      width: size.width * 0.43,
+                    ),
+                    Container(
+                      child: Text(
+                        '${_totalBuyCount()}개',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      width: size.width * 0.15,
+                    ),
+                    Container(
+                      alignment: Alignment.center,
+                      child: Text('${_totalResvCount()}개',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          )),
+                      width: size.width * 0.15,
+                    ),
+                  ],
+                ),
+              )
+            : SizedBox()
       ],
     );
   }
