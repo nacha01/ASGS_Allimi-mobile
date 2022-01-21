@@ -24,6 +24,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
   String _currentReservationQuery = '';
   String _salesValue = '';
   String _resultExplainText = '';
+  String _selectedDate = '일';
   int _currentTap = 1;
   int _salesOption = 0; // 0 : 전체, 1 : 구매, 2 : 예약
   bool _isClicked = false;
@@ -36,9 +37,11 @@ class _StatisticsPageState extends State<StatisticsPage> {
   bool _secondSelectionInResv = false;
   bool _thirdSelectionInResv = false;
   final List _salesTextList = ['전체', '구매', '예약'];
+  final List _monthDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
   List _orderList = [];
   List _reservationList = [];
   List<ProductCount> _countList = [];
+  List<List> _salesListForDate = [];
   Map<int, Map> _productCountMap = Map();
   final Map<int, String> _categoryReverseMap = {
     0: '음식류',
@@ -47,6 +50,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
     3: '문구류',
     4: '핸드메이드'
   };
+  final _dateUnitList = ['일', '주', '월'];
+  TextEditingController _dateController = TextEditingController();
 
   Future<bool> _getAllOrderDataInProduct() async {
     String url =
@@ -78,6 +83,13 @@ class _StatisticsPageState extends State<StatisticsPage> {
     } else {
       return false;
     }
+  }
+
+  DateTime _getStartDate() {
+    var today = DateTime.now();
+    var startPointDate =
+        DateTime(today.year, today.month - int.parse(_dateController.text), 1);
+    return startPointDate;
   }
 
   /// 2^3 = 8가지 경우
@@ -123,7 +135,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
     return 'orderState = 1 AND resv_state = 1';
   }
 
-  /// 2^3 = 8가지 경우
+  /// 2Π3 = 2^3 = 8가지 경우
   String _getOrderQueryFromSetting() {
     // 미결제 시
     if (!_noPayedOrder) {
@@ -266,7 +278,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
               '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
               '')
           .trim();
-      print(result);
+      // print(result);
       if (result == '' || result == null) {
         _salesValue = 'NO RESULT';
       } else {
@@ -324,6 +336,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
     super.initState();
     print(_formatStartDateTime());
     print(_formatEndDateTime());
+    // print(_getStartDate().toString());
   }
 
   @override
@@ -671,6 +684,34 @@ class _StatisticsPageState extends State<StatisticsPage> {
   Widget _salesTapLayout(Size size) {
     return Column(
       children: [
+        Row(
+          children: [
+            Text('시간 간격'),
+            Text('최근'),
+            Container(
+              width: size.width * 0.2,
+              child: TextField(
+                controller: _dateController,
+              ),
+            ),
+            Text('개월 동안'),
+            DropdownButton(
+              value: _selectedDate,
+              items: _dateUnitList.map((e) {
+                return DropdownMenuItem(
+                  child: Text(e),
+                  value: e,
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  _selectedDate = value;
+                });
+              },
+            ),
+            Text('간 통계')
+          ],
+        ),
         Divider(
           height: 5,
         ),
@@ -743,6 +784,58 @@ class _StatisticsPageState extends State<StatisticsPage> {
             FlatButton(
                 onPressed: () async {
                   await _getTotalSales();
+                  var start = _getStartDate();
+                  switch (_selectedDate) {
+                    case '일':
+                      var current = start;
+                      while (true) {
+                        if (DateTime.now().compareTo(current) < 0) {
+                          break;
+                        }
+                        print('현재 : ${current.toString()}');
+                        current = current.add(Duration(days: 1));
+                      }
+                      break;
+                    case '주':
+                      var current = start;
+                      while (true) {
+                        print('현재 시작 : ${current.toString()}');
+                        if (DateTime.now()
+                                .difference(current.add(Duration(days: 6)))
+                                .inDays <
+                            0) {
+                          print(
+                              '현재 종료 : ${current.add(Duration(days: DateTime.now().difference(current).inDays))}');
+                          break;
+                        }
+                        current = current.add(Duration(days: 6));
+                        print('현재 종료 : ${current.toString()}');
+                        current = current.add(Duration(days: 1));
+                      }
+                      break;
+                    case '월':
+                      var current = start;
+                      while (true) {
+                        print('현재 시작 : ${current.toString()}');
+                        if (current.month == DateTime.now().month &&
+                            current.year == DateTime.now().year) {
+                          print(
+                              '차이 : ${DateTime.now().difference(current).inDays}일');
+                          print(
+                              '현재 종료 : ${current.add(Duration(days: DateTime.now().difference(current).inDays))}');
+                          break;
+                        }
+                        var next = DateTime(
+                            current.year, current.month + 1, current.day);
+
+                        print('차이 : ${next.difference(current).inDays}일');
+                        current = next.subtract(Duration(days: 1));
+                        print('현재 종료 : ${current.toString()}');
+                        print('-----------------------------');
+                        current = current.add(Duration(days: 1));
+                      }
+                      break;
+                  }
                   setState(() {
                     _isClicked = true;
                     _resultExplainText = _formatStartDateTime() +
@@ -1147,22 +1240,6 @@ class _StatisticsPageState extends State<StatisticsPage> {
             ],
           ),
         ),
-        Container(
-          height: size.height * 0.4,
-          child: _countList.length == 0
-              ? Center(
-                  child: Text(
-                    'NO RESULT',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                )
-              : ListView.builder(
-                  itemBuilder: (context, index) {
-                    return _productItemLayout(_countList[index], size);
-                  },
-                  itemCount: _countList.length,
-                ),
-        ),
         _isClicked
             ? Container(
                 padding: EdgeInsets.all(size.width * 0.01),
@@ -1204,7 +1281,23 @@ class _StatisticsPageState extends State<StatisticsPage> {
                   ],
                 ),
               )
-            : SizedBox()
+            : SizedBox(),
+        Container(
+          height: size.height * 0.4,
+          child: _countList.length == 0
+              ? Center(
+                  child: Text(
+                    'NO RESULT',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                )
+              : ListView.builder(
+                  itemBuilder: (context, index) {
+                    return _productItemLayout(_countList[index], size);
+                  },
+                  itemCount: _countList.length,
+                ),
+        ),
       ],
     );
   }
