@@ -24,7 +24,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
   String _currentReservationQuery = '';
   String _salesValue = '';
   String _resultExplainText = '';
-  String _selectedDate = '일';
+  String _selectedDate = '전체';
   int _currentTap = 1;
   int _salesOption = 0; // 0 : 전체, 1 : 구매, 2 : 예약
   bool _isClicked = false;
@@ -37,11 +37,11 @@ class _StatisticsPageState extends State<StatisticsPage> {
   bool _secondSelectionInResv = false;
   bool _thirdSelectionInResv = false;
   final List _salesTextList = ['전체', '구매', '예약'];
-  final List _monthDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
   List _orderList = [];
   List _reservationList = [];
   List<ProductCount> _countList = [];
-  List<List> _salesListForDate = [];
+  List _salesRangeList = [];
+  List<Widget> _salesRangeWidgetList = [];
   Map<int, Map> _productCountMap = Map();
   final Map<int, String> _categoryReverseMap = {
     0: '음식류',
@@ -50,7 +50,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
     3: '문구류',
     4: '핸드메이드'
   };
-  final _dateUnitList = ['일', '주', '월'];
+  final _dateUnitList = ['전체', '일간', '주간', '월간'];
   TextEditingController _dateController = TextEditingController();
 
   Future<bool> _getAllOrderDataInProduct() async {
@@ -264,12 +264,13 @@ class _StatisticsPageState extends State<StatisticsPage> {
     _countList.sort((a, b) => a.pid.compareTo(b.pid));
   }
 
-  Future<bool> _getTotalSales() async {
+  Future<bool> _getTotalSales(int flag) async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_statisticsSales.php';
     final response = await http.post(url, body: <String, String>{
       'start': _formatStartDateTime(),
       'end': _formatEndDateTime(),
-      'option': _salesOption.toString()
+      'option': _salesOption.toString(),
+      'date': flag.toString()
     });
     if (response.statusCode == 200) {
       String result = utf8
@@ -278,11 +279,22 @@ class _StatisticsPageState extends State<StatisticsPage> {
               '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
               '')
           .trim();
-      // print(result);
-      if (result == '' || result == null) {
-        _salesValue = 'NO RESULT';
+      if (flag == 0) {
+        if (result == '' || result == null) {
+          _salesValue = 'NO RESULT';
+        } else {
+          _salesValue = result;
+        }
       } else {
-        _salesValue = result;
+        List map1st = jsonDecode(result);
+        for (int i = 0; i < map1st.length; ++i) {
+          map1st[i] = jsonDecode(map1st[i]);
+        }
+        print(map1st);
+        setState(() {
+          _salesRangeList = map1st;
+          _getResultListForSalesOnUnit(MediaQuery.of(context).size);
+        });
       }
       return true;
     } else {
@@ -368,6 +380,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                     setState(() {
                       _isClicked = false;
                       _currentTap = 1;
+                      _countList.clear();
                     });
                   },
                   child: Container(
@@ -411,6 +424,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                     setState(() {
                       _isClicked = false;
                       _currentTap = 3;
+                      _countList.clear();
                     });
                   },
                   child: Container(
@@ -685,39 +699,50 @@ class _StatisticsPageState extends State<StatisticsPage> {
     return Column(
       children: [
         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            Text('시간 간격'),
-            Text('최근'),
+            Text(
+              '날짜 단위',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+            ),
             Container(
-              width: size.width * 0.2,
-              child: TextField(
-                controller: _dateController,
+              width: size.width * 0.7,
+              color: Colors.grey[200],
+              child: DropdownButton(
+                value: _selectedDate,
+                isExpanded: true,
+                underline: SizedBox(),
+                items: _dateUnitList.map((e) {
+                  return DropdownMenuItem(
+                    child: Center(
+                      child: Text(
+                        e,
+                        style: TextStyle(
+                            fontSize: 13, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    value: e,
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _selectedDate = value;
+                  });
+                },
               ),
             ),
-            Text('개월 동안'),
-            DropdownButton(
-              value: _selectedDate,
-              items: _dateUnitList.map((e) {
-                return DropdownMenuItem(
-                  child: Text(e),
-                  value: e,
-                );
-              }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  _selectedDate = value;
-                });
-              },
-            ),
-            Text('간 통계')
           ],
         ),
         Divider(
           height: 5,
         ),
         Row(
-          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
+            Text(
+              '결과 값 기준 설정',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+            ),
             FlatButton(
               onPressed: () {
                 setState(() {
@@ -727,13 +752,15 @@ class _StatisticsPageState extends State<StatisticsPage> {
               child: Row(
                 children: [
                   Icon(
-                      _salesOption == 0
-                          ? Icons.check_box
-                          : Icons.check_box_outline_blank,
-                      color: Colors.blue),
+                    _salesOption == 0
+                        ? Icons.check_box
+                        : Icons.check_box_outline_blank,
+                    color: Colors.blue,
+                    size: 21,
+                  ),
                   Text(
                     ' 전체',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                   )
                 ],
               ),
@@ -747,12 +774,14 @@ class _StatisticsPageState extends State<StatisticsPage> {
               child: Row(
                 children: [
                   Icon(
-                    _salesOption == 1
-                        ? Icons.check_box
-                        : Icons.check_box_outline_blank,
-                    color: Colors.blue,
-                  ),
-                  Text(' 구매', style: TextStyle(fontWeight: FontWeight.bold))
+                      _salesOption == 1
+                          ? Icons.check_box
+                          : Icons.check_box_outline_blank,
+                      color: Colors.blue,
+                      size: 21),
+                  Text(' 구매',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 13))
                 ],
               ),
             ),
@@ -768,8 +797,11 @@ class _StatisticsPageState extends State<StatisticsPage> {
                       _salesOption == 2
                           ? Icons.check_box
                           : Icons.check_box_outline_blank,
-                      color: Colors.blue),
-                  Text(' 예약', style: TextStyle(fontWeight: FontWeight.bold))
+                      color: Colors.blue,
+                      size: 21),
+                  Text(' 예약',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 13))
                 ],
               ),
             ),
@@ -781,82 +813,33 @@ class _StatisticsPageState extends State<StatisticsPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            FlatButton(
+            TextButton(
                 onPressed: () async {
-                  await _getTotalSales();
-                  var start = _getStartDate();
-                  switch (_selectedDate) {
-                    case '일':
-                      var current = start;
-                      while (true) {
-                        if (DateTime.now().compareTo(current) < 0) {
-                          break;
-                        }
-                        print('현재 : ${current.toString()}');
-                        current = current.add(Duration(days: 1));
-                      }
-                      break;
-                    case '주':
-                      var current = start;
-                      while (true) {
-                        print('현재 시작 : ${current.toString()}');
-                        if (DateTime.now()
-                                .difference(current.add(Duration(days: 6)))
-                                .inDays <
-                            0) {
-                          print(
-                              '현재 종료 : ${current.add(Duration(days: DateTime.now().difference(current).inDays))}');
-                          break;
-                        }
-                        current = current.add(Duration(days: 6));
-                        print('현재 종료 : ${current.toString()}');
-                        current = current.add(Duration(days: 1));
-                      }
-                      break;
-                    case '월':
-                      var current = start;
-                      while (true) {
-                        print('현재 시작 : ${current.toString()}');
-                        if (current.month == DateTime.now().month &&
-                            current.year == DateTime.now().year) {
-                          print(
-                              '차이 : ${DateTime.now().difference(current).inDays}일');
-                          print(
-                              '현재 종료 : ${current.add(Duration(days: DateTime.now().difference(current).inDays))}');
-                          break;
-                        }
-                        var next = DateTime(
-                            current.year, current.month + 1, current.day);
-
-                        print('차이 : ${next.difference(current).inDays}일');
-                        current = next.subtract(Duration(days: 1));
-                        print('현재 종료 : ${current.toString()}');
-                        print('-----------------------------');
-                        current = current.add(Duration(days: 1));
-                      }
-                      break;
-                  }
+                  int flag = _dateUnitList.indexOf(_selectedDate);
+                  await _getTotalSales(flag);
                   setState(() {
                     _isClicked = true;
                     _resultExplainText = _formatStartDateTime() +
                         " ~ " +
                         _formatEndDateTime() +
-                        "\n[${_salesTextList[_salesOption]}] 매출 통계";
+                        "\n[${_salesTextList[_salesOption]}] 매출 [$_selectedDate] 통계";
                   });
                 },
                 child: Container(
                   child: Text(
                     '조회하기',
                     style: TextStyle(
-                        fontWeight: FontWeight.bold, color: Colors.white),
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontSize: 12),
                   ),
-                  width: size.width * 0.3,
+                  width: size.width * 0.23,
                   alignment: Alignment.center,
                   padding: EdgeInsets.symmetric(
-                      vertical: size.width * 0.02,
-                      horizontal: size.height * 0.01),
+                      vertical: size.width * 0.015,
+                      horizontal: size.height * 0.015),
                   decoration: BoxDecoration(
-                      border: Border.all(width: 0.5, color: Colors.black),
+                      border: Border.all(width: 1, color: Colors.black),
                       color: Colors.red,
                       borderRadius: BorderRadius.circular(6)),
                 )),
@@ -881,18 +864,26 @@ class _StatisticsPageState extends State<StatisticsPage> {
                   Divider(
                     thickness: 1,
                   ),
-                  Card(
-                    child: Container(
-                      width: size.width * 0.9,
-                      height: size.height * 0.1,
-                      alignment: Alignment.center,
-                      child: Text(
-                        '${_salesValue == 'NO RESULT' ? '0원' : _formatPrice(int.parse(_salesValue)) + '원'}',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 18),
-                      ),
-                    ),
-                  )
+                  _selectedDate == '전체'
+                      ? Card(
+                          child: Container(
+                            width: size.width * 0.9,
+                            height: size.height * 0.1,
+                            alignment: Alignment.center,
+                            child: Text(
+                              '${_salesValue == 'NO RESULT' || _salesValue == '' ? '0원' : _formatPrice(int.parse(_salesValue)) + '원'}',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 18),
+                            ),
+                          ),
+                        )
+                      : _salesRangeWidgetList.length == 0
+                          ? Center(
+                              child: Text('결과 없음'),
+                            )
+                          : Column(
+                              children: _salesRangeWidgetList,
+                            )
                 ],
               )
             : SizedBox(),
@@ -1079,13 +1070,13 @@ class _StatisticsPageState extends State<StatisticsPage> {
                       _firstSelectionInResv
                           ? Icons.check_box
                           : Icons.check_box_outline_blank,
-                      size: 19,
+                      size: 18,
                       color: _noPayedResv ? Colors.blue : Colors.grey,
                     ),
                     Text(' 예약 중',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 10,
+                          fontSize: 9,
                           color: _noPayedResv ? Colors.black : Colors.grey,
                         ))
                   ],
@@ -1105,13 +1096,13 @@ class _StatisticsPageState extends State<StatisticsPage> {
                       _secondSelectionInResv
                           ? Icons.check_box
                           : Icons.check_box_outline_blank,
-                      size: 19,
+                      size: 18,
                       color: _noPayedResv ? Colors.blue : Colors.grey,
                     ),
                     Text(' 예약 완료',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 10,
+                          fontSize: 9,
                           color: _noPayedResv ? Colors.black : Colors.grey,
                         ))
                   ],
@@ -1131,13 +1122,13 @@ class _StatisticsPageState extends State<StatisticsPage> {
                       _thirdSelectionInResv
                           ? Icons.check_box
                           : Icons.check_box_outline_blank,
-                      size: 19,
+                      size: 18,
                       color: _noPayedResv ? Colors.blue : Colors.grey,
                     ),
                     Text(' 수령 완료',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 10,
+                          fontSize: 9,
                           color: _noPayedResv ? Colors.black : Colors.grey,
                         ))
                   ],
@@ -1168,9 +1159,9 @@ class _StatisticsPageState extends State<StatisticsPage> {
                     style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
-                        fontSize: 13),
+                        fontSize: 12),
                   ),
-                  width: size.width * 0.25,
+                  width: size.width * 0.23,
                   alignment: Alignment.center,
                   padding: EdgeInsets.all(size.width * 0.015),
                   decoration: BoxDecoration(
@@ -1209,31 +1200,35 @@ class _StatisticsPageState extends State<StatisticsPage> {
             : SizedBox(),
         Container(
           padding: EdgeInsets.all(size.width * 0.01),
-          decoration:
-              BoxDecoration(border: Border.all(width: 1, color: Colors.black)),
+          decoration: BoxDecoration(
+              border: Border.all(width: 0.6, color: Colors.black)),
           child: Row(
             children: [
               Container(
-                child:
-                    Text('상품번호', style: TextStyle(fontWeight: FontWeight.bold)),
+                child: Text('상품번호',
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
                 width: size.width * 0.18,
                 alignment: Alignment.center,
               ),
               Container(
                 child: Text('[카테고리] 상품이름',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
                 width: size.width * 0.4,
                 alignment: Alignment.center,
               ),
               Container(
-                child:
-                    Text('구매수', style: TextStyle(fontWeight: FontWeight.bold)),
+                child: Text('구매수',
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
                 width: size.width * 0.18,
                 alignment: Alignment.center,
               ),
               Container(
-                child:
-                    Text('예약수', style: TextStyle(fontWeight: FontWeight.bold)),
+                child: Text('예약수',
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
                 width: size.width * 0.18,
                 alignment: Alignment.center,
               )
@@ -1253,7 +1248,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                         'Total',
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 13,
+                            fontSize: 12,
                             color: Colors.red),
                       ),
                       width: size.width * 0.2,
@@ -1265,8 +1260,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                       child: Text(
                         '${_totalBuyCount()}개',
                         style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
+                            fontWeight: FontWeight.bold, fontSize: 12),
                       ),
                       width: size.width * 0.15,
                     ),
@@ -1274,8 +1268,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                       alignment: Alignment.center,
                       child: Text('${_totalResvCount()}개',
                           style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          )),
+                              fontWeight: FontWeight.bold, fontSize: 12)),
                       width: size.width * 0.15,
                     ),
                   ],
@@ -1287,7 +1280,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
           child: _countList.length == 0
               ? Center(
                   child: Text(
-                    'NO RESULT',
+                    '결과 없음',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
                 )
@@ -1332,8 +1325,10 @@ class _StatisticsPageState extends State<StatisticsPage> {
           Container(
             child: Text(
               '${data.pid}',
-              style:
-                  TextStyle(fontWeight: FontWeight.bold, color: Colors.green),
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.green,
+                  fontSize: 12),
             ),
             width: size.width * 0.13,
           ),
@@ -1343,11 +1338,11 @@ class _StatisticsPageState extends State<StatisticsPage> {
               children: [
                 Text(
                   '[${data.category}] ',
-                  style: TextStyle(color: Colors.grey),
+                  style: TextStyle(color: Colors.grey, fontSize: 12),
                 ),
                 Text(
                   '${data.name}',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                 )
               ],
             ),
@@ -1358,9 +1353,10 @@ class _StatisticsPageState extends State<StatisticsPage> {
               children: [
                 Text(
                   '구매',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                 ),
-                Text('${data.orderCount}', style: TextStyle(color: Colors.red))
+                Text('${data.orderCount}',
+                    style: TextStyle(color: Colors.red, fontSize: 12))
               ],
             ),
           ),
@@ -1368,15 +1364,145 @@ class _StatisticsPageState extends State<StatisticsPage> {
             width: size.width * 0.15,
             child: Column(
               children: [
-                Text('예약', style: TextStyle(fontWeight: FontWeight.bold)),
+                Text('예약',
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
                 Text('${data.reservationCount}',
-                    style: TextStyle(color: Colors.red))
+                    style: TextStyle(color: Colors.red, fontSize: 12))
               ],
             ),
           )
         ],
       ),
     );
+  }
+
+  Widget _salesItemLayout(Size size, String rangeDate, int momentSale) {
+    return Container(
+      width: size.width,
+      decoration: BoxDecoration(
+          border: Border.all(width: 1, color: Colors.grey),
+          borderRadius: BorderRadius.circular(8)),
+      margin: EdgeInsets.all(size.width * 0.004),
+      padding: EdgeInsets.all(size.width * 0.02),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Container(
+            padding: EdgeInsets.all(size.width * 0.015),
+            color: Colors.orange,
+            child: Text(
+              rangeDate,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+              ),
+            ),
+          ),
+          Card(
+            child: Container(
+              padding: EdgeInsets.all(size.width * 0.015),
+              width:
+                  _selectedDate == '주간' ? size.width * 0.3 : size.width * 0.5,
+              alignment: Alignment.center,
+              child: Text(
+                _formatPrice(momentSale) + '원',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  void _getResultListForSalesOnUnit(Size size) {
+    _salesRangeWidgetList.clear();
+    int sum = 0;
+    String start = '';
+    String end = '';
+    int index = 0;
+    int count = 0;
+    if (_salesRangeList.length == 0) {
+      return;
+    }
+    if (_selectedDate == '주간') {
+      for (var i = _startDate;; i = i.add(Duration(days: 1))) {
+        if ((count + 1) % 7 == 1) {
+          start = i.toString().split(' ')[0];
+        }
+        if (index < _salesRangeList.length &&
+            _salesRangeList[index]['date'].toString().split(' ')[0] ==
+                i.toString().split(' ')[0]) {
+          sum += int.parse(_salesRangeList[index++]['total']);
+        } else {
+          sum += 0;
+        }
+        if ((count + 1) % 7 == 0) {
+          end = i.toString().split(' ')[0];
+          _salesRangeWidgetList.add(_salesItemLayout(
+              size, start.split(' ')[0] + ' ~ ' + end.split(' ')[0], sum));
+          sum = 0;
+        }
+        if (_endDate.compareTo(i) == 0) {
+          end = i.toString().split(' ')[0];
+          _salesRangeWidgetList.add(_salesItemLayout(
+              size, start.split(' ')[0] + ' ~ ' + end.split(' ')[0], sum));
+          sum = 0;
+          break;
+        }
+        count++;
+      }
+    } else if (_selectedDate == '월간') {
+      String curYear = _salesRangeList[0]['date'].toString().split('-')[0];
+      String curMonth = _salesRangeList[0]['date'].toString().split('-')[1];
+      for (int i = 0;; ++i) {
+        if (i == _salesRangeList.length - 1) {
+          sum += int.parse(_salesRangeList[i]['total']);
+          _salesRangeWidgetList.add(_salesItemLayout(
+              size,
+              _salesRangeList[i]['date']
+                      .toString()
+                      .substring(0, 7)
+                      .replaceAll('-', '년 ') +
+                  '월',
+              sum));
+          break;
+        }
+        if (curYear == _salesRangeList[i]['date'].toString().split('-')[0] &&
+            curMonth == _salesRangeList[i]['date'].toString().split('-')[1]) {
+          sum += int.parse(_salesRangeList[i]['total']);
+        } else {
+          _salesRangeWidgetList.add(_salesItemLayout(
+              size,
+              _salesRangeList[i - 1]['date']
+                      .toString()
+                      .substring(0, 7)
+                      .replaceAll('-', '년 ') +
+                  '월',
+              sum));
+          curYear = _salesRangeList[i]['date'].toString().split('-')[0];
+          curMonth = _salesRangeList[i]['date'].toString().split('-')[1];
+          sum = 0;
+          sum += int.parse(_salesRangeList[i]['total']);
+        }
+      }
+    } else if (_selectedDate == '일간') {
+      for (var i = _startDate;
+          _endDate.compareTo(i) != 0;
+          i = i.add(Duration(days: 1))) {
+        int curValue = 0;
+        if (index < _salesRangeList.length &&
+            _salesRangeList[index]['date'].toString().split(' ')[0] ==
+                i.toString().split(' ')[0]) {
+          curValue = int.parse(_salesRangeList[index]['total']);
+          index++;
+        }
+        _salesRangeWidgetList
+            .add(_salesItemLayout(size, i.toString().split(' ')[0], curValue));
+      }
+    }
+    setState(() {});
   }
 }
 
