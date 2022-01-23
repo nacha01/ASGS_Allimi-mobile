@@ -1427,7 +1427,10 @@ class _StatisticsPageState extends State<StatisticsPage> {
       return;
     }
     if (_selectedDate == '주간') {
+      // print(_startDate.toString());
+      // print(_endDate.toString());
       for (var i = _startDate;; i = i.add(Duration(days: 1))) {
+        print(i.toString());
         if ((count + 1) % 7 == 1) {
           start = i.toString().split(' ')[0];
         }
@@ -1444,7 +1447,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
               size, start.split(' ')[0] + ' ~ ' + end.split(' ')[0], sum));
           sum = 0;
         }
-        if (_endDate.compareTo(i) == 0) {
+        if (_endDate.toString().split(' ')[0] == i.toString().split(' ')[0]) {
           end = i.toString().split(' ')[0];
           _salesRangeWidgetList.add(_salesItemLayout(
               size, start.split(' ')[0] + ' ~ ' + end.split(' ')[0], sum));
@@ -1489,7 +1492,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
       }
     } else if (_selectedDate == '일간') {
       for (var i = _startDate;
-          _endDate.compareTo(i) != 0;
+          _endDate.toString().split(' ')[0] != i.toString().split(' ')[0];
           i = i.add(Duration(days: 1))) {
         int curValue = 0;
         if (index < _salesRangeList.length &&
