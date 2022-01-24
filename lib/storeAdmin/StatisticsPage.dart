@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:ui';
 
 import 'package:asgshighschool/data/user_data.dart';
+import 'package:asgshighschool/storeAdmin/StatisticsGuidePage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -26,7 +27,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
   String _resultExplainText = '';
   String _selectedDate = '전체';
   int _currentTap = 1;
-  int _salesOption = 0; // 0 : 전체, 1 : 구매, 2 : 예약
+  int _salesOption = 0; // 0 : 구매 + 예약, 1 : 구매, 2 : 예약
   bool _isClicked = false;
   bool _noPayedOrder = true;
   bool _noPayedResv = true;
@@ -36,7 +37,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
   bool _firstSelectionInResv = true;
   bool _secondSelectionInResv = false;
   bool _thirdSelectionInResv = false;
-  final List _salesTextList = ['전체', '구매', '예약'];
+  final List _salesTextList = ['구매 + 예약', '구매', '예약'];
   List _orderList = [];
   List _reservationList = [];
   List<ProductCount> _countList = [];
@@ -51,8 +52,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
     4: '핸드메이드'
   };
   final _dateUnitList = ['전체', '일간', '주간', '월간'];
-  TextEditingController _dateController = TextEditingController();
 
+  /// 시작 날짜 및 종료 날짜, 그리고 쿼리 조건문 문자열을 바탕으로 모든 구매 데이터들을 가져오는 요청
   Future<bool> _getAllOrderDataInProduct() async {
     String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_statisticsProduct.php';
@@ -75,7 +76,6 @@ class _StatisticsPageState extends State<StatisticsPage> {
       for (int i = 0; i < map1st.length; ++i) {
         map1st[i] = jsonDecode(map1st[i]);
       }
-
       setState(() {
         _orderList = map1st;
       });
@@ -85,13 +85,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
     }
   }
 
-  DateTime _getStartDate() {
-    var today = DateTime.now();
-    var startPointDate =
-        DateTime(today.year, today.month - int.parse(_dateController.text), 1);
-    return startPointDate;
-  }
-
+  /// 상품 통계에서 예약에 대한 체킹 값들에 따른 쿼리 조건문 문자열을 가져오는 작업
   /// 2^3 = 8가지 경우
   String _getReservationQueryFromSetting() {
     // 미결제 시
@@ -135,7 +129,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
     return 'orderState = 1 AND resv_state = 1';
   }
 
-  /// 2Π3 = 2^3 = 8가지 경우
+  /// 상품 통계에서 구매에 대한 체킹 값들에 따른 쿼리 조건문 문자열을 가져오는 작업
+  /// 2^3 = 8가지 경우
   String _getOrderQueryFromSetting() {
     // 미결제 시
     if (!_noPayedOrder) {
@@ -177,6 +172,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
     return 'orderState => 1 AND resv_state = 0';
   }
 
+  /// 시작 날짜 및 종료 날짜, 그리고 쿼리 조건문 문자열을 바탕으로 모든 예약 데이터들을 가져오는 요청
   Future<bool> _getAllReservationDataInProduct() async {
     String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_statisticsProduct.php';
@@ -208,6 +204,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
     }
   }
 
+  /// Count 데이터를 갖고 있는 리스트들 중 "구매"의 모든 구매수를 더하는 작업
   int _totalBuyCount() {
     int sum = 0;
     for (int i = 0; i < _countList.length; ++i) {
@@ -216,6 +213,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
     return sum;
   }
 
+  /// Count 데이터를 갖고 있는 리스트들 중 "예약"의 모든 예약수를 더하는 작업
   int _totalResvCount() {
     int sum = 0;
     for (int i = 0; i < _countList.length; ++i) {
@@ -224,6 +222,9 @@ class _StatisticsPageState extends State<StatisticsPage> {
     return sum;
   }
 
+  /// 설정한 쿼리문에 따른 구매 데이터와 예약 데이터를 하나의 Map에 데이터를 넣는 작업
+  /// 하나의 Map에 구매수, 예약수, 상품 이름, 카테고리의 Key 데이터가 들어감
+  /// 마무리로 상품 ID를 기준으로 정렬
   void _classifyProduct() {
     _productCountMap = Map();
     for (int i = 0; i < _orderList.length; ++i) {
@@ -256,7 +257,6 @@ class _StatisticsPageState extends State<StatisticsPage> {
             int.parse(_reservationList[i]['quantity']);
       }
     }
-    print(_productCountMap);
     _countList = _productCountMap.entries
         .map((e) => ProductCount(e.key, e.value['pName'], e.value['category'],
             e.value['order'], e.value['resv']))
@@ -264,6 +264,9 @@ class _StatisticsPageState extends State<StatisticsPage> {
     _countList.sort((a, b) => a.pid.compareTo(b.pid));
   }
 
+  /// 시작 날짜와 종료 날짜, 매출 옵션, 날짜 단위 flag 값을 바탕으로 한 매출 데이터를 가져오는 요청
+  /// flag = 0일 때, 전체 요청이므로 단일 데이터
+  /// flag > 0일 때, 날짜 짜르는 요청이므로 복수 데이터
   Future<bool> _getTotalSales(int flag) async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_statisticsSales.php';
     final response = await http.post(url, body: <String, String>{
@@ -290,7 +293,6 @@ class _StatisticsPageState extends State<StatisticsPage> {
         for (int i = 0; i < map1st.length; ++i) {
           map1st[i] = jsonDecode(map1st[i]);
         }
-        print(map1st);
         setState(() {
           _salesRangeList = map1st;
           _getResultListForSalesOnUnit(MediaQuery.of(context).size);
@@ -302,12 +304,14 @@ class _StatisticsPageState extends State<StatisticsPage> {
     }
   }
 
+  /// 시작 날짜와 시작 시간을 합치는 작업
   String _formatStartDateTime() {
     return _startDate.toString().split(' ')[0] +
         ' ' +
         (_startTime == '설정 없음' ? '00:00' : _startTime);
   }
 
+  /// 종료 날짜와 종료 시간을 합치는 작업
   String _formatEndDateTime() {
     return _endDate.toString().split(' ')[0] +
         ' ' +
@@ -343,12 +347,105 @@ class _StatisticsPageState extends State<StatisticsPage> {
     return newStr;
   }
 
+  /// 매출 통계에서 현재 지정한 날짜 단위에 따른 결과를 리스트를 만드는 작업
+  /// 일간 : 하나씩 리스트에 추가
+  /// 주간 : 7일 간격으로 짜르기
+  /// 월간 : 리스트들 중 겹치는 (년, 월) 대로 합치기
+  void _getResultListForSalesOnUnit(Size size) {
+    _salesRangeWidgetList.clear();
+    int sum = 0;
+    String start = '';
+    String end = '';
+    int index = 0;
+    int count = 0;
+    int order = 0;
+    if (_selectedDate == '주간') {
+      for (var i = _startDate;; i = i.add(Duration(days: 1))) {
+        if ((count + 1) % 7 == 1) {
+          start = i.toString().split(' ')[0];
+        }
+        if (index < _salesRangeList.length &&
+            _salesRangeList[index]['date'].toString().split(' ')[0] ==
+                i.toString().split(' ')[0]) {
+          sum += int.parse(_salesRangeList[index++]['total']);
+        } else {
+          sum += 0;
+        }
+        if ((count + 1) % 7 == 0) {
+          end = i.toString().split(' ')[0];
+          _salesRangeWidgetList.add(_salesItemLayout(size,
+              start.split(' ')[0] + ' ~ ' + end.split(' ')[0], sum, order++));
+          sum = 0;
+        }
+        if (_endDate.toString().split(' ')[0] == i.toString().split(' ')[0]) {
+          end = i.toString().split(' ')[0];
+          _salesRangeWidgetList.add(_salesItemLayout(size,
+              start.split(' ')[0] + ' ~ ' + end.split(' ')[0], sum, order++));
+          sum = 0;
+          break;
+        }
+        count++;
+      }
+    } else if (_selectedDate == '월간') {
+      if (_salesRangeList.length == 0) {
+        return;
+      }
+      String curYear = _salesRangeList[0]['date'].toString().split('-')[0];
+      String curMonth = _salesRangeList[0]['date'].toString().split('-')[1];
+      for (int i = 0;; ++i) {
+        if (i == _salesRangeList.length - 1) {
+          sum += int.parse(_salesRangeList[i]['total']);
+          _salesRangeWidgetList.add(_salesItemLayout(
+              size,
+              _salesRangeList[i]['date']
+                      .toString()
+                      .substring(0, 7)
+                      .replaceAll('-', '년 ') +
+                  '월',
+              sum,
+              order++));
+          break;
+        }
+        if (curYear == _salesRangeList[i]['date'].toString().split('-')[0] &&
+            curMonth == _salesRangeList[i]['date'].toString().split('-')[1]) {
+          sum += int.parse(_salesRangeList[i]['total']);
+        } else {
+          _salesRangeWidgetList.add(_salesItemLayout(
+              size,
+              _salesRangeList[i - 1]['date']
+                      .toString()
+                      .substring(0, 7)
+                      .replaceAll('-', '년 ') +
+                  '월',
+              sum,
+              order++));
+          curYear = _salesRangeList[i]['date'].toString().split('-')[0];
+          curMonth = _salesRangeList[i]['date'].toString().split('-')[1];
+          sum = 0;
+          sum += int.parse(_salesRangeList[i]['total']);
+        }
+      }
+    } else if (_selectedDate == '일간') {
+      for (var i = _startDate;
+          _endDate.toString().split(' ')[0] != i.toString().split(' ')[0];
+          i = i.add(Duration(days: 1))) {
+        int curValue = 0;
+        if (index < _salesRangeList.length &&
+            _salesRangeList[index]['date'].toString().split(' ')[0] ==
+                i.toString().split(' ')[0]) {
+          curValue = int.parse(_salesRangeList[index]['total']);
+          index++;
+        }
+        _salesRangeWidgetList.add(_salesItemLayout(
+            size, i.toString().split(' ')[0], curValue, order++));
+      }
+    }
+    setState(() {});
+  }
+
   @override
   void initState() {
     super.initState();
-    print(_formatStartDateTime());
-    print(_formatEndDateTime());
-    // print(_getStartDate().toString());
   }
 
   @override
@@ -369,6 +466,22 @@ class _StatisticsPageState extends State<StatisticsPage> {
               Icons.arrow_back,
               color: Colors.black,
             )),
+        actions: [
+          IconButton(
+            padding: EdgeInsets.all(0),
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => StatisticsGuidePage()));
+            },
+            icon: Icon(
+              Icons.help_outline,
+              color: Colors.black,
+            ),
+            iconSize: 30,
+          )
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -727,6 +840,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                 onChanged: (value) {
                   setState(() {
                     _selectedDate = value;
+                    _isClicked = false;
                   });
                 },
               ),
@@ -740,7 +854,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             Text(
-              '결과 값 기준 설정',
+              '결과 기준',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
             ),
             FlatButton(
@@ -756,11 +870,11 @@ class _StatisticsPageState extends State<StatisticsPage> {
                         ? Icons.check_box
                         : Icons.check_box_outline_blank,
                     color: Colors.blue,
-                    size: 21,
+                    size: 20,
                   ),
                   Text(
-                    ' 전체',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                    ' 구매 + 예약',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                   )
                 ],
               ),
@@ -778,10 +892,10 @@ class _StatisticsPageState extends State<StatisticsPage> {
                           ? Icons.check_box
                           : Icons.check_box_outline_blank,
                       color: Colors.blue,
-                      size: 21),
+                      size: 20),
                   Text(' 구매',
                       style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 13))
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 12))
                 ],
               ),
             ),
@@ -798,10 +912,10 @@ class _StatisticsPageState extends State<StatisticsPage> {
                           ? Icons.check_box
                           : Icons.check_box_outline_blank,
                       color: Colors.blue,
-                      size: 21),
+                      size: 20),
                   Text(' 예약',
                       style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 13))
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 12))
                 ],
               ),
             ),
@@ -882,7 +996,47 @@ class _StatisticsPageState extends State<StatisticsPage> {
                               child: Text('결과 없음'),
                             )
                           : Column(
-                              children: _salesRangeWidgetList,
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          width: 0.3, color: Colors.black)),
+                                  padding: EdgeInsets.all(size.width * 0.01),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Container(
+                                        child: Text(
+                                          'No.',
+                                          style: TextStyle(
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        width: size.width * 0.15,
+                                        alignment: Alignment.center,
+                                      ),
+                                      Container(
+                                          child: Text('날짜',
+                                              style: TextStyle(
+                                                  fontSize: 11,
+                                                  fontWeight: FontWeight.bold)),
+                                          width: size.width * 0.2,
+                                          alignment: Alignment.centerLeft),
+                                      Container(
+                                          child: Text('매출',
+                                              style: TextStyle(
+                                                  fontSize: 11,
+                                                  fontWeight: FontWeight.bold)),
+                                          width: size.width * 0.2,
+                                          alignment: Alignment.centerLeft)
+                                    ],
+                                  ),
+                                ),
+                                Column(
+                                  children: _salesRangeWidgetList,
+                                ),
+                              ],
                             )
                 ],
               )
@@ -1296,7 +1450,12 @@ class _StatisticsPageState extends State<StatisticsPage> {
   }
 
   Widget _buyerTapLayout(Size size) {
-    return SizedBox();
+    return Center(
+      child: Text(
+        '준비 중입니다..',
+        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+      ),
+    );
   }
 
   Widget _setLayoutAccordingToTap(Size size) {
@@ -1377,7 +1536,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
     );
   }
 
-  Widget _salesItemLayout(Size size, String rangeDate, int momentSale) {
+  Widget _salesItemLayout(
+      Size size, String rangeDate, int momentSale, int index) {
     return Container(
       width: size.width,
       decoration: BoxDecoration(
@@ -1388,9 +1548,16 @@ class _StatisticsPageState extends State<StatisticsPage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
+          Text(
+            '${index + 1}',
+            style: TextStyle(
+                color: Colors.green, fontWeight: FontWeight.bold, fontSize: 13),
+          ),
           Container(
-            padding: EdgeInsets.all(size.width * 0.015),
-            color: Colors.orange,
+            padding: EdgeInsets.all(size.width * 0.02),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                color: Colors.grey[200]),
             child: Text(
               rangeDate,
               style: TextStyle(
@@ -1403,7 +1570,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
             child: Container(
               padding: EdgeInsets.all(size.width * 0.015),
               width:
-                  _selectedDate == '주간' ? size.width * 0.3 : size.width * 0.5,
+                  _selectedDate == '주간' ? size.width * 0.3 : size.width * 0.45,
               alignment: Alignment.center,
               child: Text(
                 _formatPrice(momentSale) + '원',
@@ -1414,98 +1581,6 @@ class _StatisticsPageState extends State<StatisticsPage> {
         ],
       ),
     );
-  }
-
-  void _getResultListForSalesOnUnit(Size size) {
-    _salesRangeWidgetList.clear();
-    int sum = 0;
-    String start = '';
-    String end = '';
-    int index = 0;
-    int count = 0;
-    if (_salesRangeList.length == 0) {
-      return;
-    }
-    if (_selectedDate == '주간') {
-      // print(_startDate.toString());
-      // print(_endDate.toString());
-      for (var i = _startDate;; i = i.add(Duration(days: 1))) {
-        print(i.toString());
-        if ((count + 1) % 7 == 1) {
-          start = i.toString().split(' ')[0];
-        }
-        if (index < _salesRangeList.length &&
-            _salesRangeList[index]['date'].toString().split(' ')[0] ==
-                i.toString().split(' ')[0]) {
-          sum += int.parse(_salesRangeList[index++]['total']);
-        } else {
-          sum += 0;
-        }
-        if ((count + 1) % 7 == 0) {
-          end = i.toString().split(' ')[0];
-          _salesRangeWidgetList.add(_salesItemLayout(
-              size, start.split(' ')[0] + ' ~ ' + end.split(' ')[0], sum));
-          sum = 0;
-        }
-        if (_endDate.toString().split(' ')[0] == i.toString().split(' ')[0]) {
-          end = i.toString().split(' ')[0];
-          _salesRangeWidgetList.add(_salesItemLayout(
-              size, start.split(' ')[0] + ' ~ ' + end.split(' ')[0], sum));
-          sum = 0;
-          break;
-        }
-        count++;
-      }
-    } else if (_selectedDate == '월간') {
-      String curYear = _salesRangeList[0]['date'].toString().split('-')[0];
-      String curMonth = _salesRangeList[0]['date'].toString().split('-')[1];
-      for (int i = 0;; ++i) {
-        if (i == _salesRangeList.length - 1) {
-          sum += int.parse(_salesRangeList[i]['total']);
-          _salesRangeWidgetList.add(_salesItemLayout(
-              size,
-              _salesRangeList[i]['date']
-                      .toString()
-                      .substring(0, 7)
-                      .replaceAll('-', '년 ') +
-                  '월',
-              sum));
-          break;
-        }
-        if (curYear == _salesRangeList[i]['date'].toString().split('-')[0] &&
-            curMonth == _salesRangeList[i]['date'].toString().split('-')[1]) {
-          sum += int.parse(_salesRangeList[i]['total']);
-        } else {
-          _salesRangeWidgetList.add(_salesItemLayout(
-              size,
-              _salesRangeList[i - 1]['date']
-                      .toString()
-                      .substring(0, 7)
-                      .replaceAll('-', '년 ') +
-                  '월',
-              sum));
-          curYear = _salesRangeList[i]['date'].toString().split('-')[0];
-          curMonth = _salesRangeList[i]['date'].toString().split('-')[1];
-          sum = 0;
-          sum += int.parse(_salesRangeList[i]['total']);
-        }
-      }
-    } else if (_selectedDate == '일간') {
-      for (var i = _startDate;
-          _endDate.toString().split(' ')[0] != i.toString().split(' ')[0];
-          i = i.add(Duration(days: 1))) {
-        int curValue = 0;
-        if (index < _salesRangeList.length &&
-            _salesRangeList[index]['date'].toString().split(' ')[0] ==
-                i.toString().split(' ')[0]) {
-          curValue = int.parse(_salesRangeList[index]['total']);
-          index++;
-        }
-        _salesRangeWidgetList
-            .add(_salesItemLayout(size, i.toString().split(' ')[0], curValue));
-      }
-    }
-    setState(() {});
   }
 }
 
