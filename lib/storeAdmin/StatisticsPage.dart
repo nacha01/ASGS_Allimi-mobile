@@ -17,33 +17,34 @@ class StatisticsPage extends StatefulWidget {
 }
 
 class _StatisticsPageState extends State<StatisticsPage> {
-  DateTime _startDate = DateTime.now();
-  DateTime _endDate = DateTime.now().add(Duration(days: 1));
-  String _startTime = '설정 없음';
-  String _endTime = '설정 없음';
-  String _currentOrderQuery = '';
-  String _currentReservationQuery = '';
-  String _salesValue = '';
-  String _resultExplainText = '';
-  String _selectedDate = '전체';
-  int _currentTap = 1;
+  DateTime _startDate = DateTime.now(); // 시작 날짜
+  DateTime _endDate = DateTime.now().add(Duration(days: 1)); // 종료 날짜
+  String _startTime = '설정 없음'; // 시작 시간
+  String _endTime = '설정 없음'; // 종료 시간
+  String _currentOrderQuery = ''; // 구매에 대한 쿼리 조건문 문자열
+  String _currentReservationQuery = ''; // 예약에 대한 쿼리 조건문 문자열
+  String _salesValue = ''; // "전체"의 경우 저장되는 총 매출 문자열
+  String _resultExplainText = ''; // 조회하기 버튼 클릭 시 결과를 설명하는 문자열
+  String _selectedDate = '전체'; // 매출 통계에서 DropdownButton에서 현재 선택한 값
+  int _currentTap = 1; // 현재 탭
   int _salesOption = 0; // 0 : 구매 + 예약, 1 : 구매, 2 : 예약
-  bool _isClicked = false;
-  bool _noPayedOrder = true;
-  bool _noPayedResv = true;
-  bool _firstSelectionInOrder = true;
-  bool _secondSelectionInOrder = false;
-  bool _thirdSelectionInOrder = false;
-  bool _firstSelectionInResv = true;
-  bool _secondSelectionInResv = false;
-  bool _thirdSelectionInResv = false;
-  final List _salesTextList = ['구매 + 예약', '구매', '예약'];
-  List _orderList = [];
-  List _reservationList = [];
-  List<ProductCount> _countList = [];
-  List _salesRangeList = [];
-  List<Widget> _salesRangeWidgetList = [];
-  Map<int, Map> _productCountMap = Map();
+  int _selectRadio = 0; // 정렬 라디오 버튼에서 선택한 값
+  bool _isClicked = false; // 조회하기 버튼 클릭 여부
+  bool _noPayedOrder = true; // 상품 통계에서 구매에 대한 미결제 & 결제 체크박스 판단
+  bool _noPayedResv = true; // 상품 통계에서 예약에 대한 미결제 & 결제 체크박스 판단
+  bool _firstSelectionInOrder = true; // 결제 완료 체크박스
+  bool _secondSelectionInOrder = false; // 주문 처리 중 체크박스
+  bool _thirdSelectionInOrder = false; // 수령 완료(구매) 체크박스
+  bool _firstSelectionInResv = true; // 예약 중 체크박스
+  bool _secondSelectionInResv = false; // 예약 완료 체크박스
+  bool _thirdSelectionInResv = false; // 수령 완료(예약) 체크박스
+  bool _isAsc = true; // 오름차순(true), 내림차순(false) 판단,
+  List _orderList = []; // 요청으로 받아온 구매 데이터 리스트
+  List _reservationList = []; // 요청으로 받아온 예약 데이터 리스트
+  List<ProductCount> _countList = []; // 구매와 예약에 대한 데이터를 분류 및 조합한 최종 리스트
+  List _salesRangeList = []; // 매출 통계에서 "전체"가 아닌 단위로 요청 시 담기는 데이터 리스트
+  List<Widget> _salesRangeWidgetList = []; // 위의 리스트의 레이아웃 아이템을 담는 리스트
+  Map<int, Map> _productCountMap = Map(); // 데이터 분류 과정에서 사용되는 Map 데이터
   final Map<int, String> _categoryReverseMap = {
     0: '음식류',
     1: '간식류',
@@ -51,7 +52,9 @@ class _StatisticsPageState extends State<StatisticsPage> {
     3: '문구류',
     4: '핸드메이드'
   };
-  final _dateUnitList = ['전체', '일간', '주간', '월간'];
+  final List _dateUnitList = ['전체', '일간', '주간', '월간'];
+  final List _salesTextList = ['구매 + 예약', '구매', '예약'];
+  final List _sortTitleList = ['등록순(ID순)', '이름순', '구매순', '예약순'];
 
   /// 시작 날짜 및 종료 날짜, 그리고 쿼리 조건문 문자열을 바탕으로 모든 구매 데이터들을 가져오는 요청
   Future<bool> _getAllOrderDataInProduct() async {
@@ -443,9 +446,25 @@ class _StatisticsPageState extends State<StatisticsPage> {
     setState(() {});
   }
 
-  @override
-  void initState() {
-    super.initState();
+  /// 상품 통계에서 조회한 결과에 대해서 [sortMethod] 값에 따라 리스트르 정렬해주는 작업
+  void _sortProductResultByIndex(int sortMethod) {
+    _isAsc = true;
+    switch (sortMethod) {
+      case 0:
+        _countList.sort((a, b) => a.pid.compareTo(b.pid));
+        break;
+      case 1:
+        _countList.sort((a, b) => a.name.compareTo(b.name));
+        break;
+      case 2:
+        _countList.sort((a, b) => a.orderCount.compareTo(b.orderCount));
+        break;
+      case 3:
+        _countList
+            .sort((a, b) => a.reservationCount.compareTo(b.reservationCount));
+        break;
+    }
+    setState(() {});
   }
 
   @override
@@ -515,6 +534,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                     setState(() {
                       _isClicked = false;
                       _currentTap = 2;
+                      _isAsc = true;
                     });
                   },
                   child: Container(
@@ -1301,6 +1321,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                   _classifyProduct();
                   setState(() {
                     _isClicked = true;
+                    _isAsc = true;
                     _resultExplainText = _formatStartDateTime() +
                         " ~ " +
                         _formatEndDateTime() +
@@ -1352,6 +1373,87 @@ class _StatisticsPageState extends State<StatisticsPage> {
                 ],
               )
             : SizedBox(),
+        _isClicked
+            ? Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      setState(() {
+                        _isAsc = !_isAsc;
+                        _countList = List.from(_countList.reversed);
+                      });
+                    },
+                    padding: EdgeInsets.all(0),
+                    icon: Icon(_isAsc
+                        ? Icons.arrow_circle_up
+                        : Icons.arrow_circle_down),
+                    iconSize: 26,
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                                shape: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                title: Center(
+                                  child: Text(
+                                    '조회 결과 정렬 기준 선택',
+                                    style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                content: StatefulBuilder(
+                                  builder: (context, setState) {
+                                    return Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: List.generate(
+                                          _sortTitleList.length, (index) {
+                                        return RadioListTile<int>(
+                                            value: index,
+                                            groupValue: _selectRadio,
+                                            onChanged: (value) {
+                                              setState(() {
+                                                _selectRadio = value;
+                                              });
+                                              _sortProductResultByIndex(
+                                                  _selectRadio);
+                                              Navigator.pop(context);
+                                            },
+                                            title: Center(
+                                              child: Text(
+                                                _sortTitleList[index],
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 13),
+                                              ),
+                                            ));
+                                      }),
+                                    );
+                                  },
+                                ),
+                              ));
+                    },
+                    icon: Icon(Icons.sort),
+                    iconSize: 26,
+                    padding: EdgeInsets.all(0),
+                  ),
+                  Text(
+                    '[${_sortTitleList[_selectRadio]}]',
+                    style: TextStyle(
+                        fontSize: 11,
+                        color: Colors.grey,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(
+                    width: size.width * 0.01,
+                  )
+                ],
+              )
+            : SizedBox(),
         Container(
           padding: EdgeInsets.all(size.width * 0.01),
           decoration: BoxDecoration(
@@ -1359,10 +1461,10 @@ class _StatisticsPageState extends State<StatisticsPage> {
           child: Row(
             children: [
               Container(
-                child: Text('상품번호',
+                child: Text('상품번호(ID)',
                     style:
                         TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
-                width: size.width * 0.18,
+                width: size.width * 0.2,
                 alignment: Alignment.center,
               ),
               Container(
