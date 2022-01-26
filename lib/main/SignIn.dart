@@ -708,8 +708,7 @@ class _SignInPageState extends State<SignInPage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  FlatButton(
-                    padding: EdgeInsets.all(0),
+                  TextButton(
                     onPressed: () {
                       Navigator.push(
                           context,
@@ -727,7 +726,9 @@ class _SignInPageState extends State<SignInPage> {
                         Text(
                           '버그 제보하기',
                           style: TextStyle(
-                              fontSize: 10, fontWeight: FontWeight.bold),
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black),
                         ),
                       ],
                     ),

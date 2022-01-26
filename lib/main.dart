@@ -8,8 +8,22 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'main/SplashPage.dart';
+import 'package:http/http.dart' as http;
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey();
+
+Future<void> _sendErrorReport(String message) async {
+  String url = 'http://nacha01.dothome.co.kr/sin/arlimi_addReport.php';
+  final response = await http.post(url, body: <String, String>{
+    'errorMessage': message,
+    'date': DateTime.now().toString(),
+    'extra': '',
+    'isRunning': '1'
+  });
+  if (response.statusCode == 200) {
+    print('성공');
+  }
+}
 
 void main() {
   runZoned(() {
@@ -32,7 +46,7 @@ void main() {
           context: navigatorKey.currentContext,
           builder: (context) => AlertDialog(
                 title: Text(
-                  '에러 메세지 (버그 제보 바랍니다)',
+                  '예상치 못한 에러 발생',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 content: Text(
@@ -40,11 +54,13 @@ void main() {
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 actions: [
-                  FlatButton(
-                    onPressed: () => Navigator.pop(navigatorKey.currentContext),
-                    child: Text('확인',
+                  TextButton(
+                    onPressed: () async {
+                      await _sendErrorReport(e.toString());
+                      Navigator.pop(navigatorKey.currentContext);
+                    },
+                    child: Text('보고하기',
                         style: TextStyle(fontWeight: FontWeight.bold)),
-                    padding: EdgeInsets.all(0),
                   )
                 ],
               ));
