@@ -61,6 +61,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
     String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_statisticsProduct.php';
     _currentOrderQuery = _getOrderQueryFromSetting();
+    print('order $_currentOrderQuery');
     final response = await http.post(url, body: <String, String>{
       'flag': '0',
       'start': _formatStartDateTime(),
@@ -75,6 +76,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
               '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
               '')
           .trim();
+      print(result);
       List map1st = jsonDecode(result);
       for (int i = 0; i < map1st.length; ++i) {
         map1st[i] = jsonDecode(map1st[i]);
@@ -119,7 +121,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
     } else if (!_firstSelectionInResv &&
         _secondSelectionInResv &&
         _thirdSelectionInResv) {
-      return '(orderState >= 2 AND orderState <= 2) AND resv_state = 2';
+      return '(orderState >= 2 AND orderState <= 3) AND resv_state = 2';
     } else if (_firstSelectionInResv &&
         !_secondSelectionInResv &&
         _thirdSelectionInResv) {
@@ -129,6 +131,13 @@ class _StatisticsPageState extends State<StatisticsPage> {
         _thirdSelectionInResv) {
       return 'orderState >= 1 AND resv_state >= 1';
     }
+    setState(() {
+      _firstSelectionInResv = true;
+      _secondSelectionInResv = false;
+      _secondSelectionInResv = false;
+    });
+    Fluttertoast.showToast(
+        msg: '예약 설정에는 반드시 한개라도 체크가 되어 있어야 합니다. 자동으로 기본 체크 값으로 조회됩니다.');
     return 'orderState = 1 AND resv_state = 1';
   }
 
@@ -170,9 +179,16 @@ class _StatisticsPageState extends State<StatisticsPage> {
     } else if (_firstSelectionInOrder &&
         _secondSelectionInOrder &&
         _thirdSelectionInOrder) {
-      return 'orderState >= 1 AND resv_state = 0';
+      return 'orderState = 1 AND resv_state = 0';
     }
-    return 'orderState => 1 AND resv_state = 0';
+    setState(() {
+      _firstSelectionInOrder = true;
+      _secondSelectionInOrder = false;
+      _thirdSelectionInOrder = false;
+    });
+    Fluttertoast.showToast(
+        msg: '구매 설정에는 반드시 체크가 되어 있어야 합니다. 자동으로 기본 체크 값으로 조회됩니다.');
+    return 'orderState >= 1 AND resv_state = 0';
   }
 
   /// 시작 날짜 및 종료 날짜, 그리고 쿼리 조건문 문자열을 바탕으로 모든 예약 데이터들을 가져오는 요청
@@ -180,6 +196,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
     String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_statisticsProduct.php';
     _currentReservationQuery = _getReservationQueryFromSetting();
+    print('reservation $_currentReservationQuery');
     final response = await http.post(url, body: <String, String>{
       'flag': '1',
       'start': _formatStartDateTime(),
