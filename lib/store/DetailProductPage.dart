@@ -36,7 +36,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
     3: '문구류',
     4: '핸드메이드'
   };
-  bool _isDiscountZero; // 할인율이 0.0%인지 아닌지 판단
+  bool _isDiscountZero = false; // 할인율이 0.0%인지 아닌지 판단
   int _count = 1; // 버튼으로 누른 수량
   bool _isCart = false; // 장바구니에 담았는지 판단
   bool _isClicked = false; // 구매하기 버튼을 눌렀는지 판단
@@ -99,8 +99,6 @@ class _DetailProductPageState extends State<DetailProductPage> {
   /// 상품을 장바구니에 추가하는 요청을 하는 작업
   /// @response : 성공 시, '1' or 'Already Exists1'
   Future<bool> _addCartProductRequest() async {
-    print(_optionString);
-    print(_additionalPrice);
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_addCart.php';
     final response = await http.post(url, body: <String, String>{
       'uid': widget.user.uid,
@@ -116,7 +114,6 @@ class _DetailProductPageState extends State<DetailProductPage> {
               '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
               '')
           .trim();
-      print(replace);
       if (replace != '1' && replace != 'Already Exists1') {
         _errorMessage = replace;
         return false;
@@ -138,7 +135,6 @@ class _DetailProductPageState extends State<DetailProductPage> {
               '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
               '')
           .trim();
-      print(result);
       if (result == 'NO OPTION') {
         _hasOption = false;
       } else {
@@ -156,8 +152,8 @@ class _DetailProductPageState extends State<DetailProductPage> {
         for (int i = 0; i < _optionList.length; ++i) {
           _selectedOptionIndex.add(-1);
         }
-        setState(() {});
       }
+      setState(() {});
       return true;
     } else {
       return false;
@@ -198,7 +194,6 @@ class _DetailProductPageState extends State<DetailProductPage> {
             style: TextStyle(color: Colors.black, fontSize: 16),
           ),
           centerTitle: true,
-          elevation: 0,
           backgroundColor: Color(0xFF9EE1E5),
           leading: IconButton(
             icon: Icon(
@@ -604,7 +599,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                           ),
                         ),
                         GestureDetector(
-                          onTap: () {
+                          onTap: () async {
                             if (_count < 1 || widget.product.stockCount < 1) {
                               Fluttertoast.showToast(
                                   msg: '상품의 재고가 없어 결제할 수가 없습니다!',
@@ -612,7 +607,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                                   toastLength: Toast.LENGTH_SHORT);
                               return;
                             }
-                            Navigator.pushReplacement(
+                            Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => OrderPage(
@@ -622,6 +617,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                                           cart: null,
                                           optionList: _optionList,
                                           selectList: _selectedOptionIndex,
+                                          additionalPrice: _optionSummation(),
                                         )));
                           },
                           child: Container(

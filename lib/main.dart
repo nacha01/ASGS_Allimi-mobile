@@ -1,6 +1,7 @@
 //https://github.com/railsgem/FlutterTutorial/tree/master/03_flutter_firebase_push_notification
 
 import 'dart:async';
+import 'dart:developer';
 import 'dart:ui';
 import 'package:asgshighschool/data/exist_cart.dart';
 import 'package:asgshighschool/data/renewUser_data.dart';
@@ -44,7 +45,8 @@ void main() {
     try {
       showDialog(
           context: navigatorKey.currentContext,
-          builder: (context) => AlertDialog(
+          builder: (context) =>
+              AlertDialog(
                 title: Text(
                   '예상치 못한 에러 발생',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -65,6 +67,6 @@ void main() {
                 ],
               ));
     } catch (e) {}
-    print('Error occurred [runZoned] : ${e.toString()}');
+    log('Error occurred [runZoned] : $e ');
   });
 }

@@ -5,6 +5,7 @@ import 'package:asgshighschool/data/exist_cart.dart';
 import 'package:asgshighschool/data/product_data.dart';
 import 'package:asgshighschool/data/user_data.dart';
 import 'package:asgshighschool/store/PaymentCompletePage.dart';
+import 'package:asgshighschool/store/PaymentWebViewPage.dart';
 import 'package:asgshighschool/store/StoreMainPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -252,7 +253,7 @@ class _OrderPageState extends State<OrderPage> {
               '')
           .trim();
       Map p = json.decode(result);
-      if (widget.direct.stockCount >= int.parse(p['stockCount'])) {
+      if (widget.productCount <= int.parse(p['stockCount'])) {
         _checkMessage = '성공적으로 처리가 완료되었습니다.';
         return true;
       } else {
@@ -480,7 +481,28 @@ class _OrderPageState extends State<OrderPage> {
                             fontSize: 12,
                             color: Colors.black54)),
                     SizedBox(
-                      height: size.height * 0.03,
+                      height: size.height * 0.01,
+                    ),
+                    Row(
+                      children: [
+                        SizedBox(
+                          width: size.width * 0.05,
+                        ),
+                        Icon(
+                          Icons.radio_button_checked,
+                          color: Colors.grey,
+                        ),
+                        Text(
+                          '   신용카드',
+                          style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold),
+                        )
+                      ],
+                    ),
+                    SizedBox(
+                      height: size.height * 0.02,
                     ),
                     Divider(
                       thickness: 0.5,
@@ -610,13 +632,50 @@ class _OrderPageState extends State<OrderPage> {
                       ),
                     ),
                     SizedBox(
-                      height: size.height * 0.03,
+                      height: size.height * 0.02,
+                    ),
+                    Container(
+                      padding: EdgeInsets.all(size.width * 0.025),
+                      color: Colors.grey[200],
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '회사 정보',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 11),
+                          ),
+                          SizedBox(
+                            height: size.height * 0.005,
+                          ),
+                          Text(
+                            '사업자 번호: 1350-82-17822',
+                            style: TextStyle(color: Colors.grey, fontSize: 10),
+                          ),
+                          Text('회사명: 안산강서고등학교 교육경제공동체 사회적협동조합',
+                              style:
+                                  TextStyle(color: Colors.grey, fontSize: 10)),
+                          Text('대표자: 김은미',
+                              style:
+                                  TextStyle(color: Colors.grey, fontSize: 10)),
+                          Text(
+                              '위치: 경기도 안산시 단원구 와동 삼일로 367, 5층 공작관 다목적실 (안산강서고등학교)',
+                              style:
+                                  TextStyle(color: Colors.grey, fontSize: 10)),
+                          Text('대표 전화: 031-485-9742',
+                              style:
+                                  TextStyle(color: Colors.grey, fontSize: 10)),
+                          Text('대표 이메일: asgscoop@naver.com',
+                              style:
+                                  TextStyle(color: Colors.grey, fontSize: 10))
+                        ],
+                      ),
                     ),
                   ],
                 ),
               ),
             ),
-            FlatButton(
+            TextButton(
               onPressed: () async {
                 await showDialog(
                     context: context,
@@ -624,34 +683,27 @@ class _OrderPageState extends State<OrderPage> {
                       Future.delayed(Duration(milliseconds: 500),
                           () => Navigator.pop(ctx));
                       return AlertDialog(
-                        title: Text('동기화 및 재고 점검중'),
+                        title: Padding(
+                          padding: EdgeInsets.all(size.width * 0.015),
+                          child: Text(
+                            '동기화 및 재고 점검중',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                        ),
                         content: LinearProgressIndicator(),
                         shape: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide:
-                                BorderSide(color: Colors.black, width: 2)),
+                                BorderSide(color: Colors.black, width: 1)),
                       );
                     });
-
                 bool syncChk = false;
                 if (_isCart) {
                   syncChk = await _checkSynchronousStockCountForCart();
                 } else {
                   syncChk = await _checkSynchronousStockCountForProduct();
                 }
-                await showDialog(
-                    context: context,
-                    builder: (ctx) {
-                      Future.delayed(Duration(milliseconds: 1000),
-                          () => Navigator.pop(ctx));
-                      return AlertDialog(
-                        title: Text(_checkMessage),
-                        shape: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide:
-                                BorderSide(color: Colors.black, width: 2)),
-                      );
-                    });
 
                 if (!syncChk) {
                   return;
@@ -668,24 +720,34 @@ class _OrderPageState extends State<OrderPage> {
                   Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => PaymentCompletePage(
-                                result: {'orderID': _generatedOID},
+                          builder: (context) => PaymentWebViewPage(
                                 totalPrice: ((_getOriginTotalPrice() -
-                                    _getTotalDiscount())),
+                                        _getTotalDiscount()) +
+                                    _additionalPrice * widget.productCount),
+                                oID: _generatedOID,
+                                productName: widget.direct.prodName,
                               )));
+                  // Navigator.pushReplacement(
+                  //     context,
+                  //     MaterialPageRoute(
+                  //         builder: (context) => PaymentCompletePage(
+                  //               result: {'orderID': _generatedOID},
+                  //               totalPrice: ((_getOriginTotalPrice() -
+                  //                   _getTotalDiscount())),
+                  //             )));
                 }
               },
               child: Container(
                 alignment: Alignment.center,
-                height: size.height * 0.05,
-                margin: EdgeInsets.all(12),
+                height: size.height * 0.045,
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(9),
+                    borderRadius: BorderRadius.circular(8),
                     color: Color(0xFF9EE1E5)),
                 width: size.width,
                 child: Text(
                   '${_formatPrice((_getOriginTotalPrice() - _getTotalDiscount()))} 원 결제 및 구매하기',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.black),
                 ),
               ),
             )

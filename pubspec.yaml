@@ -43,7 +43,7 @@ dependencies:
   cloud_firestore: ^0.13.7
 
   # Payment
-  iamport_flutter: ^0.9.12
+  iamport_flutter: ^0.9.15
 
   # WebView
   webview_flutter: ^0.3.22+1
@@ -58,6 +58,14 @@ dependencies:
   badges: ^2.0.1
   qr_flutter: ^4.0.0
   qr_code_scanner: ^0.4.0
+
+  # for payment
+  crypto: ^3.0.1
+  hex: ^0.2.0
+  flutter_inappwebview: ^5.0.5
+  cp949: ^1.2.1
+  url_launcher: ^5.1.1
+
   #The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.3
