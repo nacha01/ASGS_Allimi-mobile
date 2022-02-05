@@ -104,6 +104,11 @@ class _ReportBugPageState extends State<ReportBugPage> {
               child: Text('- 버튼등 클릭, 터치가 안되는 경우',
                   style: TextStyle(fontSize: 12, color: Colors.red)),
             ),
+            Padding(
+              padding: EdgeInsets.all(size.width * 0.01),
+              child: Text('- 화면 전체가 빨간색 배경이 상단에 작은 영어가 적혀 있는 경우',
+                  style: TextStyle(fontSize: 12, color: Colors.red)),
+            ),
             Divider(
               thickness: 1,
             ),
