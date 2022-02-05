@@ -85,8 +85,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.15.0"
+  cp949:
+    dependency: "direct main"
+    description:
+      name: cp949
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.2.1"
   crypto:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: crypto
       url: "https://pub.dartlang.org"
@@ -195,6 +202,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.2"
+  flutter_inappwebview:
+    dependency: "direct main"
+    description:
+      name: flutter_inappwebview
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "5.3.2"
   flutter_local_notifications:
     dependency: "direct main"
     description:
@@ -289,6 +303,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.9.2"
+  hex:
+    dependency: "direct main"
+    description:
+      name: hex
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.0"
   http:
     dependency: transitive
     description:
@@ -309,7 +330,7 @@ packages:
       name: iamport_flutter
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.9.13"
+    version: "0.9.15"
   image:
     dependency: transitive
     description:
@@ -652,7 +673,7 @@ packages:
     source: hosted
     version: "0.4.0"
   url_launcher:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: url_launcher
       url: "https://pub.dartlang.org"
