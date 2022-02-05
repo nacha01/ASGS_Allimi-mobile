@@ -481,7 +481,28 @@ class _OrderPageState extends State<OrderPage> {
                             fontSize: 12,
                             color: Colors.black54)),
                     SizedBox(
-                      height: size.height * 0.03,
+                      height: size.height * 0.01,
+                    ),
+                    Row(
+                      children: [
+                        SizedBox(
+                          width: size.width * 0.05,
+                        ),
+                        Icon(
+                          Icons.radio_button_checked,
+                          color: Colors.grey,
+                        ),
+                        Text(
+                          '   신용카드',
+                          style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold),
+                        )
+                      ],
+                    ),
+                    SizedBox(
+                      height: size.height * 0.02,
                     ),
                     Divider(
                       thickness: 0.5,
@@ -611,13 +632,50 @@ class _OrderPageState extends State<OrderPage> {
                       ),
                     ),
                     SizedBox(
-                      height: size.height * 0.03,
+                      height: size.height * 0.02,
+                    ),
+                    Container(
+                      padding: EdgeInsets.all(size.width * 0.025),
+                      color: Colors.grey[200],
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '회사 정보',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 11),
+                          ),
+                          SizedBox(
+                            height: size.height * 0.005,
+                          ),
+                          Text(
+                            '사업자 번호: 1350-82-17822',
+                            style: TextStyle(color: Colors.grey, fontSize: 10),
+                          ),
+                          Text('회사명: 안산강서고등학교 교육경제공동체 사회적협동조합',
+                              style:
+                                  TextStyle(color: Colors.grey, fontSize: 10)),
+                          Text('대표자: 김은미',
+                              style:
+                                  TextStyle(color: Colors.grey, fontSize: 10)),
+                          Text(
+                              '위치: 경기도 안산시 단원구 와동 삼일로 367, 5층 공작관 다목적실 (안산강서고등학교)',
+                              style:
+                                  TextStyle(color: Colors.grey, fontSize: 10)),
+                          Text('대표 전화: 031-485-9742',
+                              style:
+                                  TextStyle(color: Colors.grey, fontSize: 10)),
+                          Text('대표 이메일: asgscoop@naver.com',
+                              style:
+                                  TextStyle(color: Colors.grey, fontSize: 10))
+                        ],
+                      ),
                     ),
                   ],
                 ),
               ),
             ),
-            FlatButton(
+            TextButton(
               onPressed: () async {
                 await showDialog(
                     context: context,
@@ -681,15 +739,15 @@ class _OrderPageState extends State<OrderPage> {
               },
               child: Container(
                 alignment: Alignment.center,
-                height: size.height * 0.05,
-                margin: EdgeInsets.all(12),
+                height: size.height * 0.045,
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(9),
+                    borderRadius: BorderRadius.circular(8),
                     color: Color(0xFF9EE1E5)),
                 width: size.width,
                 child: Text(
                   '${_formatPrice((_getOriginTotalPrice() - _getTotalDiscount()))} 원 결제 및 구매하기',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.black),
                 ),
               ),
             )
