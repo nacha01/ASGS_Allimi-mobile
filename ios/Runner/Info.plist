@@ -49,7 +49,54 @@
 		<true/>
 		<key>NSAllowsArbitraryLoadsInWebContent</key>
 		<true/>
+		<key>NSExceptionDomains</key>
+		    <dict>
+		        <key>NSIncludesSubdomains</key>
+		        <true/>
+		        <key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
+		        <true/>
+		        <key>NSTemporaryExceptionMinimumTLSVersion</key>
+		        <string>TLSv1.1</string>
+		    </dict>
 	</dict>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>kftc-bankpay</string>
+		<string>ispmobile</string>
+		<string>shinhan-sr-ansimclick</string>
+		<string>smshinhanansimclick</string>
+		<string>hdcardappcardansimclick</string>
+		<string>smhyundaiansimclick</string>
+		<string>mpocket.online.ansimclick</string>
+		<string>scardcertiapp</string>
+		<string>cloudpay</string>
+		<string>nhappcardansimclick</string>
+		<string>nonghyupcardansimclick</string>
+		<string>kb-acp</string>
+		<string>lotteappcard</string>
+		<string>lottesmartpay</string>
+		<string>citispay</string>
+		<string>shinsegaeeasypayment</string>
+		<string>kakaotalk</string>
+		<string>tswansimclick</string>
+		<string>nhallonepayansimclick</string>
+		<string>citimoblieapp</string>
+		<string>payco</string>
+		<string>hanaskcardmoblieportal</string>
+		<string>wooripay</string>
+		<string>lpayapp</string>
+		<string>hanawalletmembers</string>
+		<string>tauthlink</string>
+		<string>ktauthexternalcall</string>
+		<string>upluscorporation</string>
+		<string>liivbank</string>
+		<string>kb-bankpay</string>
+		<string>naversearchthirdlogin</string>
+		<string>lmslpay</string>
+		<string>com.wooricard.wcard</string>
+		<string>https</string>
+		<string>http</string>
+	</array>
 	<key>NSCameraUsageDescription</key>
 	<string>카메라에 접근하기위한 권한이 필요합니다.</string>
 	<key>NSHumanReadableCopyright</key>
