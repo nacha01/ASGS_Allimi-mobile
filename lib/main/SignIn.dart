@@ -487,7 +487,7 @@ class _SignInPageState extends State<SignInPage> {
     return SingleChildScrollView(
       child: Container(
         width: size.width,
-        height: size.height * 0.92,
+        height: size.height * 0.95,
         decoration: BoxDecoration(
             gradient: LinearGradient(
           colors: [Color(0xFFF9F7F8), Color(0xFFF9F7F8), Colors.lightBlue[100]],
@@ -746,7 +746,7 @@ class _SignInPageState extends State<SignInPage> {
     return SingleChildScrollView(
       child: Container(
         width: size.width,
-        height: size.height * 0.92,
+        height: size.height * 0.95,
         decoration: BoxDecoration(
             gradient: LinearGradient(
           colors: [Color(0xFFF9F7F8), Color(0xFFF9F7F8), Colors.lightBlue[100]],
