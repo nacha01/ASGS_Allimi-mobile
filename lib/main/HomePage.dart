@@ -12,7 +12,6 @@ import '../store/StoreSplashPage.dart';
 import 'SettingPage.dart';
 import '../data/user_data.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -569,8 +568,6 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 FlatButton(
                     onPressed: () {
                       Navigator.pop(context, true);
-                      if (FirebaseAuth.instance != null)
-                        FirebaseAuth.instance.signOut();
                     },
                     child: Text('예',
                         style: TextStyle(fontWeight: FontWeight.bold))),
@@ -639,9 +636,6 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                   actions: [
                                     FlatButton(
                                         onPressed: () async {
-                                          if (FirebaseAuth.instance != null)
-                                            await FirebaseAuth.instance
-                                                .signOut();
                                           exit(0);
                                         },
                                         child: Text('예')),

@@ -144,10 +144,10 @@ class _SignInPageState extends State<SignInPage> {
   _loadLoginInfo() async {
     _pref = await SharedPreferences.getInstance();
     setState(() {
-      _isChecked = _pref.getBool('checked') ?? false;
+      _isChecked = _pref?.getBool('checked') ?? false;
       if (_isChecked) {
-        _idController.text = _pref.getString('uid') ?? '';
-        _passwordController.text = _pref.getString('password') ?? '';
+        _idController.text = _pref?.getString('uid') ?? '';
+        _passwordController.text = _pref?.getString('password') ?? '';
       }
     });
     if (_isChecked) {
@@ -583,10 +583,10 @@ class _SignInPageState extends State<SignInPage> {
                         });
                     return;
                   }
-                  _pref.setString('uid', _idController.text.toString());
-                  _pref.setString(
+                  _pref?.setString('uid', _idController.text.toString());
+                  _pref?.setString(
                       'password', _passwordController.text.toString());
-                  _pref.setBool('checked', _isChecked);
+                  _pref?.setBool('checked', _isChecked);
 
                   try {
                     showDialog(
