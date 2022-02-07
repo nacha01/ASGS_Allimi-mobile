@@ -18,9 +18,14 @@ class _SettingPageState extends State<SettingPage> {
 
   _loadSharedPreference() async {
     _pref = await SharedPreferences.getInstance();
-    setState(() {
-      _isChecked = _pref.getBool('checked') ?? false;
-    });
+    if (_pref != null) {
+      setState(() {
+        _isChecked =
+            _pref.getBool('checked') == null ? false : _pref.getBool('checked');
+      });
+    } else {
+      _pref = await SharedPreferences.getInstance();
+    }
   }
 
   @override
@@ -48,7 +53,7 @@ class _SettingPageState extends State<SettingPage> {
         children: [
           ListTile(
             contentPadding: EdgeInsets.all(size.width * 0.01),
-            title: Expanded(child: Text('자동 로그인 설정하기')),
+            title: Text('자동 로그인 설정하기'),
             subtitle: Text('체크박스가 체크되면 자동 로그인 설정, 체크박스가 해제되면 자동 로그인이 해제됩니다.',
                 style: TextStyle(fontSize: 12)),
             leading: Container(

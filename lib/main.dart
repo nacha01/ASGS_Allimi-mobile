@@ -26,7 +26,8 @@ Future<void> _sendErrorReport(String message) async {
   }
 }
 
-void main() {
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
   runZoned(() {
     runApp(
       MultiProvider(

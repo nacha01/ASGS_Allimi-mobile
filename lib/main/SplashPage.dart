@@ -26,7 +26,6 @@ class _SplashPageState extends State<SplashPage> {
 
   getToken() {
     _firebaseMessaging.getToken().then((String token) {
-      assert(token != null);
       setState(() {
         _token = token;
         print("Token : $token");

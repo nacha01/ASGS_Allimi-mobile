@@ -35,7 +35,7 @@ class _SignInPageState extends State<SignInPage> {
   TextEditingController _nickNameController = TextEditingController();
   SharedPreferences _pref;
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
-  String _key;
+  String _key = '';
   bool _isLogin = true;
   bool _isChecked = false;
   final _statusList = ['재학생', '학부모', '교사', '졸업생', '기타'];
@@ -147,11 +147,12 @@ class _SignInPageState extends State<SignInPage> {
       _pref = await SharedPreferences.getInstance();
       if (_pref != null) {
         setState(() {
-          _isChecked =
-          _pref.getBool('checked') == null ? false : _pref.getBool('checked');
+          _isChecked = _pref.getBool('checked') == null
+              ? false
+              : _pref.getBool('checked');
           if (_isChecked) {
             _idController.text =
-            _pref.getString('uid') == null ? '' : _pref.getString('uid');
+                _pref.getString('uid') == null ? '' : _pref.getString('uid');
             _passwordController.text = _pref.getString('password') == null
                 ? ''
                 : _pref.getString('password');
@@ -162,30 +163,6 @@ class _SignInPageState extends State<SignInPage> {
               barrierDismissible: false,
               context: (context),
               builder: (context) {
-                if (!this.mounted) {
-                  Future.delayed(Duration(seconds: 5), () {
-                    Navigator.pop(context);
-                    showDialog(
-                        context: context,
-                        builder: (c) =>
-                            AlertDialog(
-                              title: Text(
-                                '요청시간 초과',
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.bold),
-                              ),
-                              actions: [
-                                FlatButton(
-                                  onPressed: () => Navigator.pop(c),
-                                  child: Text('확인',
-                                      style:
-                                      TextStyle(fontWeight: FontWeight.bold)),
-                                  padding: EdgeInsets.all(0),
-                                )
-                              ],
-                            ));
-                  });
-                }
                 return Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -208,8 +185,7 @@ class _SignInPageState extends State<SignInPage> {
             Navigator.pop(context);
             showDialog(
                 context: context,
-                builder: (context) =>
-                    AlertDialog(
+                builder: (context) => AlertDialog(
                       title: Text(
                         '로그인 실패',
                         style: TextStyle(
@@ -219,8 +195,8 @@ class _SignInPageState extends State<SignInPage> {
                       ),
                       content: Text(
                         '입력한 정보가 맞지 않습니다!',
-                        style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 14),
                       ),
                       actions: [
                         FlatButton(
@@ -242,19 +218,16 @@ class _SignInPageState extends State<SignInPage> {
             Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                    builder: (context) =>
-                        HomePage(
+                    builder: (context) => HomePage(
                           user: result,
                           token: widget.token,
                         )));
           }
         }
-      }
-      else{
+      } else {
         _pref = await SharedPreferences.getInstance();
       }
-    }
-    catch(e){
+    } catch (e) {
       log(e);
     }
   }
@@ -619,29 +592,6 @@ class _SignInPageState extends State<SignInPage> {
                         barrierDismissible: false,
                         context: (context),
                         builder: (context) {
-                          if (!this.mounted) {
-                            Future.delayed(Duration(seconds: 5), () {
-                              Navigator.pop(context);
-                              showDialog(
-                                  context: context,
-                                  builder: (c) => AlertDialog(
-                                        title: Text('요청 시간 초과',
-                                            style: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.bold)),
-                                        actions: [
-                                          FlatButton(
-                                            onPressed: () => Navigator.pop(c),
-                                            child: Text('확인',
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold)),
-                                            padding: EdgeInsets.all(0),
-                                          )
-                                        ],
-                                      ));
-                            });
-                          }
                           return Center(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
