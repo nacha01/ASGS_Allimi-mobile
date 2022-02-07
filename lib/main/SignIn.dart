@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'dart:ui';
 
@@ -141,102 +142,120 @@ class _SignInPageState extends State<SignInPage> {
     }
   }
 
-  _loadLoginInfo() async {
-    _pref = await SharedPreferences.getInstance();
-    setState(() {
-      _isChecked = _pref?.getBool('checked') ?? false;
-      if (_isChecked) {
-        _idController.text = _pref?.getString('uid') ?? '';
-        _passwordController.text = _pref?.getString('password') ?? '';
-      }
-    });
-    if (_isChecked) {
-      showDialog(
-          barrierDismissible: false,
-          context: (context),
-          builder: (context) {
-            if (!this.mounted) {
-              Future.delayed(Duration(seconds: 5), () {
-                Navigator.pop(context);
-                showDialog(
-                    context: context,
-                    builder: (c) => AlertDialog(
-                          title: Text(
-                            '요청시간 초과',
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
-                          actions: [
-                            FlatButton(
-                              onPressed: () => Navigator.pop(c),
-                              child: Text('확인',
-                                  style:
+  void _loadLoginInfo() async {
+    try {
+      _pref = await SharedPreferences.getInstance();
+      if (_pref != null) {
+        setState(() {
+          _isChecked =
+          _pref.getBool('checked') == null ? false : _pref.getBool('checked');
+          if (_isChecked) {
+            _idController.text =
+            _pref.getString('uid') == null ? '' : _pref.getString('uid');
+            _passwordController.text = _pref.getString('password') == null
+                ? ''
+                : _pref.getString('password');
+          }
+        });
+        if (_isChecked) {
+          showDialog(
+              barrierDismissible: false,
+              context: (context),
+              builder: (context) {
+                if (!this.mounted) {
+                  Future.delayed(Duration(seconds: 5), () {
+                    Navigator.pop(context);
+                    showDialog(
+                        context: context,
+                        builder: (c) =>
+                            AlertDialog(
+                              title: Text(
+                                '요청시간 초과',
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
+                              actions: [
+                                FlatButton(
+                                  onPressed: () => Navigator.pop(c),
+                                  child: Text('확인',
+                                      style:
                                       TextStyle(fontWeight: FontWeight.bold)),
-                              padding: EdgeInsets.all(0),
-                            )
-                          ],
-                        ));
+                                  padding: EdgeInsets.all(0),
+                                )
+                              ],
+                            ));
+                  });
+                }
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        '로그인 중입니다.',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 13,
+                            decoration: TextDecoration.none,
+                            fontWeight: FontWeight.normal),
+                      ),
+                      CircularProgressIndicator(),
+                    ],
+                  ),
+                );
               });
+          var result = await _requestLogin();
+          if (result == null) {
+            Navigator.pop(context);
+            showDialog(
+                context: context,
+                builder: (context) =>
+                    AlertDialog(
+                      title: Text(
+                        '로그인 실패',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      content: Text(
+                        '입력한 정보가 맞지 않습니다!',
+                        style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                      ),
+                      actions: [
+                        FlatButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: Text('확인',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          padding: EdgeInsets.all(0),
+                        )
+                      ],
+                    ));
+            return;
+          } else {
+            result.isAdmin = await _judgeIsAdminAccount();
+            if (result.isAdmin) {
+              result.adminKey = _key;
             }
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    '로그인 중입니다.',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 13,
-                        decoration: TextDecoration.none,
-                        fontWeight: FontWeight.normal),
-                  ),
-                  CircularProgressIndicator(),
-                ],
-              ),
-            );
-          });
-      var result = await _requestLogin();
-      if (result == null) {
-        Navigator.pop(context);
-        showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-                  title: Text(
-                    '로그인 실패',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                  content: Text(
-                    '입력한 정보가 맞지 않습니다!',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                  ),
-                  actions: [
-                    FlatButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: Text('확인',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                      padding: EdgeInsets.all(0),
-                    )
-                  ],
-                ));
-        return;
-      } else {
-        result.isAdmin = await _judgeIsAdminAccount();
-        if (result.isAdmin) {
-          result.adminKey = _key;
+            await _checkUserToken(_idController.text);
+            Navigator.pop(context);
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        HomePage(
+                          user: result,
+                          token: widget.token,
+                        )));
+          }
         }
-        await _checkUserToken(_idController.text);
-        Navigator.pop(context);
-        Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-                builder: (context) => HomePage(
-                      user: result,
-                      token: widget.token,
-                    )));
       }
+      else{
+        _pref = await SharedPreferences.getInstance();
+      }
+    }
+    catch(e){
+      log(e);
     }
   }
 
@@ -573,15 +592,22 @@ class _SignInPageState extends State<SignInPage> {
                         context: context,
                         builder: (context) {
                           return AlertDialog(
-                            content: Text('내용을 입력하세요'),
+                            content: Text('내용을 입력하세요',
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold)),
                             actions: [
                               FlatButton(
                                   onPressed: () => Navigator.pop(context),
-                                  child: Text('확인'))
+                                  child: Text('확인',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold)))
                             ],
                           );
                         });
                     return;
+                  }
+                  if (_pref == null) {
+                    _pref = await SharedPreferences.getInstance();
                   }
                   _pref?.setString('uid', _idController.text.toString());
                   _pref?.setString(
