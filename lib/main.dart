@@ -11,7 +11,7 @@ import 'package:provider/provider.dart';
 import 'main/SplashPage.dart';
 import 'package:http/http.dart' as http;
 
-final GlobalKey<NavigatorState> navigatorKey = GlobalKey();
+//final GlobalKey<NavigatorState> navigatorKey = GlobalKey();
 
 Future<void> _sendErrorReport(String message) async {
   String url = 'http://nacha01.dothome.co.kr/sin/arlimi_addReport.php';
@@ -27,7 +27,7 @@ Future<void> _sendErrorReport(String message) async {
 }
 
 void main() async{
-  WidgetsFlutterBinding.ensureInitialized();
+  //WidgetsFlutterBinding.ensureInitialized();
   runZoned(() {
     runApp(
       MultiProvider(
@@ -38,12 +38,12 @@ void main() async{
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
           home: SplashPage(),
-          navigatorKey: navigatorKey,
+          // navigatorKey: navigatorKey,
         ),
       ),
     );
   }, onError: (e) {
-    try {
+    /*try {
       showDialog(
           context: navigatorKey.currentContext,
           builder: (context) =>
@@ -68,6 +68,8 @@ void main() async{
                 ],
               ));
     } catch (e) {}
+
+     */
     log('Error occurred [runZoned] : $e ');
   });
 }
