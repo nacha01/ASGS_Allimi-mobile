@@ -6,6 +6,7 @@ import 'package:asgshighschool/data/exist_cart.dart';
 import 'package:asgshighschool/data/renewUser_data.dart';
 import 'package:asgshighschool/main/GameListPage.dart';
 import 'package:asgshighschool/memoryGame/MemoryGamePage.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
 import '../store/StoreSplashPage.dart';
@@ -48,6 +49,8 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    _checkUserToken(widget.user.uid);
+
     //getMainImage();
     _numberOfTabs = 4;
     tabController = TabController(vsync: this, length: _numberOfTabs);
@@ -64,6 +67,26 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
     //     _goGame();
     //   }
     // });
+  }
+
+  Future<bool> _checkUserToken(String uid) async {
+    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_checkUserToken.php';
+    final response = await http
+        .post(url, body: <String, String>{'uid': uid, 'token': widget.token});
+    if (response.statusCode == 200) {
+      String result = utf8
+          .decode(response.bodyBytes)
+          .replaceAll(
+          '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+          '')
+          .trim();
+      if(!result.contains('SAME')){
+        Fluttertoast.showToast(msg: '토큰 업데이트 완료');
+      }
+      return true;
+    } else {
+      return false;
+    }
   }
 
   void _goDuruDuru() async {
