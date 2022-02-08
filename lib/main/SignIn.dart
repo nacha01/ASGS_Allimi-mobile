@@ -8,6 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import 'HomePage.dart';
 import 'package:asgshighschool/WebView.dart';
@@ -55,6 +56,7 @@ class _SignInPageState extends State<SignInPage> {
 
   @override
   void initState() {
+    _loadLoginInfo();
     super.initState();
 
     _firebaseMessaging.configure(
@@ -87,7 +89,6 @@ class _SignInPageState extends State<SignInPage> {
     }
     localNotifyManager.setOnNotificationClick(onNotificationClick);
     localNotifyManager.setOnNotificationReceive(onNotificationReceive);
-    _loadLoginInfo();
   }
 
   void selectLocation(String screenLoc) {
@@ -143,19 +144,14 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   void _loadLoginInfo() async {
-    try {
       _pref = await SharedPreferences.getInstance();
       if (_pref != null) {
         setState(() {
-          _isChecked = _pref.getBool('checked') == null
-              ? false
-              : _pref.getBool('checked');
+          _isChecked = _pref.getBool('checked') ?? false;
           if (_isChecked) {
             _idController.text =
-                _pref.getString('uid') == null ? '' : _pref.getString('uid');
-            _passwordController.text = _pref.getString('password') == null
-                ? ''
-                : _pref.getString('password');
+                _pref.getString('uid') ?? '';
+            _passwordController.text = _pref.getString('password') ?? '';
           }
         });
         if (_isChecked) {
@@ -168,7 +164,7 @@ class _SignInPageState extends State<SignInPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        '로그인 중입니다.',
+                        '로그인 중입니다.\n(3초 이상 지속될 경우 앱을 껐다 켜주세요)',
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: 13,
@@ -213,7 +209,6 @@ class _SignInPageState extends State<SignInPage> {
             if (result.isAdmin) {
               result.adminKey = _key;
             }
-            await _checkUserToken(_idController.text);
             Navigator.pop(context);
             Navigator.pushReplacement(
                 context,
@@ -225,11 +220,9 @@ class _SignInPageState extends State<SignInPage> {
           }
         }
       } else {
+        Fluttertoast.showToast(msg: 'pref value is null');
         _pref = await SharedPreferences.getInstance();
       }
-    } catch (e) {
-      log(e);
-    }
   }
 
   void _moveScreenAccordingToPush(
@@ -337,16 +330,7 @@ class _SignInPageState extends State<SignInPage> {
     }
   }
 
-  Future<bool> _checkUserToken(String uid) async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_checkUserToken.php';
-    final response = await http
-        .post(url, body: <String, String>{'uid': uid, 'token': widget.token});
-    if (response.statusCode == 200) {
-      return true;
-    } else {
-      return false;
-    }
-  }
+
 
   Future<User> _requestLogin() async {
     String uri =
@@ -354,7 +338,6 @@ class _SignInPageState extends State<SignInPage> {
     final response = await http.get(Uri.parse(uri), headers: <String, String>{
       'Content-Type': 'application/x-www-form-urlencoded'
     });
-
     if (response.statusCode == 200) {
       if (utf8.decode(response.bodyBytes).contains('NOT EXIST ACCOUNT')) {
         return null;
@@ -582,12 +565,12 @@ class _SignInPageState extends State<SignInPage> {
                   if (_pref == null) {
                     _pref = await SharedPreferences.getInstance();
                   }
-                  _pref?.setString('uid', _idController.text.toString());
-                  _pref?.setString(
+                  var r1 = await _pref.setString('uid', _idController.text.toString());
+                  var r2 = await _pref.setString(
                       'password', _passwordController.text.toString());
-                  _pref?.setBool('checked', _isChecked);
+                  var r3 = await _pref.setBool('checked', _isChecked);
 
-                  try {
+                  // try {
                     showDialog(
                         barrierDismissible: false,
                         context: (context),
@@ -597,12 +580,13 @@ class _SignInPageState extends State<SignInPage> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  '로그인 중입니다.',
+                                  '로그인 중입니다.\n(3초 이상 지속될 경우 앱을 껐다 켜주세요)',
                                   style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 13,
                                       decoration: TextDecoration.none,
                                       fontWeight: FontWeight.normal),
+                                  textAlign: TextAlign.center,
                                 ),
                                 CircularProgressIndicator(),
                               ],
@@ -610,6 +594,7 @@ class _SignInPageState extends State<SignInPage> {
                           );
                         });
                     var result = await _requestLogin();
+                    Fluttertoast.showToast(msg: '로그인 승인 완료');
                     if (result == null) {
                       Navigator.pop(context);
                       showDialog(
@@ -644,8 +629,8 @@ class _SignInPageState extends State<SignInPage> {
                       result.isAdmin = await _judgeIsAdminAccount();
                       if (result.isAdmin) {
                         result.adminKey = _key;
+                        Fluttertoast.showToast(msg: 'Admin key 저장 완료: ${result.adminKey}');
                       }
-                      await _checkUserToken(_idController.text);
                       Navigator.pop(context);
                       Navigator.pushReplacement(
                           context,
@@ -655,9 +640,9 @@ class _SignInPageState extends State<SignInPage> {
                                     token: widget.token,
                                   )));
                     }
-                  } catch (e) {
-                    print(e.toString());
-                  }
+                  // } catch (e) {
+                  //   print(e.toString());
+                  // }
                 },
                 padding: EdgeInsets.all(size.width * 0.02),
                 highlightColor: Colors.blue[200],
