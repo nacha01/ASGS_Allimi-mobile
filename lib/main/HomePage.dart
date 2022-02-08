@@ -77,10 +77,10 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
       String result = utf8
           .decode(response.bodyBytes)
           .replaceAll(
-          '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-          '')
+              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+              '')
           .trim();
-      if(!result.contains('SAME')){
+      if (!result.contains('SAME')) {
         Fluttertoast.showToast(msg: '토큰 업데이트 완료');
       }
       return true;

@@ -26,8 +26,7 @@ Future<void> _sendErrorReport(String message) async {
   }
 }
 
-void main() async{
-  //WidgetsFlutterBinding.ensureInitialized();
+void main() async {
   runZoned(() {
     runApp(
       MultiProvider(
@@ -43,8 +42,7 @@ void main() async{
       ),
     );
   }, onError: (e) {
-    /*try {
-      showDialog(
+      /*showDialog(
           context: navigatorKey.currentContext,
           builder: (context) =>
               AlertDialog(
@@ -67,9 +65,7 @@ void main() async{
                   )
                 ],
               ));
-    } catch (e) {}
-
-     */
+       */
     log('Error occurred [runZoned] : $e ');
   });
 }

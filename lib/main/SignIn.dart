@@ -144,85 +144,84 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   void _loadLoginInfo() async {
-      _pref = await SharedPreferences.getInstance();
-      if (_pref != null) {
-        setState(() {
-          _isChecked = _pref.getBool('checked') ?? false;
-          if (_isChecked) {
-            _idController.text =
-                _pref.getString('uid') ?? '';
-            _passwordController.text = _pref.getString('password') ?? '';
-          }
-        });
+    _pref = await SharedPreferences.getInstance();
+    if (_pref != null) {
+      setState(() {
+        _isChecked = _pref.getBool('checked') ?? false;
         if (_isChecked) {
-          showDialog(
-              barrierDismissible: false,
-              context: (context),
-              builder: (context) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        '로그인 중입니다.\n(3초 이상 지속될 경우 앱을 껐다 켜주세요)',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 13,
-                            decoration: TextDecoration.none,
-                            fontWeight: FontWeight.normal),
-                      ),
-                      CircularProgressIndicator(),
-                    ],
-                  ),
-                );
-              });
-          var result = await _requestLogin();
-          if (result == null) {
-            Navigator.pop(context);
-            showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                      title: Text(
-                        '로그인 실패',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      content: Text(
-                        '입력한 정보가 맞지 않습니다!',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 14),
-                      ),
-                      actions: [
-                        FlatButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: Text('확인',
-                              style: TextStyle(fontWeight: FontWeight.bold)),
-                          padding: EdgeInsets.all(0),
-                        )
-                      ],
-                    ));
-            return;
-          } else {
-            result.isAdmin = await _judgeIsAdminAccount();
-            if (result.isAdmin) {
-              result.adminKey = _key;
-            }
-            Navigator.pop(context);
-            Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => HomePage(
-                          user: result,
-                          token: widget.token,
-                        )));
-          }
+          _idController.text = _pref.getString('uid') ?? '';
+          _passwordController.text = _pref.getString('password') ?? '';
         }
-      } else {
-        Fluttertoast.showToast(msg: 'pref value is null');
-        _pref = await SharedPreferences.getInstance();
+      });
+      if (_isChecked) {
+        showDialog(
+            barrierDismissible: false,
+            context: (context),
+            builder: (context) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      '로그인 중입니다.\n(3초 이상 지속될 경우 앱을 껐다 켜주세요)',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 13,
+                          decoration: TextDecoration.none,
+                          fontWeight: FontWeight.normal),
+                    ),
+                    CircularProgressIndicator(),
+                  ],
+                ),
+              );
+            });
+        var result = await _requestLogin();
+        if (result == null) {
+          Navigator.pop(context);
+          showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                    title: Text(
+                      '로그인 실패',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    content: Text(
+                      '입력한 정보가 맞지 않습니다!',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                    ),
+                    actions: [
+                      FlatButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text('확인',
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        padding: EdgeInsets.all(0),
+                      )
+                    ],
+                  ));
+          return;
+        } else {
+          result.isAdmin = await _judgeIsAdminAccount();
+          if (result.isAdmin) {
+            result.adminKey = _key;
+          }
+          Navigator.pop(context);
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => HomePage(
+                        user: result,
+                        token: widget.token,
+                      )));
+        }
       }
+    } else {
+      Fluttertoast.showToast(msg: 'pref value is null');
+      _pref = await SharedPreferences.getInstance();
+    }
   }
 
   void _moveScreenAccordingToPush(
@@ -329,8 +328,6 @@ class _SignInPageState extends State<SignInPage> {
       return null;
     }
   }
-
-
 
   Future<User> _requestLogin() async {
     String uri =
@@ -565,84 +562,80 @@ class _SignInPageState extends State<SignInPage> {
                   if (_pref == null) {
                     _pref = await SharedPreferences.getInstance();
                   }
-                  var r1 = await _pref.setString('uid', _idController.text.toString());
-                  var r2 = await _pref.setString(
+                  await _pref.setString('uid', _idController.text.toString());
+                  await _pref.setString(
                       'password', _passwordController.text.toString());
-                  var r3 = await _pref.setBool('checked', _isChecked);
+                  await _pref.setBool('checked', _isChecked);
 
-                  // try {
+                  showDialog(
+                      barrierDismissible: false,
+                      context: (context),
+                      builder: (context) {
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                '로그인 중입니다.\n(3초 이상 지속될 경우 앱을 껐다 켜주세요)',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 13,
+                                    decoration: TextDecoration.none,
+                                    fontWeight: FontWeight.normal),
+                                textAlign: TextAlign.center,
+                              ),
+                              CircularProgressIndicator(),
+                            ],
+                          ),
+                        );
+                      });
+                  var result = await _requestLogin();
+                  Fluttertoast.showToast(msg: '로그인 승인 완료');
+                  if (result == null) {
+                    Navigator.pop(context);
                     showDialog(
-                        barrierDismissible: false,
-                        context: (context),
-                        builder: (context) {
-                          return Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  '로그인 중입니다.\n(3초 이상 지속될 경우 앱을 껐다 켜주세요)',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 13,
-                                      decoration: TextDecoration.none,
-                                      fontWeight: FontWeight.normal),
-                                  textAlign: TextAlign.center,
+                        context: context,
+                        builder: (context) => AlertDialog(
+                              actionsPadding: EdgeInsets.all(0),
+                              title: Text(
+                                '로그인 실패',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
                                 ),
-                                CircularProgressIndicator(),
+                              ),
+                              content: Text(
+                                '입력한 정보가 맞지 않습니다!',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 14),
+                              ),
+                              actions: [
+                                FlatButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: Text('확인',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold)),
+                                  padding: EdgeInsets.all(0),
+                                )
                               ],
-                            ),
-                          );
-                        });
-                    var result = await _requestLogin();
-                    Fluttertoast.showToast(msg: '로그인 승인 완료');
-                    if (result == null) {
-                      Navigator.pop(context);
-                      showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                                actionsPadding: EdgeInsets.all(0),
-                                title: Text(
-                                  '로그인 실패',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                content: Text(
-                                  '입력한 정보가 맞지 않습니다!',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14),
-                                ),
-                                actions: [
-                                  FlatButton(
-                                    onPressed: () => Navigator.pop(context),
-                                    child: Text('확인',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold)),
-                                    padding: EdgeInsets.all(0),
-                                  )
-                                ],
-                              ));
-                      return;
-                    } else {
-                      result.isAdmin = await _judgeIsAdminAccount();
-                      if (result.isAdmin) {
-                        result.adminKey = _key;
-                        Fluttertoast.showToast(msg: 'Admin key 저장 완료: ${result.adminKey}');
-                      }
-                      Navigator.pop(context);
-                      Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => HomePage(
-                                    user: result,
-                                    token: widget.token,
-                                  )));
+                            ));
+                    return;
+                  } else {
+                    result.isAdmin = await _judgeIsAdminAccount();
+                    if (result.isAdmin) {
+                      result.adminKey = _key;
+                      Fluttertoast.showToast(
+                          msg: 'Admin key 저장 완료: ${result.adminKey}');
                     }
-                  // } catch (e) {
-                  //   print(e.toString());
-                  // }
+                    Navigator.pop(context);
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => HomePage(
+                                  user: result,
+                                  token: widget.token,
+                                )));
+                  }
                 },
                 padding: EdgeInsets.all(size.width * 0.02),
                 highlightColor: Colors.blue[200],
