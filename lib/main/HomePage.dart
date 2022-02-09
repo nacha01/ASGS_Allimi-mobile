@@ -80,6 +80,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
               '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
               '')
           .trim();
+      print(result);
       if (!result.contains('SAME')) {
         Fluttertoast.showToast(msg: '토큰 업데이트 완료');
       }

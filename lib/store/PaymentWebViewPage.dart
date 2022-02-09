@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:asgshighschool/store/PaymentCompletePage.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -179,6 +180,31 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
         },
         onWebViewCreated: (controller) {
           _inAppWebViewController = controller;
+          _inAppWebViewController.addJavaScriptHandler(
+              handlerName: 'myHandler',
+              callback: (args) {
+                try {
+                  // var data = jsonDecode(args[0]);
+                  showDialog(context: context,
+                      builder: (context) =>
+                          AlertDialog(
+                            title: SingleChildScrollView(child: Text(args[0]['ResultCode'])),));
+                }
+                catch(e){
+                  showDialog(context: context,
+                      builder: (context) =>
+                          AlertDialog(
+                            title: SingleChildScrollView(child: Text(e.toString())),));
+                }
+                // print(args);
+                // Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //         builder: (context) => PaymentCompletePage(
+                //               totalPrice: widget.totalPrice,
+                //               result: {'orderID': widget.oID},
+                //             )));
+              });
           _inAppWebViewController.setOptions(
               options: InAppWebViewGroupOptions(
                   crossPlatform: InAppWebViewOptions(
