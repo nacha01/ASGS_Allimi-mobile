@@ -2,8 +2,11 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:asgshighschool/data/product_data.dart';
+import 'package:asgshighschool/data/user_data.dart';
 import 'package:asgshighschool/store/PaymentCompletePage.dart';
 import 'package:crypto/crypto.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -12,11 +15,34 @@ import 'package:cp949/cp949.dart' as cp949;
 import 'package:url_launcher/url_launcher.dart';
 
 class PaymentWebViewPage extends StatefulWidget {
-  final int totalPrice;
-  final String productName;
-  final String oID;
+  final String oID; // 생성한 order ID
+  final bool isCart; // 장바구니 결제인지 단일 상품 결제인지 판단하는 flag
 
-  PaymentWebViewPage({this.totalPrice, this.productName, this.oID});
+  final List<Map> cart; // 장바구니에서 결제시 장바구니 리스트 Map 데이터
+  final Product direct; // 바로 결제 시 그 단일 상품 하나
+  final int productCount; // 바로 결제시 상품의 개수
+  final User user;
+  final List optionList; // 바로 결제 시 단일 상품에 대한 옵션 리스트
+  final List selectList; // 바로 결제 시 단일 상품에 대한 옵션 리스트에 대해 선택한 인덱스 리스트
+  final int additionalPrice; // 상품 옵션의 총 가격
+
+  final String receiveMethod; // 수령 방법
+  final String option; // 추가 요청
+  final String location; // 배달 시 위치정보
+
+  PaymentWebViewPage(
+      {this.oID,
+      this.direct,
+      this.cart,
+      this.productCount,
+      this.user,
+      this.optionList,
+      this.selectList,
+      this.additionalPrice,
+      this.receiveMethod,
+      this.option,
+      this.location,
+      this.isCart});
 
   @override
   _PaymentWebViewPageState createState() => _PaymentWebViewPageState();
@@ -25,16 +51,18 @@ class PaymentWebViewPage extends StatefulWidget {
 class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
   InAppWebViewController _inAppWebViewController;
   static const platform = MethodChannel('asgs');
-  final _KEY =
+  static const _KEY =
       '33F49GnCMS1mFYlGXisbUDzVf2ATWCl9k3R++d5hDd3Frmuos/XLx8XhXpe+LDYAbpGKZYSwtlyyLOtS/8aD7A==';
-  final _MID = 'nictest00m';
-  final _RETURN_URL = 'http://nacha01.dothome.co.kr/sin/result_test.php';
+  static const _MID = 'nictest00m';
+  static const _RETURN_URL = 'http://nacha01.dothome.co.kr/sin/result_test.php';
   String _ediDate = '';
+  bool _isCart = true;
+  String _goodsName = '';
+  int _totalPrice = 0;
 
   String _getSignData() {
     return HEX.encode(sha256
-        .convert(
-            utf8.encode(_ediDate + _MID + widget.totalPrice.toString() + _KEY))
+        .convert(utf8.encode(_ediDate + _MID + _totalPrice.toString() + _KEY))
         .bytes);
   }
 
@@ -110,8 +138,52 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
     }
   }
 
+  void _setGoodsName() {
+    if (_isCart) {
+      if (widget.cart.length > 1) {
+        _goodsName =
+            widget.cart[0]['prodName'] + ' 외 ${widget.cart.length - 1}개';
+      } else {
+        _goodsName = widget.cart[0]['prodName'];
+      }
+    } else {
+      _goodsName = widget.direct.prodName;
+    }
+  }
+
+  int _obtainTotalPrice() {
+    int sum = 0;
+    if (_isCart) {
+      for (int i = 0; i < widget.cart.length; ++i) {
+        sum += (int.parse(widget.cart[i]['price']) *
+                (1 -
+                        (widget.cart[i]['discount'].toString() == '0.0'
+                                ? 0
+                                : double.parse(widget.cart[i]['discount'])) /
+                            100.0)
+                    .round()) *
+            int.parse(widget.cart[i]['quantity']);
+      }
+      sum += widget.additionalPrice;
+    } else {
+      sum += widget.direct.price *
+          (1 - (widget.direct.discount / 100.0)).round() *
+          widget.productCount;
+      sum += widget.additionalPrice;
+    }
+    return sum;
+  }
+
   @override
   void initState() {
+    if (widget.direct == null) {
+      _isCart = true;
+    }
+    if (widget.cart == null) {
+      _isCart = false;
+    }
+    _setGoodsName();
+    _totalPrice = _obtainTotalPrice();
     _ediDate = DateTime.now()
         .toString()
         .replaceAll('-', '')
@@ -181,29 +253,51 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
         onWebViewCreated: (controller) {
           _inAppWebViewController = controller;
           _inAppWebViewController.addJavaScriptHandler(
-              handlerName: 'myHandler',
+              handlerName: 'cancelPaymentHandler',
               callback: (args) {
-                try {
-                  // var data = jsonDecode(args[0]);
-                  showDialog(context: context,
-                      builder: (context) =>
-                          AlertDialog(
-                            title: SingleChildScrollView(child: Text(args[0]['ResultCode'])),));
-                }
-                catch(e){
-                  showDialog(context: context,
-                      builder: (context) =>
-                          AlertDialog(
-                            title: SingleChildScrollView(child: Text(e.toString())),));
-                }
-                // print(args);
-                // Navigator.push(
-                //     context,
-                //     MaterialPageRoute(
-                //         builder: (context) => PaymentCompletePage(
-                //               totalPrice: widget.totalPrice,
-                //               result: {'orderID': widget.oID},
-                //             )));
+                showDialog(
+                    barrierDismissible: false,
+                    context: context,
+                    builder: (context) => AlertDialog(
+                          title: Text(
+                            '결제 취소',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 16),
+                          ),
+                          content: Text('${args[0][1]} (code-${args[0][0]})',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 14)),
+                          actions: [
+                            TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  Navigator.pop(this.context);
+                                },
+                                child: Text('확인'))
+                          ],
+                        ));
+              });
+          _inAppWebViewController.addJavaScriptHandler(
+              handlerName: 'responseHandler',
+              callback: (args) {
+                print(args[0][1]);
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => PaymentCompletePage(
+                              totalPrice: _totalPrice,
+                              responseData: args[0],
+                              location: widget.location,
+                              receiveMethod: widget.receiveMethod,
+                              user: widget.user,
+                              direct: widget.direct,
+                              productCount: widget.productCount,
+                              selectList: widget.selectList,
+                              optionList: widget.optionList,
+                              option: widget.option,
+                              cart: widget.cart,
+                              isCart: widget.isCart,
+                            )));
               });
           _inAppWebViewController.setOptions(
               options: InAppWebViewGroupOptions(
@@ -220,15 +314,14 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
                       cacheMode: AndroidCacheMode.LOAD_DEFAULT)));
           _inAppWebViewController.postUrl(
               url: Uri.parse('https://web.nicepay.co.kr/v3/v3Payment.jsp'),
-              postData: Uint8List.fromList(
-                  cp949.encode('GoodsName=${widget.productName}&'
-                      'Amt=${widget.totalPrice}&'
-                      'MID=$_MID&'
-                      'ReturnURL=$_RETURN_URL&'
-                      'EdiDate=$_ediDate&'
-                      'Moid=${widget.oID}&'
-                      'SignData=${_getSignData()}&'
-                      'CharSet=euc-kr')));
+              postData: Uint8List.fromList(cp949.encode('GoodsName=$_goodsName&'
+                  'Amt=$_totalPrice&'
+                  'MID=$_MID&'
+                  'ReturnURL=$_RETURN_URL&'
+                  'EdiDate=$_ediDate&'
+                  'Moid=${widget.oID}&'
+                  'SignData=${_getSignData()}&'
+                  'CharSet=euc-kr')));
         },
       ),
     );
