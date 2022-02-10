@@ -85,7 +85,7 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
     String left = leftSp[0] + '년 ' + leftSp[1] + '월 ' + leftSp[2] + '일 ';
 
     var rightSp = split[1].split(':');
-    String right = rightSp[0] + '시 ' + leftSp[1] + '분';
+    String right = rightSp[0] + '시 ' + rightSp[1] + '분';
 
     return left + right;
   }
