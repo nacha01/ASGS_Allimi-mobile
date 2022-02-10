@@ -34,6 +34,8 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
         return '주문 처리 중';
       case 3:
         return '결제완료 및 수령완료';
+      case 4:
+        return '결제취소 및 주문취소';
       default:
         return 'Error';
     }
@@ -51,6 +53,8 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
         return Colors.lightBlue;
       case 3:
         return Colors.green;
+      case 4:
+        return Colors.grey;
       default:
         return Colors.grey;
     }
@@ -254,12 +258,17 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
               SizedBox(
                 height: size.height * 0.015,
               ),
-              int.parse(widget.order['orderState']) == 3
+              int.parse(widget.order['orderState']) == 3 ||
+                      int.parse(widget.order['orderState']) == 4
                   ? Center(
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          '이미 수령하셨기 때문에 만료되었습니다.',
+                          int.parse(widget.order['orderState']) == 3
+                              ? '이미 수령하셨기 때문에 만료되었습니다.'
+                              : int.parse(widget.order['orderState']) == 4
+                                  ? '결제 취소 및 주문이 취소되었습니다.'
+                                  : '',
                           style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -309,7 +318,8 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
               Row(
                 children: [
                   Text('결제 방식 ', style: TextStyle(fontWeight: FontWeight.bold)),
-                  Text(' [ ${widget.order['payMethod']} ]')
+                  Text(
+                      ' [ ${widget.order['payMethod'] == '0' ? '신용카드' : '간편결제'} ]')
                 ],
               ),
               SizedBox(

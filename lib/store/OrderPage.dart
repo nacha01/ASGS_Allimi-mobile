@@ -68,12 +68,10 @@ class _OrderPageState extends State<OrderPage> {
       'oid': _generatedOID,
       'uid': widget.user.uid,
       'oDate': DateTime.now().toString(),
-      'price': ((_getOriginTotalPrice() - _getTotalDiscount()) +
-              _additionalPrice * widget.productCount)
-          .toString(),
-      'oState': '1', // 임시 설정
+      'price': (_getOriginTotalPrice() - _getTotalDiscount()).toString(),
+      'oState': '0', // '미결제' 상태로 등록. 추후에 결제가 완료되면 '결제완료' 상태로 전환
       'recvMethod': _receiveMethod == ReceiveMethod.DIRECT ? '0' : '1',
-      'pay': '0', // 임시 설정
+      'pay': '0', // 신용카드
       'option': _isCart
           ? _entireOptionForCart
           : _optionString +
@@ -132,7 +130,11 @@ class _OrderPageState extends State<OrderPage> {
               ' , ';
         }
       }
-      _optionString += ']\n';
+      if (j == widget.productCount - 1) {
+        _optionString += ']';
+      } else {
+        _optionString += ']\n';
+      }
     }
     setState(() {});
   }
@@ -336,7 +338,7 @@ class _OrderPageState extends State<OrderPage> {
       sum += widget.additionalPrice;
     } else {
       sum = (widget.direct.price) * widget.productCount;
-      sum += _additionalPrice * widget.productCount;
+      sum += _additionalPrice; // 이미 여기서 개수만큼 다 구해놓음 (개수 곱할 필요 없음)
     }
     return sum;
   }
@@ -706,36 +708,66 @@ class _OrderPageState extends State<OrderPage> {
                 }
 
                 if (!syncChk) {
+                  showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                            title: Text('구매 불가',
+                                style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.red)),
+                            content: Text(
+                                '실시간 재고 점검 결과 수량이 부족하여 해당 상품을 구매하실 수 없습니다!',
+                                style: TextStyle(
+                                    fontSize: 13, fontWeight: FontWeight.bold)),
+                            actions: [
+                              TextButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: Text('확인'))
+                            ],
+                          ));
                   return;
                 }
 
-                var res = await _registerOrderRequest();
+                // var res = await _registerOrderRequest();
 
-                if (res) {
-                  await _updateUserBuyCountRequest();
-                  StoreMainPageState.currentNav = 0;
-                  if (_isCart) {
-                    data.setExistCart(false);
-                  }
-                  Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => PaymentWebViewPage(
-                                totalPrice: ((_getOriginTotalPrice() -
-                                        _getTotalDiscount()) +
-                                    _additionalPrice * widget.productCount),
-                                oID: _generatedOID,
-                                productName: widget.direct.prodName,
-                              )));
-                  // Navigator.pushReplacement(
-                  //     context,
-                  //     MaterialPageRoute(
-                  //         builder: (context) => PaymentCompletePage(
-                  //               result: {'orderID': _generatedOID},
-                  //               totalPrice: ((_getOriginTotalPrice() -
-                  //                   _getTotalDiscount())),
-                  //             )));
+                // if (res) {
+                //   await _updateUserBuyCountRequest();
+                StoreMainPageState.currentNav = 0;
+                if (_isCart) {
+                  data.setExistCart(false);
                 }
+                _generatedOID = DateTime.now().millisecondsSinceEpoch.toString();
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => PaymentWebViewPage(
+                              isCart: _isCart,
+                              oID: _generatedOID,
+                              additionalPrice: _isCart
+                                  ? widget.additionalPrice
+                                  : _additionalPrice,
+                              user: widget.user,
+                              productCount: widget.productCount,
+                              selectList: widget.selectList,
+                              optionList: widget.optionList,
+                              cart: widget.cart,
+                              direct: widget.direct,
+                              receiveMethod:
+                                  _receiveMethod == ReceiveMethod.DIRECT
+                                      ? '0'
+                                      : '1',
+                              option: _isCart
+                                  ? _entireOptionForCart
+                                  : _optionString +
+                                      (_requestOptionController.text.isEmpty
+                                          ? ''
+                                          : '\n' +
+                                              _requestOptionController.text),
+                              location: _receiveMethod == ReceiveMethod.DELIVERY
+                                  ? _locationController.text
+                                  : 'NULL',
+                            )));
               },
               child: Container(
                 alignment: Alignment.center,

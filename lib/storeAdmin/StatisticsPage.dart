@@ -129,7 +129,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
     } else if (_firstSelectionInResv &&
         _secondSelectionInResv &&
         _thirdSelectionInResv) {
-      return 'orderState >= 1 AND resv_state >= 1';
+      return '(orderState >= 1 AND orderState <= 3) AND resv_state >= 1';
     }
     setState(() {
       _firstSelectionInResv = true;
@@ -171,7 +171,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
     } else if (!_firstSelectionInOrder &&
         _secondSelectionInOrder &&
         _thirdSelectionInOrder) {
-      return 'orderState >= 2 AND resv_state = 0';
+      return '(orderState >= 2 AND orderState <= 3) ANDresv_state = 0';
     } else if (_firstSelectionInOrder &&
         !_secondSelectionInOrder &&
         _thirdSelectionInOrder) {
@@ -188,7 +188,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
     });
     Fluttertoast.showToast(
         msg: '구매 설정에는 반드시 체크가 되어 있어야 합니다. 자동으로 기본 체크 값으로 조회됩니다.');
-    return 'orderState >= 1 AND resv_state = 0';
+    return '(orderState >= 1 AND orderState <= 3) AND resv_state = 0';
   }
 
   /// 시작 날짜 및 종료 날짜, 그리고 쿼리 조건문 문자열을 바탕으로 모든 예약 데이터들을 가져오는 요청

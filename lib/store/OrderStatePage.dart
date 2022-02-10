@@ -115,6 +115,8 @@ class _OrderStatePageState extends State<OrderStatePage> {
         return Colors.lightBlue;
       case 3:
         return Colors.green;
+      case 4:
+        return Colors.grey;
       default:
         return Colors.grey;
     }
@@ -132,6 +134,8 @@ class _OrderStatePageState extends State<OrderStatePage> {
         return '주문 처리 중';
       case 3:
         return '결제완료 및 수령완료';
+      case 4:
+        return '결제취소 및 주문취소';
       default:
         return 'Error';
     }

@@ -23,6 +23,7 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
     3: '문구류',
     4: '핸드메이드'
   };
+
   bool _isCharged = false;
   int _state = 1;
 
@@ -112,6 +113,9 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
             int.parse(widget.data['orderState']) == 2)
         ? true
         : false;
+    if (int.parse(widget.data['orderState']) == 4) {
+      _isCharged = true;
+    }
     _state = int.parse(widget.data['orderState']);
     super.initState();
   }
@@ -141,7 +145,7 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
               )),
         ),
         floatingActionButton: _isCharged
-            ? _state == 3
+            ? _state == 3 || _state == 4
                 ? null
                 : FloatingActionButton(
                     child: Icon(Icons.qr_code_scanner),
@@ -238,7 +242,8 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
                   children: [
                     Text('결제 방식 ',
                         style: TextStyle(fontWeight: FontWeight.bold)),
-                    Text(' [ ${widget.data['payMethod']} ]')
+                    Text(
+                        ' [ ${widget.data['payMethod'] == '0' ? '신용카드' : '간편결제'} ]')
                   ],
                 ),
                 SizedBox(
@@ -389,6 +394,12 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
               style: TextStyle(fontWeight: FontWeight.bold),
             )
           ],
+        );
+      case 4:
+        return Text(
+          '결제 취소 및 주문이 취소되었습니다.',
+          style: TextStyle(
+              fontWeight: FontWeight.bold, fontSize: 15, color: Colors.grey),
         );
       default:
         return SizedBox();
