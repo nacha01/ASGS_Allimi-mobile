@@ -165,10 +165,12 @@ class _SignInPageState extends State<SignInPage> {
                     Text(
                       '로그인 중입니다.\n(3초 이상 지속될 경우 앱을 껐다 켜주세요)',
                       style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 13,
-                          decoration: TextDecoration.none,
-                          fontWeight: FontWeight.normal),
+                        color: Colors.white,
+                        fontSize: 13,
+                        decoration: TextDecoration.none,
+                        fontWeight: FontWeight.normal,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
                     CircularProgressIndicator(),
                   ],
