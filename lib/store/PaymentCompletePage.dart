@@ -7,9 +7,7 @@ import 'package:crypto/crypto.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hex/hex.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:cp949/cp949.dart' as cp949;
 
@@ -56,6 +54,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
   String _resultMessage = '';
   bool _isFinished = false;
   Map _cancelResponse;
+  String _resultCode = '';
   static const _KEY =
       '33F49GnCMS1mFYlGXisbUDzVf2ATWCl9k3R++d5hDd3Frmuos/XLx8XhXpe+LDYAbpGKZYSwtlyyLOtS/8aD7A==';
   static const _MID = 'nictest00m';
@@ -354,6 +353,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
     _isCreditSuccess =
         widget.responseData['ResultCode'] == '3001' ? true : false;
     _resultMessage = widget.responseData['ResultMsg'];
+    _resultCode = widget.responseData['ResultCode'];
     super.initState();
     _getOrderInfo();
     _processAfterPaying();
@@ -368,6 +368,9 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
   void _processAfterPaying() async {
     if (_isCreditSuccess) {
       var res = await _registerOrderRequest();
+      if (!res) {
+        _resultCode = 'O001'; // 커스텀 코드로 결제는 되었으나 DB에 주문 등록이 실패했다는 의미
+      }
     }
     setState(() {
       _isFinished = true;
@@ -396,294 +399,14 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
           ),
           backgroundColor: Color(0xFF9EE1E5),
           title: Text(
-            '결제 완료',
+            '결제 결과 페이지',
             style: TextStyle(
                 color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
           ),
           centerTitle: true,
         ),
         body: _isFinished
-            ? _isCreditSuccess
-                ? SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        SizedBox(
-                          height: size.height * 0.04,
-                        ),
-                        Text(
-                          '주문이 성공적으로 완료되었습니다!',
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(
-                          height: size.height * 0.02,
-                        ),
-                        Divider(
-                          thickness: 0.5,
-                          indent: 3,
-                          endIndent: 3,
-                        ),
-                        SizedBox(
-                          height: size.height * 0.03,
-                        ),
-                        Text(
-                          '주문번호 ${widget.responseData['Moid']}',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.lightBlue),
-                        ),
-                        SizedBox(
-                          height: size.height * 0.02,
-                        ),
-                        Column(
-                          children: _getProductList(size),
-                        ),
-                        SizedBox(
-                          height: size.height * 0.02,
-                        ),
-                        Card(
-                          child: Container(
-                            alignment: Alignment.center,
-                            width: size.width * 0.6,
-                            padding: EdgeInsets.all(size.width * 0.02),
-                            child: Text(
-                              '결제 금액  ${_formatPrice(int.parse(widget.responseData['Amt']))}원',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 15),
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: size.height * 0.02,
-                        ),
-                        Text(
-                          '주문 현황 및 상세 정보는 ',
-                          style: TextStyle(fontSize: 12),
-                        ),
-                        SizedBox(
-                          height: size.height * 0.01,
-                        ),
-                        Text(
-                          '마이페이지 → 내 주문 현황',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.red,
-                              fontSize: 15),
-                        ),
-                        SizedBox(
-                          height: size.height * 0.01,
-                        ),
-                        Text(' 에서도 확인할 수 있습니다.',
-                            style: TextStyle(fontSize: 12)),
-                        SizedBox(
-                          height: size.height * 0.03,
-                        ),
-                        Divider(
-                          thickness: 0.5,
-                          indent: 3,
-                          endIndent: 3,
-                        ),
-                        Text(
-                          '주문 인증용 QR 코드',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(
-                          height: size.height * 0.02,
-                        ),
-                        SizedBox(
-                          height: size.height * 0.015,
-                        ),
-                        Text(
-                          'QR 코드는 "내 주문 현황"에서 확인 가능합니다.',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 12),
-                        ),
-                        SizedBox(
-                          height: size.height * 0.02,
-                        ),
-                        Divider(
-                          thickness: 0.5,
-                          indent: 3,
-                          endIndent: 3,
-                        ),
-                        SizedBox(
-                          height: size.height * 0.02,
-                        ),
-                        Text(
-                          'QR 코드나 주문 번호는 본인이 주문을 했다는 것을 인증할 수 있는 수단으로써 상품을 수령하기 위해서는 반드시 필요한 것입니다.',
-                          style: TextStyle(fontSize: 11, color: Colors.grey),
-                          textAlign: TextAlign.center,
-                        ),
-                        SizedBox(
-                          height: size.height * 0.01,
-                        ),
-                        Divider(
-                          thickness: 0.5,
-                          indent: 3,
-                          endIndent: 3,
-                        ),
-                        SizedBox(
-                          height: size.height * 0.01,
-                        ),
-                        TextButton(
-                            onPressed: () {
-                              showDialog(
-                                  context: context,
-                                  builder: (context) => AlertDialog(
-                                        title: Text('결제 취소 요청',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 16)),
-                                        content: Text('정말로 결제를 취소하시겠습니까?',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 13)),
-                                        actions: [
-                                          TextButton(
-                                              onPressed: () async {
-                                                var res =
-                                                    await _cancelOrderHandling();
-                                                if (res) {
-                                                  showDialog(
-                                                      context: context,
-                                                      builder:
-                                                          (context) =>
-                                                              AlertDialog(
-                                                                title: Text(
-                                                                    '결제취소 성공',
-                                                                    style: TextStyle(
-                                                                        fontWeight:
-                                                                            FontWeight
-                                                                                .bold,
-                                                                        color: Colors
-                                                                            .green,
-                                                                        fontSize:
-                                                                            16)),
-                                                                content: Text(
-                                                                    '${_cancelResponse['ResultMsg']}',
-                                                                    style: TextStyle(
-                                                                        fontWeight:
-                                                                            FontWeight
-                                                                                .bold,
-                                                                        fontSize:
-                                                                            14)),
-                                                                actions: [
-                                                                  TextButton(
-                                                                      onPressed:
-                                                                          () {
-                                                                        Navigator.pop(
-                                                                            context);
-                                                                        Navigator.pop(
-                                                                            context);
-                                                                        Navigator.pop(
-                                                                            this.context);
-                                                                      },
-                                                                      child: Text(
-                                                                          '확인'))
-                                                                ],
-                                                              ));
-                                                } else {
-                                                  showDialog(
-                                                      context: context,
-                                                      builder:
-                                                          (context) =>
-                                                              AlertDialog(
-                                                                title: Text(
-                                                                  '결제취소 실패',
-                                                                  style: TextStyle(
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .bold,
-                                                                      color: Colors
-                                                                          .red,
-                                                                      fontSize:
-                                                                          16),
-                                                                ),
-                                                                content: Text(
-                                                                    '${_cancelResponse['ResultMsg']} (code-${_cancelResponse['ResultCode']}',
-                                                                    style: TextStyle(
-                                                                        fontWeight:
-                                                                            FontWeight
-                                                                                .bold,
-                                                                        fontSize:
-                                                                            14)),
-                                                                actions: [
-                                                                  TextButton(
-                                                                      onPressed:
-                                                                          () {
-                                                                        Navigator.pop(
-                                                                            context);
-                                                                        Navigator.pop(
-                                                                            context);
-                                                                        Navigator.pop(
-                                                                            this.context);
-                                                                      },
-                                                                      child: Text(
-                                                                          '확인'))
-                                                                ],
-                                                              ));
-                                                }
-                                              },
-                                              child: Text('예')),
-                                          TextButton(
-                                              onPressed: () =>
-                                                  Navigator.pop(context),
-                                              child: Text('아니오'))
-                                        ],
-                                      ));
-                            },
-                            child: Container(
-                              child: Text(
-                                '결제 취소하기',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black),
-                              ),
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(
-                                      width: 0.5, color: Colors.black),
-                                  color: Colors.red[400]),
-                              padding: EdgeInsets.all(size.width * 0.01),
-                              width: size.width * 0.4,
-                              height: size.height * 0.04,
-                            )),
-                        Text(
-                          '※ 결제 취소는 이 페이지에서만 가능합니다. 신중하게 판단해주세요.',
-                          style: TextStyle(fontSize: 10, color: Colors.red),
-                        )
-                      ],
-                    ),
-                  )
-                : SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        SizedBox(
-                          height: size.height * 0.04,
-                        ),
-                        Text(
-                          '결제에 실패하였습니다.',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.red,
-                              fontSize: 17),
-                        ),
-                        SizedBox(
-                          height: size.height * 0.02,
-                        ),
-                        Text(
-                            ' 실패 사유: $_resultMessage (code-${widget.responseData['ResultCode']})'),
-                        Text(
-                          '결제를 다시 시도하거나 실패 사유에 대한 문제를 해결하고 시도해주세요.',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 11,
-                              color: Colors.grey),
-                        )
-                      ],
-                    ),
-                  )
+            ? _layoutAccordingToResultCode(_resultCode, size)
             : Container(
                 height: size.height,
                 alignment: Alignment.center,
@@ -701,6 +424,437 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
               ),
       ),
     );
+  }
+
+  Widget _layoutAccordingToResultCode(String resultCode, Size size) {
+    switch (resultCode) {
+      case '3001': // 카드 결제 성공
+        return SingleChildScrollView(
+          child: Column(
+            children: [
+              Icon(
+                Icons.check,
+                color: Colors.lightGreenAccent,
+                size: 85,
+              ),
+              Text(
+                '주문이 성공적으로 완료되었습니다!',
+                style: TextStyle(
+                    fontSize: 19,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green),
+              ),
+              SizedBox(
+                height: size.height * 0.02,
+              ),
+              Divider(
+                thickness: 0.5,
+                indent: 3,
+                endIndent: 3,
+              ),
+              SizedBox(
+                height: size.height * 0.01,
+              ),
+              Text(
+                '주문번호 ${widget.responseData['Moid']}',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold, color: Colors.lightBlue),
+              ),
+              SizedBox(
+                height: size.height * 0.02,
+              ),
+              Column(
+                children: _getProductList(size),
+              ),
+              SizedBox(
+                height: size.height * 0.01,
+              ),
+              widget.option.isNotEmpty
+                  ? Container(
+                      width: size.width * 0.8,
+                      padding: EdgeInsets.all(size.width * 0.02),
+                      decoration: BoxDecoration(
+                          border: Border.all(width: 1, color: Colors.grey),
+                          borderRadius: BorderRadius.circular(8)),
+                      child: Column(
+                        children: [
+                          Text(
+                            '요청 사항 및 상품 옵션',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 11,
+                                color: Colors.black54),
+                          ),
+                          Text(
+                            widget.option,
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 12),
+                          ),
+                        ],
+                      ),
+                    )
+                  : SizedBox(),
+              SizedBox(
+                height: size.height * 0.01,
+              ),
+              Card(
+                child: Container(
+                  alignment: Alignment.center,
+                  width: size.width * 0.6,
+                  padding: EdgeInsets.all(size.width * 0.02),
+                  child: Text(
+                    '결제 금액  ${_formatPrice(int.parse(widget.responseData['Amt']))}원',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: size.height * 0.02,
+              ),
+              Text(
+                '주문 현황 및 상세 정보는 ',
+                style: TextStyle(fontSize: 12),
+              ),
+              SizedBox(
+                height: size.height * 0.01,
+              ),
+              Text(
+                '마이페이지 → 내 주문 현황',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red,
+                    fontSize: 15),
+              ),
+              SizedBox(
+                height: size.height * 0.01,
+              ),
+              Text(' 에서도 확인할 수 있습니다.', style: TextStyle(fontSize: 12)),
+              SizedBox(
+                height: size.height * 0.02,
+              ),
+              Divider(
+                thickness: 0.5,
+                indent: 3,
+                endIndent: 3,
+              ),
+              Text(
+                '주문 인증용 QR 코드',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              SizedBox(
+                height: size.height * 0.02,
+              ),
+              SizedBox(
+                height: size.height * 0.015,
+              ),
+              Text(
+                'QR 코드는 "내 주문 현황"에서 확인 가능합니다.',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                    color: Colors.blueGrey),
+              ),
+              SizedBox(
+                height: size.height * 0.02,
+              ),
+              Text(
+                '* QR 코드나 주문 번호는 본인이 주문을 했다는 것을 인증할 수 있는 수단으로써 상품을 수령하기 위해서는 반드시 필요한 것입니다.',
+                style: TextStyle(fontSize: 10, color: Colors.grey),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(
+                height: size.height * 0.01,
+              ),
+              Divider(
+                thickness: 2,
+                indent: 3,
+                endIndent: 3,
+              ),
+              SizedBox(
+                height: size.height * 0.02,
+              ),
+              TextButton(
+                  onPressed: () {
+                    showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                              title: Text('결제 취소 요청',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16)),
+                              content: Text('정말로 결제를 취소하시겠습니까?',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 13)),
+                              actions: [
+                                TextButton(
+                                    onPressed: () async {
+                                      var res = await _cancelOrderHandling();
+                                      if (res) {
+                                        showDialog(
+                                            barrierDismissible: false,
+                                            context: context,
+                                            builder: (context) => AlertDialog(
+                                                  title: Text('결제취소 성공',
+                                                      style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          color: Colors.green,
+                                                          fontSize: 16)),
+                                                  content: Text(
+                                                      '${_cancelResponse['ResultMsg']}',
+                                                      style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontSize: 14)),
+                                                  actions: [
+                                                    TextButton(
+                                                        onPressed: () {
+                                                          Navigator.pop(
+                                                              context);
+                                                          Navigator.pop(
+                                                              context);
+                                                          Navigator.pop(
+                                                              this.context);
+                                                        },
+                                                        child: Text('확인'))
+                                                  ],
+                                                ));
+                                      } else {
+                                        showDialog(
+                                            barrierDismissible: false,
+                                            context: context,
+                                            builder: (context) => AlertDialog(
+                                                  title: Text(
+                                                    '결제취소 실패',
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: Colors.red,
+                                                        fontSize: 16),
+                                                  ),
+                                                  content: Text(
+                                                      '${_cancelResponse['ResultMsg']} (code-${_cancelResponse['ResultCode']}',
+                                                      style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontSize: 14)),
+                                                  actions: [
+                                                    TextButton(
+                                                        onPressed: () {
+                                                          Navigator.pop(
+                                                              context);
+                                                          Navigator.pop(
+                                                              context);
+                                                        },
+                                                        child: Text('확인'))
+                                                  ],
+                                                ));
+                                      }
+                                    },
+                                    child: Text('예')),
+                                TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: Text('아니오'))
+                              ],
+                            ));
+                  },
+                  child: Container(
+                    child: Text(
+                      '결제 취소하기',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.white),
+                    ),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(width: 0.5, color: Colors.black),
+                        color: Colors.red),
+                    padding: EdgeInsets.all(size.width * 0.01),
+                    width: size.width * 0.6,
+                    height: size.height * 0.04,
+                  )),
+              Text(
+                '※ 결제 취소는 이 페이지에서만 가능합니다. 신중하게 판단해주세요.',
+                style: TextStyle(fontSize: 10, color: Colors.red),
+              )
+            ],
+          ),
+        );
+      case '2001': // 망취소
+        return Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.cancel_outlined,
+                color: Colors.deepOrange,
+                size: 85,
+              ),
+              Text(
+                '결제가 취소되었습니다.',
+                style: TextStyle(
+                    color: Colors.orange,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20),
+              ),
+              SizedBox(
+                height: size.height * 0.02,
+              ),
+              Padding(
+                padding: EdgeInsets.all(size.width * 0.03),
+                child: Text(
+                  '네트워크 오류로 인해 결제 정상승인이 이루어지지 않아 결제가 자동으로 취소되었습니다.\n(Connection time-out)',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              Text(
+                '* 결제를 원하시면 다시 시도 바랍니다.',
+                style: TextStyle(color: Colors.grey, fontSize: 11),
+              ),
+              SizedBox(
+                height: size.height * 0.08,
+              )
+            ],
+          ),
+        );
+      case 'O001':
+        return Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.help_outline,
+                size: 85,
+                color: Colors.grey,
+              ),
+              Text(
+                '결제에 성공했으나 주문 등록에는 실패하였습니다. ',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 19,
+                    color: Colors.black54),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(
+                height: size.height * 0.03,
+              ),
+              Text(
+                '결제는 정상승인 되었으나 결제 정보를 저장하는데 실패하였습니다.',
+                textAlign: TextAlign.center,
+              ),
+              Padding(
+                padding: EdgeInsets.all(size.width * 0.03),
+                child: Text(
+                  '* 결제 취소 후 결제를 원하시면 다시 시도바랍니다.',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 11,
+                      color: Colors.grey),
+                ),
+              ),
+              TextButton(
+                  onPressed: () async {
+                    var res = await _cancelPaymentRequest();
+                    if (res == '2001') {
+                      showDialog(
+                          barrierDismissible: false,
+                          context: context,
+                          builder: (context) => AlertDialog(
+                                title: Text('결제취소 성공',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.green,
+                                        fontSize: 16)),
+                                content: Text('${_cancelResponse['ResultMsg']}',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14)),
+                                actions: [
+                                  TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                        Navigator.pop(this.context);
+                                      },
+                                      child: Text('확인'))
+                                ],
+                              ));
+                    } else {
+                      showDialog(
+                          barrierDismissible: false,
+                          context: context,
+                          builder: (context) => AlertDialog(
+                                title: Text(
+                                  '결제취소 실패',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.red,
+                                      fontSize: 16),
+                                ),
+                                content: Text(
+                                    '${_cancelResponse['ResultMsg']} (code-${_cancelResponse['ResultCode']}',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14)),
+                                actions: [
+                                  TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: Text('확인'))
+                                ],
+                              ));
+                    }
+                  },
+                  child: Text('결제 취소하기'))
+            ],
+          ),
+        );
+      default: // 이외에 결제 실패 오류
+        return Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.warning_amber_outlined,
+                color: Colors.red,
+                size: 85,
+              ),
+              Text(
+                '결제에 실패했습니다!',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red,
+                    fontSize: 20),
+              ),
+              SizedBox(
+                height: size.height * 0.03,
+              ),
+              Text(
+                ' | 실패 사유 |\n$_resultMessage (code-${widget.responseData['ResultCode']})',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              Padding(
+                padding: EdgeInsets.all(size.width * 0.03),
+                child: Text(
+                  '* 결제를 다시 시도하거나 실패 사유에 대한 문제를 해결하고 시도해주세요.',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 10,
+                      color: Colors.grey),
+                ),
+              ),
+              SizedBox(
+                height: size.height * 0.08,
+              )
+            ],
+          ),
+        );
+    }
   }
 
   Widget _productLayout(String name, int quantity, int category, Size size) {
