@@ -20,7 +20,13 @@ class _FullListPageState extends State<FullListPage> {
   bool _isFinished = false;
   final _payState = ['미결제', '결제 완료'];
   final _reservationState = ['예약 중', '수령 준비', '수령 완료'];
-  final _orderState = ['미결제', '결제 완료 및 미수령', '주문 처리 중', '결제완료 및 수령 완료', '결제 취소'];
+  final _orderState = [
+    '미결제',
+    '결제 완료 및 미수령',
+    '주문 처리 중',
+    '결제완료 및 수령 완료',
+    '결제 취소'
+  ];
 
   Future<bool> _getReservationList() async {
     String url =
