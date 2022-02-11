@@ -438,7 +438,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
                 size: 85,
               ),
               Text(
-                '주문이 성공적으로 완료되었습니다!',
+                '결제가 성공적으로 완료되었습니다!',
                 style: TextStyle(
                     fontSize: 19,
                     fontWeight: FontWeight.bold,
