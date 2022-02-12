@@ -5,20 +5,17 @@ import 'dart:io';
 import 'package:asgshighschool/data/exist_cart.dart';
 import 'package:asgshighschool/data/renewUser_data.dart';
 import 'package:asgshighschool/main/GameListPage.dart';
-import 'package:asgshighschool/memoryGame/MemoryGamePage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
 import '../store/StoreSplashPage.dart';
 import 'SettingPage.dart';
 import '../data/user_data.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
 import '../WebView.dart';
 
 final List<String> imgList = [
@@ -29,7 +26,6 @@ final List<String> imgList = [
 
 class HomePage extends StatefulWidget {
   HomePage({Key key, this.user, this.token}) : super(key: key);
-  static const routeName = '/home';
   final User user;
   final String token;
 
@@ -46,27 +42,27 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool isWebLoading = true;
   bool _isAndroid = true;
+  bool _isMoved = false;
+
   @override
   void initState() {
     super.initState();
     _checkUserToken(widget.user.uid);
-
-    //getMainImage();
     _numberOfTabs = 4;
     tabController = TabController(vsync: this, length: _numberOfTabs);
     _scrollViewController = ScrollController();
+
     if (Platform.isAndroid) {
       _isAndroid = true;
     } else if (Platform.isIOS) {
       _isAndroid = false;
     }
-    // tabController.addListener(() {
-    //   if (tabController.index == 1) {
-    //     _goDuruDuru();
-    //   } else if (tabController.index == 2) {
-    //     _goGame();
-    //   }
-    // });
+    tabController.addListener(() {
+      if (tabController.index == 1 && !_isMoved) {
+        _isMoved = true;
+        _goDuruDuru();
+      }
+    });
   }
 
   Future<bool> _checkUserToken(String uid) async {
@@ -103,6 +99,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   user: widget.user,
                 )));
     tabController.index = 0;
+    _isMoved = false;
   }
 
   void _goGame() async {
@@ -122,24 +119,6 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  void getMainImage() async {
-    await Firestore.instance
-        .collection('main_img')
-        .getDocuments()
-        .then((value) {
-      mainImage = value;
-      print(mainImage.documents[0]['img_url']);
-      print(mainImage.documents[0]['img_url2']);
-      print(mainImage.documents[0]['img_url3']);
-
-      for (int i = 0; i < 3; ++i) {
-        imgList.add(
-            mainImage.documents[0][i == 0 ? 'img_url' : 'img_url${i + 1}']);
-      }
-      print(imgList.length);
-    });
-  }
-
   Future<bool> _checkExistCart() async {
     String uri = 'http://nacha01.dothome.co.kr/sin/arlimi_checkCart.php';
     final response = await http.get(uri + '?uid=${widget.user.uid}');
@@ -152,35 +131,13 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
               '')
           .trim();
       if (int.parse(result) >= 1) {
-        // Provider.of<ExistCart>(this.context).setExistCart(true);
         return true;
       } else {
-        // Provider.of<ExistCart>(this.context).setExistCart(false);
         return false;
       }
     } else {
       return false;
     }
-  }
-
-  Future<List> gets() async {
-    String url = 'https://www.googleapis.com/youtube/v3/search?';
-    String query = 'q=플러터';
-    String key = '[Your API Key]';
-    String part = 'snippet';
-    String maxResults = '7';
-    String type = 'video';
-
-    List jsonData = [];
-
-    url = '$url$query&key=$key&part=$part&maxResults=$maxResults&type=$type';
-    await http.get(url, headers: {"Accept": "application/json"}).then((value) {
-      var data = json.decode(value.body);
-      for (var c in data['items']) {
-        jsonData.add(c);
-      }
-    });
-    return jsonData;
   }
 
   @override
@@ -508,7 +465,6 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     background: Column(
                       children: <Widget>[
                         appBarAbove(),
-                        //appBarBelow(),
                       ],
                     ),
                   ),
@@ -591,7 +547,9 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
               actions: [
                 FlatButton(
                     onPressed: () {
-                      Navigator.pop(context, true);
+                      while (Navigator.canPop(context)) {
+                        Navigator.pop(context, true);
+                      }
                     },
                     child: Text('예',
                         style: TextStyle(fontWeight: FontWeight.bold))),
@@ -821,19 +779,6 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
         ),
       ),
     );
-  }
-
-  Widget appBarBelow() {
-    return Padding(
-        padding: EdgeInsets.only(top: 0, right: 17, left: 17),
-        child: TextField(
-          controller: nameHolder,
-          autocorrect: true,
-        ));
-  }
-
-  String numberWithComma(int param) {
-    return NumberFormat('###,###,###,###').format(param).replaceAll(' ', '');
   }
 
   Widget ink(BuildContext context, String title, IconData icon, String url) {
