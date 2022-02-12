@@ -637,6 +637,7 @@ class _OrderPageState extends State<OrderPage> {
                       height: size.height * 0.02,
                     ),
                     Container(
+                      width: size.width,
                       padding: EdgeInsets.all(size.width * 0.025),
                       color: Colors.grey[200],
                       child: Column(
