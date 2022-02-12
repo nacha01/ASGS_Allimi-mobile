@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 // Flutter Default Setting
 
 class SplashPage extends StatefulWidget {
-  static const routeName = '/SplashPage';
   @override
   _SplashPageState createState() => _SplashPageState();
 }
