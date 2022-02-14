@@ -91,7 +91,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
   };
   var _selectedCategory = '음식류'; // 드롭다운 아이템 default
   String serverImageUri =
-      'http://nacha01.dothome.co.kr/sin/arlimi_productImage/';
+      'http://nacha01.dothome.co.kr/sin/arlimi_productImage/64_';
 
   AsyncMemoizer<bool> _memoizer;
 
@@ -1727,7 +1727,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
   }
 
   void test(int index) async {
-    int i=0;
+    int i = 0;
     await for (var value in _streamControllerList[index].stream) {
       print('${i++}번째 $value');
     }
