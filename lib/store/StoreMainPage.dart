@@ -32,15 +32,6 @@ class StoreMainPageState extends State<StoreMainPage> {
     final Size size = MediaQuery.of(context).size;
     var data = Provider.of<ExistCart>(context);
     return Scaffold(
-      // floatingActionButton: widget.user.isAdmin
-      //     ? FloatingActionButton(
-      //         child: Icon(Icons.qr_code_scanner),
-      //         onPressed: () {
-      //           Navigator.push(context,
-      //               MaterialPageRoute(builder: (context) => QRScannerPage()));
-      //         },
-      //       )
-      //     : null,
       body: SafeArea(
           child:
               getWidgetAccordingIndex(currentNav == 0 ? 1 : currentNav, size)),
