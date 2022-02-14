@@ -1,10 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:asgshighschool/data/exist_cart.dart';
 import 'package:asgshighschool/data/renewUser_data.dart';
 import 'package:asgshighschool/main/GameListPage.dart';
+import 'package:asgshighschool/main/SelectImagePage.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
@@ -43,14 +46,18 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
   bool isWebLoading = true;
   bool _isAndroid = true;
   bool _isMoved = false;
+  bool _controllerWaiting = true;
+  String _prefixImgUrl = 'http://nacha01.dothome.co.kr/sin/arlimi_image/';
+  List<String> _bannerImgNameList = [];
+  var _swiperController = SwiperController();
 
   @override
   void initState() {
     super.initState();
+    _getBannerImage();
     _checkUserToken(widget.user.uid);
-    _numberOfTabs = 4;
+    _numberOfTabs = 3;
     tabController = TabController(vsync: this, length: _numberOfTabs);
-    _scrollViewController = ScrollController();
 
     if (Platform.isAndroid) {
       _isAndroid = true;
@@ -83,6 +90,29 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
       return true;
     } else {
       return false;
+    }
+  }
+
+  Future<void> _getBannerImage() async {
+    String url =
+        'http://nacha01.dothome.co.kr/sin/main_getAllSelectedImage.php';
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      String result = utf8
+          .decode(response.bodyBytes)
+          .replaceAll(
+              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+              '')
+          .trim();
+      _bannerImgNameList.clear();
+      List map1st = jsonDecode(result);
+      for (int i = 0; i < map1st.length; ++i) {
+        map1st[i] = jsonDecode(map1st[i]);
+        _bannerImgNameList.add(map1st[i]['imgName']);
+      }
+      setState(() {
+        _controllerWaiting = false;
+      });
     }
   }
 
@@ -142,7 +172,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final Size size = MediaQuery.of(context).size;
+    final size = MediaQuery.of(context).size;
     var data = Provider.of<ExistCart>(context);
     var providedUser = Provider.of<RenewUserData>(context);
     Widget homeTab = SingleChildScrollView(
@@ -150,21 +180,28 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
         children: <Widget>[
           Container(
             height: 210,
-            child: Swiper(
-              control: SwiperControl(),
-              autoplay: true,
-              pagination: SwiperPagination(alignment: Alignment.bottomCenter),
-              itemCount: imgList.length,
-              itemBuilder: (BuildContext context, int index) {
-                return GestureDetector(
-                  onTap: () {},
-                  child: Image(
-                    image: AssetImage('assets/images/' + imgList[index]),
-                    fit: BoxFit.fill,
+            child: _controllerWaiting
+                ? SizedBox()
+                : Swiper(
+                    controller: _swiperController,
+                    autoplay: true,
+                    pagination:
+                        SwiperPagination(alignment: Alignment.bottomCenter),
+                    itemCount: _bannerImgNameList.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return CachedNetworkImage(
+                        imageUrl: _prefixImgUrl + _bannerImgNameList[index],
+                        fit: BoxFit.cover,
+                        errorWidget: (context, url, error) {
+                          return Text(
+                            '이미지를 불러오는데 실패하였습니다.',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 12),
+                          );
+                        },
+                      );
+                    },
                   ),
-                );
-              },
-            ),
           ),
           Padding(
             padding: EdgeInsets.only(left: 6, right: 6, top: 10, bottom: 6),
@@ -263,189 +300,6 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
         ],
       ),
     );
-
-    Widget asgsMovieTab = Column(
-      children: [
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          child: Row(
-            children: [
-              RichText(
-                  textAlign: TextAlign.start,
-                  text: TextSpan(children: <TextSpan>[
-                    TextSpan(
-                      text: ' 안산강서고 알림방입니다.',
-                      style: TextStyle(
-                          fontSize: 15,
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    TextSpan(
-                      // text: '(교내용입니다.)',
-                      style: TextStyle(
-                          fontSize: 15,
-                          color: Colors.blue,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ])),
-              Spacer(),
-              //Icon(Icons.arrow_forward_ios)
-            ],
-          ),
-        ),
-        /*
-        Expanded(
-          child: ListView.builder(
-              padding: EdgeInsets.all(10),
-              itemCount: widget.books.documents.length,
-              itemBuilder: (BuildContext context, int index) {
-                return GestureDetector(
-                  // onTap: () {
-                  //   Navigator.push(
-                  //       context,
-                  //       MaterialPageRoute(
-                  //           builder: (context) => BookPage(
-                  //               user: widget.user,
-                  //               Book_data: widget.books,
-                  //               number: index)));
-                  // },
-                  child: Card(
-                      child: Container(
-                    margin: EdgeInsets.all(10),
-                    width: 140,
-                    height: 140,
-                    child: Row(
-                      children: [
-                        Image.network(widget.books.documents[index]['img_url']),
-                        SizedBox(
-                          width: 14,
-                        ),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                // titleTestss(index),
-                                //'${widget.books.documents[index]['author']}
-                                '강서고 컴퓨터 동아리(테라바이트)가 만들어가는 알리미입니다. 많은 기대와 관심 부탁드립니다.',
-                                //widget.books.documents[index]['name'],
-                                style: TextStyle(fontSize: 15),
-                              ),
-                              Spacer(),
-                              Text(
-                                '안산강서고',
-                                //widget.books.documents[index]['author'],
-                                style: TextStyle(color: Colors.grey),
-                              ),
-                              //Text(widget.books.documents[index]['publisher']),
-                              //Text(
-                              //'${numberWithComma(widget.books.documents[index]['value'])}원',
-                              //style:
-                              //  TextStyle(color: Colors.blue, fontSize: 18),
-                              //),
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
-                  )),
-                );
-              }),
-        ),
-        */
-      ],
-    );
-
-    /*
-    Widget interviewTab = Column(
-      children: [
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          child: Row(
-            children: [
-              RichText(
-                  textAlign: TextAlign.start,
-                  text: TextSpan(children: <TextSpan>[
-                    TextSpan(
-                      text: '수시 면접 기출 문제 모음 ',
-                      style: TextStyle(
-                          fontSize: 15,
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    TextSpan(
-                      text: '(교내용입니다.)',
-                      style: TextStyle(
-                          fontSize: 15,
-                          color: Colors.blue,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ])),
-              Spacer(),
-              //Icon(Icons.arrow_forward_ios)
-            ],
-          ),
-        ),
-        Expanded(
-          child: ListView.builder(
-              padding: EdgeInsets.all(10),
-              itemCount: widget.books.documents.length,
-              itemBuilder: (BuildContext context, int index) {
-                return GestureDetector(
-                  // onTap: () {
-                  //   Navigator.push(
-                  //       context,
-                  //       MaterialPageRoute(
-                  //           builder: (context) => BookPage(
-                  //               user: widget.user,
-                  //               Book_data: widget.books,
-                  //               number: index)));
-                  // },
-                  child: Card(
-                      child: Container(
-                    margin: EdgeInsets.all(10),
-                    width: 140,
-                    height: 140,
-                    child: Row(
-                      children: [
-                        Image.network(widget.books.documents[index]['img_url']),
-                        SizedBox(
-                          width: 14,
-                        ),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                '수시에 지원한 선배들이 남긴 자료입니다. 이 자료는 안산강서고 교내에서만 열람이 가능합니다.',
-                                //widget.books.documents[index]['name'],
-                                style: TextStyle(fontSize: 15),
-                              ),
-                              Spacer(),
-                              Text(
-                                '안산강서고',
-                                //widget.books.documents[index]['author'],
-                                style: TextStyle(color: Colors.grey),
-                              ),
-                              //Text(widget.books.documents[index]['publisher']),
-                              //Text(
-                              //'${numberWithComma(widget.books.documents[index]['value'])}원',
-                              //style:
-                              //  TextStyle(color: Colors.blue, fontSize: 18),
-                              //),
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
-                  )),
-                );
-              }),
-        ),
-
-      ],
-    );
-  */
     return WillPopScope(
       onWillPop: _onBackPressed,
       child: Scaffold(
@@ -476,18 +330,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   bottom: TabBar(
                     labelStyle: TextStyle(fontSize: 13),
                     onTap: (index) async {
-                      if (index == 1) {
-                        tabController.index = 0;
-                        var res = await _checkExistCart();
-                        data.setExistCart(res);
-                        providedUser.setNewUser(widget.user);
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => StoreSplashPage(
-                                      user: widget.user,
-                                    )));
-                      } else if (index == 3) {
+                      if (index == 3) {
                         tabController.index = 0;
                         Navigator.push(
                             context,
@@ -503,10 +346,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     tabs: <Tab>[
                       Tab(text: "Home"),
                       Tab(text: "두루두루"),
-                      Tab(text: "알리미 공지사항"),
-                      Tab(
-                        text: '게임',
-                      )
+                      Tab(text: '게임')
                     ],
                     controller: tabController,
                   ),
@@ -515,12 +355,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
             },
             body: TabBarView(
               controller: tabController,
-              children: [
-                homeTab,
-                movingToStorePage(),
-                asgsMovieTab,
-                movingToGamePage()
-              ],
+              children: [homeTab, movingToStorePage(), movingToGamePage()],
             ),
           )),
     );
@@ -528,7 +363,16 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   Widget movingToStorePage() {
     return Stack(
-      children: [Center(child: Text('잠시만 기다려주세요. 화면 전환 대기 중...'))],
+      children: [
+        Center(
+            child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('잠시만 기다려주세요. 화면 전환 대기 중...'),
+            CircularProgressIndicator()
+          ],
+        ))
+      ],
     );
   }
 
@@ -703,20 +547,26 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                       )));
                         },
                       ),
-                      // ElevatedButton(
-                      //   child: Text("설문조사 바로가기"),
-                      //   // color: Colors.white,
-                      //   onPressed: () {
-                      //     Navigator.push(
-                      //         context,
-                      //         MaterialPageRoute(
-                      //             builder: (context) => WebViewPage(
-                      //                   title: '강서 설문조사',
-                      //                   baseUrl:
-                      //                       'https://docs.google.com/forms/d/1Ql4kIHZduTRZ4pExAoImEQr6IaVDI0mQ8dm-nuMtQU8/edit',
-                      //                 )));
-                      //   },
-                      // ),
+                      widget.user.isAdmin
+                          ? ListTile(
+                              title: Text('배너 사진 관리',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.red)),
+                              trailing: Icon(
+                                Icons.arrow_forward_ios,
+                                color: Colors.red,
+                              ),
+                              onTap: () async {
+                                await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            SelectImagePage()));
+                              },
+                            )
+                          : SizedBox(),
                     ],
                   ),
                 ),
