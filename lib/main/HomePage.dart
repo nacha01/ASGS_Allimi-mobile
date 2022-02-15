@@ -7,6 +7,7 @@ import 'package:asgshighschool/data/exist_cart.dart';
 import 'package:asgshighschool/data/renewUser_data.dart';
 import 'package:asgshighschool/main/GameListPage.dart';
 import 'package:asgshighschool/main/SelectImagePage.dart';
+import 'package:asgshighschool/store/UpdateUserPage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
@@ -474,6 +475,33 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       },
                     ),
                   )),
+                ),
+                Row(
+                  children: [
+                    TextButton(
+                        onPressed: () async {
+                          await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => UpdateUserPage(
+                                        user: widget.user,
+                                      )));
+                        },
+                        child: Container(
+                          padding: EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              border:
+                                  Border.all(width: 1, color: Colors.black54)),
+                          child: Text(
+                            '내 정보 가기',
+                            style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        )),
+                  ],
                 ),
                 Expanded(
                   child: ListView(
