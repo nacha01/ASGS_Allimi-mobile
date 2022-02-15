@@ -210,6 +210,9 @@ class _UpdatePasswordPageState extends State<UpdatePasswordPage> {
                       msg: msg,
                       toastLength: Toast.LENGTH_SHORT,
                       gravity: ToastGravity.BOTTOM);
+                  if (res == 1) {
+                    Navigator.pop(context);
+                  }
                 },
                 child: Text('비밀번호 변경하기')),
           )
