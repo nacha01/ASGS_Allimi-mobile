@@ -10,8 +10,9 @@ class User {
   int _point;
   bool _isAdmin = false;
   String _adminKey;
+  String _email = '';
   User(this._uid, this._token, this._name, this._identity, this._studentId,
-      this._nickName, this._rDate, this._buyCount, this._point);
+      this._nickName, this._rDate, this._buyCount, this._point, this._email);
 
   User.fromJson(Map<String, dynamic> json)
       : _uid = json['uid'],
@@ -22,7 +23,8 @@ class User {
         _nickName = json['nickname'],
         _rDate = json['reg_date'],
         _buyCount = int.parse(json['buy_count']),
-        _point = int.parse(json['point']);
+        _point = int.parse(json['point']),
+        _email = json['email'];
 
   int get point => _point;
 
@@ -88,5 +90,11 @@ class User {
 
   set adminKey(String value) {
     _adminKey = value;
+  }
+
+  String get email => _email;
+
+  set email(String value) {
+    _email = value;
   }
 }
