@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:asgshighschool/main/ReportBugPage.dart';
@@ -34,15 +35,43 @@ class _SignInPageState extends State<SignInPage> {
   TextEditingController _idRegisterController = TextEditingController();
   TextEditingController _passwordRegisterController = TextEditingController();
   TextEditingController _nickNameController = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _updateEmailController = TextEditingController();
+  TextEditingController _findEmailControllerID = TextEditingController();
+  TextEditingController _findNameControllerID = TextEditingController();
+  TextEditingController _findGradeControllerID = TextEditingController();
+  TextEditingController _findIdControllerPW = TextEditingController();
+  TextEditingController _findEmailControllerPW = TextEditingController();
+  TextEditingController _findNameControllerPW = TextEditingController();
+  TextEditingController _findGradeControllerPW = TextEditingController();
   SharedPreferences _pref;
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   String _key = '';
-  bool _isLogin = true;
+  String _resultID = '';
+  String _resultPW = '';
   bool _isChecked = false;
+  int _tapState = 1;
   final _statusList = ['재학생', '학부모', '교사', '졸업생', '기타'];
   final _statusMap = {'재학생': 1, '학부모': 2, '교사': 3, '졸업생': 4, '기타': 5};
   var _selectedValue = '재학생';
-
+  final _hexValueList = [
+    '0',
+    '1',
+    '2',
+    '3',
+    '4',
+    '5',
+    '6',
+    '7',
+    '8',
+    '9',
+    'a',
+    'b',
+    'c',
+    'd',
+    'e',
+    'f'
+  ];
   bool isTwoRow() {
     if (_selectedValue == '재학생' || _selectedValue == '학부모') {
       return true;
@@ -143,6 +172,16 @@ class _SignInPageState extends State<SignInPage> {
     }
   }
 
+  String _getRandomPassword() {
+    // 0~F 까지의 랜덤 값을 6자리로 생성
+    String value = '';
+    for (int i = 0; i < 6; ++i) {
+      int rdIndex = Random().nextInt(15);
+      value += _hexValueList[rdIndex];
+    }
+    return value;
+  }
+
   void _loadLoginInfo() async {
     _pref = await SharedPreferences.getInstance();
     if (_pref != null) {
@@ -206,6 +245,78 @@ class _SignInPageState extends State<SignInPage> {
                   ));
           return;
         } else {
+          if (result.email.isEmpty) {
+            await showDialog(
+                barrierDismissible: false,
+                context: context,
+                builder: (context) => AlertDialog(
+                      title: Text(
+                        '이메일 필수 입력 안내',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            '※ 버전 업데이트로 인해 본인인증 수단으로 기존에 가입했던 사용자분들의 이메일 정보를 저장하기 위해 이메일을 필수로 입력바랍니다.',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 13),
+                          ),
+                          SizedBox(
+                            height: 25,
+                          ),
+                          Container(
+                            decoration: BoxDecoration(
+                                border:
+                                    Border.all(width: 0.5, color: Colors.black),
+                                color: Colors.grey[200]),
+                            child: TextField(
+                              controller: _updateEmailController,
+                              decoration: InputDecoration(
+                                hintText: '이메일을 입력해주세요.',
+                                hintStyle: TextStyle(color: Colors.grey),
+                              ),
+                              keyboardType: TextInputType.emailAddress,
+                            ),
+                          )
+                        ],
+                      ),
+                      actions: [
+                        TextButton(
+                            onPressed: () async {
+                              if (_updateEmailController.text.isEmpty ||
+                                  !_updateEmailController.text.contains('@')) {
+                                return;
+                              }
+                              var res = await _updateEmailRequest();
+                              if (res) {
+                                Navigator.pop(context);
+                                Fluttertoast.showToast(msg: '이메일 등록 성공');
+                                result.email = _updateEmailController.text;
+                              } else {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      Future.delayed(
+                                          Duration(milliseconds: 300), () {
+                                        Navigator.pop(context);
+                                      });
+                                      return AlertDialog(
+                                        title: Text(
+                                          '등록 실패',
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      );
+                                    });
+                              }
+                            },
+                            child: Text('등록하기'))
+                      ],
+                    ));
+          }
           result.isAdmin = await _judgeIsAdminAccount();
           if (result.isAdmin) {
             result.adminKey = _key;
@@ -237,6 +348,88 @@ class _SignInPageState extends State<SignInPage> {
                 )));
   }
 
+  Future<bool> _updateEmailRequest() async {
+    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_updateEmail.php';
+    final response = await http.post(url, body: <String, String>{
+      'uid': _idController.text,
+      'email': _updateEmailController.text
+    });
+
+    if (response.statusCode == 200) {
+      String result = utf8
+          .decode(response.bodyBytes)
+          .replaceAll(
+              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+              '')
+          .trim();
+      if (result.contains('UPDATED')) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+
+  Future<String> _getFoundUserID() async {
+    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_findUserID.php';
+    final response = await http.post(url, body: <String, String>{
+      'name': _findNameControllerID.text,
+      'email': _findEmailControllerID.text,
+      'grade': _findGradeControllerID.text.isEmpty
+          ? 'X'
+          : _findGradeControllerID.text
+    });
+
+    if (response.statusCode == 200) {
+      String result = utf8
+          .decode(response.bodyBytes)
+          .replaceAll(
+              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+              '')
+          .trim();
+      if (result.contains('NOT FOUND')) {
+        return '해당하는 ID가 존재하지 않습니다!';
+      } else {
+        return result;
+      }
+    } else {
+      return '아이디 요청 실패';
+    }
+  }
+
+  Future<bool> _changeRandomPassword(String pw) async {
+    String url =
+        'http://nacha01.dothome.co.kr/sin/arlimi_changePasswordForFind.php';
+    final response = await http.post(url, body: <String, String>{
+      'uid': _findIdControllerPW.text,
+      'email': _findEmailControllerPW.text,
+      'name': _findNameControllerPW.text,
+      'grade': _findGradeControllerPW.text.isEmpty
+          ? 'X'
+          : _findGradeControllerPW.text,
+      'password': pw
+    });
+
+    if (response.statusCode == 200) {
+      String result = utf8
+          .decode(response.bodyBytes)
+          .replaceAll(
+              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+              '')
+          .trim();
+      print(result);
+      if (result.contains('UPDATED')) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+
   Future<void> _postRegisterRequest() async {
     Navigator.pop(context);
     String uri = 'http://nacha01.dothome.co.kr/sin/arlimi_register.php';
@@ -249,7 +442,8 @@ class _SignInPageState extends State<SignInPage> {
       'name': _nameController.text.toString(),
       'nickname': _nickNameController.text.toString(),
       'identity': _statusMap[_selectedValue].toString(),
-      'student_id': isTwoRow() ? _gradeController.text.toString() : 'NULL'
+      'student_id': isTwoRow() ? _gradeController.text.toString() : 'NULL',
+      'email': _emailController.text
     });
 
     if (response.statusCode == 200) {
@@ -344,7 +538,8 @@ class _SignInPageState extends State<SignInPage> {
       if (response.body.contains('일일 트래픽을 모두 사용하였습니다.')) {
         print('일일 트래픽 모두 사용 in 로그인');
         // 임시 유저로 이동
-        return User('tmp', 'tmp', 'tmp', 5, 'tmp', 'tmp', 'tmp', 0, 0);
+        return User(
+            'tmp', 'tmp', 'tmp', 5, 'tmp', 'tmp', 'tmp', 0, 0, 'tmp@tmp');
       }
       String result = utf8
           .decode(response.bodyBytes)
@@ -360,7 +555,7 @@ class _SignInPageState extends State<SignInPage> {
 
   Future<bool> _judgeIsAdminAccount() async {
     String uri =
-        'http://nacha01.dothome.co.kr/sin/arlimi_isAdmin.php?uid=${_idController.text}&pw=${_passwordController.text}';
+        'http://nacha01.dothome.co.kr/sin/arlimi_isAdmin.php?uid=${_idController.text}';
     final response = await http.get(uri, headers: <String, String>{
       'Content-Type': 'application/x-www-form-urlencoded'
     });
@@ -407,17 +602,17 @@ class _SignInPageState extends State<SignInPage> {
                   child: Text(
                     '로그인 하기\nLogin',
                     textAlign: TextAlign.center,
-                    textScaleFactor: _isLogin ? 1.2 : 1.1,
+                    textScaleFactor: _tapState == 1 ? 1.2 : 1.1,
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   width: size.width * 0.3,
                   height: size.height * 0.08,
                   alignment: Alignment.center,
-                  color: _isLogin ? Color(0xFFF9F7F8) : Color(0xFFDAE2EF),
+                  color: _tapState == 1 ? Color(0xFFF9F7F8) : Color(0xFFDAE2EF),
                 ),
                 onPressed: () {
                   setState(() {
-                    _isLogin = true;
+                    _tapState = 1;
                   });
                 },
               ),
@@ -427,34 +622,59 @@ class _SignInPageState extends State<SignInPage> {
                   padding: EdgeInsets.all(size.width * 0.01),
                   child: Text('회원가입 하기\nJoin Membership',
                       textAlign: TextAlign.center,
-                      textScaleFactor: _isLogin ? 1.1 : 1.2,
+                      textScaleFactor: _tapState == 2 ? 1.2 : 1.1,
                       style: TextStyle(fontWeight: FontWeight.bold)),
                   width: size.width * 0.4,
                   height: size.height * 0.08,
                   alignment: Alignment.center,
-                  color: _isLogin ? Color(0xFFDAE2EF) : Color(0xFFF9F7F8),
+                  color: _tapState == 2 ? Color(0xFFF9F7F8) : Color(0xFFDAE2EF),
                 ),
                 onPressed: () {
                   setState(() {
-                    _isLogin = false;
+                    _tapState = 2;
                   });
                 },
               ),
               Expanded(
-                child: Container(
-                  color: Color(0xFF4072AF),
-                  height: size.height * 0.08,
-                  child: SizedBox(),
+                child: FlatButton(
+                  padding: EdgeInsets.all(0),
+                  child: Container(
+                    padding: EdgeInsets.all(size.width * 0.01),
+                    child: Text('ID/PW 찾기\nFind ID/PW',
+                        textAlign: TextAlign.center,
+                        textScaleFactor: _tapState == 3 ? 1.2 : 1.1,
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    height: size.height * 0.08,
+                    alignment: Alignment.center,
+                    color:
+                        _tapState == 3 ? Color(0xFFF9F7F8) : Color(0xFF4072A7),
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _tapState = 3;
+                    });
+                  },
                 ),
-              )
+              ),
             ],
           ),
-          _isLogin
-              ? Expanded(child: _loginTap(size))
-              : Expanded(child: _registerTap(size)),
+          _switchTap(size)
         ],
       ),
     ));
+  }
+
+  Widget _switchTap(Size size) {
+    switch (_tapState) {
+      case 1:
+        return Expanded(child: _loginTap(size));
+      case 2:
+        return Expanded(child: _registerTap(size));
+      case 3:
+        return Expanded(child: _findAccountTap(size));
+      default:
+        return SizedBox();
+    }
   }
 
   Widget _loginTap(Size size) {
@@ -592,7 +812,7 @@ class _SignInPageState extends State<SignInPage> {
                         );
                       });
                   var result = await _requestLogin();
-                  Fluttertoast.showToast(msg: '로그인 승인 완료');
+                  Fluttertoast.showToast(msg: '계정 검사완료');
                   if (result == null) {
                     Navigator.pop(context);
                     showDialog(
@@ -623,6 +843,88 @@ class _SignInPageState extends State<SignInPage> {
                             ));
                     return;
                   } else {
+                    if (result.email.isEmpty) {
+                      await showDialog(
+                          barrierDismissible: false,
+                          context: context,
+                          builder: (context) => AlertDialog(
+                                title: Text(
+                                  '이메일 필수 입력 안내',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16),
+                                ),
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      '※ 버전 업데이트로 인해 본인인증 수단으로 기존에 가입했던 사용자분들의 이메일 정보를 저장하기 위해 이메일을 필수로 입력바랍니다.',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 13),
+                                    ),
+                                    SizedBox(
+                                      height: 25,
+                                    ),
+                                    Container(
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
+                                              width: 0.5, color: Colors.black),
+                                          color: Colors.grey[200]),
+                                      child: TextField(
+                                        controller: _updateEmailController,
+                                        decoration: InputDecoration(
+                                          hintText: '이메일을 입력해주세요.',
+                                          hintStyle:
+                                              TextStyle(color: Colors.grey),
+                                        ),
+                                        keyboardType:
+                                            TextInputType.emailAddress,
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                actions: [
+                                  TextButton(
+                                      onPressed: () async {
+                                        if (_updateEmailController
+                                                .text.isEmpty ||
+                                            !_updateEmailController.text
+                                                .contains('@')) {
+                                          return;
+                                        }
+                                        var res = await _updateEmailRequest();
+                                        if (res) {
+                                          Navigator.pop(context);
+                                          Fluttertoast.showToast(
+                                              msg: '이메일 등록 성공');
+                                          result.email =
+                                              _updateEmailController.text;
+                                        } else {
+                                          showDialog(
+                                              context: context,
+                                              builder: (context) {
+                                                Future.delayed(
+                                                    Duration(milliseconds: 300),
+                                                    () {
+                                                  Navigator.pop(context);
+                                                });
+                                                return AlertDialog(
+                                                  title: Text(
+                                                    '등록 실패',
+                                                    style: TextStyle(
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                );
+                                              });
+                                        }
+                                      },
+                                      child: Text('등록하기'))
+                                ],
+                              ));
+                    }
                     result.isAdmin = await _judgeIsAdminAccount();
                     if (result.isAdmin) {
                       result.adminKey = _key;
@@ -796,6 +1098,18 @@ class _SignInPageState extends State<SignInPage> {
                   Container(
                     width: size.width * 0.85,
                     child: TextField(
+                      keyboardType: TextInputType.emailAddress,
+                      controller: _emailController,
+                      cursorColor: Colors.black,
+                      onChanged: (value) {},
+                      decoration: InputDecoration(
+                          hintText: '이메일',
+                          hintStyle: TextStyle(color: Colors.grey)),
+                    ),
+                  ),
+                  Container(
+                    width: size.width * 0.85,
+                    child: TextField(
                       controller: _nameController,
                       cursorColor: Colors.black,
                       onChanged: (value) {},
@@ -825,7 +1139,8 @@ class _SignInPageState extends State<SignInPage> {
                 onPressed: () async {
                   if (_idRegisterController.text.isEmpty ||
                       _nameController.text.isEmpty ||
-                      _nickNameController.text.isEmpty) {
+                      _nickNameController.text.isEmpty ||
+                      _emailController.text.isEmpty) {
                     showDialog(
                         context: context,
                         builder: (context) => AlertDialog(
@@ -914,6 +1229,8 @@ class _SignInPageState extends State<SignInPage> {
                               Text('닉네임 : ${_nickNameController.text}',
                                   style:
                                       TextStyle(fontWeight: FontWeight.bold)),
+                              Text('이메일 : ${_emailController.text}',
+                                  style: TextStyle(fontWeight: FontWeight.bold))
                             ],
                           ),
                           actions: [
@@ -956,5 +1273,220 @@ class _SignInPageState extends State<SignInPage> {
         ),
       ),
     );
+  }
+
+  Widget _findAccountTap(Size size) {
+    return SingleChildScrollView(
+        child: Container(
+      width: size.width,
+      height: size.height * 0.9,
+      decoration: BoxDecoration(
+          gradient: LinearGradient(
+        colors: [Color(0xFFF9F7F8), Color(0xFFF9F7F8), Colors.lightBlue[100]],
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+      )),
+      child: Padding(
+        padding: EdgeInsets.all(size.width * 0.02),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: EdgeInsets.all(size.width * 0.015),
+              child: Text(
+                '아이디 찾기',
+                style: TextStyle(
+                    color: Colors.black54,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+            SizedBox(
+              height: size.height * 0.015,
+            ),
+            Container(
+              decoration: BoxDecoration(
+                  border: Border.all(width: 0.5, color: Colors.black),
+                  color: Colors.grey[100]),
+              width: size.width * 0.8,
+              child: TextField(
+                controller: _findNameControllerID,
+                decoration: InputDecoration(hintText: '이름을 입력하세요.'),
+              ),
+            ),
+            SizedBox(
+              height: size.height * 0.01,
+            ),
+            Container(
+              decoration: BoxDecoration(
+                  border: Border.all(width: 0.5, color: Colors.black),
+                  color: Colors.grey[100]),
+              width: size.width * 0.8,
+              child: TextField(
+                keyboardType: TextInputType.emailAddress,
+                controller: _findEmailControllerID,
+                decoration: InputDecoration(hintText: '이메일을 입력하세요.'),
+              ),
+            ),
+            SizedBox(
+              height: size.height * 0.01,
+            ),
+            Container(
+              decoration: BoxDecoration(
+                  border: Border.all(width: 0.5, color: Colors.black),
+                  color: Colors.grey[100]),
+              width: size.width * 0.8,
+              child: TextField(
+                controller: _findGradeControllerID,
+                decoration: InputDecoration(
+                    hintText: '학번을 입력하세요.(재학생이 아닌 경우 입력X)',
+                    hintStyle: TextStyle(fontSize: 13)),
+              ),
+            ),
+            SizedBox(
+              height: size.height * 0.01,
+            ),
+            TextButton(
+                onPressed: () async {
+                  var res = await _getFoundUserID();
+                  setState(() {
+                    _resultID = res;
+                  });
+                },
+                child: Container(
+                  width: size.width * 0.2,
+                  alignment: Alignment.center,
+                  padding: EdgeInsets.all(size.width * 0.02),
+                  child: Text(
+                    '찾기',
+                    style: TextStyle(
+                        color: Colors.black, fontWeight: FontWeight.bold),
+                  ),
+                  decoration: BoxDecoration(
+                      border: Border.all(width: 0.5, color: Colors.black),
+                      borderRadius: BorderRadius.circular(6),
+                      color: Colors.lightBlueAccent),
+                )),
+            SizedBox(
+              height: size.height * 0.01,
+            ),
+            Text(
+              ' 검색 결과:  $_resultID',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+            ),
+            SizedBox(
+              height: size.height * 0.015,
+            ),
+            Divider(
+              thickness: 1,
+            ),
+            SizedBox(
+              height: size.height * 0.015,
+            ),
+            Padding(
+              padding: EdgeInsets.all(size.width * 0.015),
+              child: Text(
+                '비밀번호 찾기',
+                style: TextStyle(
+                    color: Colors.black54,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+            SizedBox(
+              height: size.height * 0.015,
+            ),
+            Container(
+              decoration: BoxDecoration(
+                  border: Border.all(width: 0.5, color: Colors.black),
+                  color: Colors.grey[100]),
+              width: size.width * 0.8,
+              child: TextField(
+                controller: _findIdControllerPW,
+                decoration: InputDecoration(hintText: 'ID를 입력하세요.'),
+              ),
+            ),
+            SizedBox(
+              height: size.height * 0.01,
+            ),
+            Container(
+              decoration: BoxDecoration(
+                  border: Border.all(width: 0.5, color: Colors.black),
+                  color: Colors.grey[100]),
+              width: size.width * 0.8,
+              child: TextField(
+                keyboardType: TextInputType.emailAddress,
+                controller: _findEmailControllerPW,
+                decoration: InputDecoration(hintText: '이메일을 입력하세요.'),
+              ),
+            ),
+            SizedBox(
+              height: size.height * 0.01,
+            ),
+            Container(
+              decoration: BoxDecoration(
+                  border: Border.all(width: 0.5, color: Colors.black),
+                  color: Colors.grey[100]),
+              width: size.width * 0.8,
+              child: TextField(
+                controller: _findNameControllerPW,
+                decoration: InputDecoration(hintText: '이름을 입력하세요.'),
+              ),
+            ),
+            SizedBox(
+              height: size.height * 0.01,
+            ),
+            Container(
+              decoration: BoxDecoration(
+                  border: Border.all(width: 0.5, color: Colors.black),
+                  color: Colors.grey[100]),
+              width: size.width * 0.8,
+              child: TextField(
+                controller: _findGradeControllerPW,
+                decoration: InputDecoration(
+                    hintText: '학번을 입력하세요.(재학생이 아닌 경우 입력X)',
+                    hintStyle: TextStyle(fontSize: 13)),
+              ),
+            ),
+            TextButton(
+                onPressed: () async {
+                  var changedPW = _getRandomPassword();
+                  var result = await _changeRandomPassword(changedPW);
+                  if (result) {
+                    setState(() {
+                      _resultPW =
+                          '해당 계정의 비밀번호를 "$changedPW"로 초기화하였습니다. 해당 비밀번호로 로그인 후 비밀번호를 변경해주세요.';
+                    });
+                  } else {
+                    setState(() {
+                      _resultPW = '존재하지 않는 계정이거나 문제가 발생했습니다. 재시도 바랍니다.';
+                    });
+                  }
+                },
+                child: Container(
+                  width: size.width * 0.2,
+                  alignment: Alignment.center,
+                  padding: EdgeInsets.all(size.width * 0.02),
+                  child: Text(
+                    '찾기',
+                    style: TextStyle(
+                        color: Colors.black, fontWeight: FontWeight.bold),
+                  ),
+                  decoration: BoxDecoration(
+                      border: Border.all(width: 0.5, color: Colors.black),
+                      borderRadius: BorderRadius.circular(6),
+                      color: Colors.lightGreenAccent),
+                )),
+            Padding(
+              padding: EdgeInsets.all(size.width * 0.015),
+              child: Text(
+                '$_resultPW',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ));
   }
 }
