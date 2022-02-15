@@ -41,24 +41,6 @@
 	<false/>
 	<key>LSApplicationCategoryType</key>
 	<string></string>
-	<key>LSRequiresIPhoneOS</key>
-	<true/>
-	<key>NSAppTransportSecurity</key>
-	<dict>
-		<key>NSAllowsArbitraryLoads</key>
-		<true/>
-		<key>NSAllowsArbitraryLoadsInWebContent</key>
-		<true/>
-		<key>NSExceptionDomains</key>
-		    <dict>
-		        <key>NSIncludesSubdomains</key>
-		        <true/>
-		        <key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
-		        <true/>
-		        <key>NSTemporaryExceptionMinimumTLSVersion</key>
-		        <string>TLSv1.1</string>
-		    </dict>
-	</dict>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>kftc-bankpay</string>
@@ -97,6 +79,24 @@
 		<string>https</string>
 		<string>http</string>
 	</array>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+		<key>NSAllowsArbitraryLoadsInWebContent</key>
+		<true/>
+		<key>NSExceptionDomains</key>
+		<dict>
+			<key>NSIncludesSubdomains</key>
+			<true/>
+			<key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
+			<true/>
+			<key>NSTemporaryExceptionMinimumTLSVersion</key>
+			<string>TLSv1.1</string>
+		</dict>
+	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>카메라에 접근하기위한 권한이 필요합니다.</string>
 	<key>NSHumanReadableCopyright</key>
