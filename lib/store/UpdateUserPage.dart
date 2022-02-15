@@ -17,10 +17,11 @@ import 'package:provider/provider.dart';
 /// 3. identity[modifiable]
 /// 4. studentId[modifiable]
 /// 5. nickname[modifiable]
-/// 6. tel[modifiable]
-/// 7. reg_date
-/// 8. buy_count
-/// 9. point
+/// 6. tel[removed]
+/// 7. email[modifiable]
+/// 8. reg_date
+/// 9. buy_count
+/// 10. point
 class UpdateUserPage extends StatefulWidget {
   UpdateUserPage({this.user});
   final User user;
@@ -34,6 +35,7 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
   TextEditingController _studentIDController = TextEditingController();
   TextEditingController _nicknameController = TextEditingController();
   TextEditingController _pwController = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
 
   final statusList = ['재학생', '학부모', '교사', '졸업생', '기타'];
   final statusMap = {'재학생': 1, '학부모': 2, '교사': 3, '졸업생': 4, '기타': 5};
@@ -47,6 +49,7 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
     _nameController.text = widget.user.name;
     _studentIDController.text = widget.user.studentId;
     _nicknameController.text = widget.user.nickName;
+    _emailController.text = widget.user.email;
     _selectedValue = statusList[widget.user.identity - 1];
   }
 
@@ -59,6 +62,7 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
       'identity': statusMap[_selectedValue].toString(),
       'studentID': _studentIDController.text,
       'nickname': _nicknameController.text,
+      'email': _emailController.text
     });
 
     if (response.statusCode == 200) {
@@ -109,7 +113,8 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
         _tmpUser = null;
       }
       if (response.body.contains('일일 트래픽을 모두 사용하였습니다.')) {
-        _tmpUser = User('tmp', 'tmp', 'tmp', 5, 'tmp', 'tmp', 'tmp', 0, 0);
+        _tmpUser =
+            User('tmp', 'tmp', 'tmp', 5, 'tmp', 'tmp', 'tmp', 0, 0, 'tmp@tmp');
       }
       String result = utf8
           .decode(response.bodyBytes)
@@ -357,6 +362,34 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
                         textAlign: TextAlign.center,
                         decoration: InputDecoration(border: InputBorder.none),
                         controller: _nicknameController,
+                      ))
+                ],
+              ),
+              Row(
+                children: [
+                  Container(
+                      alignment: Alignment.center,
+                      width: size.width * 0.4,
+                      height: size.height * 0.1,
+                      decoration: BoxDecoration(
+                          color: Color(0xFF9EE1E5),
+                          border: Border(
+                              left: BorderSide(color: Colors.black, width: 1),
+                              right: BorderSide(color: Colors.black, width: 1),
+                              top: BorderSide(color: Colors.black, width: 0.5),
+                              bottom:
+                                  BorderSide(color: Colors.black, width: 0.5))),
+                      child: Text('이메일',
+                          style: TextStyle(fontWeight: FontWeight.bold))),
+                  Container(
+                      alignment: Alignment.center,
+                      width: size.width * 0.6,
+                      height: size.height * 0.1,
+                      child: TextField(
+                        keyboardType: TextInputType.emailAddress,
+                        textAlign: TextAlign.center,
+                        decoration: InputDecoration(border: InputBorder.none),
+                        controller: _emailController,
                       ))
                 ],
               ),
