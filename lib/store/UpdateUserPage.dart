@@ -185,7 +185,7 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
-                  '* 표시는 수정 불가능한 항목을 의미합니다.',
+                  '* 표시는 수정 가능한 항목을 의미합니다.',
                   style: TextStyle(color: Colors.red),
                 ),
               ),
@@ -220,7 +220,7 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
                               top: BorderSide(color: Colors.black, width: 1),
                               bottom:
                                   BorderSide(color: Colors.black, width: 0.5))),
-                      child: Text('* 아이디',
+                      child: Text('아이디',
                           style: TextStyle(fontWeight: FontWeight.bold))),
                   Container(
                       alignment: Alignment.center,
@@ -250,7 +250,7 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
                               bottom:
                                   BorderSide(color: Colors.black, width: 0.5))),
                       child: Text(
-                        '이름',
+                        '* 이름',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       )),
                   Container(
@@ -278,7 +278,7 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
                               top: BorderSide(color: Colors.black, width: 0.5),
                               bottom:
                                   BorderSide(color: Colors.black, width: 0.5))),
-                      child: Text('신분',
+                      child: Text('* 신분',
                           style: TextStyle(fontWeight: FontWeight.bold))),
                   Container(
                     alignment: Alignment.center,
@@ -321,7 +321,7 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
                               top: BorderSide(color: Colors.black, width: 0.5),
                               bottom:
                                   BorderSide(color: Colors.black, width: 0.5))),
-                      child: Text('학번',
+                      child: Text('* 학번',
                           style: TextStyle(fontWeight: FontWeight.bold))),
                   Container(
                       alignment: Alignment.center,
@@ -352,7 +352,7 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
                               top: BorderSide(color: Colors.black, width: 0.5),
                               bottom:
                                   BorderSide(color: Colors.black, width: 0.5))),
-                      child: Text('닉네임',
+                      child: Text('* 닉네임',
                           style: TextStyle(fontWeight: FontWeight.bold))),
                   Container(
                       alignment: Alignment.center,
@@ -379,7 +379,7 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
                               top: BorderSide(color: Colors.black, width: 0.5),
                               bottom:
                                   BorderSide(color: Colors.black, width: 0.5))),
-                      child: Text('이메일',
+                      child: Text('* 이메일',
                           style: TextStyle(fontWeight: FontWeight.bold))),
                   Container(
                       alignment: Alignment.center,
@@ -407,7 +407,7 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
                               top: BorderSide(color: Colors.black, width: 0.5),
                               bottom:
                                   BorderSide(color: Colors.black, width: 0.5))),
-                      child: Text('* 가입일',
+                      child: Text('가입일',
                           style: TextStyle(fontWeight: FontWeight.bold))),
                   Container(
                       alignment: Alignment.center,
@@ -431,7 +431,7 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
                               top: BorderSide(color: Colors.black, width: 0.5),
                               bottom:
                                   BorderSide(color: Colors.black, width: 0.5))),
-                      child: Text('* 구매수',
+                      child: Text('구매수',
                           style: TextStyle(fontWeight: FontWeight.bold))),
                   Container(
                       alignment: Alignment.center,
@@ -457,7 +457,7 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
                               top: BorderSide(color: Colors.black, width: 0.5),
                               bottom:
                                   BorderSide(color: Colors.black, width: 0.5))),
-                      child: Text('* 포인트',
+                      child: Text('포인트',
                           style: TextStyle(fontWeight: FontWeight.bold))),
                   Container(
                       alignment: Alignment.center,
