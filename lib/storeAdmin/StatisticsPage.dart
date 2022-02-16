@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:asgshighschool/data/user_data.dart';
 import 'package:asgshighschool/storeAdmin/StatisticsGuidePage.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -44,6 +45,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
   List<ProductCount> _countList = []; // 구매와 예약에 대한 데이터를 분류 및 조합한 최종 리스트
   List _salesRangeList = []; // 매출 통계에서 "전체"가 아닌 단위로 요청 시 담기는 데이터 리스트
   List<Widget> _salesRangeWidgetList = []; // 위의 리스트의 레이아웃 아이템을 담는 리스트
+  List _productStockList = [];
   Map<int, Map> _productCountMap = Map(); // 데이터 분류 과정에서 사용되는 Map 데이터
   final Map<int, String> _categoryReverseMap = {
     0: '음식류',
@@ -55,6 +57,32 @@ class _StatisticsPageState extends State<StatisticsPage> {
   final List _dateUnitList = ['전체', '일간', '주간', '월간'];
   final List _salesTextList = ['구매 + 예약', '구매', '예약'];
   final List _sortTitleList = ['등록순(ID순)', '이름순', '구매순', '예약순'];
+
+  Future<bool> _getAllProductStockCount() async {
+    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_statisticsStock.php';
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      String result = utf8
+          .decode(response.bodyBytes)
+          .replaceAll(
+              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+              '')
+          .trim();
+
+      List map1st = jsonDecode(result);
+
+      for (int i = 0; i < map1st.length; ++i) {
+        map1st[i] = jsonDecode(map1st[i]);
+      }
+      setState(() {
+        _productStockList = map1st;
+      });
+      return true;
+    } else {
+      return false;
+    }
+  }
 
   /// 시작 날짜 및 종료 날짜, 그리고 쿼리 조건문 문자열을 바탕으로 모든 구매 데이터들을 가져오는 요청
   Future<bool> _getAllOrderDataInProduct() async {
@@ -485,6 +513,12 @@ class _StatisticsPageState extends State<StatisticsPage> {
   }
 
   @override
+  void initState() {
+    _getAllProductStockCount();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
@@ -579,7 +613,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                   },
                   child: Container(
                     child: Text(
-                      '구매자 통계',
+                      '재고 통계',
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                     ),
@@ -1569,11 +1603,48 @@ class _StatisticsPageState extends State<StatisticsPage> {
   }
 
   Widget _buyerTapLayout(Size size) {
-    return Center(
-      child: Text(
-        '준비 중입니다..',
-        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-      ),
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Container(
+              alignment: Alignment.center,
+              width: size.width * 0.2,
+              child: Text(
+                '대표 이미지',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+              ),
+            ),
+            Container(
+              alignment: Alignment.center,
+              width: size.width * 0.45,
+              child: Text('상품 이름',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+            ),
+            Container(
+              alignment: Alignment.center,
+              width: size.width * 0.2,
+              child: Text('남은 재고',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+            ),
+            Text('판매 중',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))
+          ],
+        ),
+        SizedBox(
+          height: size.height * 0.01,
+        ),
+        Container(
+          height: size.height * 0.67,
+          child: ListView.builder(
+            itemBuilder: (context, index) {
+              return _productStockItemLayout(_productStockList[index], size);
+            },
+            itemCount: _productStockList.length,
+          ),
+        ),
+      ],
     );
   }
 
@@ -1696,6 +1767,59 @@ class _StatisticsPageState extends State<StatisticsPage> {
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _productStockItemLayout(Map data, Size size) {
+    return Container(
+      margin: EdgeInsets.all(size.width * 0.01),
+      width: size.width,
+      decoration:
+          BoxDecoration(border: Border.all(width: 0.5, color: Colors.grey)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          CachedNetworkImage(
+            imageUrl: data['imgUrl'],
+            width: size.width * 0.15,
+            height: size.height * 0.06,
+            errorWidget: (context, url, error) {
+              return Container(
+                alignment: Alignment.center,
+                child: Text(
+                  'No Image',
+                  style: TextStyle(fontSize: 9),
+                ),
+                decoration: BoxDecoration(
+                    color: Colors.grey[400],
+                    borderRadius: BorderRadius.circular(6)),
+              );
+            },
+          ),
+          Container(
+            child: Text(
+              data['pName'],
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+            ),
+            width: size.width * 0.45,
+            alignment: Alignment.center,
+          ),
+          Container(
+            alignment: Alignment.center,
+            child: Text(data['stockCount'] + '개',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                    color: Colors.blue)),
+            width: size.width * 0.2,
+          ),
+          Icon(
+            int.parse(data['onSale']) == 1 ? Icons.check : Icons.clear,
+            color:
+                int.parse(data['onSale']) == 1 ? Colors.lightGreen : Colors.red,
           )
         ],
       ),
