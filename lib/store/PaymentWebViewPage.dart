@@ -321,7 +321,9 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
                   'EdiDate=$_ediDate&'
                   'Moid=${widget.oID}&'
                   'SignData=${_getSignData()}&'
-                  'CharSet=euc-kr')));
+                  'CharSet=euc-kr&'
+                  'PayMethod=CARD&'
+                  'BuyerName=${widget.user.name}')));
         },
       ),
     );
