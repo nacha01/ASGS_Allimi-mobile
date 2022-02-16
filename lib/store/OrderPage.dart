@@ -506,21 +506,26 @@ class _OrderPageState extends State<OrderPage> {
                     SizedBox(
                       height: size.height * 0.02,
                     ),
-                    Divider(
-                      thickness: 0.5,
-                      indent: 5,
-                      endIndent: 5,
+                    Row(
+                      children: [
+                        SizedBox(
+                          width: size.width * 0.05,
+                        ),
+                        Icon(
+                          Icons.radio_button_off,
+                          color: Colors.grey,
+                        ),
+                        Text(
+                          '   기타 (준비중입니다.)',
+                          style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold),
+                        )
+                      ],
                     ),
                     SizedBox(
                       height: size.height * 0.02,
-                    ),
-                    Text(' * 휴대폰 본인 인증',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12,
-                            color: Colors.black54)),
-                    SizedBox(
-                      height: size.height * 0.03,
                     ),
                     Divider(
                       thickness: 0.5,
@@ -738,7 +743,8 @@ class _OrderPageState extends State<OrderPage> {
                 if (_isCart) {
                   data.setExistCart(false);
                 }
-                _generatedOID = DateTime.now().millisecondsSinceEpoch.toString();
+                _generatedOID =
+                    DateTime.now().millisecondsSinceEpoch.toString();
                 Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
