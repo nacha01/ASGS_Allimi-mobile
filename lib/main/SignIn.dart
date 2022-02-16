@@ -812,7 +812,6 @@ class _SignInPageState extends State<SignInPage> {
                         );
                       });
                   var result = await _requestLogin();
-                  Fluttertoast.showToast(msg: '계정 검사완료');
                   if (result == null) {
                     Navigator.pop(context);
                     showDialog(
@@ -928,8 +927,6 @@ class _SignInPageState extends State<SignInPage> {
                     result.isAdmin = await _judgeIsAdminAccount();
                     if (result.isAdmin) {
                       result.adminKey = _key;
-                      Fluttertoast.showToast(
-                          msg: 'Admin key 저장 완료: ${result.adminKey}');
                     }
                     Navigator.pop(context);
                     Navigator.pushReplacement(
@@ -1057,21 +1054,23 @@ class _SignInPageState extends State<SignInPage> {
                       },
                     ),
                   ),
-                  Container(
-                    width: size.width * 0.85,
-                    child: TextField(
-                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      keyboardType: TextInputType.number,
-                      controller: _gradeController,
-                      cursorColor: Colors.black,
-                      onChanged: (value) {},
-                      decoration: InputDecoration(
-                          hintText: '학번',
-                          hintStyle: TextStyle(
-                              color: isTwoRow() ? Colors.grey : Colors.red)),
-                      readOnly: !isTwoRow(),
-                    ),
-                  ),
+                  isTwoRow()
+                      ? Container(
+                          width: size.width * 0.85,
+                          child: TextField(
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly
+                            ],
+                            keyboardType: TextInputType.number,
+                            controller: _gradeController,
+                            cursorColor: Colors.black,
+                            onChanged: (value) {},
+                            decoration: InputDecoration(
+                                hintText: '학번',
+                                hintStyle: TextStyle(color: Colors.grey)),
+                          ),
+                        )
+                      : SizedBox(),
                   Container(
                     width: size.width * 0.85,
                     child: TextField(
@@ -1328,8 +1327,12 @@ class _SignInPageState extends State<SignInPage> {
                 decoration: InputDecoration(hintText: '이메일을 입력하세요.'),
               ),
             ),
-            SizedBox(
-              height: size.height * 0.01,
+            Padding(
+              padding: EdgeInsets.all(size.width * 0.015),
+              child: Text(
+                '* 이메일을 미입력한 기존에 가입한 유저의 경우 이메일란을 비우고 진행해주세요.',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 9),
+              ),
             ),
             Container(
               decoration: BoxDecoration(
@@ -1420,8 +1423,12 @@ class _SignInPageState extends State<SignInPage> {
                 decoration: InputDecoration(hintText: '이메일을 입력하세요.'),
               ),
             ),
-            SizedBox(
-              height: size.height * 0.01,
+            Padding(
+              padding: EdgeInsets.all(size.width * 0.015),
+              child: Text(
+                '* 이메일을 미입력한 기존에 가입한 유저의 경우 이메일란을 비우고 진행해주세요.',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 9),
+              ),
             ),
             Container(
               decoration: BoxDecoration(
