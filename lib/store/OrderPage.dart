@@ -643,7 +643,7 @@ class _OrderPageState extends State<OrderPage> {
                     ),
                     Container(
                       width: size.width,
-                      padding: EdgeInsets.all(size.width * 0.025),
+                      padding: EdgeInsets.all(size.width * 0.02),
                       color: Colors.grey[200],
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -651,31 +651,30 @@ class _OrderPageState extends State<OrderPage> {
                           Text(
                             '회사 정보',
                             style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 11),
+                                fontWeight: FontWeight.bold, fontSize: 10),
                           ),
                           SizedBox(
                             height: size.height * 0.005,
                           ),
                           Text(
-                            '사업자 번호: 1350-82-17822',
-                            style: TextStyle(color: Colors.grey, fontSize: 10),
+                            '사업자 번호: 135-82-17822',
+                            style: TextStyle(color: Colors.grey, fontSize: 9),
                           ),
                           Text('회사명: 안산강서고등학교 교육경제공동체 사회적협동조합',
                               style:
-                                  TextStyle(color: Colors.grey, fontSize: 10)),
+                                  TextStyle(color: Colors.grey, fontSize: 9)),
                           Text('대표자: 김은미',
                               style:
-                                  TextStyle(color: Colors.grey, fontSize: 10)),
+                                  TextStyle(color: Colors.grey, fontSize: 9)),
                           Text(
                               '위치: 경기도 안산시 단원구 와동 삼일로 367, 5층 공작관 다목적실 (안산강서고등학교)',
                               style:
-                                  TextStyle(color: Colors.grey, fontSize: 10)),
+                                  TextStyle(color: Colors.grey, fontSize: 9)),
                           Text('대표 전화: 031-485-9742',
                               style:
-                                  TextStyle(color: Colors.grey, fontSize: 10)),
+                                  TextStyle(color: Colors.grey, fontSize: 9)),
                           Text('대표 이메일: asgscoop@naver.com',
-                              style:
-                                  TextStyle(color: Colors.grey, fontSize: 10))
+                              style: TextStyle(color: Colors.grey, fontSize: 9))
                         ],
                       ),
                     ),

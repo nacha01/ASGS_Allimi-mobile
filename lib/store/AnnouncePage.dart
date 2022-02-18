@@ -28,6 +28,7 @@ class _AnnouncePageState extends State<AnnouncePage> {
   var _selectedCategory = '제목';
   bool _isSearch = false;
   bool _isLoading = true; // 로딩 중인지 판단
+  bool _corporationInfoClicked = false;
 
   /// 모든 공지사항 데이터를 요청하는 작업
   Future<bool> _getAnnounceRequest() async {
@@ -148,7 +149,7 @@ class _AnnouncePageState extends State<AnnouncePage> {
             children: [
               Container(
                 width: size.width,
-                height: size.height * 0.1,
+                height: size.height * 0.05,
                 child: Column(
                   children: [
                     //brief 설명 적는 곳
@@ -269,19 +270,11 @@ class _AnnouncePageState extends State<AnnouncePage> {
                   : SizedBox(),
               _isFinished
                   ? _announceList.length == 0
-                      ? SingleChildScrollView(
-                          physics: AlwaysScrollableScrollPhysics(),
+                      ? Expanded(
                           child: Container(
                               alignment: Alignment.center,
-                              margin: EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                border:
-                                    Border.all(width: 1, color: Colors.black54),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              height: size.height * 0.2,
                               child: Text(
-                                '공지사항이 없습니다!\n새로고침하려면 이 박스를 아래로 당겨주세요!',
+                                '공지사항이 없습니다!',
                                 textAlign: TextAlign.center,
                               )),
                         )
@@ -340,10 +333,71 @@ class _AnnouncePageState extends State<AnnouncePage> {
                           CircularProgressIndicator(),
                         ],
                       ),
-                    ))
+                    )),
+              _corpInfoLayout(size)
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _corpInfoLayout(Size size) {
+    return Container(
+      width: size.width,
+      padding: EdgeInsets.all(
+          _corporationInfoClicked ? size.width * 0.02 : size.width * 0.01),
+      color: Colors.grey[100],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                _corporationInfoClicked = !_corporationInfoClicked;
+              });
+            },
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                SizedBox(
+                  width: size.width * 0.04,
+                ),
+                Text(
+                  '회사 정보',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10),
+                ),
+                Icon(_corporationInfoClicked
+                    ? Icons.keyboard_arrow_up
+                    : Icons.keyboard_arrow_down)
+              ],
+            ),
+          ),
+          _corporationInfoClicked
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: size.height * 0.005,
+                    ),
+                    Text(
+                      '사업자 번호: 135-82-17822',
+                      style: TextStyle(color: Colors.grey, fontSize: 9),
+                    ),
+                    Text('회사명: 안산강서고등학교 교육경제공동체 사회적협동조합',
+                        style: TextStyle(color: Colors.grey, fontSize: 9)),
+                    Text('대표자: 김은미',
+                        style: TextStyle(color: Colors.grey, fontSize: 9)),
+                    Text('위치: 경기도 안산시 단원구 와동 삼일로 367, 5층 공작관 다목적실 (안산강서고등학교)',
+                        style: TextStyle(color: Colors.grey, fontSize: 9)),
+                    Text('대표 전화: 031-485-9742',
+                        style: TextStyle(color: Colors.grey, fontSize: 9)),
+                    Text('대표 이메일: asgscoop@naver.com',
+                        style: TextStyle(color: Colors.grey, fontSize: 9))
+                  ],
+                )
+              : SizedBox(),
+        ],
       ),
     );
   }

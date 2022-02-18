@@ -178,17 +178,6 @@ class _ReservationCompletePageState extends State<ReservationCompletePage> {
               SizedBox(
                 height: size.height * 0.015,
               ),
-              Padding(
-                padding: EdgeInsets.all(size.width * 0.03),
-                child: Text(
-                  '<카카오뱅크 79794096110, 예금주 이경희>\n 로 [${_formatPrice(widget.totalPrice)}원] 송금 바랍니다.',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.5),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              SizedBox(
-                height: size.height * 0.015,
-              ),
               Divider(),
               Padding(
                 padding: EdgeInsets.all(size.width * 0.03),

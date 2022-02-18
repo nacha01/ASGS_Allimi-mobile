@@ -42,6 +42,7 @@ class _CartPageState extends State<CartPage> {
   List<int> _countList = [];
   bool _isLoading = true;
   int _allAdditionalPrice = 0;
+  bool _corporationInfoClicked = false;
 
   /// 특정 유저에 대해 그 유저가 갖고 있는 장바구니 상품들을 가져오는 HTTP 요청
   /// @return : 요청 성공 여부
@@ -234,11 +235,19 @@ class _CartPageState extends State<CartPage> {
                     ],
                   ),
                 )
-              : Center(
-                  child: Text(
-                    '장바구니에 상품이 없습니다!',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
+              : Column(
+                  children: [
+                    Expanded(
+                      child: Center(
+                        child: Text(
+                          '장바구니에 상품이 없습니다!',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
+                      ),
+                    ),
+                    _corpInfoLayout(size)
+                  ],
                 )
           : Column(
               children: [
@@ -247,15 +256,14 @@ class _CartPageState extends State<CartPage> {
                   child: Column(
                     children: [
                       //brief 설명 적는 곳
-                      Text('' /*이 페이지의 간략한 설명 적는 란*/),
                       Padding(
-                        padding: EdgeInsets.all(size.width * 0.02),
+                        padding: EdgeInsets.all(size.width * 0.015),
                         child: Text(
                           '* 상품 옵션이 존재하는 상품의 경우 장바구니 페이지에서 수량 증가 시 어떤 옵션도 선택되지 않은 정가의 순수 상품이 추가 됩니다. \n* 서로 다른 옵션을 사용하고 싶으신 경우 상품 정보에서 옵션을 선택 후 "장바구니 담기"를 선택해주세요.',
                           style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.bold,
-                              fontSize: 12),
+                              fontSize: 9),
                         ),
                       )
                     ],
@@ -272,7 +280,8 @@ class _CartPageState extends State<CartPage> {
                       },
                       itemCount: _cartProductList.length),
                 ),
-                FlatButton(
+                _corpInfoLayout(size),
+                TextButton(
                   onPressed: () async {
                     await _renewCartCount();
                     await _getCartForUserRequest();
@@ -292,8 +301,7 @@ class _CartPageState extends State<CartPage> {
                     });
                   },
                   child: Container(
-                    height: size.height * 0.05,
-                    margin: EdgeInsets.all(12),
+                    padding: EdgeInsets.all(size.width * 0.01),
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(9),
                         color: Color(0xFF9EE1E5)),
@@ -302,7 +310,7 @@ class _CartPageState extends State<CartPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
-                          height: size.height * 0.05 * 0.8,
+                          height: size.height * 0.04 * 0.8,
                           child: CircleAvatar(
                             child: Text(
                               '${_cartProductList.length}',
@@ -316,7 +324,10 @@ class _CartPageState extends State<CartPage> {
                         ),
                         Text(
                           '${_formatPrice(_totalPrice() + _allAdditionalPrice)}원  결제하기',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                              fontSize: 13),
                         )
                       ],
                     ),
@@ -520,6 +531,66 @@ class _CartPageState extends State<CartPage> {
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _corpInfoLayout(Size size) {
+    return Container(
+      width: size.width,
+      padding: EdgeInsets.all(
+          _corporationInfoClicked ? size.width * 0.02 : size.width * 0.01),
+      color: Colors.grey[100],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                _corporationInfoClicked = !_corporationInfoClicked;
+              });
+            },
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                SizedBox(
+                  width: size.width * 0.04,
+                ),
+                Text(
+                  '회사 정보',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10),
+                ),
+                Icon(_corporationInfoClicked
+                    ? Icons.keyboard_arrow_up
+                    : Icons.keyboard_arrow_down)
+              ],
+            ),
+          ),
+          _corporationInfoClicked
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: size.height * 0.005,
+                    ),
+                    Text(
+                      '사업자 번호: 135-82-17822',
+                      style: TextStyle(color: Colors.grey, fontSize: 9),
+                    ),
+                    Text('회사명: 안산강서고등학교 교육경제공동체 사회적협동조합',
+                        style: TextStyle(color: Colors.grey, fontSize: 9)),
+                    Text('대표자: 김은미',
+                        style: TextStyle(color: Colors.grey, fontSize: 9)),
+                    Text('위치: 경기도 안산시 단원구 와동 삼일로 367, 5층 공작관 다목적실 (안산강서고등학교)',
+                        style: TextStyle(color: Colors.grey, fontSize: 9)),
+                    Text('대표 전화: 031-485-9742',
+                        style: TextStyle(color: Colors.grey, fontSize: 9)),
+                    Text('대표 이메일: asgscoop@naver.com',
+                        style: TextStyle(color: Colors.grey, fontSize: 9))
+                  ],
+                )
+              : SizedBox(),
         ],
       ),
     );

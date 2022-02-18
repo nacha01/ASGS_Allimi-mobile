@@ -36,6 +36,7 @@ class _StoreHomePageState extends State<StoreHomePage>
   bool _isAsc = true; // true : 오름차순 , false : 내림차순
   bool _isSearch = false; // 검색 기능 사용했는지 판단
   bool _isLoading = true; // 상품 데이터 가져오는 동안의 로딩 상태
+  bool _corporationInfoClicked = false;
 
   List<Product> _searchProductList = [];
   List<Widget> _searchProductLayoutList = [];
@@ -674,7 +675,6 @@ class _StoreHomePageState extends State<StoreHomePage>
           return [
             SliverAppBar(
               backgroundColor: Colors.white,
-              expandedHeight: 110,
               forceElevated: innerBoxIsScrolled,
               leadingWidth: size.width * 0.23,
               centerTitle: true,
@@ -692,7 +692,7 @@ class _StoreHomePageState extends State<StoreHomePage>
                       style: TextStyle(
                         color: Color(0xFF9EE1E5),
                         fontWeight: FontWeight.bold,
-                        fontSize: 18,
+                        fontSize: 17,
                       ),
                     ),
                   )),
@@ -712,7 +712,8 @@ class _StoreHomePageState extends State<StoreHomePage>
                   )
                 ],
                 labelColor: Colors.black,
-                labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                labelStyle:
+                    TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                 indicatorColor: Color(0xFF9EE1E5),
                 indicatorWeight: 6.0,
                 controller: _tabController,
@@ -816,14 +817,11 @@ class _StoreHomePageState extends State<StoreHomePage>
                       child: Column(
                         children: [
                           addProductForAdmin(size),
-                          SizedBox(
-                            height: size.height * 0.01,
-                          ),
                           Card(
                             elevation: 2,
                             child: Container(
                               margin: EdgeInsets.all(5),
-                              height: size.height * 0.10,
+                              height: size.height * 0.085,
                               child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceEvenly,
@@ -848,10 +846,11 @@ class _StoreHomePageState extends State<StoreHomePage>
                                                     1
                                                 ? "assets/images/dinner_on_icon.jpg"
                                                 : "assets/images/dinner_icon.jpg"),
-                                            height: size.height * 0.07,
+                                            height: size.height * 0.06,
                                           ),
                                           Text('음식류',
                                               style: TextStyle(
+                                                  fontSize: 12,
                                                   fontWeight: FontWeight.bold,
                                                   color: _selectedCategory == 1
                                                       ? Color(0xFF9EE1E5)
@@ -880,10 +879,11 @@ class _StoreHomePageState extends State<StoreHomePage>
                                                     2
                                                 ? "assets/images/candy_on_icon.jpg"
                                                 : "assets/images/candy_icon.jpg"),
-                                            height: size.height * 0.07,
+                                            height: size.height * 0.06,
                                           ),
                                           Text('간식류',
                                               style: TextStyle(
+                                                  fontSize: 12,
                                                   fontWeight: FontWeight.bold,
                                                   color: _selectedCategory == 2
                                                       ? Color(0xFF9EE1E5)
@@ -912,10 +912,11 @@ class _StoreHomePageState extends State<StoreHomePage>
                                                     3
                                                 ? "assets/images/drink_on_icon.jpg"
                                                 : "assets/images/drink_icon.jpg"),
-                                            height: size.height * 0.07,
+                                            height: size.height * 0.06,
                                           ),
                                           Text('음료류',
                                               style: TextStyle(
+                                                  fontSize: 12,
                                                   fontWeight: FontWeight.bold,
                                                   color: _selectedCategory == 3
                                                       ? Color(0xFF9EE1E5)
@@ -944,10 +945,11 @@ class _StoreHomePageState extends State<StoreHomePage>
                                                     4
                                                 ? "assets/images/pencil_on_icon.jpg"
                                                 : "assets/images/pencil_icon.jpg"),
-                                            height: size.height * 0.07,
+                                            height: size.height * 0.06,
                                           ),
                                           Text('문구류',
                                               style: TextStyle(
+                                                  fontSize: 12,
                                                   fontWeight: FontWeight.bold,
                                                   color: _selectedCategory == 4
                                                       ? Color(0xFF9EE1E5)
@@ -976,12 +978,12 @@ class _StoreHomePageState extends State<StoreHomePage>
                                                     5
                                                 ? "assets/images/handmade_on_icon.jpg"
                                                 : "assets/images/handmadeicon.jpg"),
-                                            height: size.height * 0.07,
+                                            height: size.height * 0.06,
                                           ),
                                           Text('핸드메이드',
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
-                                                  fontSize: 13,
+                                                  fontSize: 12,
                                                   color: _selectedCategory == 5
                                                       ? Color(0xFF9EE1E5)
                                                       : Colors.black))
@@ -1043,7 +1045,7 @@ class _StoreHomePageState extends State<StoreHomePage>
                                 icon: Icon(_isAsc
                                     ? Icons.arrow_circle_up
                                     : Icons.arrow_circle_down),
-                                iconSize: 32,
+                                iconSize: 27,
                               ),
                               IconButton(
                                 onPressed: () {
@@ -1095,7 +1097,7 @@ class _StoreHomePageState extends State<StoreHomePage>
                                 },
                                 icon: Icon(Icons.sort),
                                 padding: EdgeInsets.all(0),
-                                iconSize: 32,
+                                iconSize: 27,
                               ),
                               SizedBox(
                                 width: size.width * 0.02,
@@ -1131,6 +1133,7 @@ class _StoreHomePageState extends State<StoreHomePage>
                                         }),
                                   ),
                                 ),
+                          _corpInfoLayout(size)
                         ],
                       ),
                     ),
@@ -1149,6 +1152,7 @@ class _StoreHomePageState extends State<StoreHomePage>
                               fontWeight: FontWeight.bold, fontSize: 21),
                         )),
                       ),
+                      _corpInfoLayout(size)
                     ],
                   ),
                 )
@@ -1206,7 +1210,7 @@ class _StoreHomePageState extends State<StoreHomePage>
                             icon: Icon(_isAsc
                                 ? Icons.arrow_circle_up
                                 : Icons.arrow_circle_down),
-                            iconSize: 32,
+                            iconSize: 27,
                           ),
                           IconButton(
                             onPressed: () {
@@ -1255,7 +1259,7 @@ class _StoreHomePageState extends State<StoreHomePage>
                             },
                             icon: Icon(Icons.sort),
                             padding: EdgeInsets.all(0),
-                            iconSize: 32,
+                            iconSize: 27,
                           ),
                           SizedBox(
                             width: size.width * 0.02,
@@ -1276,6 +1280,7 @@ class _StoreHomePageState extends State<StoreHomePage>
                               }),
                         ),
                       ),
+                      _corpInfoLayout(size)
                     ],
                   ),
                 ),
@@ -1294,6 +1299,7 @@ class _StoreHomePageState extends State<StoreHomePage>
                               fontWeight: FontWeight.bold, fontSize: 21),
                         )),
                       ),
+                      _corpInfoLayout(size)
                     ],
                   ),
                 )
@@ -1351,7 +1357,8 @@ class _StoreHomePageState extends State<StoreHomePage>
                             icon: Icon(_isAsc
                                 ? Icons.arrow_circle_up
                                 : Icons.arrow_circle_down),
-                            iconSize: 32,
+                            iconSize: 27,
+                            padding: EdgeInsets.all(0.0),
                           ),
                           IconButton(
                             onPressed: () {
@@ -1400,7 +1407,7 @@ class _StoreHomePageState extends State<StoreHomePage>
                             },
                             icon: Icon(Icons.sort),
                             padding: EdgeInsets.all(0),
-                            iconSize: 32,
+                            iconSize: 27,
                           ),
                           SizedBox(
                             width: size.width * 0.02,
@@ -1421,6 +1428,7 @@ class _StoreHomePageState extends State<StoreHomePage>
                               }),
                         ),
                       ),
+                      _corpInfoLayout(size)
                     ],
                   ),
                 ),
@@ -1636,13 +1644,15 @@ class _StoreHomePageState extends State<StoreHomePage>
                     fontWeight: FontWeight.bold,
                     decoration: product.discount.toString() == '0.0'
                         ? TextDecoration.none
-                        : TextDecoration.lineThrough),
+                        : TextDecoration.lineThrough,
+                    fontSize: 12.5),
                 textAlign: TextAlign.start,
               ),
               product.discount.toString() != '0.0'
                   ? Text(
                       '  ${_formatPrice((product.price * (1 - (product.discount / 100.0))).round())}원',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 12.5),
                     )
                   : Text('')
             ],
@@ -1651,7 +1661,7 @@ class _StoreHomePageState extends State<StoreHomePage>
             height: size.height * 0.004,
           ),
           Text(prodName,
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12.5),
               textAlign: TextAlign.center)
         ],
       ),
@@ -1669,18 +1679,17 @@ class _StoreHomePageState extends State<StoreHomePage>
       },
       child: Container(
         alignment: Alignment.center,
-        padding: EdgeInsets.all(8),
+        padding: EdgeInsets.all(size.width * 0.018),
         width: size.width * 0.98,
-        height: size.height * 0.055,
-        margin: EdgeInsets.all(5),
+        margin: EdgeInsets.all(size.width * 0.015),
         decoration: BoxDecoration(
           border: Border.all(width: 1, color: Colors.black26),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(10),
           color: Colors.grey[100],
         ),
         child: Text(
           '상품 추가하기 [관리자 모드]',
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
         ),
       ),
     );
@@ -1713,11 +1722,12 @@ class _StoreHomePageState extends State<StoreHomePage>
 
   Widget aboveTap(Size size) {
     return Container(
-      margin: EdgeInsets.all(5),
+      margin: EdgeInsets.all(size.width * 0.01),
       width: size.width * 0.7,
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12), color: Color(0xFF9EE1E5)),
+          borderRadius: BorderRadius.circular(10), color: Color(0xFF9EE1E5)),
       child: TextField(
+        style: TextStyle(fontSize: 13),
         onSubmitted: (text) {
           if (text.isNotEmpty) {
             _searchProducts(text, size);
@@ -1725,10 +1735,12 @@ class _StoreHomePageState extends State<StoreHomePage>
         },
         decoration: InputDecoration(
           hintText: '상품 검색',
+          hintStyle: TextStyle(fontSize: 13),
           border: InputBorder.none,
           prefixIcon: Icon(
             Icons.search,
             color: Colors.black,
+            size: 21,
           ),
         ),
         controller: _searchController,
@@ -1762,6 +1774,66 @@ class _StoreHomePageState extends State<StoreHomePage>
             Text('검색 결과창 지우기')
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _corpInfoLayout(Size size) {
+    return Container(
+      width: size.width,
+      padding: EdgeInsets.all(
+          _corporationInfoClicked ? size.width * 0.02 : size.width * 0.01),
+      color: Colors.grey[100],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                _corporationInfoClicked = !_corporationInfoClicked;
+              });
+            },
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                SizedBox(
+                  width: size.width * 0.04,
+                ),
+                Text(
+                  '회사 정보',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10),
+                ),
+                Icon(_corporationInfoClicked
+                    ? Icons.keyboard_arrow_up
+                    : Icons.keyboard_arrow_down)
+              ],
+            ),
+          ),
+          _corporationInfoClicked
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: size.height * 0.005,
+                    ),
+                    Text(
+                      '사업자 번호: 135-82-17822',
+                      style: TextStyle(color: Colors.grey, fontSize: 9),
+                    ),
+                    Text('회사명: 안산강서고등학교 교육경제공동체 사회적협동조합',
+                        style: TextStyle(color: Colors.grey, fontSize: 9)),
+                    Text('대표자: 김은미',
+                        style: TextStyle(color: Colors.grey, fontSize: 9)),
+                    Text('위치: 경기도 안산시 단원구 와동 삼일로 367, 5층 공작관 다목적실 (안산강서고등학교)',
+                        style: TextStyle(color: Colors.grey, fontSize: 9)),
+                    Text('대표 전화: 031-485-9742',
+                        style: TextStyle(color: Colors.grey, fontSize: 9)),
+                    Text('대표 이메일: asgscoop@naver.com',
+                        style: TextStyle(color: Colors.grey, fontSize: 9))
+                  ],
+                )
+              : SizedBox(),
+        ],
       ),
     );
   }

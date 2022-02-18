@@ -59,6 +59,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
       '33F49GnCMS1mFYlGXisbUDzVf2ATWCl9k3R++d5hDd3Frmuos/XLx8XhXpe+LDYAbpGKZYSwtlyyLOtS/8aD7A==';
   static const _MID = 'nictest00m';
   String _ediDate = '';
+  bool _corporationInfoClicked = false;
 
   /// route 이동 시 넘겨 받은 주문 ID를 통한 주문 상세 정보 요청 작업
   Future<bool> _getOrderInfo() async {
@@ -406,7 +407,13 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
           centerTitle: true,
         ),
         body: _isFinished
-            ? _layoutAccordingToResultCode(_resultCode, size)
+            ? Column(
+                children: [
+                  Expanded(
+                      child: _layoutAccordingToResultCode(_resultCode, size)),
+                  _corpInfoLayout(size)
+                ],
+              )
             : Container(
                 height: size.height,
                 alignment: Alignment.center,
@@ -900,5 +907,65 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
           widget.direct.category, size));
     }
     return list;
+  }
+
+  Widget _corpInfoLayout(Size size) {
+    return Container(
+      width: size.width,
+      padding: EdgeInsets.all(
+          _corporationInfoClicked ? size.width * 0.02 : size.width * 0.01),
+      color: Colors.grey[100],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                _corporationInfoClicked = !_corporationInfoClicked;
+              });
+            },
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                SizedBox(
+                  width: size.width * 0.04,
+                ),
+                Text(
+                  '회사 정보',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10),
+                ),
+                Icon(_corporationInfoClicked
+                    ? Icons.keyboard_arrow_up
+                    : Icons.keyboard_arrow_down)
+              ],
+            ),
+          ),
+          _corporationInfoClicked
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: size.height * 0.005,
+                    ),
+                    Text(
+                      '사업자 번호: 135-82-17822',
+                      style: TextStyle(color: Colors.grey, fontSize: 9),
+                    ),
+                    Text('회사명: 안산강서고등학교 교육경제공동체 사회적협동조합',
+                        style: TextStyle(color: Colors.grey, fontSize: 9)),
+                    Text('대표자: 김은미',
+                        style: TextStyle(color: Colors.grey, fontSize: 9)),
+                    Text('위치: 경기도 안산시 단원구 와동 삼일로 367, 5층 공작관 다목적실 (안산강서고등학교)',
+                        style: TextStyle(color: Colors.grey, fontSize: 9)),
+                    Text('대표 전화: 031-485-9742',
+                        style: TextStyle(color: Colors.grey, fontSize: 9)),
+                    Text('대표 이메일: asgscoop@naver.com',
+                        style: TextStyle(color: Colors.grey, fontSize: 9))
+                  ],
+                )
+              : SizedBox(),
+        ],
+      ),
+    );
   }
 }
