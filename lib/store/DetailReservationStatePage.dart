@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:ui';
 
+import 'package:asgshighschool/data/category_data.dart';
 import 'package:asgshighschool/data/user_data.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -19,14 +20,6 @@ class DetailReservationStatePage extends StatefulWidget {
 
 class _DetailReservationStatePageState
     extends State<DetailReservationStatePage> {
-  final _categoryReverseMap = {
-    0: '음식류',
-    1: '간식류',
-    2: '음료류',
-    3: '문구류',
-    4: '핸드메이드'
-  };
-
   /// DB에 저장된 date 필드를 사용자에게 직관적으로 보여주기 위한 날짜 formatting 작업
   /// @param : 주문 데이터의 date 필드 문자열
   String _formatDate(String date) {
@@ -341,7 +334,7 @@ class _DetailReservationStatePageState
                                       fontSize: 14),
                                 ),
                                 Text(
-                                    ' [${_categoryReverseMap[int.parse(widget.data['detail'][0]['pInfo']['category'])]}]',
+                                    ' [${Category.categoryIndexToStringMap[int.parse(widget.data['detail'][0]['pInfo']['category'])]}]',
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 14)),

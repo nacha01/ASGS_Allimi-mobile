@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:ui';
 
+import 'package:asgshighschool/data/category_data.dart';
 import 'package:asgshighschool/data/product_data.dart';
 import 'package:asgshighschool/data/user_data.dart';
 import 'package:asgshighschool/store/DetailProductPage.dart';
@@ -848,7 +849,7 @@ class _StoreHomePageState extends State<StoreHomePage>
                                                 : "assets/images/dinner_icon.jpg"),
                                             height: size.height * 0.06,
                                           ),
-                                          Text('음식류',
+                                          Text('${Category.c1}',
                                               style: TextStyle(
                                                   fontSize: 12,
                                                   fontWeight: FontWeight.bold,
@@ -881,7 +882,7 @@ class _StoreHomePageState extends State<StoreHomePage>
                                                 : "assets/images/candy_icon.jpg"),
                                             height: size.height * 0.06,
                                           ),
-                                          Text('간식류',
+                                          Text('${Category.c2}',
                                               style: TextStyle(
                                                   fontSize: 12,
                                                   fontWeight: FontWeight.bold,
@@ -914,7 +915,7 @@ class _StoreHomePageState extends State<StoreHomePage>
                                                 : "assets/images/drink_icon.jpg"),
                                             height: size.height * 0.06,
                                           ),
-                                          Text('음료류',
+                                          Text('${Category.c3}',
                                               style: TextStyle(
                                                   fontSize: 12,
                                                   fontWeight: FontWeight.bold,
@@ -947,7 +948,7 @@ class _StoreHomePageState extends State<StoreHomePage>
                                                 : "assets/images/pencil_icon.jpg"),
                                             height: size.height * 0.06,
                                           ),
-                                          Text('문구류',
+                                          Text('${Category.c4}',
                                               style: TextStyle(
                                                   fontSize: 12,
                                                   fontWeight: FontWeight.bold,
@@ -980,7 +981,7 @@ class _StoreHomePageState extends State<StoreHomePage>
                                                 : "assets/images/handmadeicon.jpg"),
                                             height: size.height * 0.06,
                                           ),
-                                          Text('핸드메이드',
+                                          Text('${Category.c5}',
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 12,

@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:asgshighschool/data/renewUser_data.dart';
+import 'package:asgshighschool/data/status_data.dart';
 import 'package:asgshighschool/data/user_data.dart';
 import 'package:asgshighschool/store/InquirePage.dart';
 import 'package:asgshighschool/store/MyQnAPage.dart';
@@ -29,7 +30,6 @@ class StoreMyPage extends StatefulWidget {
 // 전화번호 변경 기능?
 
 class _StoreMyPageState extends State<StoreMyPage> {
-  final statusReverseList = ['재학생', '학부모', '교사', '졸업생', '기타'];
   @override
   void initState() {
     super.initState();
@@ -132,7 +132,7 @@ class _StoreMyPageState extends State<StoreMyPage> {
                             ),
                           ),
                           title: Text(
-                              statusReverseList[data.user.identity - 1] +
+                              Status.statusList[data.user.identity - 1] +
                                   ' ' +
                                   (data.user.isAdmin ? '[관리자] ' : '')),
                           subtitle: Text(

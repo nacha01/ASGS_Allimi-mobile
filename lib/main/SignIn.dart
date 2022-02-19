@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:asgshighschool/data/status_data.dart';
 import 'package:asgshighschool/main/ReportBugPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
@@ -51,8 +52,6 @@ class _SignInPageState extends State<SignInPage> {
   String _resultPW = '';
   bool _isChecked = false;
   int _tapState = 1;
-  final _statusList = ['재학생', '학부모', '교사', '졸업생', '기타'];
-  final _statusMap = {'재학생': 1, '학부모': 2, '교사': 3, '졸업생': 4, '기타': 5};
   var _selectedValue = '재학생';
   final _hexValueList = [
     '0',
@@ -72,6 +71,7 @@ class _SignInPageState extends State<SignInPage> {
     'e',
     'f'
   ];
+
   bool isTwoRow() {
     if (_selectedValue == '재학생' || _selectedValue == '학부모') {
       return true;
@@ -441,7 +441,7 @@ class _SignInPageState extends State<SignInPage> {
       'token': widget.token,
       'name': _nameController.text.toString(),
       'nickname': _nickNameController.text.toString(),
-      'identity': _statusMap[_selectedValue].toString(),
+      'identity': Status.statusMap[_selectedValue].toString(),
       'student_id': isTwoRow() ? _gradeController.text.toString() : 'NULL',
       'email': _emailController.text
     });
@@ -1038,7 +1038,7 @@ class _SignInPageState extends State<SignInPage> {
                       isExpanded: true,
                       iconSize: 50,
                       value: _selectedValue,
-                      items: _statusList.map((value) {
+                      items: Status.statusList.map((value) {
                         return DropdownMenuItem(
                           child: Text(value),
                           value: value,
@@ -1047,7 +1047,7 @@ class _SignInPageState extends State<SignInPage> {
                       onChanged: (value) {
                         setState(() {
                           _selectedValue = value;
-                          if (_statusMap[_selectedValue] > 1) {
+                          if (Status.statusMap[_selectedValue] > 1) {
                             _gradeController.text = '';
                           }
                         });

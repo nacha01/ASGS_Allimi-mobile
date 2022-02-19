@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:asgshighschool/data/category_data.dart';
 import 'package:async/async.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -64,32 +65,18 @@ class _AddingProductPageState extends State<AddingProductPage> {
   bool _useSub1 = false;
   bool _useSub2 = false;
 
-  int _clickCount = 0;
   bool _isNotRegister = true;
   bool _useOption = false;
+
   int _index = 0;
+  int _clickCount = 0;
+
   String _mainName;
   String _sub1Name;
   String _sub2Name;
   String pid = '';
   String _errorText = '';
-
-  final _categoryList = ['음식류', '간식류', '음료류', '문구류', '핸드메이드']; //드롭다운 아이템
-  final _categoryMap = {
-    '음식류': 0,
-    '간식류': 1,
-    '음료류': 2,
-    '문구류': 3,
-    '핸드메이드': 4
-  }; // 드롭다운 mapping
-  final _prefix = {
-    '음식류': 'F',
-    '간식류': 'S',
-    '음료류': 'D',
-    '문구류': 'SS',
-    '핸드메이드': 'H'
-  };
-  var _selectedCategory = '음식류'; // 드롭다운 아이템 default
+  String _selectedCategory = '음식류'; // 드롭다운 아이템 default
   String serverImageUri =
       'http://nacha01.dothome.co.kr/sin/arlimi_productImage/64_';
 
@@ -174,7 +161,8 @@ class _AddingProductPageState extends State<AddingProductPage> {
     }, body: <String, String>{
       'prodName': _productNameController.text,
       'prodExp': _productExplainController.text,
-      'category': _categoryMap[_selectedCategory].toString(),
+      'category':
+          Category.categoryStringToIndexMap[_selectedCategory].toString(),
       'price': _productPriceController.text,
       'stockCount': _productCountController.text,
       'isBest': _isBest ? '1' : '0',
@@ -193,7 +181,6 @@ class _AddingProductPageState extends State<AddingProductPage> {
           '');
       if (!replace.contains('INSERT')) return false;
       pid = replace.replaceAll('INSERT', '');
-      print(pid);
       return true;
     } else {
       return false;
@@ -206,7 +193,8 @@ class _AddingProductPageState extends State<AddingProductPage> {
     final response = await http.post(url, body: <String, String>{
       'pName': _productNameController.text,
       'pInfo': _productExplainController.text,
-      'category': _categoryMap[_selectedCategory].toString(),
+      'category':
+          Category.categoryStringToIndexMap[_selectedCategory].toString(),
       'price': _productPriceController.text,
       'optionCategory': optionCategory
     });
@@ -271,7 +259,9 @@ class _AddingProductPageState extends State<AddingProductPage> {
           _formatting(now.minute) +
           _formatting(now.second);
       if (_useSub1) {
-        _sub1Name = _prefix[_selectedCategory] + identified + 'A';
+        _sub1Name = Category.categoryImageNamePrefixMap[_selectedCategory] +
+            identified +
+            'A';
         var sub1Result = await _sendImageToServer(_subImage1, _sub1Name);
         if (!sub1Result) {
           _errorText = '추가 이미지1 저장 실패';
@@ -279,15 +269,21 @@ class _AddingProductPageState extends State<AddingProductPage> {
         }
       }
       if (_useSub2) {
-        _sub2Name = _prefix[_selectedCategory] + identified + 'B';
+        _sub2Name = Category.categoryImageNamePrefixMap[_selectedCategory] +
+            identified +
+            'B';
         var sub2Result = await _sendImageToServer(
-            _subImage2, _prefix[_selectedCategory] + identified + 'B');
+            _subImage2,
+            Category.categoryImageNamePrefixMap[_selectedCategory] +
+                identified +
+                'B');
         if (!sub2Result) {
           _errorText = '추가 이미지2 저장 실패';
           return false;
         }
       }
-      _mainName = _prefix[_selectedCategory] + identified;
+      _mainName =
+          Category.categoryImageNamePrefixMap[_selectedCategory] + identified;
       var mainResult = await _sendImageToServer(_mainImage, _mainName);
       if (!mainResult) {
         _errorText = '대표 이미지 저장 실패';
@@ -541,7 +537,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                             child: DropdownButton(
                               isExpanded: true,
                               value: _selectedCategory,
-                              items: _categoryList.map((value) {
+                              items: Category.categoryList.map((value) {
                                 return DropdownMenuItem(
                                   child: Center(child: Text(value)),
                                   value: value,

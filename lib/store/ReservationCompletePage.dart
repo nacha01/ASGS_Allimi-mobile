@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:asgshighschool/data/category_data.dart';
 import 'package:asgshighschool/data/product_data.dart';
 import 'package:asgshighschool/data/user_data.dart';
 import 'package:flutter/material.dart';
@@ -21,14 +22,6 @@ class ReservationCompletePage extends StatefulWidget {
 }
 
 class _ReservationCompletePageState extends State<ReservationCompletePage> {
-  final _categoryReverseMap = {
-    0: '음식류',
-    1: '간식류',
-    2: '음료류',
-    3: '문구류',
-    4: '핸드메이드'
-  };
-
   /// 일반 숫자에 ,를 붙여서 직관적인 가격을 보이게 하는 작업
   /// @param : 직관적인 가격을 보여줄 실제 int 가격[price]
   /// @return : 직관적인 가격 문자열
@@ -119,7 +112,7 @@ class _ReservationCompletePageState extends State<ReservationCompletePage> {
                   spacing: size.width * 0.01,
                   children: [
                     Text(
-                      '[${_categoryReverseMap[widget.product.category]}]',
+                      '[${Category.categoryIndexToStringMap[widget.product.category]}]',
                       style: TextStyle(color: Colors.grey),
                     ),
                     Text(

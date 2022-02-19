@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:ui';
 
+import 'package:asgshighschool/data/category_data.dart';
 import 'package:asgshighschool/data/exist_cart.dart';
 import 'package:asgshighschool/data/product_data.dart';
 import 'package:asgshighschool/data/user_data.dart';
@@ -44,13 +45,6 @@ class PaymentCompletePage extends StatefulWidget {
 }
 
 class _PaymentCompletePageState extends State<PaymentCompletePage> {
-  final _categoryReverseMap = {
-    0: '음식류',
-    1: '간식류',
-    2: '음료류',
-    3: '문구류',
-    4: '핸드메이드'
-  };
   bool _isCreditSuccess = true;
   String _resultMessage = '';
   bool _isFinished = false;
@@ -851,7 +845,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
           spacing: size.width * 0.01,
           children: [
             Text(
-              '[${_categoryReverseMap[category]}]',
+              '[${Category.categoryIndexToStringMap[category]}]',
               style: TextStyle(color: Colors.grey),
             ),
             Text(

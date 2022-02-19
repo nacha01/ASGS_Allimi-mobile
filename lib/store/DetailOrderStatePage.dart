@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:asgshighschool/data/category_data.dart';
 import 'package:asgshighschool/data/user_data.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -14,14 +15,6 @@ class DetailOrderStatePage extends StatefulWidget {
 }
 
 class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
-  final _categoryReverseMap = {
-    0: '음식류',
-    1: '간식류',
-    2: '음료류',
-    3: '문구류',
-    4: '핸드메이드'
-  };
-
   /// 주문 상태 field 값에 따른 사용자에게 보여줄 mapping 문자열을 반환
   /// @param : DB에 저장된 '주문 상태 필드'의 정수 값
   String _getTextAccordingToOrderState(int state) {
@@ -448,7 +441,7 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                 ),
                 Text(
-                  ' [${_categoryReverseMap[int.parse(productMap['category'])]}] ',
+                  ' [${Category.categoryIndexToStringMap[int.parse(productMap['category'])]}] ',
                   style: TextStyle(color: Colors.grey),
                 ),
                 Text(' $quantity개')

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:ui';
 
+import 'package:asgshighschool/data/status_data.dart';
 import 'package:asgshighschool/data/user_data.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +21,6 @@ class RecordListPage extends StatefulWidget {
 class _RecordListPageState extends State<RecordListPage> {
   String _appBarTitle;
   List _rankList = [];
-  final statusList = ['재학생', '학부모', '교사', '졸업생', '기타'];
 
   @override
   void initState() {
@@ -135,7 +135,7 @@ class _RecordListPageState extends State<RecordListPage> {
                                                     fontWeight:
                                                         FontWeight.bold)),
                                             Text(
-                                                '신분 : ${statusList[int.parse(_rankList[index]['identity']) - 1]}',
+                                                '신분 : ${Status.statusList[int.parse(_rankList[index]['identity']) - 1]}',
                                                 style: TextStyle(
                                                     fontWeight:
                                                         FontWeight.bold)),

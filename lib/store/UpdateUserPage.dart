@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:ui';
 
 import 'package:asgshighschool/data/renewUser_data.dart';
+import 'package:asgshighschool/data/status_data.dart';
 import 'package:asgshighschool/data/user_data.dart';
 import 'package:asgshighschool/store/UpdatePasswordPage.dart';
 import 'package:flutter/cupertino.dart';
@@ -37,9 +38,6 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
   TextEditingController _pwController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
 
-  final statusList = ['재학생', '학부모', '교사', '졸업생', '기타'];
-  final statusMap = {'재학생': 1, '학부모': 2, '교사': 3, '졸업생': 4, '기타': 5};
-  final statusReverseList = ['재학생', '학부모', '교사', '졸업생', '기타'];
   var _selectedValue;
   User _tmpUser;
 
@@ -50,7 +48,7 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
     _studentIDController.text = widget.user.studentId;
     _nicknameController.text = widget.user.nickName;
     _emailController.text = widget.user.email;
-    _selectedValue = statusList[widget.user.identity - 1];
+    _selectedValue = Status.statusList[widget.user.identity - 1];
   }
 
   /// 사용자 정보의 변경에 대해 업데이트 요청을 하는 작업
@@ -59,7 +57,7 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
     final response = await http.post(url, body: <String, String>{
       'uid': widget.user.uid,
       'name': _nameController.text,
-      'identity': statusMap[_selectedValue].toString(),
+      'identity': Status.statusMap[_selectedValue].toString(),
       'studentID': _studentIDController.text,
       'nickname': _nicknameController.text,
       'email': _emailController.text
@@ -289,7 +287,7 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
                       isExpanded: true,
                       iconSize: 50,
                       value: _selectedValue,
-                      items: statusList.map((value) {
+                      items: Status.statusList.map((value) {
                         return DropdownMenuItem(
                           child: Center(child: Text(value)),
                           value: value,
@@ -298,7 +296,7 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
                       onChanged: (value) {
                         setState(() {
                           _selectedValue = value;
-                          if (statusMap[_selectedValue] > 1) {
+                          if (Status.statusMap[_selectedValue] > 1) {
                             _studentIDController.text = '';
                           }
                         });

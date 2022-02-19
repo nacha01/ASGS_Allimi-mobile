@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:ui';
 
+import 'package:asgshighschool/data/category_data.dart';
 import 'package:asgshighschool/data/exist_cart.dart';
 import 'package:asgshighschool/data/user_data.dart';
 import 'package:asgshighschool/store/OrderPage.dart';
@@ -32,13 +33,6 @@ class CartPage extends StatefulWidget {
 
 class _CartPageState extends State<CartPage> {
   List<Map> _cartProductList = []; // 원본 장바구니 데이터
-  final _categoryReverseMap = {
-    0: '음식류',
-    1: '간식류',
-    2: '음료류',
-    3: '문구류',
-    4: '핸드메이드'
-  };
   List<int> _countList = [];
   bool _isLoading = true;
   int _allAdditionalPrice = 0;
@@ -386,7 +380,7 @@ class _CartPageState extends State<CartPage> {
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                     ),
                     Text(
-                      '  [${_categoryReverseMap[int.parse(cartItem['category'])]}]',
+                      '  [${Category.categoryIndexToStringMap[int.parse(cartItem['category'])]}]',
                       style: TextStyle(color: Colors.grey, fontSize: 14),
                     )
                   ]),

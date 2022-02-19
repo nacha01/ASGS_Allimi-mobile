@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:ui';
 
+import 'package:asgshighschool/data/category_data.dart';
 import 'package:asgshighschool/data/user_data.dart';
 import 'package:asgshighschool/storeAdmin/StatisticsGuidePage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -47,13 +48,6 @@ class _StatisticsPageState extends State<StatisticsPage> {
   List<Widget> _salesRangeWidgetList = []; // 위의 리스트의 레이아웃 아이템을 담는 리스트
   List _productStockList = [];
   Map<int, Map> _productCountMap = Map(); // 데이터 분류 과정에서 사용되는 Map 데이터
-  final Map<int, String> _categoryReverseMap = {
-    0: '음식류',
-    1: '간식류',
-    2: '음료류',
-    3: '문구류',
-    4: '핸드메이드'
-  };
   final List _dateUnitList = ['전체', '일간', '주간', '월간'];
   final List _salesTextList = ['구매 + 예약', '구매', '예약'];
   final List _sortTitleList = ['등록순(ID순)', '이름순', '구매순', '예약순'];
@@ -282,7 +276,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
           'order': 0,
           'resv': 0,
           'pName': _orderList[i]['pName'],
-          'category': _categoryReverseMap[int.parse(_orderList[i]['category'])]
+          'category': Category
+              .categoryIndexToStringMap[int.parse(_orderList[i]['category'])]
         };
       }
       if (_productCountMap[pid].containsKey('order')) {
@@ -296,8 +291,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
           'order': 0,
           'resv': 0,
           'pName': _reservationList[i]['pName'],
-          'category':
-              _categoryReverseMap[int.parse(_reservationList[i]['category'])]
+          'category': Category.categoryIndexToStringMap[
+              int.parse(_reservationList[i]['category'])]
         };
       }
       if (_productCountMap[pid].containsKey('resv')) {

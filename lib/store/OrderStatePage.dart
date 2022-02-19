@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:ui';
 
+import 'package:asgshighschool/data/category_data.dart';
 import 'package:asgshighschool/data/user_data.dart';
 import 'package:asgshighschool/store/DetailOrderStatePage.dart';
 import 'package:flutter/cupertino.dart';
@@ -16,13 +17,6 @@ class OrderStatePage extends StatefulWidget {
 
 class _OrderStatePageState extends State<OrderStatePage> {
   List _orderMap = [];
-  final _categoryReverseMap = {
-    0: '음식류',
-    1: '간식류',
-    2: '음료류',
-    3: '문구류',
-    4: '핸드메이드'
-  };
 
   /// 나(uid)의 모든 주문한 내역(현황)들을 요청하는 작업
   Future<bool> _getOrderInfoRequest() async {
@@ -252,7 +246,7 @@ class _OrderStatePageState extends State<OrderStatePage> {
               child: Wrap(
                 children: [
                   Text(
-                    '[${_categoryReverseMap[int.parse(orderJson['detail'][0]['pInfo']['category'])]}] ',
+                    '[${Category.categoryIndexToStringMap[int.parse(orderJson['detail'][0]['pInfo']['category'])]}] ',
                     style: TextStyle(color: Colors.grey),
                   ),
                   Text(

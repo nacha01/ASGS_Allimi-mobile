@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:ui';
 
+import 'package:asgshighschool/data/category_data.dart';
 import 'package:asgshighschool/data/user_data.dart';
 import 'package:asgshighschool/store/DetailReservationStatePage.dart';
 import 'package:flutter/cupertino.dart';
@@ -17,13 +18,6 @@ class ReservationStatePage extends StatefulWidget {
 class _ReservationStatePageState extends State<ReservationStatePage> {
   List _reservationList = []; // 모든 예약 정보를 담은 json 리스트 (수령 완료 포함)
   List _notCompleteList = []; // 아직 완료처리가 되지 않은 예약 정보를 담은 json 리스트
-  final _categoryReverseMap = {
-    0: '음식류',
-    1: '간식류',
-    2: '음료류',
-    3: '문구류',
-    4: '핸드메이드'
-  };
   bool _isChecked = true;
 
   /// 해당 사용자에 대한 모든 예약 정보를 가져오는 요청
@@ -239,7 +233,7 @@ class _ReservationStatePageState extends State<ReservationStatePage> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        '[${_categoryReverseMap[int.parse(data['detail'][0]['pInfo']['category'])]}]',
+                        '[${Category.categoryIndexToStringMap[int.parse(data['detail'][0]['pInfo']['category'])]}]',
                         style: TextStyle(color: Colors.grey[500], fontSize: 15),
                       ),
                       Text(

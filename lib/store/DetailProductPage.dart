@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:ui';
 
+import 'package:asgshighschool/data/category_data.dart';
 import 'package:asgshighschool/data/exist_cart.dart';
 import 'package:asgshighschool/data/product_data.dart';
 import 'package:asgshighschool/data/user_data.dart';
@@ -29,13 +30,6 @@ class DetailProductPage extends StatefulWidget {
 }
 
 class _DetailProductPageState extends State<DetailProductPage> {
-  final _categoryReverseMap = {
-    0: '음식류',
-    1: '간식류',
-    2: '음료류',
-    3: '문구류',
-    4: '핸드메이드'
-  };
   bool _isDiscountZero = false; // 할인율이 0.0%인지 아닌지 판단
   int _count = 1; // 버튼으로 누른 수량
   bool _isCart = false; // 장바구니에 담았는지 판단
@@ -290,7 +284,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                       ),
                     ),
                     Text(
-                      '[${_categoryReverseMap[widget.product.category]}]',
+                      '[${Category.categoryIndexToStringMap[widget.product.category]}]',
                       textScaleFactor: 1.7,
                       style: TextStyle(color: Colors.grey),
                     ),

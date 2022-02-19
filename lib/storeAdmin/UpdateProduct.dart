@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:asgshighschool/data/category_data.dart';
 import 'package:asgshighschool/data/product_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -47,34 +48,18 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
   bool _isNew = false;
   bool _isReservation = false;
   bool _useOptions = false;
+  bool _imageInitial = true;
 
   bool _useSub1 = false;
   bool _useSub2 = false;
 
   int _index = 0;
   int _clickCount = 0;
-  bool _imageInitial = true;
 
   String _mainName;
   String _sub1Name;
   String _sub2Name;
-
-  final _categoryList = ['음식류', '간식류', '음료류', '문구류', '핸드메이드']; //드롭다운 아이템
-  final _categoryMap = {
-    '음식류': 0,
-    '간식류': 1,
-    '음료류': 2,
-    '문구류': 3,
-    '핸드메이드': 4
-  }; // 드롭다운 mapping
-  final _categoryReverseMap = {
-    0: '음식류',
-    1: '간식류',
-    2: '음료류',
-    3: '문구류',
-    4: '핸드메이드'
-  }; // 드롭다운 reverse mapping
-  var _selectedCategory = '음식류'; // 드롭다운 아이템 default
+  String _selectedCategory = '음식류'; // 드롭다운 아이템 default
   String serverImageUri =
       'http://nacha01.dothome.co.kr/sin/arlimi_productImage/'; // 이미지 저장 서버 URI
 
@@ -172,7 +157,8 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
       'prodID': widget.product.prodID.toString(),
       'prodName': _productNameController.text,
       'prodInfo': _productExplainController.text,
-      'category': _categoryMap[_selectedCategory].toString(),
+      'category':
+          Category.categoryStringToIndexMap[_selectedCategory].toString(),
       'price': _productPriceController.text,
       'stockCount': _productCountController.text,
       'discount': _productDiscountController.text,
@@ -370,7 +356,8 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
     final response = await http.post(url, body: <String, String>{
       'pName': _productNameController.text,
       'pInfo': _productExplainController.text,
-      'category': _categoryMap[_selectedCategory].toString(),
+      'category':
+          Category.categoryStringToIndexMap[_selectedCategory].toString(),
       'price': _productPriceController.text,
       'optionCategory': optionCategory
     });
@@ -443,7 +430,8 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
     _productExplainController.text = widget.product.prodInfo;
     _productPriceController.text = widget.product.price.toString();
     _productCountController.text = widget.product.stockCount.toString();
-    _selectedCategory = _categoryReverseMap[widget.product.category];
+    _selectedCategory =
+        Category.categoryIndexToStringMap[widget.product.category];
     _isBest = widget.product.isBest == 1 ? true : false;
     _isNew = widget.product.isNew == 1 ? true : false;
     _cumulativeSellCount.text = widget.product.cumulBuyCount.toString();
@@ -611,7 +599,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
                     child: DropdownButton(
                       isExpanded: true,
                       value: _selectedCategory,
-                      items: _categoryList.map((value) {
+                      items: Category.categoryList.map((value) {
                         return DropdownMenuItem(
                           child: Center(child: Text(value)),
                           value: value,

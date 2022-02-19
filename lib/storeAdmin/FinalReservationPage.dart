@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:ui';
 
+import 'package:asgshighschool/data/category_data.dart';
 import 'package:asgshighschool/data/user_data.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
@@ -18,14 +19,6 @@ class FinalReservationPage extends StatefulWidget {
 }
 
 class _FinalReservationPageState extends State<FinalReservationPage> {
-  final _categoryReverseMap = {
-    0: '음식류',
-    1: '간식류',
-    2: '음료류',
-    3: '문구류',
-    4: '핸드메이드'
-  };
-
   /// 실제로 상품을 예약자에게 수령하고 난 뒤, '수령 완료' 상태로 변경하기 위한 요청
   Future<bool> _convertFinishedState() async {
     String url =
@@ -368,7 +361,7 @@ class _FinalReservationPageState extends State<FinalReservationPage> {
       child: Row(
         children: [
           Text(
-            ' [${_categoryReverseMap[int.parse(widget.data['detail'][0]['pInfo']['category'])]}]',
+            ' [${Category.categoryIndexToStringMap[int.parse(widget.data['detail'][0]['pInfo']['category'])]}]',
             style: TextStyle(color: Colors.grey, fontSize: 16),
           ),
           Text(

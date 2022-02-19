@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:ui';
 
+import 'package:asgshighschool/data/status_data.dart';
 import 'package:asgshighschool/data/user_data.dart';
 import 'package:asgshighschool/storeAdmin/AdminDetailOrder.dart';
 import 'package:asgshighschool/storeAdmin/FullListPage.dart';
@@ -22,7 +23,6 @@ class _OrderListPageState extends State<OrderListPage> {
   List _noneList = [];
   bool _isChecked = true;
   bool _isFinished = false;
-  final statusList = ['재학생', '학부모', '교사', '졸업생', '기타'];
 
   /// 등록된 날짜와 오늘의 날짜를 비교해서 어느 정도 차이가 있는지에 대한 문자열을 반환하는 작업
   /// n일 전, n시간 전, n분 전
@@ -318,7 +318,8 @@ class _OrderListPageState extends State<OrderListPage> {
                                 Text('이름 : ${user.name}',
                                     style:
                                         TextStyle(fontWeight: FontWeight.bold)),
-                                Text('신분 : ${statusList[user.identity - 1]}',
+                                Text(
+                                    '신분 : ${Status.statusList[user.identity - 1]}',
                                     style:
                                         TextStyle(fontWeight: FontWeight.bold)),
                                 Text(
@@ -398,7 +399,7 @@ class _OrderListPageState extends State<OrderListPage> {
                                                         FontWeight.bold),
                                               ),
                                               Text(
-                                                  '이름 : ${user['name']} [${statusList[int.parse(user['identity']) - 1]}]',
+                                                  '이름 : ${user['name']} [${Status.statusList[int.parse(user['identity']) - 1]}]',
                                                   style: TextStyle(
                                                       fontWeight:
                                                           FontWeight.bold)),

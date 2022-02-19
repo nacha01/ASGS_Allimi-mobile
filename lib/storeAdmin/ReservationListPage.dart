@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:ui';
 
+import 'package:asgshighschool/data/category_data.dart';
+import 'package:asgshighschool/data/status_data.dart';
 import 'package:asgshighschool/data/user_data.dart';
 import 'package:asgshighschool/storeAdmin/AdminDetailReservation.dart';
 import 'package:asgshighschool/storeAdmin/FullListPage.dart';
@@ -23,14 +25,6 @@ class _ReservationListPageState extends State<ReservationListPage> {
   bool _isOrderTime = true;
   bool _isFinished = false;
   List _reservationListForTime = [];
-  final _categoryReverseMap = {
-    0: '음식류',
-    1: '간식류',
-    2: '음료류',
-    3: '문구류',
-    4: '핸드메이드'
-  };
-  final statusList = ['재학생', '학부모', '교사', '졸업생', '기타'];
   Map<int, Map> _productCountMap = Map();
   List<ProductCount> _pcList = [];
 
@@ -754,7 +748,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
                                             style: TextStyle(
                                                 fontWeight: FontWeight.bold)),
                                         Text(
-                                            '신분 : ${statusList[user.identity - 1]}',
+                                            '신분 : ${Status.statusList[user.identity - 1]}',
                                             style: TextStyle(
                                                 fontWeight: FontWeight.bold)),
                                         Text(
@@ -793,7 +787,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
                   Wrap(
                     children: [
                       Text(
-                        ' [${_categoryReverseMap[int.parse(data['detail'][0]['pInfo']['category'])]}]',
+                        ' [${Category.categoryIndexToStringMap[int.parse(data['detail'][0]['pInfo']['category'])]}]',
                         style: TextStyle(color: Colors.grey[500], fontSize: 11),
                       ),
                       Text(' ${data['detail'][0]['pInfo']['pName']} ',
@@ -850,7 +844,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
               child: Wrap(
                 children: [
                   Text(
-                    '[${_categoryReverseMap[data.category]}] ',
+                    '[${Category.categoryIndexToStringMap[data.category]}] ',
                     style: TextStyle(color: Colors.grey, fontSize: 11),
                   ),
                   Text(

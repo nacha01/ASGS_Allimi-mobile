@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:ui';
 
+import 'package:asgshighschool/data/status_data.dart';
 import 'package:asgshighschool/data/user_data.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +33,6 @@ class _PushNotificationPageState extends State<PushNotificationPage> {
   bool _isSent = false;
   final _gradeList = [1, 2, 3];
   final _classList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
-  final _statusList = ['재학생', '학부모', '교사', '졸업생', '기타'];
   final _targetList = ['전체', '학년 별', '반 별', '개별'];
 
   Future<bool> _getAllUserInformation() async {
@@ -762,7 +762,7 @@ class _PushNotificationPageState extends State<PushNotificationPage> {
             children: [
               Container(
                 child: Text(
-                  '${_statusList[int.parse(data['identity']) - 1]}',
+                  '${Status.statusList[int.parse(data['identity']) - 1]}',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 alignment: Alignment.center,
@@ -801,7 +801,7 @@ class _PushNotificationPageState extends State<PushNotificationPage> {
           children: [
             Container(
               child: Text(
-                '${_statusList[int.parse(data['identity']) - 1]}',
+                '${Status.statusList[int.parse(data['identity']) - 1]}',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               alignment: Alignment.center,

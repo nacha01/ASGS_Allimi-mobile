@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:asgshighschool/data/category_data.dart';
 import 'package:asgshighschool/data/user_data.dart';
 import 'package:asgshighschool/storeAdmin/QRScannerPage.dart';
 import 'package:flutter/cupertino.dart';
@@ -16,14 +17,6 @@ class AdminDetailOrder extends StatefulWidget {
 }
 
 class _AdminDetailOrderState extends State<AdminDetailOrder> {
-  final _categoryReverseMap = {
-    0: '음식류',
-    1: '간식류',
-    2: '음료류',
-    3: '문구류',
-    4: '핸드메이드'
-  };
-
   bool _isCharged = false;
   int _state = 1;
 
@@ -422,7 +415,7 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
             child: Wrap(
               children: [
                 Text(
-                  '[${_categoryReverseMap[category]}] ',
+                  '[${Category.categoryIndexToStringMap[category]}] ',
                   style: TextStyle(
                     color: Colors.black54,
                   ),
