@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:ui';
 
+import 'package:asgshighschool/data/exist_cart.dart';
 import 'package:asgshighschool/data/product_data.dart';
 import 'package:asgshighschool/data/user_data.dart';
 import 'package:crypto/crypto.dart';
@@ -10,6 +11,7 @@ import 'package:flutter/widgets.dart';
 import 'package:hex/hex.dart';
 import 'package:http/http.dart' as http;
 import 'package:cp949/cp949.dart' as cp949;
+import 'package:provider/provider.dart';
 
 class PaymentCompletePage extends StatefulWidget {
   PaymentCompletePage(
@@ -49,7 +51,6 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
     3: '문구류',
     4: '핸드메이드'
   };
-  List _orderInfo = [];
   bool _isCreditSuccess = true;
   String _resultMessage = '';
   bool _isFinished = false;
@@ -60,35 +61,6 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
   static const _MID = 'nictest00m';
   String _ediDate = '';
   bool _corporationInfoClicked = false;
-
-  /// route 이동 시 넘겨 받은 주문 ID를 통한 주문 상세 정보 요청 작업
-  Future<bool> _getOrderInfo() async {
-    String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_searchOrderInfo.php?oid=${widget.responseData['Moid']}';
-    final response = await http.get(url);
-
-    if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
-
-      List map = json.decode(result);
-
-      for (int i = 0; i < map.length; ++i) {
-        map[i] = jsonDecode(map[i]);
-        map[i]['product'] = jsonDecode(map[i]['product']);
-      }
-      setState(() {
-        _orderInfo = map;
-      });
-      return true;
-    } else {
-      return false;
-    }
-  }
 
   /// 일반 숫자에 ,를 붙여서 직관적인 가격을 보이게 하는 작업
   /// @param : 직관적인 가격을 보여줄 실제 int 가격[price]
@@ -356,7 +328,6 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
     _resultMessage = widget.responseData['ResultMsg'];
     _resultCode = widget.responseData['ResultCode'];
     super.initState();
-    _getOrderInfo();
     _processAfterPaying();
   }
 
@@ -369,6 +340,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
   void _processAfterPaying() async {
     if (_isCreditSuccess) {
       var res = await _registerOrderRequest();
+      Provider.of<ExistCart>(context).setExistCart(false);
       if (!res) {
         _resultCode = 'O001'; // 커스텀 코드로 결제는 되었으나 DB에 주문 등록이 실패했다는 의미
       }
