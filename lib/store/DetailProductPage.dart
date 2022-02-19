@@ -81,6 +81,15 @@ class _DetailProductPageState extends State<DetailProductPage> {
     if (!_hasOption) {
       return;
     }
+    bool _selected = false;
+    for (int i = 0; i < _selectedOptionIndex.length; ++i) {
+      if (_selectedOptionIndex[i] != -1) {
+        _selected = true;
+      }
+    }
+    if (!_selected) {
+      return;
+    }
     for (int j = 0; j < _count; ++j) {
       _optionString += '[{${widget.product.prodName}} 상품 옵션 : ';
       for (int i = 0; i < _optionList.length; ++i) {
@@ -95,6 +104,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
       }
       _optionString += ']\n';
     }
+    _optionString = _optionString.substring(0, _optionString.length - 1);
   }
 
   /// 상품을 장바구니에 추가하는 요청을 하는 작업

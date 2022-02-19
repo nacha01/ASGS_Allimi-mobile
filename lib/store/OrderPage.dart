@@ -1,17 +1,13 @@
 import 'dart:convert';
 import 'dart:ui';
 
-import 'package:asgshighschool/data/exist_cart.dart';
 import 'package:asgshighschool/data/product_data.dart';
 import 'package:asgshighschool/data/user_data.dart';
-import 'package:asgshighschool/store/PaymentCompletePage.dart';
 import 'package:asgshighschool/store/PaymentWebViewPage.dart';
 import 'package:asgshighschool/store/StoreMainPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
 
 class OrderPage extends StatefulWidget {
   OrderPage(
@@ -60,50 +56,6 @@ class _OrderPageState extends State<OrderPage> {
     super.initState();
   }
 
-  /// 주문을 등록하는 요청
-  Future<bool> _addOrderRequest() async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_addOrder.php';
-    _generatedOID = DateTime.now().millisecondsSinceEpoch.toString();
-    final response = await http.post(url, body: <String, String>{
-      'oid': _generatedOID,
-      'uid': widget.user.uid,
-      'oDate': DateTime.now().toString(),
-      'price': (_getOriginTotalPrice() - _getTotalDiscount()).toString(),
-      'oState': '0', // '미결제' 상태로 등록. 추후에 결제가 완료되면 '결제완료' 상태로 전환
-      'recvMethod': _receiveMethod == ReceiveMethod.DIRECT ? '0' : '1',
-      'pay': '0', // 신용카드
-      'option': _isCart
-          ? _entireOptionForCart
-          : _optionString +
-              (_requestOptionController.text.isEmpty
-                  ? ''
-                  : '\n' + _requestOptionController.text),
-      'location': _receiveMethod == ReceiveMethod.DELIVERY
-          ? _locationController.text
-          : 'NULL'
-    });
-    if (response.statusCode == 200) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  /// orderDetail 테이블에 oid인 값에 대하여 어떤 상품인지 등록하는 http 요청
-  Future<bool> _addOrderDetailRequest(int pid, int quantity) async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_addOrderDetail.php';
-    final response = await http.post(url, body: <String, String>{
-      'oid': _generatedOID,
-      'pid': pid.toString(),
-      'quantity': quantity.toString()
-    });
-    if (response.statusCode == 200) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   void _preProcessForOptions() {
     if (widget.selectList == null || widget.selectList.length == 0) {
       return;
@@ -144,102 +96,8 @@ class _OrderPageState extends State<OrderPage> {
     for (int i = 0; i < widget.cart.length; ++i) {
       _entireOptionForCart += widget.cart[i]['options'] + '\n';
     }
-  }
-
-  /// 최종적으로 주문을 등록하는 과정
-  Future<bool> _registerOrderRequest() async {
-    var orderRes = await _addOrderRequest();
-    if (!orderRes) return false;
-
-    if (_isCart) {
-      for (int i = 0; i < widget.cart.length; ++i) {
-        var cartRes = await _addOrderDetailRequest(
-            int.parse(widget.cart[i]['cPID']),
-            int.parse(widget.cart[i]['quantity']));
-
-        var deleteRes =
-            await _deleteCartRequest(int.parse(widget.cart[i]['cID']));
-
-        var renewCountRes = await _updateProductCountRequest(
-            int.parse(widget.cart[i]['cPID']),
-            int.parse(widget.cart[i]['quantity']));
-
-        var sellCountRes = await _updateEachProductSellCountRequest(
-            int.parse(widget.cart[i]['cPID']),
-            int.parse(widget.cart[i]['quantity']));
-
-        if (!cartRes) return false;
-        if (!deleteRes) return false;
-        if (!renewCountRes) return false;
-        if (!sellCountRes) return false;
-      }
-    } else {
-      var detRes = await _addOrderDetailRequest(
-          widget.direct.prodID, widget.productCount);
-      var renewCountRes = await _updateProductCountRequest(
-          widget.direct.prodID, widget.productCount);
-
-      var sellCountRes = await _updateEachProductSellCountRequest(
-          widget.direct.prodID, widget.productCount);
-
-      if (!detRes) return false;
-      if (!renewCountRes) return false;
-      if (!sellCountRes) return false;
-    }
-    return true;
-  }
-
-  /// 장바구니에서 결제를 시도한다면 장바구니에 있는 데이터들을 지우는 요청
-  Future<bool> _deleteCartRequest(int cid) async {
-    String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_deleteCart.php?cid=$cid';
-    final response = await http.get(url);
-
-    if (response.statusCode == 200) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  /// 각 상품의 수량을 [quantity]만큼 깎는 요청
-  Future<bool> _updateProductCountRequest(int pid, int quantity) async {
-    String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_updateProductCount.php';
-    final response = await http.post(url, body: <String, String>{
-      'pid': pid.toString(),
-      'quantity': quantity.toString()
-    });
-    if (response.statusCode == 200) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  /// 각 상품의 누적 판매수를 반영하는 요청
-  Future<bool> _updateEachProductSellCountRequest(int pid, int quantity) async {
-    String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_updateProductSellCount.php';
-    final response = await http.get(url + '?pid=$pid&quantity=$quantity');
-    if (response.statusCode == 200) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  /// 이 주문을 요청한 사용자의 누적 구매수를 증가시키는 요청
-  Future<bool> _updateUserBuyCountRequest() async {
-    String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_updateUserBuyCount.php?uid=${widget.user.uid}';
-    final response = await http.get(url);
-
-    if (response.statusCode == 200) {
-      return true;
-    } else {
-      return false;
-    }
+    _entireOptionForCart =
+        _entireOptionForCart.substring(0, _entireOptionForCart.length - 1);
   }
 
   /// 최종적으로 결제 하기 전 그 순간에서 재고 상황을 체크하는 작업(단일 상품)
@@ -367,7 +225,6 @@ class _OrderPageState extends State<OrderPage> {
 
   @override
   Widget build(BuildContext context) {
-    final data = Provider.of<ExistCart>(context);
     final size = MediaQuery.of(context).size;
     return WillPopScope(
       onWillPop: () async {
@@ -410,7 +267,7 @@ class _OrderPageState extends State<OrderPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(
-                      height: size.height * 0.05,
+                      height: size.height * 0.03,
                     ),
                     Divider(
                       thickness: 0.5,
@@ -561,7 +418,15 @@ class _OrderPageState extends State<OrderPage> {
                       ),
                     ),
                     SizedBox(
-                      height: size.height * 0.03,
+                      height: size.height * 0.02,
+                    ),
+                    Divider(
+                      thickness: 0.5,
+                      indent: 5,
+                      endIndent: 5,
+                    ),
+                    SizedBox(
+                      height: size.height * 0.02,
                     ),
                     Text(' 상품 옵션',
                         style: TextStyle(
@@ -571,8 +436,10 @@ class _OrderPageState extends State<OrderPage> {
                     Container(
                       padding: EdgeInsets.all(size.width * 0.02),
                       width: size.width * 0.95,
-                      child:
-                          Text(_isCart ? _entireOptionForCart : _optionString),
+                      child: Text(
+                        _isCart ? _entireOptionForCart : _optionString,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ),
                     Divider(
                       thickness: 0.5,
@@ -580,7 +447,7 @@ class _OrderPageState extends State<OrderPage> {
                       endIndent: 5,
                     ),
                     SizedBox(
-                      height: size.height * 0.03,
+                      height: size.height * 0.02,
                     ),
                     Card(
                       child: Container(
@@ -722,7 +589,7 @@ class _OrderPageState extends State<OrderPage> {
                                     fontWeight: FontWeight.bold,
                                     color: Colors.red)),
                             content: Text(
-                                '실시간 재고 점검 결과 수량이 부족하여 해당 상품을 구매하실 수 없습니다!',
+                                '실시간 재고 점검 결과 수량이 부족하여 해당 상품을 구매하실 수 없습니다!\n$_checkMessage',
                                 style: TextStyle(
                                     fontSize: 13, fontWeight: FontWeight.bold)),
                             actions: [
@@ -734,14 +601,7 @@ class _OrderPageState extends State<OrderPage> {
                   return;
                 }
 
-                // var res = await _registerOrderRequest();
-
-                // if (res) {
-                //   await _updateUserBuyCountRequest();
                 StoreMainPageState.currentNav = 0;
-                if (_isCart) {
-                  data.setExistCart(false);
-                }
                 _generatedOID =
                     DateTime.now().millisecondsSinceEpoch.toString();
                 Navigator.pushReplacement(
