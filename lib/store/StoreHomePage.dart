@@ -677,7 +677,7 @@ class _StoreHomePageState extends State<StoreHomePage>
             SliverAppBar(
               backgroundColor: Colors.white,
               forceElevated: innerBoxIsScrolled,
-              leadingWidth: size.width * 0.23,
+              leadingWidth: size.width * 0.25,
               centerTitle: true,
               title: aboveTap(size),
               leading: Container(
@@ -688,13 +688,8 @@ class _StoreHomePageState extends State<StoreHomePage>
                     onPressed: () {
                       _tabController.index = 0;
                     },
-                    child: Text(
-                      '두루두루',
-                      style: TextStyle(
-                        color: Color(0xFF9EE1E5),
-                        fontWeight: FontWeight.bold,
-                        fontSize: 17,
-                      ),
+                    child: Image.asset(
+                      'assets/images/duruduru_logo.png',
                     ),
                   )),
               bottom: TabBar(
