@@ -51,8 +51,8 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
   Map _cancelResponse;
   String _resultCode = '';
   static const _KEY =
-      '33F49GnCMS1mFYlGXisbUDzVf2ATWCl9k3R++d5hDd3Frmuos/XLx8XhXpe+LDYAbpGKZYSwtlyyLOtS/8aD7A==';
-  static const _MID = 'nictest00m';
+      '52NZQ9J8Ol45+A5FF3wSfO+493AwkL8VpnPEKvjUoBuDvcc44V9claSGcd8OFgXyMxaMfiFX0e0j5VwXC2eQ2g==';
+  static const _MID = 'asgscoop2m';
   String _ediDate = '';
   bool _corporationInfoClicked = false;
 
