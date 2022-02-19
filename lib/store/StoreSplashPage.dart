@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:asgshighschool/data/exist_cart.dart';
 import 'package:asgshighschool/data/user_data.dart';
@@ -108,14 +109,27 @@ class _StoreSplashPageState extends State<StoreSplashPage> {
             color: Color(0xFF9EE1E5),
             child: Column(
               children: [
-                Text(
-                  ''/*텍스트 및 로고*/,
-                  textScaleFactor: 1.5,
+                Expanded(
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Image.asset(
+                          'assets/images/duruduru_logo.png',
+                          fit: BoxFit.fill,
+                        ),
+                        SizedBox(
+                          height: size.height * 0.02,
+                        ),
+                        Text(
+                          widget.user.isAdmin ? '관리자 권한으로 접근합니다...' : '',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 13),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-                SizedBox(
-                  height: size.height * 0.05,
-                ),
-                Text(widget.user.isAdmin ? '관리자 권한으로 접근합니다...' : ''),
               ],
             ),
           ),
