@@ -76,7 +76,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
   String _sub2Name;
   String pid = '';
   String _errorText = '';
-  String _selectedCategory = '음식류'; // 드롭다운 아이템 default
+  String _selectedCategory = Category.c1; // 드롭다운 아이템 default
   String serverImageUri =
       'http://nacha01.dothome.co.kr/sin/arlimi_productImage/64_';
 
