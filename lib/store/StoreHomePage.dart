@@ -840,8 +840,8 @@ class _StoreHomePageState extends State<StoreHomePage>
                                           Container(
                                             child: Image.asset(_selectedCategory ==
                                                     1
-                                                ? "assets/images/dinner_on_icon.jpg"
-                                                : "assets/images/dinner_icon.jpg"),
+                                                ? "assets/images/new_drink_icon.jpg"
+                                                : "assets/images/new_drink_icon.jpg"),
                                             height: size.height * 0.06,
                                           ),
                                           Text('${Category.c1}',
@@ -873,8 +873,8 @@ class _StoreHomePageState extends State<StoreHomePage>
                                           Container(
                                             child: Image.asset(_selectedCategory ==
                                                     2
-                                                ? "assets/images/candy_on_icon.jpg"
-                                                : "assets/images/candy_icon.jpg"),
+                                                ? "assets/images/snack_icon.jpg"
+                                                : "assets/images/snack_icon.jpg"),
                                             height: size.height * 0.06,
                                           ),
                                           Text('${Category.c2}',
@@ -906,8 +906,8 @@ class _StoreHomePageState extends State<StoreHomePage>
                                           Container(
                                             child: Image.asset(_selectedCategory ==
                                                     3
-                                                ? "assets/images/drink_on_icon.jpg"
-                                                : "assets/images/drink_icon.jpg"),
+                                                ? "assets/images/icecream_icon.jpg"
+                                                : "assets/images/icecream_icon.jpg"),
                                             height: size.height * 0.06,
                                           ),
                                           Text('${Category.c3}',
@@ -939,8 +939,8 @@ class _StoreHomePageState extends State<StoreHomePage>
                                           Container(
                                             child: Image.asset(_selectedCategory ==
                                                     4
-                                                ? "assets/images/pencil_on_icon.jpg"
-                                                : "assets/images/pencil_icon.jpg"),
+                                                ? "assets/images/drink_on_icon.jpg"
+                                                : "assets/images/drink_icon.jpg"),
                                             height: size.height * 0.06,
                                           ),
                                           Text('${Category.c4}',
@@ -972,8 +972,8 @@ class _StoreHomePageState extends State<StoreHomePage>
                                           Container(
                                             child: Image.asset(_selectedCategory ==
                                                     5
-                                                ? "assets/images/handmade_on_icon.jpg"
-                                                : "assets/images/handmadeicon.jpg"),
+                                                ? "assets/images/pencil_on_icon.jpg"
+                                                : "assets/images/pencil_icon.jpg"),
                                             height: size.height * 0.06,
                                           ),
                                           Text('${Category.c5}',
