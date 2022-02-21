@@ -126,6 +126,9 @@ class _StoreSplashPageState extends State<StoreSplashPage> {
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 13),
                         ),
+                        SizedBox(
+                          height: size.height * 0.06,
+                        )
                       ],
                     ),
                   ),
