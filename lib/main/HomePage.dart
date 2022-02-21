@@ -9,7 +9,6 @@ import 'package:asgshighschool/main/GameListPage.dart';
 import 'package:asgshighschool/main/SelectImagePage.dart';
 import 'package:asgshighschool/store/UpdateUserPage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
 import '../store/StoreSplashPage.dart';
@@ -21,12 +20,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:http/http.dart' as http;
 import '../WebView.dart';
-
-final List<String> imgList = [
-  'main_img_1.jpg',
-  'main_img_2.jpg',
-  'main_img_3.jpg'
-];
 
 class HomePage extends StatefulWidget {
   HomePage({Key key, this.user, this.token}) : super(key: key);
@@ -129,16 +122,6 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 )));
     tabController.index = 0;
     _isMoved = false;
-  }
-
-  void _goGame() async {
-    await Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => GameListPage(
-                  user: widget.user,
-                )));
-    tabController.index = 0;
   }
 
   @override
@@ -329,7 +312,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   bottom: TabBar(
                     labelStyle: TextStyle(fontSize: 13),
                     onTap: (index) async {
-                      if (index == 3) {
+                      if (index == 2) {
                         tabController.index = 0;
                         Navigator.push(
                             context,
