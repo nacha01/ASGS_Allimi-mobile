@@ -840,7 +840,7 @@ class _StoreHomePageState extends State<StoreHomePage>
                                           Container(
                                             child: Image.asset(_selectedCategory ==
                                                     1
-                                                ? "assets/images/new_drink_icon.jpg"
+                                                ? "assets/images/new_drink_on_icon.jpg"
                                                 : "assets/images/new_drink_icon.jpg"),
                                             height: size.height * 0.06,
                                           ),
@@ -873,7 +873,7 @@ class _StoreHomePageState extends State<StoreHomePage>
                                           Container(
                                             child: Image.asset(_selectedCategory ==
                                                     2
-                                                ? "assets/images/snack_icon.jpg"
+                                                ? "assets/images/snack_on_icon.jpg"
                                                 : "assets/images/snack_icon.jpg"),
                                             height: size.height * 0.06,
                                           ),
@@ -906,7 +906,7 @@ class _StoreHomePageState extends State<StoreHomePage>
                                           Container(
                                             child: Image.asset(_selectedCategory ==
                                                     3
-                                                ? "assets/images/icecream_icon.jpg"
+                                                ? "assets/images/icecream_on_icon.jpg"
                                                 : "assets/images/icecream_icon.jpg"),
                                             height: size.height * 0.06,
                                           ),
@@ -972,8 +972,8 @@ class _StoreHomePageState extends State<StoreHomePage>
                                           Container(
                                             child: Image.asset(_selectedCategory ==
                                                     5
-                                                ? "assets/images/pencil_on_icon.jpg"
-                                                : "assets/images/pencil_icon.jpg"),
+                                                ? "assets/images/handmade_on_icon.jpg"
+                                                : "assets/images/handmadeicon.jpg"),
                                             height: size.height * 0.06,
                                           ),
                                           Text('${Category.c5}',

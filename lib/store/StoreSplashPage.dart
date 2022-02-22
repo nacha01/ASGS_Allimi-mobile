@@ -1,9 +1,7 @@
 import 'dart:convert';
 import 'dart:ui';
 
-import 'package:asgshighschool/data/exist_cart.dart';
 import 'package:asgshighschool/data/user_data.dart';
-import 'package:provider/provider.dart';
 
 import 'StoreMainPage.dart';
 import 'package:flutter/material.dart';
