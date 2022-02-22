@@ -59,7 +59,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
   String _mainName;
   String _sub1Name;
   String _sub2Name;
-  String _selectedCategory = '음식류'; // 드롭다운 아이템 default
+  String _selectedCategory = Category.c1; // 드롭다운 아이템 default
   String serverImageUri =
       'http://nacha01.dothome.co.kr/sin/arlimi_productImage/'; // 이미지 저장 서버 URI
 
@@ -487,40 +487,50 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
               child: Column(
             children: [
               SizedBox(
-                height: 10,
-              ),
-              SizedBox(
-                height: 10,
+                height: size.height * 0.015,
               ),
               Text(
                 '*표시는 필수 입력 사항',
-                style: TextStyle(color: Colors.grey),
+                style: TextStyle(color: Colors.grey, fontSize: 12),
               ),
               Padding(
-                padding: const EdgeInsets.all(14.0),
+                padding: EdgeInsets.all(size.width * 0.03),
                 child: Column(
                   children: [
                     SizedBox(
                       height: size.height * 0.02,
                     ),
-                    Text('※ Best 메뉴 여부와 New 메뉴 여부는 등록할 상품이 해당되면 체크하세요.'),
+                    Text('※ Best 메뉴 여부와 New 메뉴 여부는 등록할 상품이 해당되면 체크하세요.',
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold)),
                     SizedBox(
                       height: size.height * 0.02,
                     ),
-                    Text('※ 대표 이미지는 카메라로 즉석에서 찍은 사진, 혹은 갤러리에서 가져와서 사용하면 됩니다.'),
+                    Text('※ 대표 이미지는 카메라로 즉석에서 찍은 사진, 혹은 갤러리에서 가져와서 사용하면 됩니다.',
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold)),
                     SizedBox(
                       height: size.height * 0.02,
+                    ),
+                    Text('※ 추가 이미지는 필수가 아니며, 필요시 추가할 때는 이미지를 반드시 추가해주세요. ',
+                        style: TextStyle(
+                            color: Colors.red,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold)),
+                    SizedBox(
+                      height: size.height * 0.025,
                     ),
                     Text(
-                        '※ 추가 이미지는 필수가 아니며, 필요시 추가할 때는 이미지와 파일이름을 반드시 적어주세요. '),
-                    SizedBox(
-                      height: size.height * 0.02,
-                    ),
-                    SizedBox(
-                      height: size.height * 0.02,
-                    ),
-                    Text('※ "할인율"을 수정할 경우 반드시 .(온점)을 붙여서 소수점 한 자리까지 작성바랍니다.'
-                        '\nex) 2.4 , 50.0 \n(형식을 맞추지 않을 시 치명적인 오류가 발생할 수 있습니다.)'),
+                        '※ "할인율"을 수정할 경우 반드시 .(온점)을 붙여서 소수점 한 자리까지 작성바랍니다.'
+                        '\nex) 2.4 , 50.0 \n(형식을 맞추지 않을 시 치명적인 오류가 발생할 수 있습니다.)',
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold)),
                     SizedBox(
                       height: size.height * 0.02,
                     ),
@@ -683,9 +693,8 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
                     height: size.height * 0.06,
                     child: Text(
                       'Best 메뉴 여부',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                     ),
                     decoration: BoxDecoration(
                         color: Color(0xFF9EE1E5),
@@ -723,9 +732,8 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
                     height: size.height * 0.06,
                     child: Text(
                       'New 메뉴 여부',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                     ),
                     decoration: BoxDecoration(
                         color: Color(0xFF9EE1E5),
@@ -764,9 +772,8 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
                     height: size.height * 0.06,
                     child: Text(
                       '*재고가 0일 때 처리',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                     ),
                     decoration: BoxDecoration(
                         color: Color(0xFF9EE1E5),
@@ -1327,12 +1334,15 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
                 width: size.width * 0.5,
                 decoration: BoxDecoration(
                     color: Colors.deepOrange,
-                    border: Border.all(width: 2, color: Colors.indigo),
-                    borderRadius: BorderRadius.circular(20)),
-                child: FlatButton(
+                    border: Border.all(width: 1, color: Colors.indigo),
+                    borderRadius: BorderRadius.circular(12)),
+                child: TextButton(
                   child: Text(
                     '최종 수정하기',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                        color: Colors.black),
                   ),
                   onPressed: () async {
                     if (_productNameController.text.isEmpty) {
@@ -1455,9 +1465,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
       height: size.height * 0.06,
       child: Text(
         require ? '*' + title : title,
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-        ),
+        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
       ),
       decoration: BoxDecoration(
           color: Color(0xFF9EE1E5), borderRadius: BorderRadius.circular(8)),
