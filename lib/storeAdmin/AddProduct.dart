@@ -430,34 +430,42 @@ class _AddingProductPageState extends State<AddingProductPage> {
                 ? Column(
                     children: [
                       SizedBox(
-                        height: 10,
-                      ),
-                      SizedBox(
-                        height: 10,
+                        height: size.height * 0.015,
                       ),
                       Text(
                         '* 표시는 필수 입력 사항',
-                        style: TextStyle(color: Colors.grey),
+                        style: TextStyle(color: Colors.grey, fontSize: 12),
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(14.0),
+                        padding: EdgeInsets.all(size.width * 0.03),
                         child: Column(
                           children: [
                             SizedBox(
                               height: size.height * 0.02,
                             ),
-                            Text(
-                                '※ Best 메뉴 여부와 New 메뉴 여부는 등록할 상품이 해당되면 체크하세요.'),
+                            Text('※ Best 메뉴 여부와 New 메뉴 여부는 등록할 상품이 해당되면 체크하세요.',
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold)),
                             SizedBox(
                               height: size.height * 0.02,
                             ),
                             Text(
-                                '※ 대표 이미지는 카메라로 즉석에서 찍은 사진, 혹은 갤러리에서 가져와서 사용하면 됩니다.'),
+                                '※ 대표 이미지는 카메라로 즉석에서 찍은 사진, 혹은 갤러리에서 가져와서 사용하면 됩니다.',
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold)),
                             SizedBox(
                               height: size.height * 0.02,
                             ),
                             Text(
-                                '※ 추가 이미지는 필수가 아니며, 필요시 추가할 때는 이미지를 반드시 추가해주세요. '),
+                                '※ 추가 이미지는 필수가 아니며, 필요시 추가할 때는 이미지를 반드시 추가해주세요. ',
+                                style: TextStyle(
+                                    color: Colors.red,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold)),
                             SizedBox(
                               height: size.height * 0.02,
                             ),
@@ -624,8 +632,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                             child: Text(
                               'Best 메뉴 여부',
                               style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
+                                  fontWeight: FontWeight.bold, fontSize: 13),
                             ),
                             decoration: BoxDecoration(
                                 color: Color(0xFF9EE1E5),
@@ -664,8 +671,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                             child: Text(
                               'New 메뉴 여부',
                               style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
+                                  fontWeight: FontWeight.bold, fontSize: 13),
                             ),
                             decoration: BoxDecoration(
                                 color: Color(0xFF9EE1E5),
@@ -705,8 +711,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                             child: Text(
                               '*재고가 0일 때 처리',
                               style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
+                                  fontWeight: FontWeight.bold, fontSize: 13),
                             ),
                             decoration: BoxDecoration(
                                 color: Color(0xFF9EE1E5),
@@ -929,8 +934,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                             child: Text(
                               '*대표 이미지 선택',
                               style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
+                                  fontWeight: FontWeight.bold, fontSize: 13),
                             ),
                             decoration: BoxDecoration(
                                 color: Color(0xFF9EE1E5),
@@ -1209,12 +1213,15 @@ class _AddingProductPageState extends State<AddingProductPage> {
                         width: size.width * 0.5,
                         decoration: BoxDecoration(
                             color: Colors.deepOrange,
-                            border: Border.all(width: 2, color: Colors.indigo),
-                            borderRadius: BorderRadius.circular(20)),
-                        child: FlatButton(
+                            border: Border.all(width: 1, color: Colors.indigo),
+                            borderRadius: BorderRadius.circular(12)),
+                        child: TextButton(
                           child: Text(
                             '최종 등록하기',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                                color: Colors.black),
                           ),
                           onPressed: () {
                             if (_productNameController.text.isEmpty) {
@@ -1260,7 +1267,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                         ),
                       ),
                       SizedBox(
-                        height: 15,
+                        height: size.height * 0.015,
                       )
                     ],
                   )
@@ -1541,9 +1548,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
       height: size.height * 0.06,
       child: Text(
         require ? '*' + title : title,
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-        ),
+        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
       ),
       decoration: BoxDecoration(
           color: Color(0xFF9EE1E5), borderRadius: BorderRadius.circular(8)),
