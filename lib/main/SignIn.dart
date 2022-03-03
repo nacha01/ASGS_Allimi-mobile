@@ -11,6 +11,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:yaml/yaml.dart';
 
 import 'HomePage.dart';
 import 'package:asgshighschool/WebView.dart';
@@ -83,9 +84,54 @@ class _SignInPageState extends State<SignInPage> {
     return true;
   }
 
+  Future<String> _getLatestVersion() async {
+    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getLatestVersion.php';
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      String result = utf8
+          .decode(response.bodyBytes)
+          .replaceAll(
+              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+              '')
+          .trim();
+      return result;
+    } else {
+      return null;
+    }
+  }
+
+  void _checkCurrentAppVersion() async {
+    var latest = await _getLatestVersion();
+    var yaml = await rootBundle.loadString('pubspec.yaml');
+    var current = loadYaml(yaml)['version'];
+    if (latest != current) {
+      await showDialog(
+          barrierDismissible: false,
+          context: context,
+          builder: (context) => WillPopScope(
+                onWillPop: () async => false,
+                child: AlertDialog(
+                  content: Text(
+                    '최신버전의 앱으로 업데이트 바랍니다.',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  ),
+                  actions: [
+                    TextButton(
+                        onPressed: () {
+                          exit(0);
+                        },
+                        child: Text('확인'))
+                  ],
+                ),
+              ));
+    } else {
+      await _loadLoginInfo();
+    }
+  }
+
   @override
   void initState() {
-    _loadLoginInfo();
+    _checkCurrentAppVersion();
     super.initState();
 
     _firebaseMessaging.configure(
@@ -182,7 +228,7 @@ class _SignInPageState extends State<SignInPage> {
     return value;
   }
 
-  void _loadLoginInfo() async {
+  Future<void> _loadLoginInfo() async {
     _pref = await SharedPreferences.getInstance();
     if (_pref != null) {
       setState(() {
