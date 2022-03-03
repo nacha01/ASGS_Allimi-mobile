@@ -36,6 +36,8 @@ dependencies:
   intl: ^0.16.1
   flutter_swiper: ^1.1.6
 
+  yaml: ^2.2.0
+
   # for shopping mall
   image_picker: ^0.6.7
   cached_network_image: ^2.5.1
@@ -80,7 +82,7 @@ flutter:
 
   assets:
     - assets/images/
-
+    - pubspec.yaml
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 
