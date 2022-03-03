@@ -294,7 +294,7 @@ class _OrderPageState extends State<OrderPage> {
                             _receiveMethod = value;
                           });
                         }),
-                    RadioListTile(
+                    /*RadioListTile(
                         subtitle: Text('요청하신 장소로 배달해드립니다.'),
                         title: Text('배달'),
                         value: ReceiveMethod.DELIVERY,
@@ -304,6 +304,7 @@ class _OrderPageState extends State<OrderPage> {
                             _receiveMethod = value;
                           });
                         }),
+                     */
                     _receiveMethod == ReceiveMethod.DELIVERY
                         ? Row(
                             mainAxisAlignment: MainAxisAlignment.center,
