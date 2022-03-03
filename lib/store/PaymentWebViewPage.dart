@@ -52,8 +52,8 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
   InAppWebViewController _inAppWebViewController;
   static const platform = MethodChannel('asgs');
   static const _KEY =
-      '52NZQ9J8Ol45+A5FF3wSfO+493AwkL8VpnPEKvjUoBuDvcc44V9claSGcd8OFgXyMxaMfiFX0e0j5VwXC2eQ2g==';
-  static const _MID = 'asgscoop2m';
+      '0DVRz8vSDD5HvkWRwSxpjVhhx7OlXEViTciw5lBQAvSyYya9yf0K0Is+JbwiR9yYC96rEH2XIbfzeHXgqzSAFQ==';
+  static const _MID = 'asgscoop1m';
   static const _RETURN_URL = 'http://nacha01.dothome.co.kr/sin/result_test.php';
   String _ediDate = '';
   bool _isCart = true;
