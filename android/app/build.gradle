@@ -13,12 +13,12 @@ if (flutterRoot == null) {
 
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
 if (flutterVersionCode == null) {
-    flutterVersionCode = '19'
+    flutterVersionCode = '20'
 }
 
 def flutterVersionName = localProperties.getProperty('flutter.versionName')
 if (flutterVersionName == null) {
-    flutterVersionName = '1.1.8'
+    flutterVersionName = '1.1.9'
 }
 
 apply plugin: 'com.android.application'
@@ -65,6 +65,8 @@ android {
         release {
             // signingConfig signingConfigs.debug
             signingConfig signingConfigs.release
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
         }
     }
