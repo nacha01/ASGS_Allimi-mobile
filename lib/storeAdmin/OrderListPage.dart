@@ -297,14 +297,6 @@ class _OrderListPageState extends State<OrderListPage> {
                         fontWeight: FontWeight.bold,
                         fontSize: 15),
                   ),
-                  Text(
-                    _formatDateTimeForToday(eDate),
-                    style: TextStyle(
-                      color : Colors.redAccent,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15),
-                    ),
-                  )
                 ],
               ),
               SizedBox(
@@ -361,6 +353,17 @@ class _OrderListPageState extends State<OrderListPage> {
               ),
               SizedBox(
                 height: size.height * 0.005,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('${eDate == null ? '주문 일자' : '주문 완료 일자'}',
+                    style: TextStyle(
+                      fontWeight : FontWeight.bold,
+                    )
+                  ),
+                  Text('${eDate == null? oDate : eDate }')
+                ],
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
