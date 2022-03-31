@@ -209,6 +209,7 @@ class _OrderListPageState extends State<OrderListPage> {
                                 _noneList[index]['uID'],
                                 int.parse(_noneList[index]['receiveMethod']),
                                 _noneList[index]['oDate'],
+                                _noneList[index]['eDate'],
                                 int.parse(_noneList[index]['orderState']),
                                 _noneList[index],
                                 size);
@@ -232,6 +233,7 @@ class _OrderListPageState extends State<OrderListPage> {
                                 _orderList[index]['uID'],
                                 int.parse(_orderList[index]['receiveMethod']),
                                 _orderList[index]['oDate'],
+                                _orderList[index]['eDate'],
                                 int.parse(_orderList[index]['orderState']),
                                 _orderList[index],
                                 size);
@@ -253,8 +255,8 @@ class _OrderListPageState extends State<OrderListPage> {
     );
   }
 
-  Widget _itemTile(String oid, String uid, int recv, String date,
-      int orderState, Map data, Size size) {
+  Widget _itemTile(String oid, String uid, int recv, String oDate,
+      String eDate, int orderState, Map data, Size size) {
     return Container(
       width: size.width,
       margin: EdgeInsets.all(size.width * 0.01),
@@ -289,11 +291,19 @@ class _OrderListPageState extends State<OrderListPage> {
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    _formatDateTimeForToday(date),
+                    _formatDateTimeForToday(oDate),
                     style: TextStyle(
                         color: Colors.redAccent,
                         fontWeight: FontWeight.bold,
                         fontSize: 15),
+                  ),
+                  Text(
+                    _formatDateTimeForToday(eDate),
+                    style: TextStyle(
+                      color : Colors.redAccent,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15),
+                    ),
                   )
                 ],
               ),
