@@ -200,6 +200,17 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
                     )
                   ],
                 ),
+                Row(
+                  children: [
+                    Text('주문 완료 일자 ${widget.data['eData'] == null ? '-' : _formatDate(widget.data['eDate'])}',
+                        style: TextStyle(color: Colors.grey, fontSize: 13)
+                    ),
+                    Text(
+                      ' (${widget.data['eData'] == null ? '-' : _formatDateTimeForToday(widget.data['eDate'])})',
+                      style: TextStyle(fontWeight: FontWeight.bold, color: Colors.deepOrange)
+                    )
+                  ],
+                ),
                 SizedBox(
                   height: size.height * 0.015,
                 ),
