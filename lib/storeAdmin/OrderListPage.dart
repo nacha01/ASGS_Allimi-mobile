@@ -357,12 +357,12 @@ class _OrderListPageState extends State<OrderListPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('${eDate == null ? '주문 일자' : '주문 완료 일자'}',
+                  Text('주문 완료 일자',
                     style: TextStyle(
                       fontWeight : FontWeight.bold,
                     )
                   ),
-                  Text('${eDate == null? oDate : eDate }')
+                  Text('${eDate == null? '-' : eDate }')
                 ],
               ),
               Row(
