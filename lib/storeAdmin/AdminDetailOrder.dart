@@ -202,7 +202,7 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
                 ),
                 Row(
                   children: [
-                    Text('주문 완료 일자 ${widget.data['eData'] == null ? '-' : _formatDate(widget.data['eDate'])}',
+                    Text('주문 완료 일자 ${widget.data['eDate'] == null ? '-' : _formatDate(widget.data['eDate'])}',
                         style: TextStyle(color: Colors.grey, fontSize: 13)
                     ),
                     Text(
