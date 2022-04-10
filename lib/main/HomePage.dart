@@ -8,6 +8,7 @@ import 'package:asgshighschool/data/renewUser_data.dart';
 import 'package:asgshighschool/main/GameListPage.dart';
 import 'package:asgshighschool/main/SelectImagePage.dart';
 import 'package:asgshighschool/store/UpdateUserPage.dart';
+import 'package:asgshighschool/store/MobileStudentCard.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 
@@ -481,7 +482,35 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 color: Colors.black,
                                 fontWeight: FontWeight.bold),
                           ),
-                        )),
+                        ),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    TextButton(
+                      onPressed: () async {
+                        await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => MobileStudentCard()
+                        ));
+                      },
+                      child: Container(
+                        padding: EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            border:
+                            Border.all(width: 1, color: Colors.black54)),
+                        child: Text(
+                          '모바일 학생증 바로 가기',
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
                 Expanded(

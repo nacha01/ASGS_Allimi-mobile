@@ -118,7 +118,8 @@ class _SignInPageState extends State<SignInPage> {
                   actions: [
                     TextButton(
                         onPressed: () {
-                          exit(0);
+                          //exit(0);
+                          Navigator.pop(context);
                         },
                         child: Text('확인'))
                   ],
