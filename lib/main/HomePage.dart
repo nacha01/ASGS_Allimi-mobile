@@ -493,7 +493,9 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         await Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => MobileStudentCard()
+                                builder: (context) => MobileStudentCard(
+                                  user: widget.user,
+                                )
                         ));
                       },
                       child: Container(
