@@ -94,7 +94,9 @@ class _ReservationStatePageState extends State<ReservationStatePage> {
                   child: Row(
                     children: [
                       Icon(
-                        _isChecked ? Icons.check_box : Icons.check_box_outlined,
+                        _isChecked
+                            ? Icons.check_box
+                            : Icons.check_box_outline_blank,
                         color: Colors.blue,
                       ),
                       Text(" 예약 '수령 완료' 안보기")
