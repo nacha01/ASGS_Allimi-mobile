@@ -46,6 +46,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
   /// @param : 직관적인 가격을 보여줄 실제 int 가격[price]
   /// @return : 직관적인 가격 문자열
   String _formatPrice(int price) {
+    if (price < 0) price = -price;
     String p = price.toString();
     String newFormat = '';
     int count = 0;
@@ -57,6 +58,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
         newFormat += p[i];
       ++count;
     }
+    print(newFormat);
     return _reverseString(newFormat);
   }
 
@@ -154,6 +156,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
           }
         }
         _optionList = map;
+        print(_optionList);
         for (int i = 0; i < _optionList.length; ++i) {
           _selectedOptionIndex.add(-1);
         }
@@ -759,7 +762,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
             width: size.width * 0.35,
             child: Text(
               '| ${data['optionCategory']}',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             ),
           ),
           Expanded(
@@ -804,14 +807,15 @@ class _DetailProductPageState extends State<DetailProductPage> {
             color: Colors.blueAccent,
           ),
           SizedBox(
-            width: size.width * 0.02,
+            width: size.width * 0.01,
           ),
           Expanded(
               child: Text(
             '${data['optionName']}',
             style: TextStyle(fontSize: 13),
           )),
-          Text('+${_formatPrice(int.parse(data['optionPrice']))}원')
+          Text(
+              '${int.parse(data['optionPrice']) < 0 ? '-' : '+'}${_formatPrice(int.parse(data['optionPrice']))}원')
         ],
       ),
     );
