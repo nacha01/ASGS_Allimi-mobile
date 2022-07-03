@@ -1730,8 +1730,7 @@ class DetailWidget {
               controller: _detailPriceControllerList[cIndex][dIndex],
               style: TextStyle(fontSize: 12),
               textAlign: TextAlign.center,
-              keyboardType: TextInputType.number,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              keyboardType: TextInputType.numberWithOptions(signed: true),
             ),
           )
         ],
