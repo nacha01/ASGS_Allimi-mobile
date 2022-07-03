@@ -96,7 +96,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
       'oState': '1', // '결제완료' 상태
       'recvMethod': widget.receiveMethod,
       'pay': '0', // 신용카드
-      'option': widget.option,
+      'option': widget.option.toString().trim(),
       'location': widget.location
     });
     if (response.statusCode == 200) {

@@ -322,7 +322,7 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
-                    '${widget.order['options'] == '' ? 'X' : widget.order['options']}'),
+                    '${widget.order['options'].toString().trim() == '' ? 'X' : widget.order['options']}'),
               ),
               Divider(
                 thickness: 10,
