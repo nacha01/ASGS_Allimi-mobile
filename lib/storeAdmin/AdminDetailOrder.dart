@@ -190,25 +190,28 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
                 ),
                 Row(
                   children: [
-                    Text('주문일자  ${_formatDate(widget.data['oDate'])}',
+                    Text('주문 일자: ${_formatDate(widget.data['oDate'])}',
                         style: TextStyle(color: Colors.grey, fontSize: 13)),
                     Text(
                       ' (${_formatDateTimeForToday(widget.data['oDate'])})',
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
+                          fontSize: 12,
                           color: Colors.deepOrange),
                     )
                   ],
                 ),
                 Row(
                   children: [
-                    Text('주문 완료 일자 ${widget.data['eDate'] == null ? '-' : _formatDate(widget.data['eDate'])}',
-                        style: TextStyle(color: Colors.grey, fontSize: 13)
-                    ),
                     Text(
-                      ' (${widget.data['eData'] == null ? '-' : _formatDateTimeForToday(widget.data['eDate'])})',
-                      style: TextStyle(fontWeight: FontWeight.bold, color: Colors.deepOrange)
-                    )
+                        '주문 완료 일자: ${widget.data['eDate'] == null || widget.data['eDate'] == '0000-00-00 00:00:00' ? '-' : _formatDate(widget.data['eDate'])}',
+                        style: TextStyle(color: Colors.grey, fontSize: 13)),
+                    Text(
+                        ' (${widget.data['eDate'] == null || widget.data['eDate'] == '0000-00-00 00:00:00' ? '-' : _formatDateTimeForToday(widget.data['eDate'])})',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                            color: Colors.deepOrange))
                   ],
                 ),
                 SizedBox(
@@ -257,7 +260,7 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                      '${widget.data['options'] == '' ? 'X' : widget.data['options']}'),
+                      '${widget.data['options'].toString().trim() == '' ? 'X' : widget.data['options']}'),
                 ),
                 Divider(
                   thickness: 6,
