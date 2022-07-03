@@ -5,6 +5,7 @@ import 'package:asgshighschool/data/status_data.dart';
 import 'package:asgshighschool/data/user_data.dart';
 import 'package:asgshighschool/storeAdmin/AdminDetailOrder.dart';
 import 'package:asgshighschool/storeAdmin/FullListPage.dart';
+import 'package:asgshighschool/storeAdmin/QrSearchScannerPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -13,7 +14,9 @@ import 'package:http/http.dart' as http;
 /// 실시간 (주기적으로 갱신) 기능은 아직 구현 안함 추후에 추가 요망
 class OrderListPage extends StatefulWidget {
   OrderListPage({this.user});
+
   final User user;
+
   @override
   _OrderListPageState createState() => _OrderListPageState();
 }
@@ -86,7 +89,8 @@ class _OrderListPageState extends State<OrderListPage> {
           _orderList[i]['detail'][j]['pInfo'] =
               json.decode(_orderList[i]['detail'][j]['pInfo']);
         }
-        if (int.parse(_orderList[i]['orderState']) != 3) {
+        if (int.parse(_orderList[i]['orderState']) != 3 &&
+            int.parse(_orderList[i]['orderState']) != 4) {
           _noneList.add(_orderList[i]);
         }
       }
@@ -164,32 +168,46 @@ class _OrderListPageState extends State<OrderListPage> {
           )
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.qr_code_scanner),
+        onPressed: () async {
+          var res = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => QrSearchScannerPage(
+                        admin: widget.user,
+                      )));
+          if (res) await _getAllOrderData();
+        },
+      ),
       body: Column(
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Container(
-                child: FlatButton(
-                  child: Row(
-                    children: [
-                      Icon(
-                        _isChecked ? Icons.check_box : Icons.check_box_outlined,
-                        color: Colors.blue,
-                      ),
-                      Text('주문 처리 완료 안보기')
-                    ],
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _isChecked = !_isChecked;
-                    });
-                  },
+              TextButton(
+                child: Row(
+                  children: [
+                    Icon(
+                      _isChecked
+                          ? Icons.check_box
+                          : Icons.check_box_outline_blank,
+                      color: Colors.blue,
+                    ),
+                    Text(
+                      ' 주문 처리 완료 및 결제 취소 안보기',
+                      style: TextStyle(fontSize: 11, color: Colors.black),
+                    )
+                  ],
                 ),
+                onPressed: () {
+                  setState(() {
+                    _isChecked = !_isChecked;
+                  });
+                },
               )
             ],
           ),
-          Divider(),
           _isFinished
               ? _isChecked
                   ? _noneList.length == 0
@@ -255,8 +273,8 @@ class _OrderListPageState extends State<OrderListPage> {
     );
   }
 
-  Widget _itemTile(String oid, String uid, int recv, String oDate,
-      String eDate, int orderState, Map data, Size size) {
+  Widget _itemTile(String oid, String uid, int recv, String oDate, String eDate,
+      int orderState, Map data, Size size) {
     return Container(
       width: size.width,
       margin: EdgeInsets.all(size.width * 0.01),
@@ -308,7 +326,7 @@ class _OrderListPageState extends State<OrderListPage> {
                   showDialog(
                       context: context,
                       builder: (context) => AlertDialog(
-                            title: Text('예약자 정보'),
+                            title: Text('구매자 정보'),
                             content: Column(
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -358,11 +376,13 @@ class _OrderListPageState extends State<OrderListPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text('주문 완료 일자',
-                    style: TextStyle(
-                      fontWeight : FontWeight.bold,
-                    )
-                  ),
-                  Text('${eDate == null? '-' : eDate }')
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      )),
+                  Text(
+                    '${eDate == null || eDate == '0000-00-00 00:00:00' ? '-' : eDate}',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  )
                 ],
               ),
               Row(
@@ -466,7 +486,24 @@ class _OrderListPageState extends State<OrderListPage> {
                               ),
                               alignment: Alignment.center,
                             )
-                          : SizedBox(),
+                          : orderState == 4
+                              ? Container(
+                                  width: size.width * 0.22,
+                                  height: size.height * 0.026,
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          width: 0.5, color: Colors.black),
+                                      borderRadius: BorderRadius.circular(6),
+                                      color: Colors.grey[300]),
+                                  child: Text(
+                                    '결제 취소',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 13),
+                                  ),
+                                  alignment: Alignment.center,
+                                )
+                              : SizedBox(),
                 ],
               )
             ],
