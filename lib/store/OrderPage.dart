@@ -76,10 +76,10 @@ class _OrderPageState extends State<OrderPage> {
           _additionalPrice += int.parse(widget.optionList[i]['detail']
               [widget.selectList[i]]['optionPrice']);
           _optionString += widget.optionList[i]['optionCategory'] +
-              ' ' +
+              '-' +
               widget.optionList[i]['detail'][widget.selectList[i]]
                   ['optionName'] +
-              ' , ';
+              ', ';
         }
       }
       if (j == widget.productCount - 1) {
