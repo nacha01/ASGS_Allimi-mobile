@@ -312,10 +312,10 @@ class _QrSearchScannerPageState extends State<QrSearchScannerPage> {
         setState(() {
           _isScanned = true;
           _result = scanData;
-          var test = '1652328498519';
-          var test2 = '1655959318117';
-          var test3 = '1656375228115';
-          var res = _queryQrInformation(test3);
+          // var test = '1652328498519';
+          // var test2 = '1655959318117';
+          // var test3 = '1656375228115';
+          var res = _queryQrInformation(_result.code);
         });
       }
     });
