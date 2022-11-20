@@ -1,13 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:ui';
-
+//import 'dart:ui';
 import 'package:asgshighschool/data/user_data.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'dart:math';
-
 import 'DrawCircle.dart';
 import 'DrawRectangle.dart';
 import 'DrawTriangle.dart';

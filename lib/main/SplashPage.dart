@@ -28,6 +28,7 @@ class _SplashPageState extends State<SplashPage> {
       setState(() {
         _token = token;
         print("Token : $token");
+        //print(_message+"토큰은?"); //여기서 토큰값이 없음
       });
     });
   }

@@ -97,7 +97,8 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
       'recvMethod': widget.receiveMethod,
       'pay': '0', // 신용카드
       'option': widget.option.toString().trim(),
-      'location': widget.location
+      'location': widget.location,
+      'TID': widget.responseData['TID'],
     });
     if (response.statusCode == 200) {
       return true;
@@ -124,6 +125,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
   /// 최종적으로 주문을 등록하는 과정
   Future<bool> _registerOrderRequest() async {
     var orderRes = await _addOrderRequest();
+    print('주문 응답 $orderRes');
     if (!orderRes) return false;
 
     if (widget.isCart) {
@@ -307,7 +309,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
     });
 
     if (response.statusCode == 200) {
-      _cancelResponse = jsonDecode(cp949.decode(response.bodyBytes));
+      _cancelResponse = jsonDecode(cp949.decode(response.bodyBytes));  //???
       return _cancelResponse['ResultCode'];
     } else {
       return 'Error';
@@ -319,10 +321,13 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
     print(widget.responseData);
     _isCreditSuccess =
         widget.responseData['ResultCode'] == '3001' ? true : false;
+    print('isCredit $_isCreditSuccess');
     _resultMessage = widget.responseData['ResultMsg'];
     _resultCode = widget.responseData['ResultCode'];
+    print('$_resultMessage result $_resultCode');
     super.initState();
     _processAfterPaying();
+
   }
 
   String _getSignData(int cancelAmt) {
@@ -334,14 +339,17 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
   void _processAfterPaying() async {
     if (_isCreditSuccess) {
       var res = await _registerOrderRequest();
-      Provider.of<ExistCart>(context).setExistCart(false);
+      print(res);
+      // Provider.of<ExistCart>(context).setExistCart(false);
       if (!res) {
         _resultCode = 'O001'; // 커스텀 코드로 결제는 되었으나 DB에 주문 등록이 실패했다는 의미
       }
+      print('After: $_resultCode');
     }
     setState(() {
       _isFinished = true;
     });
+    print(_isFinished);
   }
 
   @override
@@ -365,6 +373,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
             ),
           ),
           backgroundColor: Color(0xFF9EE1E5),
+
           title: Text(
             '결제 결과 페이지',
             style: TextStyle(
@@ -373,6 +382,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
           centerTitle: true,
         ),
         body: _isFinished
+
             ? Column(
                 children: [
                   Expanded(
@@ -387,7 +397,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      '주문 등록 중입니다..',
+                       '주문 등록 중입니다..',
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                     ),
@@ -442,7 +452,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
               SizedBox(
                 height: size.height * 0.01,
               ),
-              widget.option.isNotEmpty
+              widget.option.isNotEmpty //여기는 뭐지? ???
                   ? Container(
                       width: size.width * 0.8,
                       padding: EdgeInsets.all(size.width * 0.02),
@@ -575,7 +585,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
                                                           color: Colors.green,
                                                           fontSize: 16)),
                                                   content: Text(
-                                                      '${_cancelResponse['ResultMsg']}',
+                                                      '${_cancelResponse['ResultMsg']}', //여기가 취소 성공이라는 메세지인가?
                                                       style: TextStyle(
                                                           fontWeight:
                                                               FontWeight.bold,
@@ -634,7 +644,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
                   },
                   child: Container(
                     child: Text(
-                      '결제 취소하기',
+                      '결제 취소하기99',
                       style: TextStyle(
                           fontWeight: FontWeight.bold, color: Colors.white),
                     ),

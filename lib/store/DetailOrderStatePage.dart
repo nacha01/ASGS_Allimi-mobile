@@ -142,7 +142,7 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
         ),
         backgroundColor: Color(0xFF9EE1E5),
         title: Text(
-          '상세 주문 현황',
+          'detail 상세 주문 현황',
           style: TextStyle(
               color: Colors.black, fontWeight: FontWeight.bold, fontSize: 14),
         ),
@@ -161,7 +161,7 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
                 height: size.height * 0.015,
               ),
               Text(
-                '주문 번호  ${widget.order['oID']}',
+                '주문 번호  ${widget.order['oID']} 주문 번호  ${widget.order['tid']}',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               SizedBox(

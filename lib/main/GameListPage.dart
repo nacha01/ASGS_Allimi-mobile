@@ -106,7 +106,7 @@ class _GameListPageState extends State<GameListPage> {
                     border: Border.all(width: 0.3),
                     borderRadius: BorderRadius.circular(6),
                     color: Colors.lightGreen),
-                child: FlatButton(
+                child: TextButton(
                   onPressed: press,
                   child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,

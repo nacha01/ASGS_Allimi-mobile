@@ -165,7 +165,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
             height: 210,
             child: _controllerWaiting
                 ? SizedBox()
-                : Swiper(
+                : Swiper(  //이미지 오토 슬라이드
                     controller: _swiperController,
                     autoplay: true,
                     pagination:
@@ -372,7 +372,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
               actions: [
-                FlatButton(
+                TextButton(
                     onPressed: () {
                       while (Navigator.canPop(context)) {
                         Navigator.pop(context, true);

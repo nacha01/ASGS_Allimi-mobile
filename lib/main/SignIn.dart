@@ -25,6 +25,7 @@ import '../LocalNotifyManager.dart';
 class SignInPage extends StatefulWidget {
   SignInPage({Key key, this.token}) : super(key: key);
   final token;
+
   @override
   _SignInPageState createState() => _SignInPageState();
 }
@@ -132,7 +133,7 @@ class _SignInPageState extends State<SignInPage> {
 
   @override
   void initState() {
-    _checkCurrentAppVersion();
+    _checkCurrentAppVersion();  //서버에 있는 버전과 앱 버전의 차이 찾기
     super.initState();
 
     _firebaseMessaging.configure(
@@ -642,8 +643,10 @@ class _SignInPageState extends State<SignInPage> {
         children: [
           Row(
             children: [
-              FlatButton(
+              TextButton(
+                style: TextButton.styleFrom(
                 padding: EdgeInsets.all(0),
+              ),
                 child: Container(
                   padding: EdgeInsets.all(size.width * 0.01),
                   child: Text(
@@ -663,8 +666,10 @@ class _SignInPageState extends State<SignInPage> {
                   });
                 },
               ),
-              FlatButton(
-                padding: EdgeInsets.all(0),
+              TextButton(
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.all(0),
+                ),
                 child: Container(
                   padding: EdgeInsets.all(size.width * 0.01),
                   child: Text('회원가입 하기\nJoin Membership',
@@ -682,7 +687,7 @@ class _SignInPageState extends State<SignInPage> {
                   });
                 },
               ),
-              Expanded(
+              Expanded( //왜 확장인가???
                 child: FlatButton(
                   padding: EdgeInsets.all(0),
                   child: Container(

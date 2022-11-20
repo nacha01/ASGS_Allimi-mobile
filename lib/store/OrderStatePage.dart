@@ -4,9 +4,12 @@ import 'dart:ui';
 import 'package:asgshighschool/data/category_data.dart';
 import 'package:asgshighschool/data/user_data.dart';
 import 'package:asgshighschool/store/DetailOrderStatePage.dart';
+import 'package:crypto/crypto.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hex/hex.dart';
 import 'package:http/http.dart' as http;
+import 'package:cp949/cp949.dart' as cp949;
 
 class OrderStatePage extends StatefulWidget {
   OrderStatePage({this.user});
@@ -17,6 +20,12 @@ class OrderStatePage extends StatefulWidget {
 
 class _OrderStatePageState extends State<OrderStatePage> {
   List _orderMap = [];
+  Map _cancelResponse;
+  //final bool isCart;
+  String _ediDate = '';
+  static const _KEY =
+      '0DVRz8vSDD5HvkWRwSxpjVhhx7OlXEViTciw5lBQAvSyYya9yf0K0Is+JbwiR9yYC96rEH2XIbfzeHXgqzSAFQ==';
+  static const _MID = 'asgscoop1m';
 
   /// 나(uid)의 모든 주문한 내역(현황)들을 요청하는 작업
   Future<bool> _getOrderInfoRequest() async {
@@ -37,6 +46,7 @@ class _OrderStatePageState extends State<OrderStatePage> {
 
       for (int i = 0; i < map1st.length; ++i) {
         map1st[i] = json.decode(map1st[i]);
+        print('maplst $map1st[i]');
 
         /// 2차 내부 json 내용 파싱
         for (int j = 0; j < map1st[i]['detail'].length; ++j) {
@@ -149,6 +159,149 @@ class _OrderStatePageState extends State<OrderStatePage> {
     }
   }
 
+  String _getSignData(int cancelAmt) {
+    return HEX.encode(sha256
+        .convert(utf8.encode(_MID + cancelAmt.toString() + _ediDate + _KEY))
+        .bytes);
+  }
+
+  //////????/
+  Future<String> _cancelPaymentRequest(orderJson) async {
+    print('ccc $orderJson');
+    String url = 'https://webapi.nicepay.co.kr/webapi/cancel_process.jsp';
+    _ediDate = DateTime.now()
+        .toString()
+        .replaceAll('-', '')
+        .replaceAll(' ', '')
+        .replaceAll(':', '')
+        .split('.')[0];
+    print('ddd');
+    print('eee orderJson 값을 출력:  $orderJson');
+    print(orderJson['totalPrice']);
+
+    print(orderJson['oID']);
+    print(_ediDate);
+
+    //print('fff $orderJson[\'oID\']');
+
+    final response = await http.post(url, body: <String, String>{
+      'TID': orderJson['tid'],
+      'MID': _MID,
+      'Moid': orderJson['oID'],
+      'CancelAmt': int.parse(orderJson['totalPrice']).toString(),
+      'CancelMsg': '결제자의 요청에 의한 취소',
+      'PartialCancelCode': '0',
+      'EdiDate': _ediDate,
+      //'SignData': _getSignData(1200),
+      'SignData': _getSignData(int.parse(orderJson['totalPrice'])),
+      'CharSet': 'euc-kr',
+      'EdiType': 'JSON'
+    });
+    print('fff ');
+    print(response.statusCode);
+    if (response.statusCode == 200) {
+      _cancelResponse = jsonDecode(cp949.decode(response.bodyBytes)); //???
+      return _cancelResponse['ResultCode'];
+    } else {
+      return 'Error';
+    }
+  }
+
+  Future<bool> _updateOrderState(int state, _oID) async {
+    print(_oID);
+    //print('ccc $orderJson');
+    String url =
+        'http://nacha01.dothome.co.kr/sin/arlimi_updateOrderState.php?oid=$_oID&state=$state';
+    // 'http://nacha01.dothome.co.kr/sin/arlimi_updateOrderState.php?oid=${widget.responseData['Moid']}&state=$state';
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  /// 각 상품의 수량을 [quantity]만큼 [operator] 연산자로 수정하는 요청
+  Future<bool> _updateProductCountRequest(
+      int pid, int quantity, String operator) async {
+    String url =
+        'http://nacha01.dothome.co.kr/sin/arlimi_updateProductCount.php';
+    final response = await http.post(url, body: <String, String>{
+      'pid': pid.toString(),
+      'quantity': quantity.toString(),
+      'oper': operator
+    });
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  /// 각 상품의 누적 판매수를 반영하는 요청
+  Future<bool> _updateEachProductSellCountRequest(
+      int pid, int quantity, String operator) async {
+    String url =
+        'http://nacha01.dothome.co.kr/sin/arlimi_updateProductSellCount.php';
+    final response =
+        await http.get(url + '?pid=$pid&quantity=$quantity&oper=$operator');
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  /// 이 주문을 요청한 사용자의 누적 구매수를 [operator]대로 연산하는 요청
+  Future<bool> _updateUserBuyCountRequest(String operator) async {
+    String url =
+        'http://nacha01.dothome.co.kr/sin/arlimi_updateUserBuyCount.php?uid=${widget.user.uid}&oper=$operator';
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<bool> _cancelOrderHandling(orderJson) async {
+    print('aaaa $orderJson');
+    var code = await _cancelPaymentRequest(orderJson);
+    print('취소 코드값 $code');
+    print('tid값: ${orderJson['tid']}');
+    print(orderJson['detail'][0]['oPID']);
+    var _oid = orderJson['oID'];
+
+    if (code == '2001') {
+      print('여기');
+      var res = await _updateOrderState(4, _oid);
+      print(res);
+      print('여기2');
+      if (!res) return false;
+      print('여기3');
+      var renewCountRes = await _updateProductCountRequest(
+          int.parse(orderJson['detail'][0]['oPID']),
+          int.parse(orderJson['detail'][0]['quantity']),
+          '+');
+      print('여기4');
+      var sellCountRes = await _updateEachProductSellCountRequest(
+          orderJson['detail'][0]['prodID'],
+          orderJson['detail'][0]['productCount'],
+          '-');
+      print('여기5');
+      var buyerCountRes = await _updateUserBuyCountRequest('-');
+      print('여기6');
+      if (!renewCountRes) return false;
+      if (!sellCountRes) return false;
+      if (!buyerCountRes) return false;
+
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -166,7 +319,7 @@ class _OrderStatePageState extends State<OrderStatePage> {
         ),
         backgroundColor: Color(0xFF9EE1E5),
         title: Text(
-          '주문 현황',
+          'My 주문 현황',
           style: TextStyle(
               color: Colors.black, fontWeight: FontWeight.bold, fontSize: 14),
         ),
@@ -228,7 +381,7 @@ class _OrderStatePageState extends State<OrderStatePage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    '주문번호 : ${orderJson['oID']}',
+                    '주문번호 : ${orderJson['oID']} \n : ${orderJson['tid']}',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                   ),
                   Text(
@@ -276,7 +429,115 @@ class _OrderStatePageState extends State<OrderStatePage> {
                   ),
                 )
               ],
-            )
+            ),
+            int.parse(orderJson['orderState']) == 1
+                ? TextButton(
+                    onPressed: () {
+                      showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                                title: Text('결제 취소 요청',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16)),
+                                content: Text('정말로 결제를 취소하시겠습니까?',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 13)),
+                                actions: [
+                                  TextButton(
+                                      onPressed: () async {
+                                        var res = await _cancelOrderHandling(
+                                            orderJson);
+                                        if (res) {
+                                          showDialog(
+                                              barrierDismissible: false,
+                                              context: context,
+                                              builder: (context) => AlertDialog(
+                                                    title: Text('결제취소 성공',
+                                                        style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            color: Colors.green,
+                                                            fontSize: 16)),
+                                                    content: Text(
+                                                        '${_cancelResponse['ResultMsg']}', //여기가 취소 성공이라는 메세지인가?
+                                                        style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 14)),
+                                                    actions: [
+                                                      TextButton(
+                                                          onPressed: () {
+                                                            Navigator.pop(
+                                                                context);
+                                                            Navigator.pop(
+                                                                context);
+                                                            Navigator.pop(
+                                                                this.context);
+                                                          },
+                                                          child: Text('확인'))
+                                                    ],
+                                                  ));
+                                        } else {
+                                          showDialog(
+                                              barrierDismissible: false,
+                                              context: context,
+                                              builder: (context) => AlertDialog(
+                                                    title: Text(
+                                                      '결제취소 실패',
+                                                      style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          color: Colors.red,
+                                                          fontSize: 16),
+                                                    ),
+                                                    content: Text(
+                                                        '${_cancelResponse['ResultMsg']} (code-${_cancelResponse['ResultCode']}',
+                                                        style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 14)),
+                                                    actions: [
+                                                      TextButton(
+                                                          onPressed: () {
+                                                            Navigator.pop(
+                                                                context);
+                                                            Navigator.pop(
+                                                                context);
+                                                          },
+                                                          child: Text('확인'))
+                                                    ],
+                                                  ));
+                                        }
+                                      },
+                                      child: Text('예')),
+                                  TextButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: Text('아니오'))
+                                ],
+                              ));
+                    },
+                    child: Container(
+                      child: Text(
+                        '결제 취소하기',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, color: Colors.white),
+                      ),
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(width: 0.5, color: Colors.black),
+                          color: Colors.red),
+                      padding: EdgeInsets.all(size.width * 0.01),
+                      width: size.width * 0.6,
+                      height: size.height * 0.04,
+                    ))
+                : Text(
+              '',
+              style: TextStyle(
+                  fontWeight: FontWeight.bold, fontSize: 1),
+            ),
           ],
         ),
       ),
