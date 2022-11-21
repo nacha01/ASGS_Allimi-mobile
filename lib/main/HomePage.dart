@@ -7,9 +7,11 @@ import 'package:asgshighschool/data/exist_cart.dart';
 import 'package:asgshighschool/data/renewUser_data.dart';
 import 'package:asgshighschool/main/GameListPage.dart';
 import 'package:asgshighschool/main/SelectImagePage.dart';
+import 'package:asgshighschool/main/SignIn.dart';
 import 'package:asgshighschool/store/UpdateUserPage.dart';
 import 'package:asgshighschool/store/MobileStudentCard.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
 import '../store/StoreSplashPage.dart';
@@ -45,6 +47,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
   String _prefixImgUrl = 'http://nacha01.dothome.co.kr/sin/arlimi_image/';
   List<String> _bannerImgNameList = [];
   var _swiperController = SwiperController();
+  TextEditingController _withdrawPasswordController = TextEditingController();
 
   @override
   void initState() {
@@ -153,6 +156,30 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
     }
   }
 
+  Future<bool> _withdrawAccount(String pw) async {
+    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_withdrawAccount.php';
+
+    final response = await http
+        .post(url, body: <String, String>{'uid': widget.user.uid, 'pw': pw});
+
+    if (response.statusCode == 200) {
+      String result = utf8
+          .decode(response.bodyBytes)
+          .replaceAll(
+              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+              '')
+          .trim();
+
+      if (result == 'DELETED') {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -165,7 +192,8 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
             height: 210,
             child: _controllerWaiting
                 ? SizedBox()
-                : Swiper(  //이미지 오토 슬라이드
+                : Swiper(
+                    //이미지 오토 슬라이드
                     controller: _swiperController,
                     autoplay: true,
                     pagination:
@@ -295,7 +323,8 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 (BuildContext context, bool innerBoxIsScrolled) {
               return <Widget>[
                 SliverAppBar(
-                  backgroundColor: Colors.white, // app bar color
+                  backgroundColor: Colors.white,
+                  // app bar color
                   flexibleSpace: FlexibleSpaceBar(
                     collapseMode: CollapseMode.pin,
                     centerTitle: true,
@@ -305,8 +334,10 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       ],
                     ),
                   ),
-                  leading: Container(), // hambuger menu hide
-                  expandedHeight: 100, // space area between appbar and tabbar
+                  leading: Container(),
+                  // hambuger menu hide
+                  expandedHeight: 100,
+                  // space area between appbar and tabbar
                   pinned: true,
                   floating: true,
                   forceElevated: innerBoxIsScrolled,
@@ -324,7 +355,8 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       }
                     },
                     labelColor: Colors.black,
-                    indicatorColor: Colors.blueAccent, // 현재 보고 있는 탭을 가리키는 지시자
+                    indicatorColor: Colors.blueAccent,
+                    // 현재 보고 있는 탭을 가리키는 지시자
                     indicatorWeight: 6.0,
                     tabs: <Tab>[
                       Tab(text: "Home"),
@@ -461,28 +493,28 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 Row(
                   children: [
                     TextButton(
-                        onPressed: () async {
-                          await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => UpdateUserPage(
-                                        user: widget.user,
-                                      )));
-                        },
-                        child: Container(
-                          padding: EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                              border:
-                                  Border.all(width: 1, color: Colors.black54)),
-                          child: Text(
-                            '내 정보 가기',
-                            style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold),
-                          ),
+                      onPressed: () async {
+                        await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => UpdateUserPage(
+                                      user: widget.user,
+                                    )));
+                      },
+                      child: Container(
+                        padding: EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            border:
+                                Border.all(width: 1, color: Colors.black54)),
+                        child: Text(
+                          '내 정보 가기',
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold),
                         ),
+                      ),
                     ),
                   ],
                 ),
@@ -494,16 +526,15 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             context,
                             MaterialPageRoute(
                                 builder: (context) => MobileStudentCard(
-                                  user: widget.user,
-                                )
-                        ));
+                                      user: widget.user,
+                                    )));
                       },
                       child: Container(
                         padding: EdgeInsets.all(5),
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8),
                             border:
-                            Border.all(width: 1, color: Colors.black54)),
+                                Border.all(width: 1, color: Colors.black54)),
                         child: Text(
                           '모바일 학생증 바로 가기',
                           style: TextStyle(
@@ -607,6 +638,97 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                               },
                             )
                           : SizedBox(),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding:
+                      EdgeInsets.all(MediaQuery.of(context).size.width * 0.01),
+                  child: Row(
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                    title: Text('회원 탈퇴'),
+                                    content: Text('정말로 계정을 탈퇴하시겠습니까?'),
+                                    actions: [
+                                      TextButton(
+                                          onPressed: () =>
+                                              Navigator.pop(context),
+                                          child: Text('취소')),
+                                      TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                            showDialog(
+                                                context: context,
+                                                builder: (context) =>
+                                                    AlertDialog(
+                                                      title: Text('비밀번호 확인'),
+                                                      content: Container(
+                                                        decoration: BoxDecoration(
+                                                            color:
+                                                                Colors.black54,
+                                                            border: Border.all(
+                                                                width: 1,
+                                                                color: Colors
+                                                                    .black87)),
+                                                        child: TextField(
+                                                          obscureText: true,
+                                                          controller:
+                                                              _withdrawPasswordController,
+                                                          decoration: InputDecoration(
+                                                              hintText:
+                                                                  '비밀번호를 입력하세요.',
+                                                              border:
+                                                                  InputBorder
+                                                                      .none),
+                                                        ),
+                                                      ),
+                                                      actions: [
+                                                        TextButton(
+                                                            onPressed: () =>
+                                                                Navigator.pop(
+                                                                    context),
+                                                            child: Text('취소')),
+                                                        TextButton(
+                                                            onPressed:
+                                                                () async {
+                                                              var result =
+                                                                  await _withdrawAccount(
+                                                                      _withdrawPasswordController
+                                                                          .text
+                                                                          .toString());
+                                                              if (result)
+                                                                Navigator.pushReplacement(
+                                                                    context,
+                                                                    new MaterialPageRoute(
+                                                                        builder: (context) => SignInPage(
+                                                                              token: widget.token,
+                                                                            )));
+                                                              else
+                                                                Fluttertoast
+                                                                    .showToast(
+                                                                        msg:
+                                                                            '비밀번호가 옳지 않거나 예상치 못한 문제가 발생하였습니다.');
+                                                            },
+                                                            child: Text('완료'))
+                                                      ],
+                                                    ));
+                                          },
+                                          child: Text(
+                                            '탈퇴',
+                                            style: TextStyle(color: Colors.red),
+                                          ))
+                                    ],
+                                  ));
+                        },
+                        child: Text(
+                          '회원 탈퇴',
+                          style: TextStyle(color: Colors.grey, fontSize: 13),
+                        ),
+                      ),
                     ],
                   ),
                 ),
