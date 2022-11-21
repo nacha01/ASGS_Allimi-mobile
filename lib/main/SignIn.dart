@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
@@ -95,16 +94,25 @@ class _SignInPageState extends State<SignInPage> {
               '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
               '')
           .trim();
-      return result;
+      Map json = jsonDecode(result);
+
+      if (Platform.isIOS) // ios 디바이스라면
+        return json['ios']; // 최신 ios 앱 버전 리턴
+      else if (Platform.isAndroid) // android 디바이스라면
+        return json['android']; // 최신 android 앱 버전 리턴
+
+      return json['ios'];
     } else {
       return null;
     }
   }
 
   void _checkCurrentAppVersion() async {
-    var latest = await _getLatestVersion();
+    var latest = await _getLatestVersion(); // DB에 저장된 최신버전
+
     var yaml = await rootBundle.loadString('pubspec.yaml');
-    var current = loadYaml(yaml)['version'];
+    var current = loadYaml(yaml)['version']; // 현재 설치된 앱의 버전
+
     if (latest != current) {
       await showDialog(
           barrierDismissible: false,
@@ -133,7 +141,7 @@ class _SignInPageState extends State<SignInPage> {
 
   @override
   void initState() {
-    _checkCurrentAppVersion();  //서버에 있는 버전과 앱 버전의 차이 찾기
+    _checkCurrentAppVersion(); //서버에 있는 버전과 앱 버전의 차이 찾기
     super.initState();
 
     _firebaseMessaging.configure(
@@ -645,15 +653,16 @@ class _SignInPageState extends State<SignInPage> {
             children: [
               TextButton(
                 style: TextButton.styleFrom(
-                padding: EdgeInsets.all(0),
-              ),
+                  padding: EdgeInsets.all(0),
+                ),
                 child: Container(
                   padding: EdgeInsets.all(size.width * 0.01),
                   child: Text(
                     '로그인 하기\nLogin',
                     textAlign: TextAlign.center,
                     textScaleFactor: _tapState == 1 ? 1.2 : 1.1,
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.black),
                   ),
                   width: size.width * 0.3,
                   height: size.height * 0.08,
@@ -675,7 +684,8 @@ class _SignInPageState extends State<SignInPage> {
                   child: Text('회원가입 하기\nJoin Membership',
                       textAlign: TextAlign.center,
                       textScaleFactor: _tapState == 2 ? 1.2 : 1.1,
-                      style: TextStyle(fontWeight: FontWeight.bold)),
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.black)),
                   width: size.width * 0.4,
                   height: size.height * 0.08,
                   alignment: Alignment.center,
@@ -687,15 +697,19 @@ class _SignInPageState extends State<SignInPage> {
                   });
                 },
               ),
-              Expanded( //왜 확장인가???
-                child: FlatButton(
-                  padding: EdgeInsets.all(0),
+              Expanded(
+                //왜 확장인가???
+                child: TextButton(
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.all(0),
+                  ),
                   child: Container(
                     padding: EdgeInsets.all(size.width * 0.01),
                     child: Text('ID/PW 찾기\nFind ID/PW',
                         textAlign: TextAlign.center,
                         textScaleFactor: _tapState == 3 ? 1.2 : 1.1,
-                        style: TextStyle(fontWeight: FontWeight.bold)),
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, color: Colors.black)),
                     height: size.height * 0.08,
                     alignment: Alignment.center,
                     color:
