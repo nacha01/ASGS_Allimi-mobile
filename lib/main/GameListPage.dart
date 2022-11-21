@@ -98,7 +98,8 @@ class _GameListPageState extends State<GameListPage> {
                       borderRadius: BorderRadius.circular(6),
                       color: Colors.orange),
                   child: IconButton(
-                      onPressed: record, icon: Icon(Icons.emoji_events_rounded))),
+                      onPressed: record,
+                      icon: Icon(Icons.emoji_events_rounded))),
               Container(
                 width: size.width * 0.27,
                 alignment: Alignment.center,
@@ -111,10 +112,17 @@ class _GameListPageState extends State<GameListPage> {
                   child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Icon(Icons.play_arrow),
+                        Icon(
+                          Icons.play_arrow,
+                          color: Colors.black,
+                        ),
+                        SizedBox(
+                          width: size.width * 0.008,
+                        ),
                         Text(
                           '플레이',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, color: Colors.black),
                         )
                       ]),
                 ),

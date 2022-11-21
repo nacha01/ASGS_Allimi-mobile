@@ -597,7 +597,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                                   Icons.shopping_cart,
                                   size: 33,
                                 ),
-                                Text(_isCart ? '장바구니로 이동' : '장바구니 담기44',
+                                Text(_isCart ? '장바구니로 이동' : '장바구니 담기',
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         color: _isCart
@@ -640,7 +640,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                                 Icon(Icons.payment_rounded,
                                     color: Colors.grey[300], size: 33),
                                 Text(
-                                  '${_formatPrice((((widget.product.price * (1 - (widget.product.discount / 100.0)) + _optionSummation()) * _count)).round())}원 결제하기55',
+                                  '${_formatPrice((((widget.product.price * (1 - (widget.product.discount / 100.0)) + _optionSummation()) * _count)).round())}원 결제하기',
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       color: Colors.grey[300]),
@@ -728,7 +728,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                             ? !widget.product.isReservation
                                 ? '품절'
                                 : '예약하러 가기'
-                            : '구매하기11',
+                            : '구매하기',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, color: Colors.white),
                       ),

@@ -142,7 +142,7 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
         ),
         backgroundColor: Color(0xFF9EE1E5),
         title: Text(
-          'detail 상세 주문 현황',
+          '상세 주문 내역',
           style: TextStyle(
               color: Colors.black, fontWeight: FontWeight.bold, fontSize: 14),
         ),
@@ -161,7 +161,7 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
                 height: size.height * 0.015,
               ),
               Text(
-                '주문 번호  ${widget.order['oID']} 주문 번호  ${widget.order['tid']}',
+                '주문 번호  ${widget.order['oID']}',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               SizedBox(
@@ -235,7 +235,18 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
                         '결제완료 및 수령완료',
                         style: TextStyle(color: Colors.green, fontSize: 9),
                       ),
-                      Text(': 결제가 완료된 상태이며  상품을 수령한 상태입니다.',
+                      Text(': 결제가 완료된 상태이며 상품을 수령한 상태입니다.',
+                          style: TextStyle(color: Colors.grey, fontSize: 9))
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        '결제취소 및 주문취소',
+                        style: TextStyle(color: Colors.grey, fontSize: 9),
+                      ),
+                      Text(': 결제가 취소된 상태이며, 주문도 취소한 상태입니다.',
                           style: TextStyle(color: Colors.grey, fontSize: 9))
                     ],
                   )

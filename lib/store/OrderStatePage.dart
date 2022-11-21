@@ -165,9 +165,7 @@ class _OrderStatePageState extends State<OrderStatePage> {
         .bytes);
   }
 
-  //////????/
   Future<String> _cancelPaymentRequest(orderJson) async {
-    print('ccc $orderJson');
     String url = 'https://webapi.nicepay.co.kr/webapi/cancel_process.jsp';
     _ediDate = DateTime.now()
         .toString()
@@ -175,14 +173,6 @@ class _OrderStatePageState extends State<OrderStatePage> {
         .replaceAll(' ', '')
         .replaceAll(':', '')
         .split('.')[0];
-    print('ddd');
-    print('eee orderJson 값을 출력:  $orderJson');
-    print(orderJson['totalPrice']);
-
-    print(orderJson['oID']);
-    print(_ediDate);
-
-    //print('fff $orderJson[\'oID\']');
 
     final response = await http.post(url, body: <String, String>{
       'TID': orderJson['tid'],
@@ -192,12 +182,10 @@ class _OrderStatePageState extends State<OrderStatePage> {
       'CancelMsg': '결제자의 요청에 의한 취소',
       'PartialCancelCode': '0',
       'EdiDate': _ediDate,
-      //'SignData': _getSignData(1200),
       'SignData': _getSignData(int.parse(orderJson['totalPrice'])),
       'CharSet': 'euc-kr',
       'EdiType': 'JSON'
     });
-    print('fff ');
     print(response.statusCode);
     if (response.statusCode == 200) {
       _cancelResponse = jsonDecode(cp949.decode(response.bodyBytes)); //???
@@ -209,7 +197,6 @@ class _OrderStatePageState extends State<OrderStatePage> {
 
   Future<bool> _updateOrderState(int state, _oID) async {
     print(_oID);
-    //print('ccc $orderJson');
     String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_updateOrderState.php?oid=$_oID&state=$state';
     // 'http://nacha01.dothome.co.kr/sin/arlimi_updateOrderState.php?oid=${widget.responseData['Moid']}&state=$state';
@@ -266,32 +253,22 @@ class _OrderStatePageState extends State<OrderStatePage> {
   }
 
   Future<bool> _cancelOrderHandling(orderJson) async {
-    print('aaaa $orderJson');
     var code = await _cancelPaymentRequest(orderJson);
-    print('취소 코드값 $code');
-    print('tid값: ${orderJson['tid']}');
-    print(orderJson['detail'][0]['oPID']);
+
     var _oid = orderJson['oID'];
 
     if (code == '2001') {
-      print('여기');
       var res = await _updateOrderState(4, _oid);
-      print(res);
-      print('여기2');
       if (!res) return false;
-      print('여기3');
       var renewCountRes = await _updateProductCountRequest(
           int.parse(orderJson['detail'][0]['oPID']),
           int.parse(orderJson['detail'][0]['quantity']),
           '+');
-      print('여기4');
       var sellCountRes = await _updateEachProductSellCountRequest(
           orderJson['detail'][0]['prodID'],
           orderJson['detail'][0]['productCount'],
           '-');
-      print('여기5');
       var buyerCountRes = await _updateUserBuyCountRequest('-');
-      print('여기6');
       if (!renewCountRes) return false;
       if (!sellCountRes) return false;
       if (!buyerCountRes) return false;
@@ -319,7 +296,7 @@ class _OrderStatePageState extends State<OrderStatePage> {
         ),
         backgroundColor: Color(0xFF9EE1E5),
         title: Text(
-          'My 주문 현황',
+          '내 주문 현황',
           style: TextStyle(
               color: Colors.black, fontWeight: FontWeight.bold, fontSize: 14),
         ),
@@ -327,13 +304,6 @@ class _OrderStatePageState extends State<OrderStatePage> {
       ),
       body: Column(
         children: [
-          Container(
-            width: size.width,
-            height: size.height * 0.05,
-            child: Column(
-              children: [],
-            ),
-          ),
           _orderMap.length == 0
               ? Expanded(
                   child: Center(
@@ -381,7 +351,7 @@ class _OrderStatePageState extends State<OrderStatePage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    '주문번호 : ${orderJson['oID']} \n : ${orderJson['tid']}',
+                    '주문번호 : ${orderJson['oID']}',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                   ),
                   Text(
@@ -413,7 +383,7 @@ class _OrderStatePageState extends State<OrderStatePage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: EdgeInsets.all(size.width * 0.01),
                   child: Text(
                     '${_getTextAccordingToOrderState(int.parse(orderJson['orderState']))}',
                     style: TextStyle(
@@ -422,7 +392,7 @@ class _OrderStatePageState extends State<OrderStatePage> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: EdgeInsets.all(size.width * 0.01),
                   child: Text(
                     '${_formatPrice(int.parse(orderJson['totalPrice']))}원',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
@@ -522,7 +492,9 @@ class _OrderStatePageState extends State<OrderStatePage> {
                       child: Text(
                         '결제 취소하기',
                         style: TextStyle(
-                            fontWeight: FontWeight.bold, color: Colors.white),
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            fontSize: 12),
                       ),
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
@@ -530,14 +502,10 @@ class _OrderStatePageState extends State<OrderStatePage> {
                           border: Border.all(width: 0.5, color: Colors.black),
                           color: Colors.red),
                       padding: EdgeInsets.all(size.width * 0.01),
-                      width: size.width * 0.6,
-                      height: size.height * 0.04,
+                      width: size.width * 0.95,
+                      height: size.height * 0.035,
                     ))
-                : Text(
-              '',
-              style: TextStyle(
-                  fontWeight: FontWeight.bold, fontSize: 1),
-            ),
+                : SizedBox()
           ],
         ),
       ),

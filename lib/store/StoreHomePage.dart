@@ -1736,7 +1736,7 @@ class _StoreHomePageState extends State<StoreHomePage>
           prefixIcon: Icon(
             Icons.search,
             color: Colors.black,
-            size: 21,
+            size: 20,
           ),
         ),
         controller: _searchController,

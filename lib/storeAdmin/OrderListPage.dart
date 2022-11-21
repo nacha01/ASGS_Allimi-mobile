@@ -91,7 +91,6 @@ class _OrderListPageState extends State<OrderListPage> {
       _noneList.clear();
       for (int i = 0; i < map1st.length; ++i) {
         _orderList.add(json.decode(map1st[i]));
-       // print(_orderList);
 
         for (int j = 0; j < _orderList[i]['detail'].length; ++j) {
           _orderList[i]['detail'][j] = json.decode(_orderList[i]['detail'][j]);
@@ -137,27 +136,27 @@ class _OrderListPageState extends State<OrderListPage> {
   @override
   void initState() {
     _getAllOrderData();
-    Timer.periodic(Duration(seconds: 5), (timer) {
-      if (jumun ==1) {
-        print(DateTime.now());
-
-        //AudioCache player = AudioCache(prefix: 'audio/');
-        //player.play('explosion.mp3');
-
-        /*
-
-
-        Future audioPlayer() async{
-          await player.setVolume(75);
-          await player.setSpeed(1);
-          await player.setAsset('assets/audio/game.mp3');
-          player.play();
-        }
-        */
-
-
-      }
-    });
+    // Timer.periodic(Duration(seconds: 5), (timer) {
+    //   if (jumun ==1) {
+    //     print(DateTime.now());
+    //
+    //     //AudioCache player = AudioCache(prefix: 'audio/');
+    //     //player.play('explosion.mp3');
+    //
+    //     /*
+    //
+    //
+    //     Future audioPlayer() async{
+    //       await player.setVolume(75);
+    //       await player.setSpeed(1);
+    //       await player.setAsset('assets/audio/game.mp3');
+    //       player.play();
+    //     }
+    //     */
+    //
+    //
+    //   }
+    // });
     super.initState();
   }
 

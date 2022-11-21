@@ -125,7 +125,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
   /// 최종적으로 주문을 등록하는 과정
   Future<bool> _registerOrderRequest() async {
     var orderRes = await _addOrderRequest();
-    print('주문 응답 $orderRes');
+
     if (!orderRes) return false;
 
     if (widget.isCart) {
@@ -318,13 +318,10 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
 
   @override
   void initState() {
-    print(widget.responseData);
     _isCreditSuccess =
         widget.responseData['ResultCode'] == '3001' ? true : false;
-    print('isCredit $_isCreditSuccess');
     _resultMessage = widget.responseData['ResultMsg'];
     _resultCode = widget.responseData['ResultCode'];
-    print('$_resultMessage result $_resultCode');
     super.initState();
     _processAfterPaying();
 
@@ -339,17 +336,14 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
   void _processAfterPaying() async {
     if (_isCreditSuccess) {
       var res = await _registerOrderRequest();
-      print(res);
       // Provider.of<ExistCart>(context).setExistCart(false);
       if (!res) {
         _resultCode = 'O001'; // 커스텀 코드로 결제는 되었으나 DB에 주문 등록이 실패했다는 의미
       }
-      print('After: $_resultCode');
     }
     setState(() {
       _isFinished = true;
     });
-    print(_isFinished);
   }
 
   @override
@@ -644,7 +638,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
                   },
                   child: Container(
                     child: Text(
-                      '결제 취소하기99',
+                      '결제 취소하기',
                       style: TextStyle(
                           fontWeight: FontWeight.bold, color: Colors.white),
                     ),

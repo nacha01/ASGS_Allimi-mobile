@@ -253,7 +253,7 @@ class _OrderPageState extends State<OrderPage> {
           ),
           backgroundColor: Color(0xFF9EE1E5),
           title: Text(
-            '주문하기66',
+            '주문하기',
             style: TextStyle(
                 color: Colors.black, fontWeight: FontWeight.bold, fontSize: 13),
           ),
@@ -644,7 +644,7 @@ class _OrderPageState extends State<OrderPage> {
                     color: Color(0xFF9EE1E5)),
                 width: size.width,
                 child: Text(
-                  '${_formatPrice((_getOriginTotalPrice() - _getTotalDiscount()))} 원 결제 및 구매하기77',
+                  '${_formatPrice((_getOriginTotalPrice() - _getTotalDiscount()))} 원 결제 및 구매하기',
                   style: TextStyle(
                       fontWeight: FontWeight.bold, color: Colors.black),
                 ),

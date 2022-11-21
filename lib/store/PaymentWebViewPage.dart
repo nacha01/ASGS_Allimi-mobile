@@ -199,7 +199,7 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
       appBar: AppBar(
           backgroundColor: Color(0xFF9EE1E5),
           title: Text( //여기가 이용 약관이 나오는 곳이네 그렇다면 이미 nicepay 웹페이지로 간것인데...
-            '결제하기88',
+            '결제하기',
             style: TextStyle(
                 color: Colors.black, fontWeight: FontWeight.bold, fontSize: 14),
           ),
