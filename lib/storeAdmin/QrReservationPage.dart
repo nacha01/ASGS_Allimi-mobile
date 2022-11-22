@@ -11,7 +11,9 @@ import 'package:http/http.dart' as http;
 
 class QrReservationPage extends StatefulWidget {
   final User user;
+
   QrReservationPage({this.user});
+
   @override
   _QrReservationPageState createState() => _QrReservationPageState();
 }

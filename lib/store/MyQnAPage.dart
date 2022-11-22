@@ -9,7 +9,9 @@ import 'package:http/http.dart' as http;
 
 class MyQnAPage extends StatefulWidget {
   MyQnAPage({this.user});
+
   final User user;
+
   @override
   _MyQnAPageState createState() => _MyQnAPageState();
 }

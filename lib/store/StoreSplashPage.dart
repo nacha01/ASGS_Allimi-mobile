@@ -11,13 +11,16 @@ import '../data/product_data.dart';
 
 class StoreSplashPage extends StatefulWidget {
   final User user;
+
   StoreSplashPage({this.user});
+
   @override
   _StoreSplashPageState createState() => _StoreSplashPageState();
 }
 
 class _StoreSplashPageState extends State<StoreSplashPage> {
   bool _isExist = false;
+
   @override
   void initState() {
     super.initState();

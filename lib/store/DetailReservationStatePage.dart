@@ -12,7 +12,9 @@ import 'package:http/http.dart' as http;
 class DetailReservationStatePage extends StatefulWidget {
   final User user;
   final Map data;
+
   DetailReservationStatePage({this.user, this.data});
+
   @override
   _DetailReservationStatePageState createState() =>
       _DetailReservationStatePageState();

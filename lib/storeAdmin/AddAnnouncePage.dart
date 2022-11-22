@@ -13,9 +13,11 @@ import 'package:provider/provider.dart';
 /// [isUpdate] ? modify : add
 class AddAnnouncePage extends StatefulWidget {
   AddAnnouncePage({this.user, this.isUpdate = false, this.announce});
+
   final User user;
   final bool isUpdate;
   final Announce announce;
+
   @override
   _AddAnnouncePageState createState() => _AddAnnouncePageState();
 }

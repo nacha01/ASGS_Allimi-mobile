@@ -18,6 +18,7 @@ class OrderPage extends StatefulWidget {
       this.optionList,
       this.selectList,
       this.additionalPrice});
+
   final Product direct; // 바로 결제 시 그 단일 상품 하나
   final List<Map> cart; // 장바구니에서 결제시 장바구니 리스트 Map 데이터
   final int productCount; // 바로 결제시 상품의 개수

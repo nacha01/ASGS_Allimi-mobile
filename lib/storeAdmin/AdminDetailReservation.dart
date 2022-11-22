@@ -15,7 +15,9 @@ class AdminDetailReservation extends StatefulWidget {
   final List reservationList;
   final User user;
   final ProductCount productCount;
+
   AdminDetailReservation({this.reservationList, this.user, this.productCount});
+
   @override
   _AdminDetailReservationState createState() => _AdminDetailReservationState();
 }

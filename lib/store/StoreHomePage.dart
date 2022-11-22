@@ -18,9 +18,11 @@ import 'package:http/http.dart' as http;
 
 class StoreHomePage extends StatefulWidget {
   StoreHomePage({this.user, this.product, this.existCart});
+
   final User user;
   final List<Product> product;
   final bool existCart;
+
   @override
   _StoreHomePageState createState() => _StoreHomePageState();
 }

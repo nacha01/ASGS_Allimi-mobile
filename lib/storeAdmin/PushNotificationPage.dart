@@ -10,7 +10,9 @@ import 'package:http/http.dart' as http;
 
 class PushNotificationPage extends StatefulWidget {
   final User user;
+
   PushNotificationPage({this.user});
+
   @override
   _PushNotificationPageState createState() => _PushNotificationPageState();
 }

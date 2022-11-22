@@ -13,7 +13,9 @@ import 'package:http/http.dart' as http;
 class RecordListPage extends StatefulWidget {
   final int gameCode;
   final User user;
+
   RecordListPage({this.gameCode, this.user});
+
   @override
   _RecordListPageState createState() => _RecordListPageState();
 }

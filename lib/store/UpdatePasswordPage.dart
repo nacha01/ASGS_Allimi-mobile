@@ -9,7 +9,9 @@ import 'package:http/http.dart' as http;
 
 class UpdatePasswordPage extends StatefulWidget {
   UpdatePasswordPage({this.user});
+
   final User user;
+
   @override
   _UpdatePasswordPageState createState() => _UpdatePasswordPageState();
 }

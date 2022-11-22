@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 class TriangleShape extends CustomPainter {
   Paint _painter;
+
   @override
   void paint(Canvas canvas, Size size) {
     var path = Path();

@@ -9,10 +9,12 @@ import 'package:http/http.dart' as http;
 
 class DetailAnnouncePage extends StatefulWidget {
   DetailAnnouncePage({this.announce, this.user, this.isNew, this.newView});
+
   final Announce announce;
   final User user;
   final bool isNew;
   final int newView;
+
   @override
   _DetailAnnouncePageState createState() => _DetailAnnouncePageState();
 }

@@ -1751,7 +1751,9 @@ class _AddingProductPageState extends State<AddingProductPage> {
 /// 그리고 이 클래스를 각 옵션에 대해서 사용하기 위해 2차원 리스트로 사용한다. List<List<Class>>
 class DetailWidget {
   int dIndex;
+
   DetailWidget(this.dIndex);
+
   Widget optionDetailLayout(Size size, int cIndex) {
     return Container(
       padding: EdgeInsets.all(size.width * 0.01),

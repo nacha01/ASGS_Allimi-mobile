@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 class RectangleShape extends CustomPainter {
   Paint _painter;
   double _size;
+
   @override
   void paint(Canvas canvas, Size size) {
     Paint paintBorder = Paint()

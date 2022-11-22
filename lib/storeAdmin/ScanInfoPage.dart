@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:ui';
 
 import 'package:asgshighschool/data/category_data.dart';
@@ -14,7 +13,9 @@ class ScanInfoPage extends StatefulWidget {
   final Map orderData;
   final User user;
   final User admin;
+
   ScanInfoPage({this.orderData, this.user, this.admin});
+
   @override
   _ScanInfoPageState createState() => _ScanInfoPageState();
 }

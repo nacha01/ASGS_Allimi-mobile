@@ -13,7 +13,9 @@ import 'package:cp949/cp949.dart' as cp949;
 
 class OrderStatePage extends StatefulWidget {
   OrderStatePage({this.user});
+
   final User user;
+
   @override
   _OrderStatePageState createState() => _OrderStatePageState();
 }
@@ -21,6 +23,7 @@ class OrderStatePage extends StatefulWidget {
 class _OrderStatePageState extends State<OrderStatePage> {
   List _orderMap = [];
   Map _cancelResponse;
+
   //final bool isCart;
   String _ediDate = '';
   static const _KEY =
@@ -431,7 +434,8 @@ class _OrderStatePageState extends State<OrderStatePage> {
                                                             color: Colors.green,
                                                             fontSize: 16)),
                                                     content: Text(
-                                                        '${_cancelResponse['ResultMsg']}', //여기가 취소 성공이라는 메세지인가?
+                                                        '${_cancelResponse['ResultMsg']}',
+                                                        //여기가 취소 성공이라는 메세지인가?
                                                         style: TextStyle(
                                                             fontWeight:
                                                                 FontWeight.bold,

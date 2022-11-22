@@ -7,8 +7,10 @@ import 'package:asgshighschool/data/user_data.dart';
 
 class MobileStudentCard extends StatefulWidget {
   MobileStudentCard({this.user});
+
   final User user;
   String prefixId = 'A';
+
   @override
   _MobileStudentCardState createState() => _MobileStudentCardState();
 }

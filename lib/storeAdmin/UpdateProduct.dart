@@ -25,7 +25,9 @@ List<List<DetailWidget>> _classList = []; // 리스트의 인덱스와 위젯이
 
 class UpdatingProductPage extends StatefulWidget {
   UpdatingProductPage({this.product});
+
   final Product product;
+
   @override
   _UpdatingProductPageState createState() => _UpdatingProductPageState();
 }
@@ -1668,7 +1670,9 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
 /// 그리고 이 클래스를 각 옵션에 대해서 사용하기 위해 2차원 리스트로 사용한다. List<List<Class>>
 class DetailWidget {
   int dIndex;
+
   DetailWidget(this.dIndex);
+
   Widget optionDetailLayout(Size size, int cIndex) {
     return Container(
       padding: EdgeInsets.all(size.width * 0.01),

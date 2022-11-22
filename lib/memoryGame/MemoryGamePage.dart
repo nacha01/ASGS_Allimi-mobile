@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-//import 'dart:ui';
 import 'package:asgshighschool/data/user_data.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
@@ -11,7 +10,9 @@ import 'package:http/http.dart' as http;
 
 class MemoryGamePage extends StatefulWidget {
   final User user;
+
   MemoryGamePage({this.user});
+
   @override
   _MemoryGamePageState createState() => _MemoryGamePageState();
 }

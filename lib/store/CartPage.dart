@@ -25,8 +25,10 @@ import 'package:provider/provider.dart';
 /// 10. imgUrl1[visible] 고민중..
 class CartPage extends StatefulWidget {
   CartPage({this.user, this.isFromDetail = false});
+
   final User user;
   final bool isFromDetail;
+
   @override
   _CartPageState createState() => _CartPageState();
 }

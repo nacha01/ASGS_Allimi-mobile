@@ -8,8 +8,10 @@ import 'package:qr_flutter/qr_flutter.dart';
 
 class DetailOrderStatePage extends StatefulWidget {
   DetailOrderStatePage({this.order, this.user});
+
   final Map order;
   final User user;
+
   @override
   _DetailOrderStatePageState createState() => _DetailOrderStatePageState();
 }

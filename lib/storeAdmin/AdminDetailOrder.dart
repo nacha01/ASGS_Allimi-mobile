@@ -10,8 +10,10 @@ import 'package:http/http.dart' as http;
 
 class AdminDetailOrder extends StatefulWidget {
   AdminDetailOrder({this.data, this.user});
+
   final Map data;
   final User user;
+
   @override
   _AdminDetailOrderState createState() => _AdminDetailOrderState();
 }

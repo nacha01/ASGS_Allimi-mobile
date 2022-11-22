@@ -9,7 +9,9 @@ import 'package:http/http.dart' as http;
 
 class QRScannerPage extends StatefulWidget {
   QRScannerPage({this.oID});
+
   final String oID;
+
   @override
   _QRScannerPageState createState() => _QRScannerPageState();
 }

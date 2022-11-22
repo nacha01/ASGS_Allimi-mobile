@@ -11,7 +11,9 @@ import 'package:http/http.dart' as http;
 
 class QrSearchScannerPage extends StatefulWidget {
   final User admin;
+
   QrSearchScannerPage({this.admin});
+
   @override
   _QrSearchScannerPageState createState() => _QrSearchScannerPageState();
 }

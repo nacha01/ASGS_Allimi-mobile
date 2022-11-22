@@ -19,7 +19,9 @@ import 'package:provider/provider.dart';
 
 class StoreMyPage extends StatefulWidget {
   StoreMyPage({this.user});
+
   final User user;
+
   @override
   _StoreMyPageState createState() => _StoreMyPageState();
 }

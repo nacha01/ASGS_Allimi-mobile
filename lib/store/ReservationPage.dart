@@ -19,6 +19,7 @@ class ReservationPage extends StatefulWidget {
   final User user;
   final List optionList;
   final List selectList;
+
   @override
   _ReservationPageState createState() => _ReservationPageState();
 }

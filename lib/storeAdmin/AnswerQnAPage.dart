@@ -13,8 +13,10 @@ import 'package:http/http.dart' as http;
 /// 그 문의글에 대해 'isAnswer' 필드 값 업데이트
 class AnswerQnAPage extends StatefulWidget {
   AnswerQnAPage({this.data, this.user});
+
   final Map data;
   final User user;
+
   @override
   _AnswerQnAPageState createState() => _AnswerQnAPageState();
 }

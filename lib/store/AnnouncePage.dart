@@ -14,7 +14,9 @@ import 'package:provider/provider.dart';
 
 class AnnouncePage extends StatefulWidget {
   AnnouncePage({this.user});
+
   final User user;
+
   @override
   _AnnouncePageState createState() => _AnnouncePageState();
 }

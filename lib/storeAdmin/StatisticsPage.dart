@@ -13,7 +13,9 @@ import 'package:http/http.dart' as http;
 
 class StatisticsPage extends StatefulWidget {
   final User user;
+
   StatisticsPage({this.user});
+
   @override
   _StatisticsPageState createState() => _StatisticsPageState();
 }

@@ -9,7 +9,9 @@ import 'package:http/http.dart' as http;
 
 class InquirePage extends StatefulWidget {
   InquirePage({this.user});
+
   final User user;
+
   @override
   _InquirePageState createState() => _InquirePageState();
 }

@@ -12,7 +12,9 @@ import 'package:http/http.dart' as http;
 /// 정렬 기능 추가 요망
 class QnAListPage extends StatefulWidget {
   QnAListPage({this.user});
+
   final User user;
+
   @override
   _QnAListPageState createState() => _QnAListPageState();
 }

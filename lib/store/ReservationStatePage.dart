@@ -10,7 +10,9 @@ import 'package:http/http.dart' as http;
 
 class ReservationStatePage extends StatefulWidget {
   final User user;
+
   ReservationStatePage({this.user});
+
   @override
   _ReservationStatePageState createState() => _ReservationStatePageState();
 }

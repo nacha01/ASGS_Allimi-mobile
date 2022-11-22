@@ -11,12 +11,9 @@ class WebViewPage extends StatefulWidget {
   String title;
   final User user;
   bool isTab;
+
   WebViewPage(
-      {Key key,
-      this.baseUrl,
-      this.title,
-      this.user,
-      this.isTab = false})
+      {Key key, this.baseUrl, this.title, this.user, this.isTab = false})
       : super(key: key);
   static const routeName = '/webpage';
 
@@ -32,6 +29,7 @@ class _WebViewPageState extends State<WebViewPage> {
   double _opacity = 1.0;
   bool _isExceed = false;
   bool _oneTurn = false;
+
   @override
   void dispose() {
     _timer?.cancel();

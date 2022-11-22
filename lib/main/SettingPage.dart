@@ -10,6 +10,7 @@ class SettingPage extends StatefulWidget {
 class _SettingPageState extends State<SettingPage> {
   bool _isChecked = false;
   SharedPreferences _pref;
+
   @override
   void initState() {
     super.initState();

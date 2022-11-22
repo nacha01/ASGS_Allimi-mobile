@@ -18,15 +18,18 @@ import '../data/product_data.dart';
 
 class StoreMainPage extends StatefulWidget {
   StoreMainPage({this.user, this.product, this.existCart});
+
   final User user;
   final List<Product> product;
   final bool existCart;
+
   @override
   StoreMainPageState createState() => StoreMainPageState();
 }
 
 class StoreMainPageState extends State<StoreMainPage> {
   static int currentNav = 1;
+
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;

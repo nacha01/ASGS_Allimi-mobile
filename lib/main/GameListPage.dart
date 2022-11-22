@@ -8,7 +8,9 @@ import 'package:flutter/material.dart';
 
 class GameListPage extends StatefulWidget {
   final User user;
+
   GameListPage({this.user});
+
   @override
   _GameListPageState createState() => _GameListPageState();
 }

@@ -28,6 +28,7 @@ class PaymentCompletePage extends StatefulWidget {
       this.location,
       this.option,
       this.receiveMethod});
+
   final int totalPrice;
   final Map responseData;
   final bool isCart;
@@ -40,6 +41,7 @@ class PaymentCompletePage extends StatefulWidget {
   final String receiveMethod;
   final String option;
   final String location;
+
   @override
   _PaymentCompletePageState createState() => _PaymentCompletePageState();
 }
@@ -309,7 +311,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
     });
 
     if (response.statusCode == 200) {
-      _cancelResponse = jsonDecode(cp949.decode(response.bodyBytes));  //???
+      _cancelResponse = jsonDecode(cp949.decode(response.bodyBytes)); //???
       return _cancelResponse['ResultCode'];
     } else {
       return 'Error';
@@ -324,7 +326,6 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
     _resultCode = widget.responseData['ResultCode'];
     super.initState();
     _processAfterPaying();
-
   }
 
   String _getSignData(int cancelAmt) {
@@ -367,7 +368,6 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
             ),
           ),
           backgroundColor: Color(0xFF9EE1E5),
-
           title: Text(
             '결제 결과 페이지',
             style: TextStyle(
@@ -376,7 +376,6 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
           centerTitle: true,
         ),
         body: _isFinished
-
             ? Column(
                 children: [
                   Expanded(
@@ -391,7 +390,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                       '주문 등록 중입니다..',
+                      '주문 등록 중입니다..',
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                     ),
@@ -579,7 +578,8 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
                                                           color: Colors.green,
                                                           fontSize: 16)),
                                                   content: Text(
-                                                      '${_cancelResponse['ResultMsg']}', //여기가 취소 성공이라는 메세지인가?
+                                                      '${_cancelResponse['ResultMsg']}',
+                                                      //여기가 취소 성공이라는 메세지인가?
                                                       style: TextStyle(
                                                           fontWeight:
                                                               FontWeight.bold,

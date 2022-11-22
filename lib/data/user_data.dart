@@ -11,6 +11,7 @@ class User {
   bool _isAdmin = false;
   String _adminKey;
   String _email = '';
+
   User(this._uid, this._token, this._name, this._identity, this._studentId,
       this._nickName, this._rDate, this._buyCount, this._point, this._email);
 

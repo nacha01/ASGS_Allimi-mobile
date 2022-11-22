@@ -13,7 +13,9 @@ import 'package:http/http.dart' as http;
 class FinalReservationPage extends StatefulWidget {
   final User user;
   final Map data;
+
   FinalReservationPage({this.user, this.data});
+
   @override
   _FinalReservationPageState createState() => _FinalReservationPageState();
 }

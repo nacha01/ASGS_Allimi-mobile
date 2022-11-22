@@ -25,7 +25,9 @@ import 'package:provider/provider.dart';
 /// 10. point
 class UpdateUserPage extends StatefulWidget {
   UpdateUserPage({this.user});
+
   final User user;
+
   @override
   _UpdateUserPageState createState() => _UpdateUserPageState();
 }

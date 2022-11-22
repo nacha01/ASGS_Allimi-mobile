@@ -7,14 +7,15 @@ import 'package:flutter/material.dart';
 
 class DetailQnAPage extends StatefulWidget {
   DetailQnAPage({this.user, this.data});
+
   final Map data;
   final User user;
+
   @override
   _DetailQnAPageState createState() => _DetailQnAPageState();
 }
 
 class _DetailQnAPageState extends State<DetailQnAPage> {
-
   /// 현재 문의 글 데이터의 date field를 사용자에게 더 직관적으로 보여주는 날짜 formatting 작업
   /// format : yyyy년 MM월 dd일 (오후 or 오전) hh시 mm분
   String _formatDate(String originDate) {

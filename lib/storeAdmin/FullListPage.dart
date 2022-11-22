@@ -9,7 +9,9 @@ import 'package:http/http.dart' as http;
 class FullListPage extends StatefulWidget {
   final User user;
   final bool isResv;
+
   FullListPage({this.user, this.isResv});
+
   @override
   _FullListPageState createState() => _FullListPageState();
 }
