@@ -2,11 +2,11 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:ui';
 
-import 'package:asgshighschool/data/status_data.dart';
-import 'package:asgshighschool/data/user_data.dart';
-import 'package:asgshighschool/storeAdmin/AdminDetailOrder.dart';
+import 'package:asgshighschool/data/status.dart';
+import 'package:asgshighschool/data/user.dart';
+import 'AdminDetailOrder.dart';
 import 'package:asgshighschool/storeAdmin/FullListPage.dart';
-import 'package:asgshighschool/storeAdmin/QrSearchScannerPage.dart';
+import '../qr/QrSearchScannerPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;

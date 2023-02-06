@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:asgshighschool/data/exist_cart.dart';
-import 'package:asgshighschool/data/renewUser_data.dart';
+import '../data/provider/exist_cart.dart';
+import '../data/provider/renew_user.dart';
 import 'package:asgshighschool/main/GameListPage.dart';
 import 'package:asgshighschool/main/SelectImagePage.dart';
 import 'package:asgshighschool/main/SignIn.dart';
@@ -16,7 +16,7 @@ import 'package:provider/provider.dart';
 
 import '../store/StoreSplashPage.dart';
 import 'SettingPage.dart';
-import '../data/user_data.dart';
+import '../data/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';

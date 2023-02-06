@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:ui';
 
-import 'package:asgshighschool/data/category_data.dart';
-import 'package:asgshighschool/data/user_data.dart';
+import 'package:asgshighschool/data/category.dart';
+import 'package:asgshighschool/data/user.dart';
 import 'package:asgshighschool/store/DetailOrderStatePage.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/cupertino.dart';

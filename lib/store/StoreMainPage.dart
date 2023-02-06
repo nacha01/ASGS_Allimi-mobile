@@ -1,20 +1,20 @@
 import 'dart:ui';
 
-import 'package:asgshighschool/data/exist_cart.dart';
-import 'package:asgshighschool/data/user_data.dart';
+import '../data/provider/exist_cart.dart';
+import 'package:asgshighschool/data/user.dart';
 import 'package:asgshighschool/main/GameListPage.dart';
 import 'package:asgshighschool/store/AnnouncePage.dart';
 import 'package:asgshighschool/store/CartPage.dart';
 import 'package:asgshighschool/store/StoreHomePage.dart';
 import 'package:asgshighschool/store/StoreMyPage.dart';
-import 'package:asgshighschool/storeAdmin/QRScannerPage.dart';
+import '../storeAdmin/qr/QRScannerPage.dart';
 import 'package:badges/badges.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
-import '../data/product_data.dart';
+import '../data/product.dart';
 
 class StoreMainPage extends StatefulWidget {
   StoreMainPage({this.user, this.product, this.existCart});

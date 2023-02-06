@@ -3,23 +3,24 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
-import 'package:asgshighschool/data/user_data.dart';
+import 'package:asgshighschool/data/user.dart';
 
 class MobileStudentCard extends StatefulWidget {
   MobileStudentCard({this.user});
 
   final User user;
-  String prefixId = 'A';
 
   @override
   _MobileStudentCardState createState() => _MobileStudentCardState();
 }
 
 class _MobileStudentCardState extends State<MobileStudentCard> {
+  String _prefixId = 'A';
+
   void onChanged(value) {
     print(value);
     setState(() {
-      widget.prefixId = value;
+      _prefixId = value;
     });
   }
 
@@ -81,12 +82,12 @@ class _MobileStudentCardState extends State<MobileStudentCard> {
                 RadioListTile(
                     title: const Text('출석'),
                     value: 'A',
-                    groupValue: widget.prefixId,
+                    groupValue: _prefixId,
                     onChanged: onChanged),
                 RadioListTile(
                     title: const Text('우산'),
                     value: 'U',
-                    groupValue: widget.prefixId,
+                    groupValue: _prefixId,
                     onChanged: onChanged),
                 Divider(
                   thickness: 2.0,
@@ -96,7 +97,7 @@ class _MobileStudentCardState extends State<MobileStudentCard> {
                   children: [
                     Center(
                       child: QrImage(
-                        data: '${widget.prefixId}_${widget.user.uid}',
+                        data: '${_prefixId}_${widget.user.uid}',
                         size: 250,
                       ),
                     )

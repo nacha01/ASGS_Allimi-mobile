@@ -1,9 +1,9 @@
 import 'dart:ui';
 
-import 'package:asgshighschool/data/category_data.dart';
-import 'package:asgshighschool/data/orderState_data.dart';
-import 'package:asgshighschool/data/status_data.dart';
-import 'package:asgshighschool/data/user_data.dart';
+import 'package:asgshighschool/data/category.dart';
+import 'package:asgshighschool/data/order_state.dart';
+import 'package:asgshighschool/data/status.dart';
+import 'package:asgshighschool/data/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';

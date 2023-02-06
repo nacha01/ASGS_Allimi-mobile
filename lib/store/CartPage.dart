@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:ui';
 
-import 'package:asgshighschool/data/category_data.dart';
-import 'package:asgshighschool/data/exist_cart.dart';
-import 'package:asgshighschool/data/user_data.dart';
+import 'package:asgshighschool/data/category.dart';
+import '../data/provider/exist_cart.dart';
+import 'package:asgshighschool/data/user.dart';
 import 'package:asgshighschool/store/OrderPage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';

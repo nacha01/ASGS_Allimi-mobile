@@ -1,13 +1,13 @@
 import 'dart:convert';
 import 'dart:ui';
 
-import 'package:asgshighschool/data/user_data.dart';
+import 'package:asgshighschool/data/user.dart';
 
 import 'StoreMainPage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-import '../data/product_data.dart';
+import '../data/product.dart';
 
 class StoreSplashPage extends StatefulWidget {
   final User user;

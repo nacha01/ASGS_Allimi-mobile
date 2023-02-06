@@ -1,18 +1,18 @@
 import 'dart:ui';
 
-import 'package:asgshighschool/data/renewUser_data.dart';
-import 'package:asgshighschool/data/status_data.dart';
-import 'package:asgshighschool/data/user_data.dart';
+import '../data/provider/renew_user.dart';
+import 'package:asgshighschool/data/status.dart';
+import 'package:asgshighschool/data/user.dart';
 import 'package:asgshighschool/store/InquirePage.dart';
 import 'package:asgshighschool/store/MyQnAPage.dart';
 import 'package:asgshighschool/store/OrderStatePage.dart';
 import 'package:asgshighschool/store/ReservationStatePage.dart';
 import 'package:asgshighschool/store/UpdateUserPage.dart';
-import 'package:asgshighschool/storeAdmin/OrderListPage.dart';
+import '../storeAdmin/order/OrderListPage.dart';
 import 'package:asgshighschool/storeAdmin/PushNotificationPage.dart';
-import 'package:asgshighschool/storeAdmin/QnAListPage.dart';
-import 'package:asgshighschool/storeAdmin/ReservationListPage.dart';
-import 'package:asgshighschool/storeAdmin/StatisticsPage.dart';
+import '../storeAdmin/post/QnAListPage.dart';
+import '../storeAdmin/reservation/ReservationListPage.dart';
+import '../storeAdmin/statistics/StatisticsPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'dart:ui';
 
-import 'package:asgshighschool/data/announce_data.dart';
-import 'package:asgshighschool/data/renewUser_data.dart';
-import 'package:asgshighschool/data/user_data.dart';
+import 'package:asgshighschool/data/announce.dart';
+import '../data/provider/renew_user.dart';
+import 'package:asgshighschool/data/user.dart';
 import 'package:asgshighschool/store/DetailAnnouncePage.dart';
-import 'package:asgshighschool/storeAdmin/AddAnnouncePage.dart';
+import '../storeAdmin/post/AddAnnouncePage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';

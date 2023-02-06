@@ -1,6 +1,6 @@
-import 'package:asgshighschool/data/announce_data.dart';
-import 'package:asgshighschool/data/user_data.dart';
-import 'package:asgshighschool/storeAdmin/AddAnnouncePage.dart';
+import 'package:asgshighschool/data/announce.dart';
+import 'package:asgshighschool/data/user.dart';
+import '../storeAdmin/post/AddAnnouncePage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

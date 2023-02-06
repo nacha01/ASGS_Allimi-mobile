@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:ui';
 
 import 'package:asgshighschool/LocalNotifyManager.dart';
-import 'package:asgshighschool/data/user_data.dart';
-import 'package:asgshighschool/storeAdmin/ReservationListPage.dart';
+import 'package:asgshighschool/data/user.dart';
+import 'ReservationListPage.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

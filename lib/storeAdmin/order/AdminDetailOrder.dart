@@ -1,8 +1,8 @@
 import 'dart:ui';
 
-import 'package:asgshighschool/data/category_data.dart';
-import 'package:asgshighschool/data/user_data.dart';
-import 'package:asgshighschool/storeAdmin/QRScannerPage.dart';
+import 'package:asgshighschool/data/category.dart';
+import 'package:asgshighschool/data/user.dart';
+import '../qr/QRScannerPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';

@@ -1,4 +1,4 @@
-import 'package:asgshighschool/data/user_data.dart';
+import 'package:asgshighschool/data/user.dart';
 import 'package:flutter/widgets.dart';
 
 class RenewUserData extends ChangeNotifier {

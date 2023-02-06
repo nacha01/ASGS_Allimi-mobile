@@ -1,8 +1,8 @@
 import 'dart:ui';
 
-import 'package:asgshighschool/data/category_data.dart';
-import 'package:asgshighschool/data/product_data.dart';
-import 'package:asgshighschool/data/user_data.dart';
+import 'package:asgshighschool/data/category.dart';
+import 'package:asgshighschool/data/product.dart';
+import 'package:asgshighschool/data/user.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 

@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:asgshighschool/data/user_data.dart';
+import 'package:asgshighschool/data/user.dart';
 import 'package:asgshighschool/main/RecordListPage.dart';
 import 'package:asgshighschool/memoryGame/MemoryGamePAge.dart';
 import 'package:flutter/cupertino.dart';

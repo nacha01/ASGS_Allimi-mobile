@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:asgshighschool/data/product_data.dart';
-import 'package:asgshighschool/data/user_data.dart';
+import 'package:asgshighschool/data/product.dart';
+import 'package:asgshighschool/data/user.dart';
 import 'package:asgshighschool/store/PaymentCompletePage.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/cupertino.dart';

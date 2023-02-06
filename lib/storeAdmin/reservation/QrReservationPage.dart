@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:asgshighschool/data/user_data.dart';
-import 'package:asgshighschool/storeAdmin/FinalReservationPage.dart';
+import 'package:asgshighschool/data/user.dart';
+import 'FinalReservationPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';

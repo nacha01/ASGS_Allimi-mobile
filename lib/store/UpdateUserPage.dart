@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:ui';
 
-import 'package:asgshighschool/data/renewUser_data.dart';
-import 'package:asgshighschool/data/status_data.dart';
-import 'package:asgshighschool/data/user_data.dart';
+import '../data/provider/renew_user.dart';
+import 'package:asgshighschool/data/status.dart';
+import 'package:asgshighschool/data/user.dart';
 import 'package:asgshighschool/store/UpdatePasswordPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
