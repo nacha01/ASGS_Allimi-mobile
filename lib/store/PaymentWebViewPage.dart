@@ -10,7 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:hex/hex.dart';
 import 'package:cp949_dart/cp949_dart.dart' as cp949;
-import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class PaymentWebViewPage extends StatefulWidget {
   final String? oID; // 생성한 order ID
@@ -76,7 +76,7 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
   Future<String?> getAppUrlForAndroid(String url) async {
     if (Platform.isAndroid) {
       return await platform
-          .invokeMethod('getAppUrl', <String, Object>{'url': url});
+          .invokeMethod('getAppUrlForAndroid', <String, Object>{'url': url});
     } else {
       return url;
     }
@@ -85,17 +85,13 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
   Future<String?> getMarketUrlForAndroid(String url) async {
     if (Platform.isAndroid) {
       return await platform
-          .invokeMethod('getMarketUrl', <String, Object>{'url': url});
+          .invokeMethod('getMarketUrlForAndroid', <String, Object>{'url': url});
     } else {
       return url;
     }
   }
 
-  String getAppUrlForIOS(String url) {
-    return url;
-  }
-
-  String getMarketUrlForIOS(String url) {
+  String _getMarketUrlForIOS(String url) {
     switch (Uri.parse(url).scheme) {
       case 'kftc-bankpay': // 뱅크페이
         return 'https://itunes.apple.com/kr/app/id398456030';
@@ -116,9 +112,9 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
       case 'cloudpay': // 하나1Q페이(앱카드)
         return 'https://itunes.apple.com/kr/app/id847268987';
       case 'citimobileapp': // 시티은행 앱카드
-        return 'https://itunes.apple.com/kr/app/id1179759666';
+        return 'https://itunes.apple.com/kr/app/id1179759666';
       case 'payco': // 페이코
-        return 'https://itunes.apple.com/kr/app/id924292102';
+        return 'https://itunes.apple.com/kr/app/id924292102';
       case 'kakaotalk': // 카카오톡
         return 'https://itunes.apple.com/kr/app/id362057947';
       case 'lpayapp': // 롯데 L.pay
@@ -197,7 +193,6 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
       appBar: AppBar(
           backgroundColor: Color(0xFF9EE1E5),
           title: Text(
-            //여기가 이용 약관이 나오는 곳이네 그렇다면 이미 nicepay 웹페이지로 간것인데...
             '결제하기',
             style: TextStyle(
                 color: Colors.black, fontWeight: FontWeight.bold, fontSize: 14),
@@ -210,47 +205,61 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
                 color: Colors.black,
               ))),
       body: InAppWebView(
-        onLoadStart: (controller, uri) async {
-          if (Platform.isAndroid) {
-            if (uri!.scheme == 'about') {
-              _inAppWebViewController.goBack();
-            }
-            if (uri.scheme == 'intent') {
-              var url = uri.toString();
-              _inAppWebViewController.stopLoading();
-              getAppUrlForAndroid(url).then((value) async {
-                if (await canLaunch(value!)) {
-                  await launch(value);
-                } else {
-                  final market = (await getMarketUrlForAndroid(url))!;
-                  await launch(market);
-                }
-              });
-            }
-          } else if (Platform.isIOS) {
-            if (_isAppLink(uri.toString())) {
-              if (await canLaunch(uri.toString())) {
-                await launch(getAppUrlForIOS(uri.toString()),
-                    forceSafariVC: false);
-              } else {
-                var marketUrl = getMarketUrlForIOS(uri.toString());
-                await launch(marketUrl, forceSafariVC: false);
-              }
-            }
-          }
+        onLoadResourceCustomScheme: (controller, url) async {
+          await controller.stopLoading();
+          return null;
         },
-        shouldOverrideUrlLoading: (controller, request) async {
-          var uri = await controller.getUrl();
+        shouldOverrideUrlLoading: (controller, navigationAction) async {
           if (Platform.isAndroid) {
-            if (uri != null && uri.scheme == 'intent') {
-              return NavigationActionPolicy.CANCEL;
+            // Android
+            var url = navigationAction.request.url; // 위임 받은 URL (intent)
+            if (url != null && url.scheme.startsWith('intent')) {
+              if (!navigationAction.isForMainFrame) {
+                await controller.stopLoading(); // Intent URL 실행 방지
+              }
+              try {
+                await launchUrlString(
+                    (await getAppUrlForAndroid(url.toString()))!);
+              } catch (e) {
+                await launchUrlString(
+                    (await getMarketUrlForAndroid(url.toString()))!);
+              }
+              return NavigationActionPolicy.CANCEL; // 페이지 이동 취소
             }
             return NavigationActionPolicy.ALLOW;
+          } else if (Platform.isIOS) {
+            // iOS
+            var url = (await controller.getUrl()).toString();
+
+            if (_isAppLink(url)) {
+              if (await launchUrlString(url))
+                return NavigationActionPolicy.CANCEL;
+              else {
+                var marketURL = _getMarketUrlForIOS(url);
+                await launchUrlString(marketURL);
+
+                return NavigationActionPolicy.CANCEL;
+              }
+            }
           }
           return NavigationActionPolicy.ALLOW;
         },
         onWebViewCreated: (controller) {
           _inAppWebViewController = controller;
+
+          _inAppWebViewController.setOptions(
+              options: InAppWebViewGroupOptions(
+                  crossPlatform: InAppWebViewOptions(
+                      resourceCustomSchemes: ['intent'],
+                      useShouldOverrideUrlLoading: true,
+                      mediaPlaybackRequiresUserGesture: false),
+                  android: AndroidInAppWebViewOptions(
+                    useHybridComposition: true,
+                    disableDefaultErrorPage: true,
+                    mixedContentMode:
+                        AndroidMixedContentMode.MIXED_CONTENT_ALWAYS_ALLOW,
+                  )));
+
           _inAppWebViewController.addJavaScriptHandler(
               handlerName: 'cancelPaymentHandler',
               callback: (args) {
@@ -276,6 +285,7 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
                           ],
                         ));
               });
+
           _inAppWebViewController.addJavaScriptHandler(
               handlerName: 'responseHandler',
               callback: (args) {
@@ -299,19 +309,7 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
                               isCart: widget.isCart,
                             )));
               });
-          _inAppWebViewController.setOptions(
-              options: InAppWebViewGroupOptions(
-                  crossPlatform: InAppWebViewOptions(
-                    useShouldOverrideUrlLoading: true,
-                    javaScriptEnabled: true,
-                    cacheEnabled: true,
-                  ),
-                  android: AndroidInAppWebViewOptions(
-                      disableDefaultErrorPage: true,
-                      mixedContentMode:
-                          AndroidMixedContentMode.MIXED_CONTENT_ALWAYS_ALLOW,
-                      thirdPartyCookiesEnabled: true,
-                      cacheMode: AndroidCacheMode.LOAD_DEFAULT)));
+
           _inAppWebViewController.postUrl(
               url: Uri.parse('https://web.nicepay.co.kr/v3/v3Payment.jsp'),
               postData: Uint8List.fromList(cp949.encode('GoodsName=$_goodsName&'
