@@ -1,16 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:ui';
-
 import 'package:asgshighschool/data/user.dart';
 import 'ScanInfoPage.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:http/http.dart' as http;
 
 class QrSearchScannerPage extends StatefulWidget {
-  final User admin;
+  final User? admin;
 
   QrSearchScannerPage({this.admin});
 
@@ -20,13 +17,13 @@ class QrSearchScannerPage extends StatefulWidget {
 
 class _QrSearchScannerPageState extends State<QrSearchScannerPage> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
-  Barcode _result;
-  QRViewController _qrViewController;
+  late Barcode _result;
+  QRViewController? _qrViewController;
   bool _isScanned = false;
 
-  Future<User> _getUserInfo(String uid) async {
+  Future<User?> _getUserInfo(String? uid) async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getOneUser.php';
-    final response = await http.get(url + "?uid=$uid");
+    final response = await http.get(Uri.parse(url + "?uid=$uid"));
     if (response.statusCode == 200) {
       String result = utf8
           .decode(response.bodyBytes)
@@ -44,10 +41,10 @@ class _QrSearchScannerPageState extends State<QrSearchScannerPage> {
     }
   }
 
-  Future<bool> _queryQrInformation(String scannedValue) async {
+  Future<bool> _queryQrInformation(String? scannedValue) async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_queryOrderInfo.php';
     final response =
-        await http.post(url, body: <String, String>{'oid': scannedValue});
+        await http.post(Uri.parse(url), body: <String, String?>{'oid': scannedValue});
 
     if (response.statusCode == 200) {
       String result = utf8
@@ -93,7 +90,7 @@ class _QrSearchScannerPageState extends State<QrSearchScannerPage> {
           order['detail'][i]['pInfo'] = jsonDecode(order['detail'][i]['pInfo']);
         }
         print(order);
-        User user = await _getUserInfo(order['uID']);
+        User? user = await _getUserInfo(order['uID']);
         if (user == null) {
           showDialog(
               context: context,
@@ -145,9 +142,9 @@ class _QrSearchScannerPageState extends State<QrSearchScannerPage> {
   void reassemble() {
     super.reassemble();
     if (Platform.isAndroid) {
-      _qrViewController.pauseCamera();
+      _qrViewController!.pauseCamera();
     }
-    _qrViewController.resumeCamera();
+    _qrViewController!.resumeCamera();
   }
 
   @override
@@ -270,7 +267,7 @@ class _QrSearchScannerPageState extends State<QrSearchScannerPage> {
                       decoration: BoxDecoration(
                           border: Border.all(width: 0.5, color: Colors.black26),
                           borderRadius: BorderRadius.circular(10)),
-                      child: FlatButton(
+                      child: TextButton(
                           onPressed: () => Navigator.pop(context, true),
                           child: Text(
                             '뒤로가기',

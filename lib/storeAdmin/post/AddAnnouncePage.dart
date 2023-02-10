@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:asgshighschool/data/announce.dart';
 import '../../data/provider/renew_user.dart';
 import 'package:asgshighschool/data/user.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
@@ -14,9 +13,9 @@ import 'package:provider/provider.dart';
 class AddAnnouncePage extends StatefulWidget {
   AddAnnouncePage({this.user, this.isUpdate = false, this.announce});
 
-  final User user;
+  final User? user;
   final bool isUpdate;
-  final Announce announce;
+  final Announce? announce;
 
   @override
   _AddAnnouncePageState createState() => _AddAnnouncePageState();
@@ -27,15 +26,15 @@ enum Writer { ADMIN, NAME, NICKNAME }
 class _AddAnnouncePageState extends State<AddAnnouncePage> {
   TextEditingController _titleController = TextEditingController();
   TextEditingController _contentController = TextEditingController();
-  Writer _writer = Writer.ADMIN; // Radio 버튼 초기 값
-  Announce _updatedAnnounceObj; // Update 모드시 넘겨받을 Announce 객체
+  Writer? _writer = Writer.ADMIN; // Radio 버튼 초기 값
+  Announce? _updatedAnnounceObj; // Update 모드시 넘겨받을 Announce 객체
 
   /// 공지사항 등록을 서버에 요청하는 작업
   /// @response : 정상적인 성공 시, 문자열 1 응답
   /// @return : 정상적인 등록시 true, 그렇지 않으면 false
   Future<bool> _registerAnnounceRequest(RenewUserData providedUser) async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_addAnnounce.php';
-    final response = await http.post(url, body: <String, String>{
+    final response = await http.post(Uri.parse(url), body: <String, String?>{
       'writer': _getWriterToString(_writer, providedUser),
       'date': DateTime.now().toString().split('.')[0],
       'title': _titleController.text,
@@ -60,8 +59,8 @@ class _AddAnnouncePageState extends State<AddAnnouncePage> {
   /// @return : 정상적인 업데이트 시 true, 그렇지 않으면 false
   Future<bool> _updateAnnounceRequest(RenewUserData providedUser) async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_updateAnnounce.php';
-    final response = await http.post(url, body: <String, String>{
-      'anID': widget.announce.announceID.toString(),
+    final response = await http.post(Uri.parse(url), body: <String, String?>{
+      'anID': widget.announce!.announceID.toString(),
       'writer': _getWriterToString(_writer, providedUser),
       'date': DateTime.now().toString().split('.')[0],
       'title': _titleController.text,
@@ -79,9 +78,9 @@ class _AddAnnouncePageState extends State<AddAnnouncePage> {
   /// 공지사항 업데이트 시, 업데이트 된 그 공지사항 하나를 가져오는 요청
   /// 가져온 json 파일을 Announce.fromJson 생성자로 Announce 객체 생성해서 리턴
   Future<bool> _getUpdatedAnnounceObj() async {
-    String uri = 'http://nacha01.dothome.co.kr/sin/arlimi_getOneAnnounce.php';
+    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getOneAnnounce.php';
     final response =
-        await http.get(uri + '?anID=${widget.announce.announceID}');
+        await http.get(Uri.parse(url + '?anID=${widget.announce!.announceID}'));
     if (response.statusCode == 200) {
       String result = utf8
           .decode(response.bodyBytes)
@@ -99,24 +98,24 @@ class _AddAnnouncePageState extends State<AddAnnouncePage> {
   /// 공지사항을 추가, 수정할 때, ENUM 값에 의해 mapping 되는 작성자를 리턴
   /// @param : 작성자 ENUM 값
   /// @return : mapping 된 작성자 문자열
-  String _getWriterToString(Writer writer, RenewUserData providedUser) {
+  String? _getWriterToString(Writer? writer, RenewUserData providedUser) {
     if (writer == Writer.ADMIN) {
       return '관리자';
     } else if (writer == Writer.NAME) {
-      return providedUser.user.name;
+      return providedUser.user!.name;
     } else if (writer == Writer.NICKNAME) {
-      return providedUser.user.nickName;
+      return providedUser.user!.nickName;
     }
     return 'ERROR';
   }
 
   /// Update 모드시 받아온 객체에 대해서 작성자를 초기화 해주는 작업
   void _updateInitialize() {
-    _titleController.text = widget.announce.title;
-    _contentController.text = widget.announce.content;
-    if (widget.announce.writer == '관리자') {
+    _titleController.text = widget.announce!.title!;
+    _contentController.text = widget.announce!.content!;
+    if (widget.announce!.writer == '관리자') {
       _writer = Writer.ADMIN;
-    } else if (widget.announce.writer == widget.user.name) {
+    } else if (widget.announce!.writer == widget.user!.name) {
       _writer = Writer.NAME;
     } else {
       _writer = Writer.NICKNAME;
@@ -239,7 +238,7 @@ class _AddAnnouncePageState extends State<AddAnnouncePage> {
                       title: Text('관리자(익명)로 작성'),
                       value: Writer.ADMIN,
                       groupValue: _writer,
-                      onChanged: (value) {
+                      onChanged: (dynamic value) {
                         setState(() {
                           _writer = value;
                         });
@@ -248,7 +247,7 @@ class _AddAnnouncePageState extends State<AddAnnouncePage> {
                       title: Text('실명으로 작성'),
                       value: Writer.NAME,
                       groupValue: _writer,
-                      onChanged: (value) {
+                      onChanged: (dynamic value) {
                         setState(() {
                           _writer = value;
                         });
@@ -257,7 +256,7 @@ class _AddAnnouncePageState extends State<AddAnnouncePage> {
                       title: Text('닉네임으로 작성'),
                       value: Writer.NICKNAME,
                       groupValue: _writer,
-                      onChanged: (value) {
+                      onChanged: (dynamic value) {
                         setState(() {
                           _writer = value;
                         });
@@ -306,7 +305,7 @@ class _AddAnnouncePageState extends State<AddAnnouncePage> {
                     child: Container(
                         decoration: BoxDecoration(color: Colors.lightBlue),
                         width: size.width * 0.5,
-                        child: FlatButton(
+                        child: TextButton(
                           child: Text(
                             widget.isUpdate ? '수정하기' : '등록하기',
                             style: TextStyle(

@@ -1,15 +1,13 @@
 import 'dart:convert';
-import 'dart:ui';
 
 import 'package:asgshighschool/data/user.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class DetailQnAPage extends StatefulWidget {
   DetailQnAPage({this.user, this.data});
 
-  final Map data;
-  final User user;
+  final Map? data;
+  final User? user;
 
   @override
   _DetailQnAPageState createState() => _DetailQnAPageState();
@@ -88,7 +86,7 @@ class _DetailQnAPageState extends State<DetailQnAPage> {
                   child: Container(
                     alignment: Alignment.center,
                     child: Text(
-                      widget.data['qTitle'],
+                      widget.data!['qTitle'],
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -118,7 +116,7 @@ class _DetailQnAPageState extends State<DetailQnAPage> {
                 Expanded(
                   child: Container(
                     alignment: Alignment.center,
-                    child: Text(_formatDate(widget.data['qDate'])),
+                    child: Text(_formatDate(widget.data!['qDate'])),
                   ),
                 )
               ],
@@ -148,7 +146,7 @@ class _DetailQnAPageState extends State<DetailQnAPage> {
             child: Container(
               alignment: Alignment.center,
               child: Text(
-                widget.data['qContent'],
+                widget.data!['qContent'],
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
             ),
@@ -162,18 +160,18 @@ class _DetailQnAPageState extends State<DetailQnAPage> {
           SizedBox(
             height: size.height * 0.02,
           ),
-          int.parse(widget.data['isAnswer']) == 0
+          int.parse(widget.data!['isAnswer']) == 0
               ? Text('답변이 아직 없습니다.')
               : Container(
                   height: size.height * 0.4,
                   child: ListView.builder(
                     itemBuilder: (context, index) {
                       print(index);
-                      var data = jsonDecode(widget.data['answer'][index]);
+                      var data = jsonDecode(widget.data!['answer'][index]);
                       return _answerItemTile(data['awUID'], data['awContent'],
                           data['awDate'], index, size);
                     },
-                    itemCount: widget.data['answer'].length,
+                    itemCount: widget.data!['answer'].length,
                   ),
                 )
         ],
@@ -182,7 +180,7 @@ class _DetailQnAPageState extends State<DetailQnAPage> {
   }
 
   Widget _answerItemTile(
-      String uid, String content, String date, int index, Size size) {
+      String? uid, String content, String? date, int index, Size size) {
     return Container(
       margin: EdgeInsets.all(3),
       padding: EdgeInsets.all(size.width * 0.03),

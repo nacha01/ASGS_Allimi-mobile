@@ -1,18 +1,14 @@
 import 'dart:convert';
-import 'dart:ui';
-
 import 'package:asgshighschool/data/category.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
 class FinalReservationPage extends StatefulWidget {
-  final User user;
-  final Map data;
+  final User? user;
+  final Map? data;
 
   FinalReservationPage({this.user, this.data});
 
@@ -24,8 +20,8 @@ class _FinalReservationPageState extends State<FinalReservationPage> {
   /// 실제로 상품을 예약자에게 수령하고 난 뒤, '수령 완료' 상태로 변경하기 위한 요청
   Future<bool> _convertFinishedState() async {
     String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_updateOrderFinal.php?oid=${widget.data['oID']}';
-    final response = await http.get(url);
+        'http://nacha01.dothome.co.kr/sin/arlimi_updateOrderFinal.php?oid=${widget.data!['oID']}';
+    final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
       String result = utf8
@@ -137,7 +133,7 @@ class _FinalReservationPageState extends State<FinalReservationPage> {
                                     fontWeight: FontWeight.bold, fontSize: 16),
                               ),
                               Text(
-                                '  ${widget.data['oID']}',
+                                '  ${widget.data!['oID']}',
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
@@ -159,7 +155,7 @@ class _FinalReservationPageState extends State<FinalReservationPage> {
                                     fontWeight: FontWeight.bold, fontSize: 16),
                               ),
                               Text(
-                                '  ${widget.data['oDate']}',
+                                '  ${widget.data!['oDate']}',
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 14,
@@ -181,7 +177,7 @@ class _FinalReservationPageState extends State<FinalReservationPage> {
                                     fontWeight: FontWeight.bold, fontSize: 16),
                               ),
                               Text(
-                                ' ${widget.data['name']}',
+                                ' ${widget.data!['name']}',
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
@@ -202,7 +198,7 @@ class _FinalReservationPageState extends State<FinalReservationPage> {
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 16),
                               ),
-                              Text('${widget.data['uid']}',
+                              Text('${widget.data!['uid']}',
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16,
@@ -228,7 +224,7 @@ class _FinalReservationPageState extends State<FinalReservationPage> {
                                   ),
                                 ],
                               ),
-                              Text('${widget.data['options']}',
+                              Text('${widget.data!['options']}',
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16,
@@ -251,7 +247,7 @@ class _FinalReservationPageState extends State<FinalReservationPage> {
                             width: size.width * 0.9,
                             height: size.height * 0.5,
                             child: CachedNetworkImage(
-                              imageUrl: widget.data['detail'][0]['pInfo']
+                              imageUrl: widget.data!['detail'][0]['pInfo']
                                   ['imgUrl'],
                               fit: BoxFit.cover,
                               progressIndicatorBuilder: (context, string,
@@ -270,7 +266,7 @@ class _FinalReservationPageState extends State<FinalReservationPage> {
                                   width: size.width * 0.6,
                                   alignment: Alignment.center,
                                   child: Text(
-                                    '최종 금액 ${_formatPrice(int.parse(widget.data['totalPrice']))}원',
+                                    '최종 금액 ${_formatPrice(int.parse(widget.data!['totalPrice']))}원',
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 18),
@@ -287,8 +283,7 @@ class _FinalReservationPageState extends State<FinalReservationPage> {
                 ),
               ),
             ),
-            FlatButton(
-              padding: EdgeInsets.all(0),
+            TextButton(
               onPressed: () async {
                 showDialog(
                     context: context,
@@ -300,7 +295,7 @@ class _FinalReservationPageState extends State<FinalReservationPage> {
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                           actions: [
-                            FlatButton(
+                            TextButton(
                                 onPressed: () async {
                                   var res = await _convertFinishedState();
                                   if (res) {
@@ -320,7 +315,7 @@ class _FinalReservationPageState extends State<FinalReservationPage> {
                                       fontWeight: FontWeight.bold,
                                       color: Colors.blueAccent),
                                 )),
-                            FlatButton(
+                            TextButton(
                                 onPressed: () => Navigator.pop(context),
                                 child: Text(
                                   '아니오',
@@ -363,15 +358,15 @@ class _FinalReservationPageState extends State<FinalReservationPage> {
       child: Row(
         children: [
           Text(
-            ' [${Category.categoryIndexToStringMap[int.parse(widget.data['detail'][0]['pInfo']['category'])]}]',
+            ' [${Category.categoryIndexToStringMap[int.parse(widget.data!['detail'][0]['pInfo']['category'])]}]',
             style: TextStyle(color: Colors.grey, fontSize: 16),
           ),
           Text(
-            '  ${widget.data['detail'][0]['pInfo']['pName']}  ',
+            '  ${widget.data!['detail'][0]['pInfo']['pName']}  ',
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
           Text(
-            ' ${widget.data['detail'][0]['quantity']}개',
+            ' ${widget.data!['detail'][0]['quantity']}개',
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           )
         ],

@@ -1,17 +1,15 @@
 import 'dart:convert';
-import 'dart:ui';
 
 import 'package:asgshighschool/data/category.dart';
 import 'package:asgshighschool/data/user.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:http/http.dart' as http;
 
 class DetailReservationStatePage extends StatefulWidget {
-  final User user;
-  final Map data;
+  final User? user;
+  final Map? data;
 
   DetailReservationStatePage({this.user, this.data});
 
@@ -70,8 +68,8 @@ class _DetailReservationStatePageState
   /// @return : 삭제 성공 여부
   Future<bool> _cancelReservation() async {
     String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_cancelReservation.php?oid=${widget.data['oID']}&pm=N';
-    final response = await http.get(url);
+        'http://nacha01.dothome.co.kr/sin/arlimi_cancelReservation.php?oid=${widget.data!['oID']}&pm=N';
+    final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
       String result = utf8
@@ -90,9 +88,9 @@ class _DetailReservationStatePageState
   Future<bool> _updateReservationCurrentCount() async {
     String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_cancelReservation.php';
-    final response = await http.post(url, body: <String, String>{
-      'pid': widget.data['detail'][0]['pInfo']['pid'],
-      'count': widget.data['detail'][0]['quantity'],
+    final response = await http.post(Uri.parse(url), body: <String, String?>{
+      'pid': widget.data!['detail'][0]['pInfo']['pid'],
+      'count': widget.data!['detail'][0]['quantity'],
       'operation': 'sub'
     });
 
@@ -127,7 +125,7 @@ class _DetailReservationStatePageState
         appBar: AppBar(
           backgroundColor: Color(0xFF9EE1E5),
           title: Text(
-            '예약 정보 [${widget.data['oID']}]',
+            '예약 정보 [${widget.data!['oID']}]',
             style: TextStyle(
                 color: Colors.black, fontWeight: FontWeight.bold, fontSize: 14),
           ),
@@ -154,12 +152,12 @@ class _DetailReservationStatePageState
                       SizedBox(
                         height: size.height * 0.015,
                       ),
-                      Text('예약 번호 ${widget.data['oID']}',
+                      Text('예약 번호 ${widget.data!['oID']}',
                           style: TextStyle(fontWeight: FontWeight.bold)),
                       SizedBox(
                         height: size.height * 0.015,
                       ),
-                      Text('예약 일자  ${_formatDate(widget.data['oDate'])}',
+                      Text('예약 일자  ${_formatDate(widget.data!['oDate'])}',
                           style: TextStyle(color: Colors.grey, fontSize: 13)),
                       SizedBox(
                         height: size.height * 0.015,
@@ -169,15 +167,15 @@ class _DetailReservationStatePageState
                           Text('예약 상태  ',
                               style: TextStyle(fontWeight: FontWeight.bold)),
                           Text(
-                            '[${int.parse(widget.data['resvState']) == 1 ? '예약 중' : (int.parse(widget.data['orderState']) == 3 && int.parse(widget.data['resvState']) == 2) ? '수령 완료' : '수령 준비'}]',
+                            '[${int.parse(widget.data!['resvState']) == 1 ? '예약 중' : (int.parse(widget.data!['orderState']) == 3 && int.parse(widget.data!['resvState']) == 2) ? '수령 완료' : '수령 준비'}]',
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                color: int.parse(widget.data['resvState']) == 1
+                                color: int.parse(widget.data!['resvState']) == 1
                                     ? Colors.deepOrangeAccent
-                                    : (int.parse(widget.data['orderState']) ==
+                                    : (int.parse(widget.data!['orderState']) ==
                                                 3 &&
                                             int.parse(
-                                                    widget.data['resvState']) ==
+                                                    widget.data!['resvState']) ==
                                                 2)
                                         ? Colors.lightGreen
                                         : Colors.blueAccent),
@@ -192,10 +190,10 @@ class _DetailReservationStatePageState
                           Text('결제 상태  ',
                               style: TextStyle(fontWeight: FontWeight.bold)),
                           Text(
-                              '[${int.parse(widget.data['orderState']) == 0 ? '미결제' : '결제 완료'}]',
+                              '[${int.parse(widget.data!['orderState']) == 0 ? '미결제' : '결제 완료'}]',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                color: int.parse(widget.data['orderState']) == 0
+                                color: int.parse(widget.data!['orderState']) == 0
                                     ? Colors.redAccent
                                     : Colors.teal,
                               ))
@@ -268,8 +266,8 @@ class _DetailReservationStatePageState
                       SizedBox(
                         height: size.height * 0.015,
                       ),
-                      (int.parse(widget.data['orderState']) == 3 &&
-                              int.parse(widget.data['resvState']) == 2)
+                      (int.parse(widget.data!['orderState']) == 3 &&
+                              int.parse(widget.data!['resvState']) == 2)
                           ? Center(
                               child: Padding(
                                 padding: EdgeInsets.all(size.width * 0.01),
@@ -282,7 +280,7 @@ class _DetailReservationStatePageState
                                 ),
                               ),
                             )
-                          : (int.parse(widget.data['orderState']) == 0)
+                          : (int.parse(widget.data!['orderState']) == 0)
                               ? Center(
                                   child: Padding(
                                     padding: EdgeInsets.all(size.width * 0.01),
@@ -298,7 +296,7 @@ class _DetailReservationStatePageState
                                 )
                               : Center(
                                   child: QrImage(
-                                  data: widget.data['oID'],
+                                  data: widget.data!['oID'],
                                   size: 250,
                                 )),
                       Divider(
@@ -330,18 +328,18 @@ class _DetailReservationStatePageState
                               spacing: 0.05,
                               children: [
                                 Text(
-                                  '${widget.data['detail'][0]['pInfo']['pName']}',
+                                  '${widget.data!['detail'][0]['pInfo']['pName']}',
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 14),
                                 ),
                                 Text(
-                                    ' [${Category.categoryIndexToStringMap[int.parse(widget.data['detail'][0]['pInfo']['category'])]}]',
+                                    ' [${Category.categoryIndexToStringMap[int.parse(widget.data!['detail'][0]['pInfo']['category'])]}]',
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 14)),
                                 Text(
-                                    ' ${widget.data['detail'][0]['quantity']}개',
+                                    ' ${widget.data!['detail'][0]['quantity']}개',
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 14))
@@ -350,14 +348,14 @@ class _DetailReservationStatePageState
                             Row(
                               children: [
                                 Text(
-                                  '정가 ${_formatPrice(int.parse(widget.data['detail'][0]['pInfo']['price']))}원',
+                                  '정가 ${_formatPrice(int.parse(widget.data!['detail'][0]['pInfo']['price']))}원',
                                   style: TextStyle(fontWeight: FontWeight.bold),
                                 ),
                                 SizedBox(
                                   width: size.width * 0.05,
                                 ),
                                 Text(
-                                    '(총 금액 ${_formatPrice(int.parse(widget.data['totalPrice']))}원)',
+                                    '(총 금액 ${_formatPrice(int.parse(widget.data!['totalPrice']))}원)',
                                     style:
                                         TextStyle(fontWeight: FontWeight.bold))
                               ],
@@ -397,7 +395,7 @@ class _DetailReservationStatePageState
                             border:
                                 Border.all(width: 0.5, color: Colors.black)),
                         child: Text(
-                          '${widget.data['options'] == null || widget.data['options'] == '' ? 'X' : widget.data['options']}',
+                          '${widget.data!['options'] == null || widget.data!['options'] == '' ? 'X' : widget.data!['options']}',
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
@@ -449,7 +447,7 @@ class _DetailReservationStatePageState
                                           ],
                                         ),
                                         actions: [
-                                          FlatButton(
+                                          TextButton(
                                               onPressed: () =>
                                                   Navigator.pop(context),
                                               child: Text('확인'))
@@ -503,9 +501,8 @@ class _DetailReservationStatePageState
                   ),
                 ),
               ),
-              int.parse(widget.data['orderState']) == 0
-                  ? FlatButton(
-                      padding: EdgeInsets.all(0),
+              int.parse(widget.data!['orderState']) == 0
+                  ? TextButton(
                       onPressed: () {
                         showDialog(
                             context: context,
@@ -517,7 +514,7 @@ class _DetailReservationStatePageState
                                         TextStyle(fontWeight: FontWeight.bold),
                                   ),
                                   actions: [
-                                    FlatButton(
+                                    TextButton(
                                         onPressed: () async {
                                           var res = await _cancelReservation();
                                           if (res) {
@@ -537,16 +534,14 @@ class _DetailReservationStatePageState
                                           Navigator.pop(context);
                                           _terminateScreen();
                                         },
-                                        padding: EdgeInsets.all(0),
                                         child: Text(
                                           '예',
                                           style: TextStyle(
                                               fontWeight: FontWeight.bold,
                                               color: Colors.blueAccent),
                                         )),
-                                    FlatButton(
+                                    TextButton(
                                         onPressed: () => Navigator.pop(context),
-                                        padding: EdgeInsets.all(0),
                                         child: Text(
                                           '아니오',
                                           style: TextStyle(

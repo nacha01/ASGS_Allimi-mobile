@@ -2,19 +2,21 @@
 
 import 'dart:async';
 import 'dart:developer';
+import 'package:firebase_core/firebase_core.dart';
+
 import 'data/provider/exist_cart.dart';
 import 'data/provider/renew_user.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'main/SplashPage.dart';
 import 'package:http/http.dart' as http;
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 //final GlobalKey<NavigatorState> navigatorKey = GlobalKey();
 
 Future<void> _sendErrorReport(String message) async {
   String url = 'http://nacha01.dothome.co.kr/sin/arlimi_addReport.php';
-  final response = await http.post(url, body: <String, String>{
+  final response = await http.post(Uri.parse(url), body: <String, String>{
     'errorMessage': message,
     'date': DateTime.now().toString(),
     'extra': '',
@@ -24,8 +26,21 @@ Future<void> _sendErrorReport(String message) async {
     print('성공');
   }
 }
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  // If you're going to use other Firebase services in the background, such as Firestore,
+  // make sure you call `initializeApp` before using other Firebase services.
+  await Firebase.initializeApp();
+
+  print("Handling a background message: ${message.messageId}");
+}
 
 void main() async {
+
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+
   runZoned(() {
     runApp(
       MultiProvider(

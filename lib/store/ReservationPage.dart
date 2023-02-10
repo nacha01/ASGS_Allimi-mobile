@@ -1,24 +1,19 @@
 import 'dart:convert';
-import 'dart:ui';
-
 import 'package:asgshighschool/data/product.dart';
 import 'package:asgshighschool/data/user.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
-
 import 'ReservationCompletePage.dart';
 
 class ReservationPage extends StatefulWidget {
   ReservationPage({this.product, this.user, this.optionList, this.selectList});
 
-  final Product product;
-  final User user;
-  final List optionList;
-  final List selectList;
+  final Product? product;
+  final User? user;
+  final List? optionList;
+  final List? selectList;
 
   @override
   _ReservationPageState createState() => _ReservationPageState();
@@ -29,9 +24,9 @@ class _ReservationPageState extends State<ReservationPage> {
   TextEditingController _requestOptionController = TextEditingController();
   int _counter = 1;
   bool _isAgreed = false;
-  String _generatedOID;
+  String? _generatedOID;
   TextEditingController _countController = TextEditingController();
-  Map _initResvCount;
+  Map? _initResvCount;
   int _additionalPrice = 0;
   String _optionString = '';
   bool _isSelected = false;
@@ -42,12 +37,12 @@ class _ReservationPageState extends State<ReservationPage> {
     String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_registerReservation.php';
     _generatedOID = DateTime.now().millisecondsSinceEpoch.toString();
-    final response = await http.post(url, body: <String, String>{
+    final response = await http.post(Uri.parse(url), body: <String, String?>{
       'oid': _generatedOID,
-      'uid': widget.user.uid,
+      'uid': widget.user!.uid,
       'oDate': DateTime.now().toString(),
       'price':
-          ((widget.product.price * (1 - (widget.product.discount / 100.0)) +
+          ((widget.product!.price * (1 - (widget.product!.discount / 100.0)) +
                       _additionalPrice) *
                   _counter)
               .toString(),
@@ -71,8 +66,8 @@ class _ReservationPageState extends State<ReservationPage> {
     if (widget.selectList == null) {
       return;
     }
-    for (int i = 0; i < widget.selectList.length; ++i) {
-      if (widget.selectList[i] != -1) {
+    for (int i = 0; i < widget.selectList!.length; ++i) {
+      if (widget.selectList![i] != -1) {
         _isSelected = true;
         break;
       }
@@ -81,13 +76,13 @@ class _ReservationPageState extends State<ReservationPage> {
       return;
     }
     _optionString += '[ 상품 옵션 : ';
-    for (int i = 0; i < widget.optionList.length; ++i) {
-      if (widget.selectList[i] != -1) {
-        _additionalPrice += int.parse(widget.optionList[i]['detail']
-            [widget.selectList[i]]['optionPrice']);
-        _optionString += widget.optionList[i]['optionCategory'] +
+    for (int i = 0; i < widget.optionList!.length; ++i) {
+      if (widget.selectList![i] != -1) {
+        _additionalPrice += int.parse(widget.optionList![i]['detail']
+            [widget.selectList![i]]['optionPrice']);
+        _optionString += widget.optionList![i]['optionCategory'] +
             ' ' +
-            widget.optionList[i]['detail'][widget.selectList[i]]['optionName'] +
+            widget.optionList![i]['detail'][widget.selectList![i]]['optionName'] +
             ' , ';
       }
     }
@@ -100,8 +95,8 @@ class _ReservationPageState extends State<ReservationPage> {
             int.parse(_countController.text) != -1
         ? -1
         : int.parse(_countController.text);
-    final response = await http.post(url, body: <String, String>{
-      'pid': widget.product.prodID.toString(),
+    final response = await http.post(Uri.parse(url), body: <String, String>{
+      'pid': widget.product!.prodID.toString(),
       'max_count': value.toString()
     });
 
@@ -125,8 +120,8 @@ class _ReservationPageState extends State<ReservationPage> {
 
   Future<bool> _getReservationCurrent() async {
     String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_getResvCount.php?pid=${widget.product.prodID.toString()}';
-    final response = await http.get(url);
+        'http://nacha01.dothome.co.kr/sin/arlimi_getResvCount.php?pid=${widget.product!.prodID.toString()}';
+    final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
       String result = utf8
@@ -136,7 +131,7 @@ class _ReservationPageState extends State<ReservationPage> {
               '')
           .trim();
       _initResvCount = json.decode(result);
-      _countController.text = _initResvCount['max_count'];
+      _countController.text = _initResvCount!['max_count'];
       return true;
     } else {
       return false;
@@ -146,8 +141,8 @@ class _ReservationPageState extends State<ReservationPage> {
   Future<bool> _updateReservationCurrent() async {
     String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_updateResvCurrent.php';
-    final response = await http.post(url, body: <String, String>{
-      'pid': widget.product.prodID.toString(),
+    final response = await http.post(Uri.parse(url), body: <String, String>{
+      'pid': widget.product!.prodID.toString(),
       'count': _counterController.text,
       'operation': 'add'
     });
@@ -169,9 +164,9 @@ class _ReservationPageState extends State<ReservationPage> {
   /// orderDetail 테이블에 oid인 값에 대하여 어떤 상품인지 등록하는 http 요청
   Future<bool> _addOrderDetailRequest() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_addOrderDetail.php';
-    final response = await http.post(url, body: <String, String>{
+    final response = await http.post(Uri.parse(url), body: <String, String?>{
       'oid': _generatedOID,
-      'pid': widget.product.prodID.toString(),
+      'pid': widget.product!.prodID.toString(),
       'quantity': _counter.toString()
     });
     if (response.statusCode == 200) {
@@ -254,7 +249,7 @@ class _ReservationPageState extends State<ReservationPage> {
                           style: TextStyle(fontSize: 17),
                         ),
                         Text(
-                          '${widget.product.prodName}',
+                          '${widget.product!.prodName}',
                           style: TextStyle(color: Colors.green, fontSize: 17),
                         ),
                         Text('] 예약하기', style: TextStyle(fontSize: 17)),
@@ -264,7 +259,7 @@ class _ReservationPageState extends State<ReservationPage> {
                   SizedBox(
                     height: size.height * 0.01,
                   ),
-                  widget.user.isAdmin
+                  widget.user!.isAdmin
                       ? Container(
                           padding: EdgeInsets.symmetric(
                               horizontal: size.width * 0.04),
@@ -272,8 +267,7 @@ class _ReservationPageState extends State<ReservationPage> {
                               border: Border.all(width: 1, color: Colors.black),
                               borderRadius: BorderRadius.circular(8),
                               color: Colors.redAccent),
-                          child: FlatButton(
-                            padding: EdgeInsets.all(0),
+                          child: TextButton(
                             onPressed: () {
                               showDialog(
                                   context: context,
@@ -312,11 +306,11 @@ class _ReservationPageState extends State<ReservationPage> {
                                           ],
                                         ),
                                         actions: [
-                                          FlatButton(
+                                          TextButton(
                                               onPressed: () =>
                                                   Navigator.pop(context),
                                               child: Text('취소')),
-                                          FlatButton(
+                                          TextButton(
                                               onPressed: () async {
                                                 var res =
                                                     await _setReservationCountLimit();
@@ -328,7 +322,7 @@ class _ReservationPageState extends State<ReservationPage> {
                                                   Fluttertoast.showToast(
                                                       msg: '수량 제한에 실패하였습니다!');
                                                   _countController.text =
-                                                      _initResvCount[
+                                                      _initResvCount![
                                                           'max_count'];
                                                 }
                                                 Navigator.pop(context);
@@ -439,7 +433,7 @@ class _ReservationPageState extends State<ReservationPage> {
                       ),
                       title: Center(
                           child: Text(
-                        '${_formatPrice(((widget.product.price * (1 - (widget.product.discount / 100.0)) + _additionalPrice) * _counter).round())}원',
+                        '${_formatPrice(((widget.product!.price * (1 - (widget.product!.discount / 100.0)) + _additionalPrice) * _counter).round())}원',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       )),
                     ),
@@ -661,7 +655,7 @@ class _ReservationPageState extends State<ReservationPage> {
                   ),
                   Row(
                     children: [
-                      FlatButton(
+                      TextButton(
                         onPressed: () {
                           showDialog(
                               context: context,
@@ -699,7 +693,7 @@ class _ReservationPageState extends State<ReservationPage> {
                                       ],
                                     ),
                                     actions: [
-                                      FlatButton(
+                                      TextButton(
                                           onPressed: () =>
                                               Navigator.pop(context),
                                           child: Text('확인'))
@@ -730,7 +724,7 @@ class _ReservationPageState extends State<ReservationPage> {
               ),
             ),
           ),
-          FlatButton(
+          TextButton(
             onPressed: () {
               setState(() {
                 _isAgreed = !_isAgreed;
@@ -746,25 +740,24 @@ class _ReservationPageState extends State<ReservationPage> {
               ],
             ),
           ),
-          FlatButton(
-              padding: EdgeInsets.all(0),
+          TextButton(
               onPressed: () async {
                 if (!_isAgreed) return;
                 await _getReservationCurrent();
-                if (int.parse(_initResvCount['max_count']) != -1 &&
-                    int.parse(_initResvCount['cur_count']) +
+                if (int.parse(_initResvCount!['max_count']) != -1 &&
+                    int.parse(_initResvCount!['cur_count']) +
                             int.parse(_counterController.text) >
-                        int.parse(_initResvCount['max_count'])) {
+                        int.parse(_initResvCount!['max_count'])) {
                   await showDialog(
                       context: context,
                       builder: (context) => AlertDialog(
                             title: Text('예약 불가'),
                             content: Text(
-                              '예약 가능한 최대 개수를 초과하는 예약 수량입니다! (${(int.parse(_initResvCount['cur_count']) + int.parse(_counterController.text)) - int.parse(_initResvCount['max_count'])}개 초과)',
+                              '예약 가능한 최대 개수를 초과하는 예약 수량입니다! (${(int.parse(_initResvCount!['cur_count']) + int.parse(_counterController.text)) - int.parse(_initResvCount!['max_count'])}개 초과)',
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                             actions: [
-                              FlatButton(
+                              TextButton(
                                   onPressed: () => Navigator.pop(context),
                                   child: Text('확인'))
                             ],
@@ -797,9 +790,9 @@ class _ReservationPageState extends State<ReservationPage> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => ReservationCompletePage(
-                              totalPrice: ((widget.product.price *
+                              totalPrice: ((widget.product!.price *
                                               (1 -
-                                                  (widget.product.discount /
+                                                  (widget.product!.discount /
                                                       100.0)) +
                                           _additionalPrice) *
                                       _counter)

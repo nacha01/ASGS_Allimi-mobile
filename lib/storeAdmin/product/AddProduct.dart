@@ -1,15 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:ui';
-
 import 'package:asgshighschool/data/category.dart';
 import 'package:async/async.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
@@ -54,12 +48,12 @@ class _AddingProductPageState extends State<AddingProductPage> {
   var _productExplainController = TextEditingController();
   var _reservationCountController = TextEditingController();
 
-  PickedFile _mainImage;
-  PickedFile _subImage1;
-  PickedFile _subImage2;
+  PickedFile? _mainImage;
+  PickedFile? _subImage1;
+  PickedFile? _subImage2;
 
-  bool _isBest = false;
-  bool _isNew = false;
+  bool? _isBest = false;
+  bool? _isNew = false;
   bool _isReservation = false;
 
   bool _useSub1 = false;
@@ -71,16 +65,16 @@ class _AddingProductPageState extends State<AddingProductPage> {
   int _index = 0;
   int _clickCount = 0;
 
-  String _mainName;
-  String _sub1Name;
-  String _sub2Name;
+  late String _mainName;
+  late String _sub1Name;
+  late String _sub2Name;
   String pid = '';
   String _errorText = '';
-  String _selectedCategory = Category.c1; // 드롭다운 아이템 default
+  String? _selectedCategory = Category.c1; // 드롭다운 아이템 default
   String serverImageUri =
       'http://nacha01.dothome.co.kr/sin/arlimi_productImage/64_';
 
-  AsyncMemoizer<bool> _memoizer;
+  late AsyncMemoizer<bool> _memoizer;
 
   /// 갤러리에서 이미지를 가져오는 작업
   /// [index] = {0 : main, 1 : sub1, 2 : sub3}
@@ -156,7 +150,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
   /// @response : "1"
   Future<bool> _postRequestForInsertProduct() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_insertProduct.php';
-    http.Response response = await http.post(url, headers: <String, String>{
+    http.Response response = await http.post(Uri.parse(url), headers: <String, String>{
       'Content-Type': 'application/x-www-form-urlencoded'
     }, body: <String, String>{
       'prodName': _productNameController.text,
@@ -165,8 +159,8 @@ class _AddingProductPageState extends State<AddingProductPage> {
           Category.categoryStringToIndexMap[_selectedCategory].toString(),
       'price': _productPriceController.text,
       'stockCount': _productCountController.text,
-      'isBest': _isBest ? '1' : '0',
-      'isNew': _isNew ? '1' : '0',
+      'isBest': _isBest! ? '1' : '0',
+      'isNew': _isNew! ? '1' : '0',
       'imgUrl1': serverImageUri + _mainName + '.jpg',
       'imgUrl2': _useSub1 ? serverImageUri + _sub1Name + '.jpg' : 'None',
       'imgUrl3': _useSub2 ? serverImageUri + _sub2Name + '.jpg' : 'None',
@@ -190,7 +184,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
   Future<int> _registerOptionCategory(String optionCategory) async {
     String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_registerOptionCategory.php';
-    final response = await http.post(url, body: <String, String>{
+    final response = await http.post(Uri.parse(url), body: <String, String>{
       'pName': _productNameController.text,
       'pInfo': _productExplainController.text,
       'category':
@@ -216,7 +210,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
       String optionName, String optionPrice) async {
     String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_registerOptionDetail.php';
-    final response = await http.post(url, body: <String, String>{
+    final response = await http.post(Uri.parse(url), body: <String, String>{
       'pid': pid.toString(),
       'optionCategory': optionCategory,
       'optionName': optionName,
@@ -259,22 +253,22 @@ class _AddingProductPageState extends State<AddingProductPage> {
           _formatting(now.minute) +
           _formatting(now.second);
       if (_useSub1) {
-        _sub1Name = Category.categoryImageNamePrefixMap[_selectedCategory] +
+        _sub1Name = Category.categoryImageNamePrefixMap[_selectedCategory]! +
             identified +
             'A';
-        var sub1Result = await _sendImageToServer(_subImage1, _sub1Name);
+        var sub1Result = await _sendImageToServer(_subImage1!, _sub1Name);
         if (!sub1Result) {
           _errorText = '추가 이미지1 저장 실패';
           return false;
         }
       }
       if (_useSub2) {
-        _sub2Name = Category.categoryImageNamePrefixMap[_selectedCategory] +
+        _sub2Name = Category.categoryImageNamePrefixMap[_selectedCategory]! +
             identified +
             'B';
         var sub2Result = await _sendImageToServer(
-            _subImage2,
-            Category.categoryImageNamePrefixMap[_selectedCategory] +
+            _subImage2!,
+            Category.categoryImageNamePrefixMap[_selectedCategory]! +
                 identified +
                 'B');
         if (!sub2Result) {
@@ -283,8 +277,8 @@ class _AddingProductPageState extends State<AddingProductPage> {
         }
       }
       _mainName =
-          Category.categoryImageNamePrefixMap[_selectedCategory] + identified;
-      var mainResult = await _sendImageToServer(_mainImage, _mainName);
+          Category.categoryImageNamePrefixMap[_selectedCategory]! + identified;
+      var mainResult = await _sendImageToServer(_mainImage!, _mainName);
       if (!mainResult) {
         _errorText = '대표 이미지 저장 실패';
         return false;
@@ -318,7 +312,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
             int.parse(_reservationCountController.text) != -1
         ? -1
         : int.parse(_reservationCountController.text);
-    final response = await http.post(url,
+    final response = await http.post(Uri.parse(url),
         body: <String, String>{'pid': pid, 'max_count': value.toString()});
 
     if (response.statusCode == 200) {
@@ -371,7 +365,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
               title: Text('문제 발생'),
               content: Text('입력사항을 재확인 바랍니다.\n[$errorLocation]'),
               actions: [
-                FlatButton(
+                TextButton(
                     onPressed: () => Navigator.pop(context), child: Text('확인'))
               ],
             ));
@@ -551,7 +545,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                   value: value,
                                 );
                               }).toList(),
-                              onChanged: (value) {
+                              onChanged: (dynamic value) {
                                 setState(() {
                                   _selectedCategory = value;
                                 });
@@ -869,7 +863,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
-                                    FlatButton(
+                                    TextButton(
                                         onPressed: () {
                                           _optionDetailList.add([]);
                                           _detailTitleControllerList.add([]);
@@ -978,7 +972,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                           _mainImage == null
                               ? imageLoadLayout(size)
                               : Image.file(
-                                  File(_mainImage.path),
+                                  File(_mainImage!.path),
                                   fit: BoxFit.cover,
                                   width: size.width * 0.9,
                                   height: size.width * 0.9 * 1.4,
@@ -1065,7 +1059,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                 _subImage1 == null
                                     ? imageLoadLayout(size)
                                     : Image.file(
-                                        File(_subImage1.path),
+                                        File(_subImage1!.path),
                                         fit: BoxFit.cover,
                                         width: size.width * 0.9,
                                         height: size.width * 0.9 * 1.4,
@@ -1153,7 +1147,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                 _subImage2 == null
                                     ? imageLoadLayout(size)
                                     : Image.file(
-                                        File(_subImage2.path),
+                                        File(_subImage2!.path),
                                         fit: BoxFit.cover,
                                         width: size.width * 0.9,
                                         height: size.width * 0.9 * 1.4,
@@ -1167,7 +1161,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                       SizedBox(
                         height: 10,
                       ),
-                      FlatButton(
+                      TextButton(
                         onPressed: _useSub1 && _useSub2
                             ? null
                             : () {
@@ -1275,7 +1269,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                     future: _doRegisterProduct(),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
-                        if (snapshot.data) {
+                        if (snapshot.data!) {
                           return Padding(
                             padding: EdgeInsets.all(15),
                             child: Container(
@@ -1309,7 +1303,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                           color: Colors.blueGrey),
                                       width: size.width * 0.45,
                                       height: size.height * 0.06,
-                                      child: FlatButton(
+                                      child: TextButton(
                                           onPressed: () =>
                                               Navigator.pop(context, true),
                                           child: Text(
@@ -1372,7 +1366,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                               border: Border.all(
                                                   color: Colors.black,
                                                   width: 1)),
-                                          child: FlatButton(
+                                          child: TextButton(
                                               onPressed: () =>
                                                   Navigator.pop(context),
                                               child: Text('이전')),
@@ -1388,7 +1382,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                               border: Border.all(
                                                   color: Colors.black,
                                                   width: 1)),
-                                          child: FlatButton(
+                                          child: TextButton(
                                               onPressed: () {
                                                 setState(() {
                                                   _isNotRegister =
@@ -1452,7 +1446,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                             color: Colors.orange,
                                             border: Border.all(
                                                 color: Colors.black, width: 1)),
-                                        child: FlatButton(
+                                        child: TextButton(
                                             onPressed: () =>
                                                 Navigator.pop(context),
                                             child: Text('이전')),
@@ -1467,7 +1461,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                             color: Colors.orange,
                                             border: Border.all(
                                                 color: Colors.black, width: 1)),
-                                        child: FlatButton(
+                                        child: TextButton(
                                             onPressed: () {
                                               setState(() {
                                                 _isNotRegister =
@@ -1508,12 +1502,12 @@ class _AddingProductPageState extends State<AddingProductPage> {
   }
 
   Widget textFieldLayoutWidget(
-      {double height,
-      double width,
-      TextEditingController controller,
-      int maxCharNum,
+      {double? height,
+      double? width,
+      TextEditingController? controller,
+      int? maxCharNum,
       bool validation = false,
-      int maxLine = 1,
+      int? maxLine = 1,
       bool formatType = false}) {
     return Container(
       alignment: Alignment.center,
@@ -1540,7 +1534,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
   }
 
   Widget titleLayoutWidget(
-      {@required String title, @required bool require, @required Size size}) {
+      {required String title, required bool require, required Size size}) {
     return Container(
       margin: EdgeInsets.all(5),
       alignment: Alignment.center,
@@ -1624,7 +1618,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                           index); // index 에 해당하는 옵션 리스트의 동적 인덱스를 갖는 선택지 객체를 지운다.
                       _index--; // 옵션 리스트의 index 를 하나 줄인다. (옵션 리스트의 동적 인덱스 역할)
                     });
-                    StreamSubscription sub;
+                    late StreamSubscription sub;
                     sub = _streamControllerList[index].stream.listen((event) {
                       sub.cancel(); // index 에 해당하는 옵션 리스트의 연결되어 있는 스트림 통로를 끊는다.
                     });
@@ -1662,7 +1656,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               return Column(
-                children: snapshot.data,
+                children: snapshot.data as List<Widget>,
               );
             } else {
               return SizedBox(
@@ -1674,7 +1668,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
         ),
         Row(
           children: [
-            FlatButton(
+            TextButton(
                 onPressed: () {
                   _detailPriceControllerList[index].add(
                       TextEditingController()); // index 에 해당하는 옵션에 가격 컨트롤러 하나를 추가한다.

@@ -1,5 +1,4 @@
-import 'dart:ui';
-
+import 'package:badges/badges.dart';
 import '../data/provider/exist_cart.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:asgshighschool/main/GameListPage.dart';
@@ -8,20 +7,17 @@ import 'package:asgshighschool/store/CartPage.dart';
 import 'package:asgshighschool/store/StoreHomePage.dart';
 import 'package:asgshighschool/store/StoreMyPage.dart';
 import '../storeAdmin/qr/QRScannerPage.dart';
-import 'package:badges/badges.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:badges/badges.dart' as badges;
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
-
 import '../data/product.dart';
 
 class StoreMainPage extends StatefulWidget {
   StoreMainPage({this.user, this.product, this.existCart});
 
-  final User user;
-  final List<Product> product;
-  final bool existCart;
+  final User? user;
+  final List<Product>? product;
+  final bool? existCart;
 
   @override
   StoreMainPageState createState() => StoreMainPageState();
@@ -118,13 +114,13 @@ class StoreMainPageState extends State<StoreMainPage> {
           ),
           BottomNavigationBarItem(
               icon: data.isExistCart
-                  ? Badge(
-                      alignment: Alignment.topRight,
-                      animationType: BadgeAnimationType.scale,
-                      padding: EdgeInsets.all(6),
+                  ? badges.Badge(
+                      // alignment: Alignment.topRight,
+                      // animationType: BadgeAnimationType.scale,
+                      // padding: EdgeInsets.all(6),
                       position: BadgePosition.topEnd(top: -15, end: -17),
                       child: Icon(Icons.shopping_cart),
-                      shape: BadgeShape.circle,
+                      // shape: BadgeShape.circle,
                       badgeContent: Text(
                         '!',
                         style: TextStyle(color: Colors.white),

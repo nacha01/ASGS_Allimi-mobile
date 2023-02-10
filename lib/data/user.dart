@@ -1,16 +1,16 @@
 class User {
-  String _uid;
-  String _token;
-  String _name;
+  String? _uid;
+  String? _token;
+  String? _name;
   int _identity;
-  String _studentId;
-  String _nickName;
-  String _rDate;
+  String? _studentId;
+  String? _nickName;
+  String? _rDate;
   int _buyCount;
   int _point;
   bool _isAdmin = false;
-  String _adminKey;
-  String _email = '';
+  String? _adminKey;
+  String? _email = '';
 
   User(this._uid, this._token, this._name, this._identity, this._studentId,
       this._nickName, this._rDate, this._buyCount, this._point, this._email);
@@ -39,21 +39,21 @@ class User {
     _buyCount = value;
   }
 
-  String get rDate => _rDate;
+  String? get rDate => _rDate;
 
-  set rDate(String value) {
+  set rDate(String? value) {
     _rDate = value;
   }
 
-  String get nickName => _nickName;
+  String? get nickName => _nickName;
 
-  set nickName(String value) {
+  set nickName(String? value) {
     _nickName = value;
   }
 
-  String get studentId => _studentId;
+  String? get studentId => _studentId;
 
-  set studentId(String value) {
+  set studentId(String? value) {
     _studentId = value;
   }
 
@@ -63,21 +63,21 @@ class User {
     _identity = value;
   }
 
-  String get name => _name;
+  String? get name => _name;
 
-  set name(String value) {
+  set name(String? value) {
     _name = value;
   }
 
-  String get token => _token;
+  String? get token => _token;
 
-  set token(String value) {
+  set token(String? value) {
     _token = value;
   }
 
-  String get uid => _uid;
+  String? get uid => _uid;
 
-  set uid(String value) {
+  set uid(String? value) {
     _uid = value;
   }
 
@@ -87,15 +87,15 @@ class User {
     _isAdmin = value;
   }
 
-  String get adminKey => _adminKey;
+  String? get adminKey => _adminKey;
 
-  set adminKey(String value) {
+  set adminKey(String? value) {
     _adminKey = value;
   }
 
-  String get email => _email;
+  String? get email => _email;
 
-  set email(String value) {
+  set email(String? value) {
     _email = value;
   }
 }

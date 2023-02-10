@@ -9,7 +9,7 @@ import 'package:iamport_flutter/model/payment_data.dart';
 class Payment extends StatelessWidget {
   // ignore: non_constant_identifier_names
   List Payment_info;
-  Payment({Key key, @required this.Payment_info}) : super(key: key);
+  Payment({Key? key, required this.Payment_info}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

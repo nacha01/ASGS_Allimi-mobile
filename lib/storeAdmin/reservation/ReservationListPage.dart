@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'dart:ui';
-
 import 'package:asgshighschool/data/category.dart';
 import 'package:asgshighschool/data/status.dart';
 import 'package:asgshighschool/data/user.dart';
@@ -8,14 +6,12 @@ import 'AdminDetailReservation.dart';
 import 'package:asgshighschool/storeAdmin/FullListPage.dart';
 import 'QrReservationPage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
 class ReservationListPage extends StatefulWidget {
-  final User user;
+  final User? user;
 
   ReservationListPage({this.user});
 
@@ -34,7 +30,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
   Future<bool> _getAllReservationData() async {
     String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_getAllReservation.php';
-    final response = await http.get(url);
+    final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
       String result = utf8
@@ -69,7 +65,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
   Future<bool> _forceCancellationForReservation(String oid) async {
     String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_cancelReservation.php?${'oid=' + oid + '&pm=A'}';
-    final response = await http.get(url);
+    final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
       String result = utf8
@@ -86,10 +82,10 @@ class _ReservationListPageState extends State<ReservationListPage> {
   }
 
   Future<bool> _updateReservationCurrentCount(
-      String pid, String quantity) async {
+      String? pid, String? quantity) async {
     String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_updateResvCurrent.php';
-    final response = await http.post(url, body: <String, String>{
+    final response = await http.post(Uri.parse(url), body: <String, String?>{
       'pid': pid,
       'count': quantity,
       'operation': 'sub'
@@ -109,10 +105,10 @@ class _ReservationListPageState extends State<ReservationListPage> {
     }
   }
 
-  Future<User> _getUserInformation(String uid) async {
+  Future<User?> _getUserInformation(String? uid) async {
     String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_getOneUser.php?uid=$uid';
-    final response = await http.get(url);
+    final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
       String result = utf8
@@ -133,7 +129,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
   Future<bool> _updateOrderState(String oid, String state) async {
     String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_updateOrderState.php?${'oid=' + oid + '&state=' + state}';
-    final response = await http.get(url);
+    final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
       return true;
     } else {
@@ -202,7 +198,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
               int.parse(_reservationListForTime[i]['orderState']) < 3 &&
               int.parse(_reservationListForTime[i]['resvState']) == 1)) {
         _productCountMap[
-                int.parse(_reservationListForTime[i]['detail'][0]['oPID'])]
+                int.parse(_reservationListForTime[i]['detail'][0]['oPID'])]!
             ['count']++;
       } else if (int.parse(_reservationListForTime[i]['orderState']) != 0 &&
           (int.parse(_reservationListForTime[i]['orderState']) >= 1 &&
@@ -213,19 +209,19 @@ class _ReservationListPageState extends State<ReservationListPage> {
           'count': 1
         };
         _productCountMap[
-                    int.parse(_reservationListForTime[i]['detail'][0]['oPID'])]
+                    int.parse(_reservationListForTime[i]['detail'][0]['oPID'])]!
                 ['pName'] =
             _reservationListForTime[i]['detail'][0]['pInfo']['pName'];
         _productCountMap[
-                    int.parse(_reservationListForTime[i]['detail'][0]['oPID'])]
+                    int.parse(_reservationListForTime[i]['detail'][0]['oPID'])]!
                 ['category'] =
             _reservationListForTime[i]['detail'][0]['pInfo']['category'];
         _productCountMap[
-                    int.parse(_reservationListForTime[i]['detail'][0]['oPID'])]
+                    int.parse(_reservationListForTime[i]['detail'][0]['oPID'])]!
                 ['price'] =
             _reservationListForTime[i]['detail'][0]['pInfo']['price'];
         _productCountMap[
-                    int.parse(_reservationListForTime[i]['detail'][0]['oPID'])]
+                    int.parse(_reservationListForTime[i]['detail'][0]['oPID'])]!
                 ['imgUrl'] =
             _reservationListForTime[i]['detail'][0]['pInfo']['imgUrl'];
       }
@@ -310,7 +306,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              FlatButton(
+              TextButton(
                 onPressed: () {
                   setState(() {
                     _isOrderTime = true;
@@ -329,7 +325,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
                   ],
                 ),
               ),
-              FlatButton(
+              TextButton(
                 onPressed: () {
                   setState(() {
                     _isOrderTime = false;
@@ -423,7 +419,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
   }
 
   Widget _itemTileForTime(Map data, Size size, int index) {
-    return FlatButton(
+    return TextButton(
       onLongPress: () async {
         await showDialog(
             context: context,
@@ -434,7 +430,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                   ),
                   actions: [
-                    FlatButton(
+                    TextButton(
                         onPressed: () async {
                           var res = await _forceCancellationForReservation(
                               data['oID']);
@@ -455,7 +451,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
                           Navigator.pop(context);
                         },
                         child: Text('예')),
-                    FlatButton(
+                    TextButton(
                         onPressed: () => Navigator.pop(context),
                         child: Text('아니오'))
                   ],
@@ -477,8 +473,8 @@ class _ReservationListPageState extends State<ReservationListPage> {
                       textAlign: TextAlign.center,
                     ),
                     actions: [
-                      FlatButton(
-                          padding: EdgeInsets.all(0),
+                      TextButton(
+                          
                           onPressed: () => Navigator.pop(context),
                           child: Text(
                             '확인',
@@ -506,8 +502,8 @@ class _ReservationListPageState extends State<ReservationListPage> {
                       ],
                     ),
                     actions: [
-                      FlatButton(
-                          padding: EdgeInsets.all(0),
+                      TextButton(
+                          
                           onPressed: () async {
                             await _updateOrderState(data['oID'], '1');
                             setState(() {
@@ -520,8 +516,8 @@ class _ReservationListPageState extends State<ReservationListPage> {
                             '예',
                             style: TextStyle(color: Colors.blue),
                           )),
-                      FlatButton(
-                          padding: EdgeInsets.all(0),
+                      TextButton(
+                          
                           onPressed: () => Navigator.pop(context),
                           child: Text(
                             '아니요',
@@ -548,8 +544,8 @@ class _ReservationListPageState extends State<ReservationListPage> {
                       ],
                     ),
                     actions: [
-                      FlatButton(
-                          padding: EdgeInsets.all(0),
+                      TextButton(
+                          
                           onPressed: () async {
                             await _updateOrderState(data['oID'], '0');
                             setState(() {
@@ -562,8 +558,8 @@ class _ReservationListPageState extends State<ReservationListPage> {
                             '예',
                             style: TextStyle(color: Colors.blue),
                           )),
-                      FlatButton(
-                          padding: EdgeInsets.all(0),
+                      TextButton(
+                          
                           onPressed: () => Navigator.pop(context),
                           child: Text(
                             '아니요',
@@ -574,7 +570,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
           await _getAllReservationData();
         }
       },
-      padding: EdgeInsets.all(0),
+      
       child: Container(
         width: size.width,
         padding: EdgeInsets.all(size.width * 0.02),
@@ -664,15 +660,13 @@ class _ReservationListPageState extends State<ReservationListPage> {
                                       ),
                                     ),
                                     actions: [
-                                      FlatButton(
+                                      TextButton(
                                         onPressed: () => Navigator.pop(context),
                                         child: Text(
                                           '확인',
                                           style: TextStyle(
                                               fontWeight: FontWeight.bold),
                                         ),
-                                        materialTapTargetSize:
-                                            MaterialTapTargetSize.shrinkWrap,
                                       )
                                     ],
                                   ));
@@ -698,10 +692,10 @@ class _ReservationListPageState extends State<ReservationListPage> {
                                           fontWeight: FontWeight.bold),
                                     ),
                                     actions: [
-                                      FlatButton(
+                                      TextButton(
                                         onPressed: () => Navigator.pop(context),
                                         child: Text('확인'),
-                                        padding: EdgeInsets.all(0),
+                                        
                                       )
                                     ],
                                   ));
@@ -742,7 +736,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          '아이디 : ${user.uid}',
+                                          '아이디 : ${user!.uid}',
                                           style: TextStyle(
                                               fontWeight: FontWeight.bold),
                                         ),
@@ -763,13 +757,13 @@ class _ReservationListPageState extends State<ReservationListPage> {
                                       ],
                                     ),
                                     actions: [
-                                      FlatButton(
+                                      TextButton(
                                         onPressed: () => Navigator.pop(context),
                                         child: Text('확인',
                                             style: TextStyle(
                                                 fontWeight: FontWeight.bold,
                                                 color: Colors.blueAccent)),
-                                        padding: EdgeInsets.all(0),
+                                        
                                       )
                                     ],
                                   ));
@@ -824,7 +818,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(3),
           border: Border.all(width: 0.5, color: Colors.black)),
-      child: FlatButton(
+      child: TextButton(
         onPressed: () async {
           var res = await Navigator.push(
               context,
@@ -838,7 +832,6 @@ class _ReservationListPageState extends State<ReservationListPage> {
             await _getAllReservationData();
           }
         },
-        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         child: Column(
           children: [
             Align(
@@ -904,7 +897,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
 
 class ProductCount {
   int pid;
-  int count;
+  int? count;
   String name;
   int category;
   int price;

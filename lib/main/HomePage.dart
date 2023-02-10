@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:ui';
+
+import 'package:flutter_swiper_view/flutter_swiper_view.dart';
 
 import '../data/provider/exist_cart.dart';
 import '../data/provider/renew_user.dart';
@@ -17,26 +18,23 @@ import 'package:provider/provider.dart';
 import '../store/StoreSplashPage.dart';
 import 'SettingPage.dart';
 import '../data/user.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:http/http.dart' as http;
 import '../WebView.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({Key key, this.user, this.token}) : super(key: key);
-  final User user;
-  final String token;
+  HomePage({Key? key, this.user, this.token}) : super(key: key);
+  final User? user;
+  final String? token;
 
   @override
   HomePageState createState() => HomePageState();
 }
 
 class HomePageState extends State<HomePage> with TickerProviderStateMixin {
-  ScrollController _scrollViewController;
-  static TabController tabController;
-  int _numberOfTabs;
+  ScrollController? _scrollViewController;
+  static TabController? tabController;
+  late int _numberOfTabs;
   var mainImage;
   final nameHolder = TextEditingController();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -45,7 +43,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
   bool _isMoved = false;
   bool _controllerWaiting = true;
   String _prefixImgUrl = 'http://nacha01.dothome.co.kr/sin/arlimi_image/';
-  List<String> _bannerImgNameList = [];
+  List<String?> _bannerImgNameList = [];
   var _swiperController = SwiperController();
   TextEditingController _withdrawPasswordController = TextEditingController();
 
@@ -53,7 +51,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _getBannerImage();
-    _checkUserToken(widget.user.uid);
+    _checkUserToken(widget.user!.uid);
     _numberOfTabs = 3;
     tabController = TabController(vsync: this, length: _numberOfTabs);
 
@@ -62,18 +60,18 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
     } else if (Platform.isIOS) {
       _isAndroid = false;
     }
-    tabController.addListener(() {
-      if (tabController.index == 1 && !_isMoved) {
+    tabController!.addListener(() {
+      if (tabController!.index == 1 && !_isMoved) {
         _isMoved = true;
         _goDuruDuru();
       }
     });
   }
 
-  Future<bool> _checkUserToken(String uid) async {
+  Future<bool> _checkUserToken(String? uid) async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_checkUserToken.php';
     final response = await http
-        .post(url, body: <String, String>{'uid': uid, 'token': widget.token});
+        .post(Uri.parse(url), body: <String, String?>{'uid': uid, 'token': widget.token});
     if (response.statusCode == 200) {
       String result = utf8
           .decode(response.bodyBytes)
@@ -92,7 +90,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Future<void> _getBannerImage() async {
     String url =
         'http://nacha01.dothome.co.kr/sin/main_getAllSelectedImage.php';
-    final response = await http.get(url);
+    final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
       String result = utf8
           .decode(response.bodyBytes)
@@ -124,20 +122,20 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
             builder: (context) => StoreSplashPage(
                   user: widget.user,
                 )));
-    tabController.index = 0;
+    tabController!.index = 0;
     _isMoved = false;
   }
 
-  @override
-  void dispose() {
-    _scrollViewController.dispose();
-    tabController.dispose();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   // _scrollViewController.dispose();
+  //   // tabController.dispose();
+  //   super.dispose();
+  // }
 
   Future<bool> _checkExistCart() async {
     String uri = 'http://nacha01.dothome.co.kr/sin/arlimi_checkCart.php';
-    final response = await http.get(uri + '?uid=${widget.user.uid}');
+    final response = await http.get(Uri.parse(uri + '?uid=${widget.user!.uid}'));
 
     if (response.statusCode == 200) {
       String result = utf8
@@ -160,7 +158,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_withdrawAccount.php';
 
     final response = await http
-        .post(url, body: <String, String>{'uid': widget.user.uid, 'pw': pw});
+        .post(Uri.parse(url), body: <String, String?>{'uid': widget.user!.uid, 'pw': pw});
 
     if (response.statusCode == 200) {
       String result = utf8
@@ -201,7 +199,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     itemCount: _bannerImgNameList.length,
                     itemBuilder: (BuildContext context, int index) {
                       return CachedNetworkImage(
-                        imageUrl: _prefixImgUrl + _bannerImgNameList[index],
+                        imageUrl: _prefixImgUrl + _bannerImgNameList[index]!,
                         fit: BoxFit.cover,
                         errorWidget: (context, url, error) {
                           return Text(
@@ -312,7 +310,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
       ),
     );
     return WillPopScope(
-      onWillPop: _onBackPressed,
+      onWillPop: _onBackPressed as Future<bool> Function()?,
       child: Scaffold(
           resizeToAvoidBottomInset: false, // keyboard not slide
           drawer: slidePage(),
@@ -345,7 +343,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     labelStyle: TextStyle(fontSize: 13),
                     onTap: (index) async {
                       if (index == 2) {
-                        tabController.index = 0;
+                        tabController!.index = 0;
                         Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -395,7 +393,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
     return Stack();
   }
 
-  Future<bool> _onBackPressed() {
+  Future<bool?> _onBackPressed() {
     return showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -412,7 +410,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     },
                     child: Text('예',
                         style: TextStyle(fontWeight: FontWeight.bold))),
-                FlatButton(
+                TextButton(
                     onPressed: () => Navigator.pop(context, false),
                     child: Text('아니오',
                         style: TextStyle(fontWeight: FontWeight.bold)))
@@ -462,8 +460,8 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 AssetImage('assets/images/asgs_mark_sqare.png'),
                           )),
                     ),
-                    title: Text(widget.user.nickName),
-                    subtitle: Text(widget.user.uid),
+                    title: Text(widget.user!.nickName!),
+                    subtitle: Text(widget.user!.uid!),
                     trailing: IconButton(
                       icon: Icon(
                         Icons.power_settings_new,
@@ -475,12 +473,12 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             builder: (context) => AlertDialog(
                                   title: Text('정말로 종료하시겠습니까?'),
                                   actions: [
-                                    FlatButton(
+                                    TextButton(
                                         onPressed: () async {
                                           exit(0);
                                         },
                                         child: Text('예')),
-                                    FlatButton(
+                                    TextButton(
                                         onPressed: () =>
                                             Navigator.pop(context, false),
                                         child: Text('아니오'))
@@ -618,7 +616,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                       )));
                         },
                       ),
-                      widget.user.isAdmin
+                      widget.user!.isAdmin
                           ? ListTile(
                               title: Text('배너 사진 관리',
                                   style: TextStyle(
@@ -774,7 +772,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 color: Colors.blueAccent,
               ),
               onPressed: () {
-                _scaffoldKey.currentState.openDrawer();
+                _scaffoldKey.currentState!.openDrawer();
               },
             ),
             Container(
@@ -821,12 +819,12 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   Widget belowBox(
-      {BuildContext context,
-      String title,
-      String organizer,
-      String imageUrl,
-      String siteUrl,
-      @required String upTitle}) {
+      {BuildContext? context,
+      String? title,
+      required String organizer,
+      required String imageUrl,
+      String? siteUrl,
+      required String upTitle}) {
     double percentBar = 166;
     return Container(
       height: 150,
@@ -837,13 +835,13 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
           GestureDetector(
             onTap: () {
               Navigator.push(
-                  context,
+                  context!,
                   MaterialPageRoute(
                       builder: (context) => WebViewPage(
                             title: title,
                             baseUrl: _isAndroid
                                 ? siteUrl
-                                : 'http://nacha01.dothome.co.kr/school/redirect_22.php?${siteUrl.split('?')[1]}',
+                                : 'http://nacha01.dothome.co.kr/school/redirect_22.php?${siteUrl!.split('?')[1]}',
                           )));
             },
             child: Stack(

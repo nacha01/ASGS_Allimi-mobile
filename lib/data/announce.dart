@@ -1,11 +1,11 @@
 class Announce {
   int _announceID;
-  String _writer;
-  String _title;
-  String _content;
-  String _writeDate;
+  String? _writer;
+  String? _title;
+  String? _content;
+  String? _writeDate;
   int _view;
-  String _file;
+  String? _file;
 
   Announce(this._announceID, this._writer, this._title, this._content,
       this._writeDate, this._view, this._file);
@@ -25,11 +25,11 @@ class Announce {
     _announceID = value;
   }
 
-  String get writer => _writer;
+  String? get writer => _writer;
 
-  String get file => _file;
+  String? get file => _file;
 
-  set file(String value) {
+  set file(String? value) {
     _file = value;
   }
 
@@ -39,25 +39,25 @@ class Announce {
     _view = value;
   }
 
-  String get writeDate => _writeDate;
+  String? get writeDate => _writeDate;
 
-  set writeDate(String value) {
+  set writeDate(String? value) {
     _writeDate = value;
   }
 
-  String get content => _content;
+  String? get content => _content;
 
-  set content(String value) {
+  set content(String? value) {
     _content = value;
   }
 
-  String get title => _title;
+  String? get title => _title;
 
-  set title(String value) {
+  set title(String? value) {
     _title = value;
   }
 
-  set writer(String value) {
+  set writer(String? value) {
     _writer = value;
   }
 }

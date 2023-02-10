@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:asgshighschool/data/category.dart';
 import 'package:asgshighschool/data/product.dart';
 import 'package:asgshighschool/data/user.dart';
@@ -7,11 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class ReservationCompletePage extends StatefulWidget {
-  final User user;
-  final int count;
-  final Product product;
-  final String orderID;
-  final int totalPrice;
+  final User? user;
+  final int? count;
+  final Product? product;
+  final String? orderID;
+  final int? totalPrice;
 
   ReservationCompletePage(
       {this.user, this.product, this.count, this.orderID, this.totalPrice});
@@ -112,11 +110,11 @@ class _ReservationCompletePageState extends State<ReservationCompletePage> {
                   spacing: size.width * 0.01,
                   children: [
                     Text(
-                      '[${Category.categoryIndexToStringMap[widget.product.category]}]',
+                      '[${Category.categoryIndexToStringMap[widget.product!.category]}]',
                       style: TextStyle(color: Colors.grey),
                     ),
                     Text(
-                      ' ${widget.product.prodName} ${widget.count}개 ',
+                      ' ${widget.product!.prodName} ${widget.count}개 ',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ],

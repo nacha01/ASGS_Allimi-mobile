@@ -1,18 +1,14 @@
 import 'dart:convert';
-import 'dart:ui';
-
 import 'package:asgshighschool/data/category.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'StatisticsGuidePage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
 class StatisticsPage extends StatefulWidget {
-  final User user;
+  final User? user;
 
   StatisticsPage({this.user});
 
@@ -29,10 +25,10 @@ class _StatisticsPageState extends State<StatisticsPage> {
   String _currentReservationQuery = ''; // 예약에 대한 쿼리 조건문 문자열
   String _salesValue = ''; // "전체"의 경우 저장되는 총 매출 문자열
   String _resultExplainText = ''; // 조회하기 버튼 클릭 시 결과를 설명하는 문자열
-  String _selectedDate = '전체'; // 매출 통계에서 DropdownButton에서 현재 선택한 값
+  String? _selectedDate = '전체'; // 매출 통계에서 DropdownButton에서 현재 선택한 값
   int _currentTap = 1; // 현재 탭
   int _salesOption = 0; // 0 : 구매 + 예약, 1 : 구매, 2 : 예약
-  int _selectRadio = 0; // 정렬 라디오 버튼에서 선택한 값
+  int? _selectRadio = 0; // 정렬 라디오 버튼에서 선택한 값
   bool _isClicked = false; // 조회하기 버튼 클릭 여부
   bool _noPayedOrder = true; // 상품 통계에서 구매에 대한 미결제 & 결제 체크박스 판단
   bool _noPayedResv = true; // 상품 통계에서 예약에 대한 미결제 & 결제 체크박스 판단
@@ -56,7 +52,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
 
   Future<bool> _getAllProductStockCount() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_statisticsStock.php';
-    final response = await http.get(url);
+    final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
       String result = utf8
@@ -86,7 +82,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
         'http://nacha01.dothome.co.kr/sin/arlimi_statisticsProduct.php';
     _currentOrderQuery = _getOrderQueryFromSetting();
     print('order $_currentOrderQuery');
-    final response = await http.post(url, body: <String, String>{
+    final response = await http.post(Uri.parse(url), body: <String, String>{
       'flag': '0',
       'start': _formatStartDateTime(),
       'end': _formatEndDateTime(),
@@ -221,7 +217,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
         'http://nacha01.dothome.co.kr/sin/arlimi_statisticsProduct.php';
     _currentReservationQuery = _getReservationQueryFromSetting();
     print('reservation $_currentReservationQuery');
-    final response = await http.post(url, body: <String, String>{
+    final response = await http.post(Uri.parse(url), body: <String, String>{
       'flag': '1',
       'start': _formatStartDateTime(),
       'end': _formatEndDateTime(),
@@ -252,7 +248,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
   int _totalBuyCount() {
     int sum = 0;
     for (int i = 0; i < _countList.length; ++i) {
-      sum += _countList[i].orderCount;
+      sum += _countList[i].orderCount!;
     }
     return sum;
   }
@@ -261,7 +257,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
   int _totalResvCount() {
     int sum = 0;
     for (int i = 0; i < _countList.length; ++i) {
-      sum += _countList[i].reservationCount;
+      sum += _countList[i].reservationCount!;
     }
     return sum;
   }
@@ -282,8 +278,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
               .categoryIndexToStringMap[int.parse(_orderList[i]['category'])]
         };
       }
-      if (_productCountMap[pid].containsKey('order')) {
-        _productCountMap[pid]['order'] = int.parse(_orderList[i]['quantity']);
+      if (_productCountMap[pid]!.containsKey('order')) {
+        _productCountMap[pid]!['order'] = int.parse(_orderList[i]['quantity']);
       }
     }
     for (int i = 0; i < _reservationList.length; ++i) {
@@ -297,8 +293,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
               int.parse(_reservationList[i]['category'])]
         };
       }
-      if (_productCountMap[pid].containsKey('resv')) {
-        _productCountMap[pid]['resv'] =
+      if (_productCountMap[pid]!.containsKey('resv')) {
+        _productCountMap[pid]!['resv'] =
             int.parse(_reservationList[i]['quantity']);
       }
     }
@@ -314,7 +310,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
   /// flag > 0일 때, 날짜 짜르는 요청이므로 복수 데이터
   Future<bool> _getTotalSales(int flag) async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_statisticsSales.php';
-    final response = await http.post(url, body: <String, String>{
+    final response = await http.post(Uri.parse(url), body: <String, String>{
       'start': _formatStartDateTime(),
       'end': _formatEndDateTime(),
       'option': _salesOption.toString(),
@@ -489,21 +485,21 @@ class _StatisticsPageState extends State<StatisticsPage> {
   }
 
   /// 상품 통계에서 조회한 결과에 대해서 [sortMethod] 값에 따라 리스트르 정렬해주는 작업
-  void _sortProductResultByIndex(int sortMethod) {
+  void _sortProductResultByIndex(int? sortMethod) {
     _isAsc = true;
     switch (sortMethod) {
       case 0:
         _countList.sort((a, b) => a.pid.compareTo(b.pid));
         break;
       case 1:
-        _countList.sort((a, b) => a.name.compareTo(b.name));
+        _countList.sort((a, b) => a.name!.compareTo(b.name!));
         break;
       case 2:
-        _countList.sort((a, b) => a.orderCount.compareTo(b.orderCount));
+        _countList.sort((a, b) => a.orderCount!.compareTo(b.orderCount!));
         break;
       case 3:
         _countList
-            .sort((a, b) => a.reservationCount.compareTo(b.reservationCount));
+            .sort((a, b) => a.reservationCount!.compareTo(b.reservationCount!));
         break;
     }
     setState(() {});
@@ -555,7 +551,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
           children: [
             Row(
               children: [
-                FlatButton(
+                TextButton(
                   onPressed: () {
                     setState(() {
                       _isClicked = false;
@@ -575,9 +571,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
                             _currentTap == 1 ? Colors.green[200] : Colors.white,
                         border: Border.all(width: 0.2, color: Colors.grey)),
                   ),
-                  padding: EdgeInsets.all(0),
                 ),
-                FlatButton(
+                TextButton(
                   onPressed: () {
                     setState(() {
                       _isClicked = false;
@@ -597,10 +592,9 @@ class _StatisticsPageState extends State<StatisticsPage> {
                             _currentTap == 2 ? Colors.green[200] : Colors.white,
                         border: Border.all(width: 0.2, color: Colors.grey)),
                   ),
-                  padding: EdgeInsets.all(0),
                 ),
                 Expanded(
-                    child: FlatButton(
+                    child: TextButton(
                   onPressed: () {
                     setState(() {
                       _isClicked = false;
@@ -621,7 +615,6 @@ class _StatisticsPageState extends State<StatisticsPage> {
                             _currentTap == 3 ? Colors.green[200] : Colors.white,
                         border: Border.all(width: 0.2, color: Colors.grey)),
                   ),
-                  padding: EdgeInsets.all(0),
                 )),
               ],
             ),
@@ -664,16 +657,16 @@ class _StatisticsPageState extends State<StatisticsPage> {
                           child: IconButton(
                             padding: EdgeInsets.all(0),
                             onPressed: () {
-                              Future<DateTime> selectDate = showDatePicker(
+                              Future<DateTime?> selectDate = showDatePicker(
                                 helpText: '날짜를 선택하세요',
                                 context: context,
                                 initialDate: DateTime.now(),
                                 firstDate: DateTime(2021),
                                 lastDate: DateTime(2031),
-                                builder: (BuildContext context, Widget child) {
+                                builder: (BuildContext context, Widget? child) {
                                   return Theme(
                                     data: ThemeData.light(), // 밝은테마
-                                    child: child,
+                                    child: child!,
                                   );
                                 },
                               );
@@ -713,7 +706,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                             child: IconButton(
                               padding: EdgeInsets.all(0),
                               onPressed: () {
-                                Future<TimeOfDay> selectTime = showTimePicker(
+                                Future<TimeOfDay?> selectTime = showTimePicker(
                                     helpText: '시간을 선택하세요',
                                     context: context,
                                     initialTime: TimeOfDay.now());
@@ -779,16 +772,16 @@ class _StatisticsPageState extends State<StatisticsPage> {
                           child: IconButton(
                             padding: EdgeInsets.all(0),
                             onPressed: () {
-                              Future<DateTime> selectDate = showDatePicker(
+                              Future<DateTime?> selectDate = showDatePicker(
                                 helpText: '날짜를 선택하세요',
                                 context: context,
                                 initialDate: DateTime.now(),
                                 firstDate: DateTime(2021),
                                 lastDate: DateTime(2031),
-                                builder: (BuildContext context, Widget child) {
+                                builder: (BuildContext context, Widget? child) {
                                   return Theme(
                                     data: ThemeData.light(), // 밝은테마
-                                    child: child,
+                                    child: child!,
                                   );
                                 },
                               );
@@ -834,7 +827,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                             child: IconButton(
                               padding: EdgeInsets.all(0),
                               onPressed: () {
-                                Future<TimeOfDay> selectTime = showTimePicker(
+                                Future<TimeOfDay?> selectTime = showTimePicker(
                                     helpText: '시간을 선택하세요',
                                     context: context,
                                     initialTime: TimeOfDay.now());
@@ -905,7 +898,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                     value: e,
                   );
                 }).toList(),
-                onChanged: (value) {
+                onChanged: (dynamic value) {
                   setState(() {
                     _selectedDate = value;
                     _isClicked = false;
@@ -925,7 +918,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
               '결과 기준',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
             ),
-            FlatButton(
+            TextButton(
               onPressed: () {
                 setState(() {
                   _salesOption = 0;
@@ -947,7 +940,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                 ],
               ),
             ),
-            FlatButton(
+            TextButton(
               onPressed: () {
                 setState(() {
                   _salesOption = 1;
@@ -967,7 +960,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                 ],
               ),
             ),
-            FlatButton(
+            TextButton(
               onPressed: () {
                 setState(() {
                   _salesOption = 2;
@@ -1490,7 +1483,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                     padding: EdgeInsets.all(0),
                   ),
                   Text(
-                    '[${_sortTitleList[_selectRadio]}]',
+                    '[${_sortTitleList[_selectRadio!]}]',
                     style: TextStyle(
                         fontSize: 11,
                         color: Colors.grey,
@@ -1826,10 +1819,10 @@ class _StatisticsPageState extends State<StatisticsPage> {
 
 class ProductCount {
   int pid;
-  String name;
-  String category;
-  int orderCount;
-  int reservationCount;
+  String? name;
+  String? category;
+  int? orderCount;
+  int? reservationCount;
 
   ProductCount(this.pid, this.name, this.category, this.orderCount,
       this.reservationCount);

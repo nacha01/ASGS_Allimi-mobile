@@ -1,11 +1,8 @@
 import 'dart:convert';
-import 'dart:ui';
-
 import 'package:asgshighschool/data/product.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:asgshighschool/store/PaymentWebViewPage.dart';
 import 'package:asgshighschool/store/StoreMainPage.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -19,13 +16,13 @@ class OrderPage extends StatefulWidget {
       this.selectList,
       this.additionalPrice});
 
-  final Product direct; // 바로 결제 시 그 단일 상품 하나
-  final List<Map> cart; // 장바구니에서 결제시 장바구니 리스트 Map 데이터
-  final int productCount; // 바로 결제시 상품의 개수
-  final User user;
-  final List optionList;
-  final List selectList;
-  final int additionalPrice; // 장바구니에서 결제시 모든 상품들의 상품 옵션의 총 가격
+  final Product? direct; // 바로 결제 시 그 단일 상품 하나
+  final List<Map?>? cart; // 장바구니에서 결제시 장바구니 리스트 Map 데이터
+  final int? productCount; // 바로 결제시 상품의 개수
+  final User? user;
+  final List? optionList;
+  final List? selectList;
+  final int? additionalPrice; // 장바구니에서 결제시 모든 상품들의 상품 옵션의 총 가격
   @override
   _OrderPageState createState() => _OrderPageState();
 }
@@ -33,12 +30,12 @@ class OrderPage extends StatefulWidget {
 enum ReceiveMethod { DELIVERY, DIRECT }
 
 class _OrderPageState extends State<OrderPage> {
-  ReceiveMethod _receiveMethod = ReceiveMethod.DIRECT;
+  ReceiveMethod? _receiveMethod = ReceiveMethod.DIRECT;
   TextEditingController _requestOptionController = TextEditingController();
   TextEditingController _locationController = TextEditingController();
   bool _isCart = true;
-  String _generatedOID;
-  String _checkMessage;
+  String? _generatedOID;
+  String? _checkMessage;
   bool _isSelected = false;
   String _optionString = '';
   int _additionalPrice = 0;
@@ -58,11 +55,11 @@ class _OrderPageState extends State<OrderPage> {
   }
 
   void _preProcessForOptions() {
-    if (widget.selectList == null || widget.selectList.length == 0) {
+    if (widget.selectList == null || widget.selectList!.length == 0) {
       return;
     }
-    for (int i = 0; i < widget.selectList.length; ++i) {
-      if (widget.selectList[i] != -1) {
+    for (int i = 0; i < widget.selectList!.length; ++i) {
+      if (widget.selectList![i] != -1) {
         _isSelected = true;
         break;
       }
@@ -70,20 +67,20 @@ class _OrderPageState extends State<OrderPage> {
     if (!_isSelected) {
       return;
     }
-    for (int j = 0; j < widget.productCount; ++j) {
+    for (int j = 0; j < widget.productCount!; ++j) {
       _optionString += '[ 상품 옵션 : ';
-      for (int i = 0; i < widget.optionList.length; ++i) {
-        if (widget.selectList[i] != -1) {
-          _additionalPrice += int.parse(widget.optionList[i]['detail']
-              [widget.selectList[i]]['optionPrice']);
-          _optionString += widget.optionList[i]['optionCategory'] +
+      for (int i = 0; i < widget.optionList!.length; ++i) {
+        if (widget.selectList![i] != -1) {
+          _additionalPrice += int.parse(widget.optionList![i]['detail']
+              [widget.selectList![i]]['optionPrice']);
+          _optionString += widget.optionList![i]['optionCategory'] +
               '-' +
-              widget.optionList[i]['detail'][widget.selectList[i]]
+              widget.optionList![i]['detail'][widget.selectList![i]]
                   ['optionName'] +
               ', ';
         }
       }
-      if (j == widget.productCount - 1) {
+      if (j == widget.productCount! - 1) {
         _optionString += ']';
       } else {
         _optionString += ']\n';
@@ -94,8 +91,8 @@ class _OrderPageState extends State<OrderPage> {
 
   /// 장바구니의 경우에 각 상품의 옵션 텍스트를 합치는 기능
   void _sumOptionStringForCart() {
-    for (int i = 0; i < widget.cart.length; ++i) {
-      _entireOptionForCart += widget.cart[i]['options'] + '\n';
+    for (int i = 0; i < widget.cart!.length; ++i) {
+      _entireOptionForCart += widget.cart![i]!['options'] + '\n';
     }
     _entireOptionForCart =
         _entireOptionForCart.substring(0, _entireOptionForCart.length - 1);
@@ -104,7 +101,7 @@ class _OrderPageState extends State<OrderPage> {
   /// 최종적으로 결제 하기 전 그 순간에서 재고 상황을 체크하는 작업(단일 상품)
   Future<bool> _checkSynchronousStockCountForProduct() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getOneProduct.php';
-    final response = await http.get(url + '?pid=${widget.direct.prodID}');
+    final response = await http.get(Uri.parse(url + '?pid=${widget.direct!.prodID}'));
 
     if (response.statusCode == 200) {
       String result = utf8
@@ -114,11 +111,11 @@ class _OrderPageState extends State<OrderPage> {
               '')
           .trim();
       Map p = json.decode(result);
-      if (widget.productCount <= int.parse(p['stockCount'])) {
+      if (widget.productCount! <= int.parse(p['stockCount'])) {
         _checkMessage = '성공적으로 처리가 완료되었습니다.';
         return true;
       } else {
-        _checkMessage = '"${widget.direct.prodName}"상품의 선택 수량이 현재 재고보다 많습니다.';
+        _checkMessage = '"${widget.direct!.prodName}"상품의 선택 수량이 현재 재고보다 많습니다.';
         return false;
       }
     } else {
@@ -129,7 +126,7 @@ class _OrderPageState extends State<OrderPage> {
   /// 최종적으로 결제 하기 전 그 순간에서 재고 상황을 체크하는 작업(장바구니)
   Future<bool> _checkSynchronousStockCountForCart() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getAllCart.php';
-    final response = await http.get(url + '?uid=${widget.user.uid}');
+    final response = await http.get(Uri.parse(url + '?uid=${widget.user!.uid}'));
     if (response.statusCode == 200) {
       String result = utf8
           .decode(response.bodyBytes)
@@ -138,15 +135,15 @@ class _OrderPageState extends State<OrderPage> {
               '')
           .trim();
       List cartProduct = json.decode(result);
-      List<Map> checksum = [];
+      List<Map?> checksum = [];
       for (int i = 0; i < cartProduct.length; ++i) {
         checksum.add(json.decode(cartProduct[i]));
       }
       for (int i = 0; i < checksum.length; ++i) {
-        if (int.parse(widget.cart[i]['quantity']) >=
-            (int.parse(checksum[i]['stockCount']))) {
+        if (int.parse(widget.cart![i]!['quantity']) >=
+            (int.parse(checksum[i]!['stockCount']))) {
           _checkMessage =
-              '"${widget.cart[i]['prodName']}"상품의 선택 수량이 현재 재고보다 많습니다.';
+              '"${widget.cart![i]!['prodName']}"상품의 선택 수량이 현재 재고보다 많습니다.';
           return false;
         }
       }
@@ -190,13 +187,13 @@ class _OrderPageState extends State<OrderPage> {
   int _getOriginTotalPrice() {
     int sum = 0;
     if (_isCart) {
-      for (int i = 0; i < widget.cart.length; ++i) {
-        sum += int.parse(widget.cart[i]['price']) *
-            int.parse(widget.cart[i]['quantity']);
+      for (int i = 0; i < widget.cart!.length; ++i) {
+        sum += int.parse(widget.cart![i]!['price']) *
+            int.parse(widget.cart![i]!['quantity']);
       }
-      sum += widget.additionalPrice;
+      sum += widget.additionalPrice!;
     } else {
-      sum = (widget.direct.price) * widget.productCount;
+      sum = (widget.direct!.price) * widget.productCount!;
       sum += _additionalPrice; // 이미 여기서 개수만큼 다 구해놓음 (개수 곱할 필요 없음)
     }
     return sum;
@@ -206,19 +203,19 @@ class _OrderPageState extends State<OrderPage> {
   int _getTotalDiscount() {
     int sum = 0;
     if (_isCart) {
-      for (int i = 0; i < widget.cart.length; ++i) {
-        sum += ((int.parse(widget.cart[i]['price']) *
-                    (widget.cart[i]['discount'].toString() == '0.0'
+      for (int i = 0; i < widget.cart!.length; ++i) {
+        sum += ((int.parse(widget.cart![i]!['price']) *
+                    (widget.cart![i]!['discount'].toString() == '0.0'
                         ? 0
-                        : double.parse(widget.cart[i]['discount']) / 100)) *
-                int.parse(widget.cart[i]['quantity']))
+                        : double.parse(widget.cart![i]!['discount']) / 100)) *
+                int.parse(widget.cart![i]!['quantity']))
             .round();
       }
     } else {
-      sum += (((widget.direct.price * widget.productCount) *
-              (widget.direct.discount.toString() == '0.0'
+      sum += ((widget.direct!.price * widget.productCount!) *
+              (widget.direct!.discount.toString() == '0.0'
                   ? 0
-                  : widget.direct.discount / 100.0)))
+                  : widget.direct!.discount / 100.0))
           .round();
     }
     return sum;
@@ -290,7 +287,7 @@ class _OrderPageState extends State<OrderPage> {
                         title: Text('직접 수령'),
                         value: ReceiveMethod.DIRECT,
                         groupValue: _receiveMethod,
-                        onChanged: (value) {
+                        onChanged: (dynamic value) {
                           setState(() {
                             _receiveMethod = value;
                           });

@@ -1,7 +1,6 @@
 import 'package:asgshighschool/data/announce.dart';
 import 'package:asgshighschool/data/user.dart';
 import '../storeAdmin/post/AddAnnouncePage.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -10,10 +9,10 @@ import 'package:http/http.dart' as http;
 class DetailAnnouncePage extends StatefulWidget {
   DetailAnnouncePage({this.announce, this.user, this.isNew, this.newView});
 
-  final Announce announce;
-  final User user;
-  final bool isNew;
-  final int newView;
+  final Announce? announce;
+  final User? user;
+  final bool? isNew;
+  final int? newView;
 
   @override
   _DetailAnnouncePageState createState() => _DetailAnnouncePageState();
@@ -22,12 +21,12 @@ class DetailAnnouncePage extends StatefulWidget {
 class _DetailAnnouncePageState extends State<DetailAnnouncePage> {
   var _rcvResult;
   bool _isUsable = false;
-  Announce _temp;
+  Announce? _temp;
   TextEditingController _adminKeyController = TextEditingController();
 
   /// 토스트 메세지를 띄워주는 작업
   /// @param : message - 띄워줄 메세지 문자열
-  Future<bool> showToast(String message, bool fail) {
+  Future<bool?> showToast(String message, bool fail) {
     return Fluttertoast.showToast(
         msg: message,
         toastLength: Toast.LENGTH_SHORT,
@@ -40,9 +39,9 @@ class _DetailAnnouncePageState extends State<DetailAnnouncePage> {
   /// @param : HTTP GET : UID 값과 ADMIN KEY 값
   /// @result : 관리자 인증이 되었는지에 대한 bool 값
   Future<bool> _certifyAdminAccess() async {
-    String uri = 'http://nacha01.dothome.co.kr/sin/arlimi_adminCertified.php';
+    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_adminCertified.php';
     final response = await http
-        .get(uri + '?uid=${widget.user.uid}&key=${_adminKeyController.text}');
+        .get(Uri.parse(url + '?uid=${widget.user!.uid}&key=${_adminKeyController.text}'));
 
     if (response.statusCode == 200) {
       if (response.body.contains('CERTIFIED')) {
@@ -63,8 +62,8 @@ class _DetailAnnouncePageState extends State<DetailAnnouncePage> {
   /// parameter의 ID를 가진 공지사항 데이터에 대해 삭제 요청하는 작업
   /// @response : 성공적으로 삭제 시 'DELETE'
   Future<bool> _deleteAnnounceRequest(int announceID) async {
-    String uri = 'http://nacha01.dothome.co.kr/sin/arlimi_deleteAnnounce.php';
-    final response = await http.get(uri + '?anID=$announceID');
+    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_deleteAnnounce.php';
+    final response = await http.get(Uri.parse(url + '?anID=$announceID'));
     if (response.statusCode == 200) {
       if (response.body.contains('DELETED')) {
         return true;
@@ -105,7 +104,7 @@ class _DetailAnnouncePageState extends State<DetailAnnouncePage> {
             onPressed: () => Navigator.pop(context, true),
           ),
           actions: [
-            widget.user.isAdmin
+            widget.user!.isAdmin
                 ? IconButton(
                     icon: Icon(
                       Icons.update,
@@ -128,13 +127,13 @@ class _DetailAnnouncePageState extends State<DetailAnnouncePage> {
                         }
                         if (_rcvResult is Announce) {
                           _isUsable = true;
-                          _temp = _rcvResult as Announce;
+                          _temp = _rcvResult as Announce?;
                         }
                       });
                     },
                   )
                 : SizedBox(),
-            widget.user.isAdmin
+            widget.user!.isAdmin
                 ? IconButton(
                     icon: Icon(Icons.delete, color: Colors.black),
                     onPressed: () {
@@ -158,7 +157,7 @@ class _DetailAnnouncePageState extends State<DetailAnnouncePage> {
                                       textAlign: TextAlign.center,
                                     ),
                                     Text(
-                                      '[${_isUsable ? (_rcvResult as Announce).title : _temp.title}]',
+                                      '[${_isUsable ? (_rcvResult as Announce).title : _temp!.title}]',
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 17),
@@ -166,10 +165,10 @@ class _DetailAnnouncePageState extends State<DetailAnnouncePage> {
                                   ],
                                 ),
                                 actions: [
-                                  FlatButton(
+                                  TextButton(
                                       onPressed: () => Navigator.pop(context),
                                       child: Text('아니요')),
-                                  FlatButton(
+                                  TextButton(
                                       onPressed: () {
                                         Navigator.pop(context);
                                         showDialog(
@@ -181,7 +180,7 @@ class _DetailAnnouncePageState extends State<DetailAnnouncePage> {
                                                         border: Border.all(
                                                             width: 1,
                                                             color: Colors
-                                                                .orange[200]),
+                                                                .orange[200]!),
                                                         color:
                                                             Colors.blue[100]),
                                                     child: TextField(
@@ -200,11 +199,11 @@ class _DetailAnnouncePageState extends State<DetailAnnouncePage> {
                                                     ),
                                                   ),
                                                   actions: [
-                                                    FlatButton(
+                                                    TextButton(
                                                         onPressed: () =>
                                                             Navigator.pop(ctx),
                                                         child: Text('취소')),
-                                                    FlatButton(
+                                                    TextButton(
                                                         onPressed: () async {
                                                           var result =
                                                               await _certifyAdminAccess(); // 어드민 키 인증
@@ -213,7 +212,7 @@ class _DetailAnnouncePageState extends State<DetailAnnouncePage> {
                                                                 ? (_rcvResult
                                                                         as Announce)
                                                                     .announceID
-                                                                : _temp
+                                                                : _temp!
                                                                     .announceID); // DB에서 상품 삭제
                                                             if (res) {
                                                               Navigator.pop(
@@ -265,7 +264,7 @@ class _DetailAnnouncePageState extends State<DetailAnnouncePage> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        '${_isUsable ? (_rcvResult as Announce).title : _temp.title}',
+                        '${_isUsable ? (_rcvResult as Announce).title : _temp!.title}',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 22,
@@ -274,7 +273,7 @@ class _DetailAnnouncePageState extends State<DetailAnnouncePage> {
                       SizedBox(
                         width: size.width * 0.05,
                       ),
-                      widget.isNew
+                      widget.isNew!
                           ? Container(
                               padding: EdgeInsets.all(4),
                               child: Text(
@@ -294,7 +293,7 @@ class _DetailAnnouncePageState extends State<DetailAnnouncePage> {
                 Container(
                   padding: EdgeInsets.symmetric(vertical: 10),
                   child: Text(
-                      '${_isUsable ? (_rcvResult as Announce).writeDate : _temp.writeDate}',
+                      '${_isUsable ? (_rcvResult as Announce).writeDate : _temp!.writeDate}',
                       style: TextStyle(fontSize: 13, color: Colors.grey)),
                 ),
                 Container(
@@ -304,7 +303,7 @@ class _DetailAnnouncePageState extends State<DetailAnnouncePage> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                          '작성자  ${_isUsable ? (_rcvResult as Announce).writer : _temp.writer}',
+                          '작성자  ${_isUsable ? (_rcvResult as Announce).writer : _temp!.writer}',
                           style: TextStyle(fontSize: 14)),
                       SizedBox(
                         width: size.width * 0.12,
@@ -322,7 +321,7 @@ class _DetailAnnouncePageState extends State<DetailAnnouncePage> {
                 Container(
                   padding: EdgeInsets.all(6),
                   child: Text(
-                    '${_isUsable ? (_rcvResult as Announce).content : _temp.content}',
+                    '${_isUsable ? (_rcvResult as Announce).content : _temp!.content}',
                     style: TextStyle(fontSize: 17),
                   ),
                 ),

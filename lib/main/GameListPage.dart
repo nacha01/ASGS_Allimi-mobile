@@ -1,13 +1,10 @@
-import 'dart:ui';
-
 import 'package:asgshighschool/data/user.dart';
 import 'package:asgshighschool/main/RecordListPage.dart';
-import 'package:asgshighschool/memoryGame/MemoryGamePAge.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:asgshighschool/memoryGame/MemoryGamePage.dart';
 import 'package:flutter/material.dart';
 
 class GameListPage extends StatefulWidget {
-  final User user;
+  final User? user;
 
   GameListPage({this.user});
 
@@ -69,11 +66,11 @@ class _GameListPageState extends State<GameListPage> {
   }
 
   Widget _boardLayout(
-      {String title,
-      String info,
-      void Function() press,
-      Size size,
-      void Function() record}) {
+      {String? title,
+      String? info,
+      void Function()? press,
+      required Size size,
+      void Function()? record}) {
     return Container(
       padding: EdgeInsets.all(size.width * 0.02),
       decoration: BoxDecoration(

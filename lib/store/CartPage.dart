@@ -1,12 +1,10 @@
 import 'dart:convert';
-import 'dart:ui';
 
 import 'package:asgshighschool/data/category.dart';
 import '../data/provider/exist_cart.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:asgshighschool/store/OrderPage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
@@ -26,7 +24,7 @@ import 'package:provider/provider.dart';
 class CartPage extends StatefulWidget {
   CartPage({this.user, this.isFromDetail = false});
 
-  final User user;
+  final User? user;
   final bool isFromDetail;
 
   @override
@@ -34,7 +32,7 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
-  List<Map> _cartProductList = []; // 원본 장바구니 데이터
+  List<Map?> _cartProductList = []; // 원본 장바구니 데이터
   List<int> _countList = [];
   bool _isLoading = true;
   int _allAdditionalPrice = 0;
@@ -43,8 +41,8 @@ class _CartPageState extends State<CartPage> {
   /// 특정 유저에 대해 그 유저가 갖고 있는 장바구니 상품들을 가져오는 HTTP 요청
   /// @return : 요청 성공 여부
   Future<bool> _getCartForUserRequest() async {
-    String uri = 'http://nacha01.dothome.co.kr/sin/arlimi_getAllCart.php';
-    final response = await http.get(uri + '?uid=${widget.user.uid}');
+    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getAllCart.php';
+    final response = await http.get(Uri.parse(url + '?uid=${widget.user!.uid}'));
     if (response.statusCode == 200) {
       String result = utf8
           .decode(response.bodyBytes)
@@ -73,8 +71,8 @@ class _CartPageState extends State<CartPage> {
   /// @response message : DELETED : 삭제 완료, NOT : 삭제 실패
   /// @return : 요청 성공 여부
   Future<bool> _deleteCartForUserRequest(int cid) async {
-    String uri = 'http://nacha01.dothome.co.kr/sin/arlimi_deleteCart.php';
-    final response = await http.get(uri + '?cid=$cid');
+    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_deleteCart.php';
+    final response = await http.get(Uri.parse(url + '?cid=$cid'));
 
     if (response.statusCode == 200) {
       String result = utf8
@@ -98,9 +96,9 @@ class _CartPageState extends State<CartPage> {
   /// @param : 장바구니 고유 ID[cid], 현재 장바구니 수량[currentQuantity]
   /// @return : 요청 성공 여부
   Future<bool> _updateCartQuantity(int cid, int currentQuantity) async {
-    String uri = 'http://nacha01.dothome.co.kr/sin/arlimi_updateCartCount.php';
+    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_updateCartCount.php';
     final response =
-        await http.get(uri + '?cid=$cid&quantity=$currentQuantity');
+        await http.get(Uri.parse(url + '?cid=$cid&quantity=$currentQuantity'));
     if (response.statusCode == 200) {
       print(response.body);
       return true;
@@ -154,8 +152,8 @@ class _CartPageState extends State<CartPage> {
   int _totalPrice() {
     int sum = 0;
     for (int i = 0; i < _cartProductList.length; ++i) {
-      sum += _calculateTotalEachPrice(int.parse(_cartProductList[i]['price']),
-          double.parse(_cartProductList[i]['discount']), _countList[i]);
+      sum += _calculateTotalEachPrice(int.parse(_cartProductList[i]!['price']),
+          double.parse(_cartProductList[i]!['discount']), _countList[i]);
     }
     return sum;
   }
@@ -164,9 +162,9 @@ class _CartPageState extends State<CartPage> {
   /// DB에 업데이트하는 작업
   void _renewCartCount() async {
     for (int i = 0; i < _cartProductList.length; ++i) {
-      if (int.parse(_cartProductList[i]['quantity']) != _countList[i]) {
+      if (int.parse(_cartProductList[i]!['quantity']) != _countList[i]) {
         await _updateCartQuantity(
-            int.parse(_cartProductList[i]['cID']), _countList[i]);
+            int.parse(_cartProductList[i]!['cID']), _countList[i]);
       }
     }
   }
@@ -175,14 +173,14 @@ class _CartPageState extends State<CartPage> {
   /// mutable한 객체에 복사해서 저장하는 작업
   void _initCartCount() {
     for (int i = 0; i < _cartProductList.length; ++i) {
-      _countList.add(int.parse(_cartProductList[i]['quantity']));
+      _countList.add(int.parse(_cartProductList[i]!['quantity']));
     }
   }
 
   void _sumAllOptionPrice() {
     _allAdditionalPrice = 0;
     for (int i = 0; i < _cartProductList.length; ++i) {
-      _allAdditionalPrice += int.parse(_cartProductList[i]['optionPrice']);
+      _allAdditionalPrice += int.parse(_cartProductList[i]!['optionPrice']);
     }
     setState(() {});
   }
@@ -272,14 +270,14 @@ class _CartPageState extends State<CartPage> {
                   child: ListView.builder(
                       itemBuilder: (context, index) {
                         return _cartItemTile(
-                            _cartProductList[index], size, data, index);
+                            _cartProductList[index]!, size, data, index);
                       },
                       itemCount: _cartProductList.length),
                 ),
                 _corpInfoLayout(size),
                 TextButton(
                   onPressed: () async {
-                    await _renewCartCount();
+                    _renewCartCount();
                     await _getCartForUserRequest();
                     final res = await Navigator.push(
                         context,
@@ -403,7 +401,7 @@ class _CartPageState extends State<CartPage> {
                       decoration: BoxDecoration(
                           color: Colors.black38,
                           border:
-                              Border.all(width: 1, color: Colors.grey[400])),
+                              Border.all(width: 1, color: Colors.grey[400]!)),
                       child: IconButton(
                         onPressed: () async {
                           if (cartItem['options'] == null ||
@@ -425,7 +423,7 @@ class _CartPageState extends State<CartPage> {
                                         ),
                                       ),
                                       actions: [
-                                        FlatButton(
+                                        TextButton(
                                             onPressed: () =>
                                                 Navigator.pop(context),
                                             child: Text('확인'))
@@ -443,7 +441,7 @@ class _CartPageState extends State<CartPage> {
                       decoration: BoxDecoration(
                           color: Colors.black38,
                           border:
-                              Border.all(width: 1, color: Colors.grey[400])),
+                              Border.all(width: 1, color: Colors.grey[400]!)),
                       child: Text(
                         '${_countList[index]}',
                         style: TextStyle(fontWeight: FontWeight.bold),
@@ -455,12 +453,12 @@ class _CartPageState extends State<CartPage> {
                       decoration: BoxDecoration(
                           color: Colors.black38,
                           border:
-                              Border.all(width: 1, color: Colors.grey[400])),
+                              Border.all(width: 1, color: Colors.grey[400]!)),
                       child: IconButton(
                         onPressed: () async {
                           if (_countList[index] <
                               int.parse(
-                                  _cartProductList[index]['stockCount'])) {
+                                  _cartProductList[index]!['stockCount'])) {
                             setState(() {
                               _countList[index]++;
                             });

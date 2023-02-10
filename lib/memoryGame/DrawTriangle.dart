@@ -1,8 +1,7 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 
 class TriangleShape extends CustomPainter {
-  Paint _painter;
+  late Paint _painter;
 
   @override
   void paint(Canvas canvas, Size size) {

@@ -1,8 +1,5 @@
 import 'dart:convert';
-import 'dart:ui';
-
 import 'package:asgshighschool/data/user.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
@@ -14,8 +11,8 @@ import 'package:http/http.dart' as http;
 class AnswerQnAPage extends StatefulWidget {
   AnswerQnAPage({this.data, this.user});
 
-  final Map data;
-  final User user;
+  final Map? data;
+  final User? user;
 
   @override
   _AnswerQnAPageState createState() => _AnswerQnAPageState();
@@ -29,9 +26,9 @@ class _AnswerQnAPageState extends State<AnswerQnAPage> {
   Future<bool> _registerAnswerToDB() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_addAnswer.php';
 
-    final response = await http.post(url, body: <String, String>{
-      'qid': widget.data['qID'],
-      'uid': widget.user.uid,
+    final response = await http.post(Uri.parse(url), body: <String, String?>{
+      'qid': widget.data!['qID'],
+      'uid': widget.user!.uid,
       'date': DateTime.now().toString(),
       'content': _answerController.text
     });
@@ -50,7 +47,7 @@ class _AnswerQnAPageState extends State<AnswerQnAPage> {
 
   @override
   void initState() {
-    _isAnswer = int.parse(widget.data['isAnswer']) == 1 ? true : false;
+    _isAnswer = int.parse(widget.data!['isAnswer']) == 1 ? true : false;
     super.initState();
   }
 
@@ -102,7 +99,7 @@ class _AnswerQnAPageState extends State<AnswerQnAPage> {
                     ),
                     Expanded(
                         child: Container(
-                      child: Text('${widget.data['qTitle']}'),
+                      child: Text('${widget.data!['qTitle']}'),
                       alignment: Alignment.center,
                     ))
                   ],
@@ -125,7 +122,7 @@ class _AnswerQnAPageState extends State<AnswerQnAPage> {
                     ),
                     Expanded(
                         child: Container(
-                      child: Text('${widget.data['qDate']}'),
+                      child: Text('${widget.data!['qDate']}'),
                       alignment: Alignment.center,
                     ))
                   ],
@@ -148,7 +145,7 @@ class _AnswerQnAPageState extends State<AnswerQnAPage> {
                     ),
                     Expanded(
                         child: Container(
-                      child: Text('${widget.data['qUID']}'),
+                      child: Text('${widget.data!['qUID']}'),
                       alignment: Alignment.center,
                     ))
                   ],
@@ -177,7 +174,7 @@ class _AnswerQnAPageState extends State<AnswerQnAPage> {
                 decoration: BoxDecoration(
                     border: Border.all(width: 1.5, color: Colors.black),
                     borderRadius: BorderRadius.circular(10)),
-                child: Text('${widget.data['qContent']}'),
+                child: Text('${widget.data!['qContent']}'),
               ),
               SizedBox(
                 height: size.height * 0.01,
@@ -194,13 +191,13 @@ class _AnswerQnAPageState extends State<AnswerQnAPage> {
                       child: ListView.builder(
                         itemBuilder: (context, index) {
                           return _answerItemTile(
-                              widget.data['answer'][index]['awUID'],
-                              widget.data['answer'][index]['awContent'],
-                              widget.data['answer'][index]['awDate'],
+                              widget.data!['answer'][index]['awUID'],
+                              widget.data!['answer'][index]['awContent'],
+                              widget.data!['answer'][index]['awDate'],
                               index,
                               size);
                         },
-                        itemCount: widget.data['answer'].length,
+                        itemCount: widget.data!['answer'].length,
                       ),
                     )
                   : SizedBox(),
@@ -247,7 +244,7 @@ class _AnswerQnAPageState extends State<AnswerQnAPage> {
                       alignment: Alignment.center,
                       width: size.width * 0.17,
                       height: size.height * 0.05,
-                      child: FlatButton(
+                      child: TextButton(
                         onPressed: () async {
                           var res = await _registerAnswerToDB();
                           if (res) {
@@ -283,7 +280,7 @@ class _AnswerQnAPageState extends State<AnswerQnAPage> {
   }
 
   Widget _answerItemTile(
-      String uid, String content, String date, int index, Size size) {
+      String? uid, String content, String? date, int index, Size size) {
     return Container(
       margin: EdgeInsets.all(3),
       padding: EdgeInsets.all(size.width * 0.03),

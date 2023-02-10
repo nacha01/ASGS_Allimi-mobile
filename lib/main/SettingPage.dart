@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -8,8 +7,8 @@ class SettingPage extends StatefulWidget {
 }
 
 class _SettingPageState extends State<SettingPage> {
-  bool _isChecked = false;
-  SharedPreferences _pref;
+  bool? _isChecked = false;
+  SharedPreferences? _pref;
 
   @override
   void initState() {
@@ -22,7 +21,7 @@ class _SettingPageState extends State<SettingPage> {
     if (_pref != null) {
       setState(() {
         _isChecked =
-            _pref.getBool('checked') == null ? false : _pref.getBool('checked');
+            _pref!.getBool('checked') == null ? false : _pref!.getBool('checked');
       });
     } else {
       _pref = await SharedPreferences.getInstance();
@@ -78,7 +77,7 @@ class _SettingPageState extends State<SettingPage> {
                 onChanged: (value) {
                   setState(() {
                     _isChecked = value;
-                    _pref.setBool('checked', _isChecked);
+                    _pref!.setBool('checked', _isChecked!);
                   });
                 },
               ),

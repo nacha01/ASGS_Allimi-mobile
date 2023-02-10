@@ -1,15 +1,12 @@
 import 'dart:convert';
-import 'dart:ui';
-
 import 'package:asgshighschool/data/status.dart';
 import 'package:asgshighschool/data/user.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
 class PushNotificationPage extends StatefulWidget {
-  final User user;
+  final User? user;
 
   PushNotificationPage({this.user});
 
@@ -28,8 +25,8 @@ class _PushNotificationPageState extends State<PushNotificationPage> {
   int _failCount = 0;
   int _sentTotalCount = 0;
   int _currentTap = 0;
-  int _selectedGrade = 1;
-  int _selectedClass = 1;
+  int? _selectedGrade = 1;
+  int? _selectedClass = 1;
   TextEditingController _titleController = TextEditingController();
   TextEditingController _contentController = TextEditingController();
   bool _isSent = false;
@@ -39,7 +36,7 @@ class _PushNotificationPageState extends State<PushNotificationPage> {
 
   Future<bool> _getAllUserInformation() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getAllUsers.php';
-    final response = await http.get(url);
+    final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
       String result = utf8
           .decode(response.bodyBytes)
@@ -68,9 +65,9 @@ class _PushNotificationPageState extends State<PushNotificationPage> {
   }
 
   Future<bool> _sendPushNotification(
-      {@required bool isEntire, String token}) async {
+      {required bool isEntire, String? token}) async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_pushNotification.php';
-    final response = await http.post(url, body: <String, String>{
+    final response = await http.post(Uri.parse(url), body: <String, String?>{
       'title': _titleController.text,
       'message': _contentController.text,
       'target': isEntire ? 'ENTIRE' : 'EACH',
@@ -317,7 +314,7 @@ class _PushNotificationPageState extends State<PushNotificationPage> {
                 ),
                 Align(
                   alignment: Alignment.center,
-                  child: FlatButton(
+                  child: TextButton(
                       onPressed: () async {
                         if (_titleController.text.isEmpty) {
                           Fluttertoast.showToast(msg: '제목을 입력하세요!');
@@ -334,7 +331,7 @@ class _PushNotificationPageState extends State<PushNotificationPage> {
                                   content: Text(
                                       '정말로 전송하시겠습니까? [${_targetList[_currentTap]}]'),
                                   actions: [
-                                    FlatButton(
+                                    TextButton(
                                         onPressed: () async {
                                           _successCount = 0;
                                           _failCount = 0;
@@ -398,7 +395,7 @@ class _PushNotificationPageState extends State<PushNotificationPage> {
                                           });
                                         },
                                         child: Text('예')),
-                                    FlatButton(
+                                    TextButton(
                                         onPressed: () => Navigator.pop(context),
                                         child: Text('아니오'))
                                   ],
@@ -506,8 +503,7 @@ class _PushNotificationPageState extends State<PushNotificationPage> {
               '학년',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
             ),
-            FlatButton(
-                padding: EdgeInsets.all(0),
+            TextButton(
                 onPressed: () {
                   setState(() {
                     _selectedGrade = 1;
@@ -526,8 +522,7 @@ class _PushNotificationPageState extends State<PushNotificationPage> {
                       borderRadius: BorderRadius.circular(6),
                       color: _selectedGrade == 1 ? Colors.blue : Colors.white),
                 )),
-            FlatButton(
-                padding: EdgeInsets.all(0),
+            TextButton(
                 onPressed: () {
                   setState(() {
                     _selectedGrade = 2;
@@ -545,8 +540,7 @@ class _PushNotificationPageState extends State<PushNotificationPage> {
                       borderRadius: BorderRadius.circular(6),
                       color: _selectedGrade == 2 ? Colors.blue : Colors.white),
                 )),
-            FlatButton(
-                padding: EdgeInsets.all(0),
+            TextButton(
                 onPressed: () {
                   setState(() {
                     _selectedGrade = 3;
@@ -608,7 +602,7 @@ class _PushNotificationPageState extends State<PushNotificationPage> {
                           value: e,
                         ))
                     .toList(),
-                onChanged: (value) {
+                onChanged: (dynamic value) {
                   setState(() {
                     _selectedGrade = value;
                   });
@@ -631,7 +625,7 @@ class _PushNotificationPageState extends State<PushNotificationPage> {
                           value: e,
                         ))
                     .toList(),
-                onChanged: (value) {
+                onChanged: (dynamic value) {
                   setState(() {
                     _selectedClass = value;
                   });
@@ -676,8 +670,7 @@ class _PushNotificationPageState extends State<PushNotificationPage> {
               : Column(
                   children: _eachLayoutList,
                 ),
-          FlatButton(
-              padding: EdgeInsets.all(0),
+          TextButton(
               onPressed: () async {
                 await showDialog(
                     context: context,
@@ -701,10 +694,9 @@ class _PushNotificationPageState extends State<PushNotificationPage> {
                       ),
                     ),
                     actions: [
-                      FlatButton(
+                      TextButton(
                         onPressed: () => Navigator.pop(context),
                         child: Text('닫기'),
-                        padding: EdgeInsets.all(0),
                       )
                     ],
                   ),

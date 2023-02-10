@@ -1,11 +1,8 @@
 import 'dart:convert';
-import 'dart:ui';
-
 import '../data/provider/renew_user.dart';
 import 'package:asgshighschool/data/status.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:asgshighschool/store/UpdatePasswordPage.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -26,7 +23,7 @@ import 'package:provider/provider.dart';
 class UpdateUserPage extends StatefulWidget {
   UpdateUserPage({this.user});
 
-  final User user;
+  final User? user;
 
   @override
   _UpdateUserPageState createState() => _UpdateUserPageState();
@@ -41,23 +38,23 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
   TextEditingController _emailController = TextEditingController();
 
   var _selectedValue;
-  User _tmpUser;
+  User? _tmpUser;
 
   /// 사용자의 정보를 화면에 보여지게 하는 초기화 작업
   void _initInfo() {
-    _uidController.text = widget.user.uid;
-    _nameController.text = widget.user.name;
-    _studentIDController.text = widget.user.studentId;
-    _nicknameController.text = widget.user.nickName;
-    _emailController.text = widget.user.email;
-    _selectedValue = Status.statusList[widget.user.identity - 1];
+    _uidController.text = widget.user!.uid!;
+    _nameController.text = widget.user!.name!;
+    _studentIDController.text = widget.user!.studentId!;
+    _nicknameController.text = widget.user!.nickName!;
+    _emailController.text = widget.user!.email!;
+    _selectedValue = Status.statusList[widget.user!.identity - 1];
   }
 
   /// 사용자 정보의 변경에 대해 업데이트 요청을 하는 작업
   Future<bool> _updateUserInfoRequest() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_updateUser.php';
-    final response = await http.post(url, body: <String, String>{
-      'uid': widget.user.uid,
+    final response = await http.post(Uri.parse(url), body: <String, String?>{
+      'uid': widget.user!.uid,
       'name': _nameController.text,
       'identity': Status.statusMap[_selectedValue].toString(),
       'studentID': _studentIDController.text,
@@ -81,9 +78,9 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
 
   /// 본인 인증을 하기 위한 요청
   Future<bool> _certifyMyselfRequest() async {
-    String uri = 'http://nacha01.dothome.co.kr/sin/arlimi_certifyMyself.php';
+    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_certifyMyself.php';
     final response = await http
-        .get(uri + '?uid=${widget.user.uid}&pw=${_pwController.text}');
+        .get(Uri.parse(url + '?uid=${widget.user!.uid}&pw=${_pwController.text}'));
 
     if (response.statusCode == 200) {
       String result = utf8
@@ -105,7 +102,7 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
   /// 사용자(본인) 정보를 요청하는 작업
   Future<void> _getUserInfoRequest() async {
     String uri =
-        'http://nacha01.dothome.co.kr/sin/arlimi_getOneUser.php?uid=${widget.user.uid}';
+        'http://nacha01.dothome.co.kr/sin/arlimi_getOneUser.php?uid=${widget.user!.uid}';
     final response = await http.get(Uri.parse(uri));
 
     if (response.statusCode == 200) {
@@ -123,9 +120,9 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
               '')
           .trim();
       _tmpUser = User.fromJson(json.decode(result));
-      if (widget.user.isAdmin) {
-        _tmpUser.isAdmin = true;
-        _tmpUser.adminKey = widget.user.adminKey;
+      if (widget.user!.isAdmin) {
+        _tmpUser!.isAdmin = true;
+        _tmpUser!.adminKey = widget.user!.adminKey;
       }
     } else {
       _tmpUser = null;
@@ -295,10 +292,10 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
                           value: value,
                         );
                       }).toList(),
-                      onChanged: (value) {
+                      onChanged: (dynamic value) {
                         setState(() {
                           _selectedValue = value;
-                          if (Status.statusMap[_selectedValue] > 1) {
+                          if (Status.statusMap[_selectedValue]! > 1) {
                             _studentIDController.text = '';
                           }
                         });
@@ -413,7 +410,7 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
                       alignment: Alignment.center,
                       width: size.width * 0.6,
                       height: size.height * 0.1,
-                      child: Text('${widget.user.rDate}',
+                      child: Text('${widget.user!.rDate}',
                           style: TextStyle(color: Colors.black54)))
                 ],
               ),
@@ -438,7 +435,7 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
                       width: size.width * 0.6,
                       height: size.height * 0.1,
                       child: Text(
-                        '${widget.user.buyCount}회',
+                        '${widget.user!.buyCount}회',
                         style: TextStyle(color: Colors.black54),
                       ))
                 ],
@@ -463,7 +460,7 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
                       alignment: Alignment.center,
                       width: size.width * 0.6,
                       height: size.height * 0.1,
-                      child: Text('${widget.user.point}P',
+                      child: Text('${widget.user!.point}P',
                           style: TextStyle(color: Colors.black54)))
                 ],
               ),
@@ -483,7 +480,7 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
                         border: Border.all(width: 0.5, color: Colors.black),
                         borderRadius: BorderRadius.circular(6),
                         color: Colors.white24),
-                    child: FlatButton(
+                    child: TextButton(
                         onPressed: () async {
                           showDialog(
                               context: context,
@@ -500,11 +497,11 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
                                       ),
                                     ),
                                     actions: [
-                                      FlatButton(
+                                      TextButton(
                                           onPressed: () =>
                                               Navigator.pop(context),
                                           child: Text('취소')),
-                                      FlatButton(
+                                      TextButton(
                                           onPressed: () async {
                                             var res =
                                                 await _certifyMyselfRequest();
@@ -552,7 +549,7 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
                         border: Border.all(width: 0.5, color: Colors.black),
                         borderRadius: BorderRadius.circular(6),
                         color: Colors.white24),
-                    child: FlatButton(
+                    child: TextButton(
                         onPressed: () {
                           Navigator.push(
                               context,

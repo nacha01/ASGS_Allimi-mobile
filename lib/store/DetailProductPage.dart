@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:ui';
 
 import 'package:asgshighschool/data/category.dart';
 import '../data/provider/exist_cart.dart';
@@ -9,9 +8,7 @@ import 'package:asgshighschool/store/CartPage.dart';
 import 'package:asgshighschool/store/OrderPage.dart';
 import 'package:asgshighschool/store/ReservationPage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
@@ -22,8 +19,8 @@ import 'package:provider/provider.dart';
 class DetailProductPage extends StatefulWidget {
   DetailProductPage({this.product, this.user});
 
-  final Product product;
-  final User user;
+  final Product? product;
+  final User? user;
 
   @override
   _DetailProductPageState createState() => _DetailProductPageState();
@@ -87,7 +84,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
       return;
     }
     for (int j = 0; j < _count; ++j) {
-      _optionString += '[{${widget.product.prodName}} 상품 옵션 : ';
+      _optionString += '[{${widget.product!.prodName}} 상품 옵션 : ';
       for (int i = 0; i < _optionList.length; ++i) {
         if (_selectedOptionIndex[i] != -1) {
           _additionalPrice += int.parse(
@@ -107,9 +104,9 @@ class _DetailProductPageState extends State<DetailProductPage> {
   /// @response : 성공 시, '1' or 'Already Exists1'
   Future<bool> _addCartProductRequest() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_addCart.php';
-    final response = await http.post(url, body: <String, String>{
-      'uid': widget.user.uid,
-      'pid': widget.product.prodID.toString(),
+    final response = await http.post(Uri.parse(url), body: <String, String?>{
+      'uid': widget.user!.uid,
+      'pid': widget.product!.prodID.toString(),
       'quantity': _count.toString(),
       'optionString': _optionString,
       'optionPrice': _additionalPrice.toString()
@@ -133,8 +130,8 @@ class _DetailProductPageState extends State<DetailProductPage> {
 
   Future<bool> _getOptionsForProduct() async {
     String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_getProductOptions.php?pid=${widget.product.prodID}';
-    final response = await http.get(url);
+        'http://nacha01.dothome.co.kr/sin/arlimi_getProductOptions.php?pid=${widget.product!.prodID}';
+    final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
       String result = utf8
           .decode(response.bodyBytes)
@@ -182,7 +179,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
   @override
   void initState() {
     super.initState();
-    _isDiscountZero = widget.product.discount.toString() == '0.0';
+    _isDiscountZero = widget.product!.discount.toString() == '0.0';
     _getOptionsForProduct();
   }
 
@@ -225,7 +222,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                         width: size.width * 0.9,
                         height: size.width * 0.9 * 1.4,
                         child: CachedNetworkImage(
-                          imageUrl: widget.product.imgUrl1,
+                          imageUrl: widget.product!.imgUrl1!,
                           fit: BoxFit.cover,
                           progressIndicatorBuilder:
                               (context, string, progress) =>
@@ -239,7 +236,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        widget.product.isBest == 1
+                        widget.product!.isBest == 1
                             ? Container(
                                 margin: EdgeInsets.symmetric(horizontal: 6),
                                 width: size.width * 0.16,
@@ -253,7 +250,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                                 ),
                               )
                             : SizedBox(),
-                        widget.product.isNew == 1
+                        widget.product!.isNew == 1
                             ? Container(
                                 margin: EdgeInsets.symmetric(horizontal: 6),
                                 width: size.width * 0.16,
@@ -267,7 +264,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                             : SizedBox(),
                       ],
                     ),
-                    widget.product.isBest == 1 || widget.product.isNew == 1
+                    widget.product!.isBest == 1 || widget.product!.isNew == 1
                         ? Divider(
                             thickness: 1,
                             endIndent: 15,
@@ -280,14 +277,14 @@ class _DetailProductPageState extends State<DetailProductPage> {
                     Padding(
                       padding: EdgeInsets.all(size.width * 0.01),
                       child: Text(
-                        '${widget.product.prodName}',
+                        '${widget.product!.prodName}',
                         textScaleFactor: 2.5,
                         style: TextStyle(fontWeight: FontWeight.bold),
                         textAlign: TextAlign.center,
                       ),
                     ),
                     Text(
-                      '[${Category.categoryIndexToStringMap[widget.product.category]}]',
+                      '[${Category.categoryIndexToStringMap[widget.product!.category]}]',
                       textScaleFactor: 1.7,
                       style: TextStyle(color: Colors.grey),
                     ),
@@ -309,7 +306,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                                   offset: Offset(0, 6))
                             ]),
                         child: Text(
-                          '${widget.product.prodInfo}',
+                          '${widget.product!.prodInfo}',
                           textScaleFactor: 2,
                           style: TextStyle(height: 1.3),
                         )),
@@ -327,7 +324,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                           ),
                           title: Center(
                             child: Text(
-                              '상품 재고 : ${(widget.product.stockCount) < 0 ? 0 : (widget.product.stockCount)}개',
+                              '상품 재고 : ${(widget.product!.stockCount) < 0 ? 0 : (widget.product!.stockCount)}개',
                               style: TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 18),
                             ),
@@ -351,7 +348,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              '${_formatPrice(widget.product.price)}원',
+                              '${_formatPrice(widget.product!.price)}원',
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   decoration: _isDiscountZero
@@ -365,7 +362,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                             _isDiscountZero
                                 ? Text('')
                                 : Text(
-                                    ' → ${_formatPrice((widget.product.price * (1 - (widget.product.discount / 100.0))).round())}원',
+                                    ' → ${_formatPrice((widget.product!.price * (1 - (widget.product!.discount / 100.0))).round())}원',
                                     style: TextStyle(fontSize: 19),
                                   )
                           ],
@@ -374,7 +371,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                             ? null
                             : Center(
                                 child: Text(
-                                  '${widget.product.discount}% 할인 중',
+                                  '${widget.product!.discount}% 할인 중',
                                   style: TextStyle(
                                       color: Colors.black,
                                       fontWeight: FontWeight.bold,
@@ -411,7 +408,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                     SizedBox(
                       height: size.height * 0.02,
                     ),
-                    (widget.product.stockCount) <= 0
+                    (widget.product!.stockCount) <= 0
                         ? Container(
                             child: Text(
                               '재고가 없습니다.',
@@ -457,7 +454,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                                   height: size.height * 0.06,
                                   child: IconButton(
                                     onPressed: () {
-                                      if (_count < widget.product.stockCount) {
+                                      if (_count < widget.product!.stockCount) {
                                         setState(() {
                                           ++_count;
                                         });
@@ -489,7 +486,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                         child: Container(
                       padding: EdgeInsets.all(size.width * 0.03),
                       child: Text(
-                        '※ 개당 총 가격 ${_formatPrice(((widget.product.price * (1 - (widget.product.discount / 100.0))) + _optionSummation()).round())}원',
+                        '※ 개당 총 가격 ${_formatPrice(((widget.product!.price * (1 - (widget.product!.discount / 100.0))) + _optionSummation()).round())}원',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 15),
                       ),
@@ -497,13 +494,13 @@ class _DetailProductPageState extends State<DetailProductPage> {
                     SizedBox(
                       height: size.height * 0.03,
                     ),
-                    widget.product.imgUrl2 == null
+                    widget.product!.imgUrl2 == null
                         ? SizedBox()
                         : Container(
                             width: size.width * 0.8,
                             height: size.height * 0.4,
                             child: CachedNetworkImage(
-                              imageUrl: widget.product.imgUrl2,
+                              imageUrl: widget.product!.imgUrl2!,
                               fit: BoxFit.fill,
                               progressIndicatorBuilder: (context, string,
                                       progress) =>
@@ -512,13 +509,13 @@ class _DetailProductPageState extends State<DetailProductPage> {
                     SizedBox(
                       height: size.height * 0.05,
                     ),
-                    widget.product.imgUrl3 == null
+                    widget.product!.imgUrl3 == null
                         ? SizedBox()
                         : Container(
                             width: size.width * 0.8,
                             height: size.height * 0.4,
                             child: CachedNetworkImage(
-                              imageUrl: widget.product.imgUrl3,
+                              imageUrl: widget.product!.imgUrl3!,
                               fit: BoxFit.fill,
                               progressIndicatorBuilder: (context, string,
                                       progress) =>
@@ -540,7 +537,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                       children: [
                         GestureDetector(
                           onTap: () async {
-                            if (_count < 1 || widget.product.stockCount < 1) {
+                            if (_count < 1 || widget.product!.stockCount < 1) {
                               Fluttertoast.showToast(
                                   msg: '상품의 재고가 없어 장바구니에 담을 수 없습니다!',
                                   gravity: ToastGravity.BOTTOM,
@@ -565,7 +562,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                                           content: Text(
                                               '장바구니에 상품을 추가하는데 문제가 발생했습니다!\n${_errorMessage.trim() == 'EXCESS' ? '→현재 장바구니에 존재하는 이 상품의 수량과 현재 지정한 수량의 합이 상품 재고를 초과했습니다.' : _errorMessage} '),
                                           actions: [
-                                            FlatButton(
+                                            TextButton(
                                                 onPressed: () =>
                                                     Navigator.pop(context),
                                                 child: Text('확인'))
@@ -609,7 +606,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                         ),
                         GestureDetector(
                           onTap: () async {
-                            if (_count < 1 || widget.product.stockCount < 1) {
+                            if (_count < 1 || widget.product!.stockCount < 1) {
                               Fluttertoast.showToast(
                                   msg: '상품의 재고가 없어 결제할 수가 없습니다!',
                                   gravity: ToastGravity.BOTTOM,
@@ -640,7 +637,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                                 Icon(Icons.payment_rounded,
                                     color: Colors.grey[300], size: 33),
                                 Text(
-                                  '${_formatPrice((((widget.product.price * (1 - (widget.product.discount / 100.0)) + _optionSummation()) * _count)).round())}원 결제하기',
+                                  '${_formatPrice(((widget.product!.price * (1 - (widget.product!.discount / 100.0)) + _optionSummation()) * _count).round())}원 결제하기',
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       color: Colors.grey[300]),
@@ -652,13 +649,12 @@ class _DetailProductPageState extends State<DetailProductPage> {
                       ],
                     ),
                   )
-                : FlatButton(
-                    padding: EdgeInsets.all(0),
-                    onPressed: widget.product.stockCount < 1 &&
-                            !widget.product.isReservation
+                : TextButton(
+                    onPressed: widget.product!.stockCount < 1 &&
+                            !widget.product!.isReservation
                         ? null
                         : () {
-                            if (widget.product.stockCount < 1) {
+                            if (widget.product!.stockCount < 1) {
                               showDialog(
                                   context: context,
                                   builder: (context) => AlertDialog(
@@ -670,7 +666,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                                         content: Text(
                                             '현재 상품의 재고가 없어 예약만 가능합니다. 예약하러 가시겠습니까?'),
                                         actions: [
-                                          FlatButton(
+                                          TextButton(
                                               onPressed: () {
                                                 Navigator.pushReplacement(
                                                     context,
@@ -694,7 +690,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                                                 style: TextStyle(
                                                     color: Colors.lightBlue),
                                               )),
-                                          FlatButton(
+                                          TextButton(
                                               onPressed: () {
                                                 Navigator.pop(context);
                                               },
@@ -718,14 +714,14 @@ class _DetailProductPageState extends State<DetailProductPage> {
                       padding: EdgeInsets.all(size.width * 0.025),
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8),
-                          color: widget.product.stockCount < 1
-                              ? !widget.product.isReservation
+                          color: widget.product!.stockCount < 1
+                              ? !widget.product!.isReservation
                                   ? Colors.grey
                                   : Colors.deepOrange
                               : Colors.blueAccent),
                       child: Text(
-                        widget.product.stockCount < 1
-                            ? !widget.product.isReservation
+                        widget.product!.stockCount < 1
+                            ? !widget.product!.isReservation
                                 ? '품절'
                                 : '예약하러 가기'
                             : '구매하기',
@@ -786,8 +782,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
 
   Widget _optionDetailSelectLayout(
       Map data, Size size, int cIndex, int dIndex) {
-    return FlatButton(
-      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+    return TextButton(
       onPressed: () {
         setState(() {
           if (_selectedOptionIndex[cIndex] != dIndex) {

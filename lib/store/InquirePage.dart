@@ -1,8 +1,5 @@
 import 'dart:convert';
-import 'dart:ui';
-
 import 'package:asgshighschool/data/user.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
@@ -10,7 +7,7 @@ import 'package:http/http.dart' as http;
 class InquirePage extends StatefulWidget {
   InquirePage({this.user});
 
-  final User user;
+  final User? user;
 
   @override
   _InquirePageState createState() => _InquirePageState();
@@ -21,14 +18,14 @@ class _InquirePageState extends State<InquirePage> {
   TextEditingController _contentController = TextEditingController();
   List _categoryList = ['상품', '교환/환불', '계정', '앱 이용', '기타'];
   Map _categoryMap = {'상품': 0, '교환/환불': 1, '계정': 2, '앱 이용': 3, '기타': 4};
-  var _selectedCategory = '상품';
+  String? _selectedCategory = '상품';
 
   /// 새로운 문의 글을 등록하는 요청을 하는 작업
   /// @response : 성공 시, '1'
   Future<bool> _registerNewQnA() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_addQnA.php';
-    final response = await http.post(url, body: <String, String>{
-      'uid': widget.user.uid,
+    final response = await http.post(Uri.parse(url), body: <String, String?>{
+      'uid': widget.user!.uid,
       'category': _categoryMap[_selectedCategory].toString(),
       'title': _titleController.text,
       'content': _contentController.text,
@@ -132,7 +129,7 @@ class _InquirePageState extends State<InquirePage> {
                       );
                     }).toList(),
                     value: _selectedCategory,
-                    onChanged: (value) {
+                    onChanged: (dynamic value) {
                       setState(() {
                         _selectedCategory = value;
                       });
@@ -181,7 +178,7 @@ class _InquirePageState extends State<InquirePage> {
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
                   color: Colors.lightBlueAccent),
-              child: FlatButton(
+              child: TextButton(
                 onPressed: () async {
                   var res = await _registerNewQnA();
                   if (res) {

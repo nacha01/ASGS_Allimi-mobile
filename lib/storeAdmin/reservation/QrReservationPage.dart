@@ -1,16 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:ui';
-
 import 'package:asgshighschool/data/user.dart';
 import 'FinalReservationPage.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:http/http.dart' as http;
 
 class QrReservationPage extends StatefulWidget {
-  final User user;
+  final User? user;
 
   QrReservationPage({this.user});
 
@@ -20,8 +17,8 @@ class QrReservationPage extends StatefulWidget {
 
 class _QrReservationPageState extends State<QrReservationPage> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
-  Barcode result;
-  QRViewController controller;
+  late Barcode result;
+  QRViewController? controller;
   List _readyStateResvList = [];
   bool _isUsed = false;
 
@@ -29,7 +26,7 @@ class _QrReservationPageState extends State<QrReservationPage> {
   /// orderState == 2 && resvState == 2 인 데이터만 포함
   Future<bool> _getReservationQRState() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getQrForResv.php';
-    final response = await http.get(url);
+    final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
       String result = utf8
@@ -60,9 +57,9 @@ class _QrReservationPageState extends State<QrReservationPage> {
   void reassemble() {
     super.reassemble();
     if (Platform.isAndroid) {
-      controller.pauseCamera();
+      controller!.pauseCamera();
     }
-    controller.resumeCamera();
+    controller!.resumeCamera();
   }
 
   @override
@@ -271,7 +268,7 @@ class _QrReservationPageState extends State<QrReservationPage> {
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   actions: [
-                    FlatButton(
+                    TextButton(
                         onPressed: () {
                           _isUsed = false;
                           Navigator.pop(context);

@@ -1,16 +1,12 @@
 import 'dart:convert';
-import 'dart:ui';
-
 import 'package:asgshighschool/data/user.dart';
-
 import 'StoreMainPage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-
 import '../data/product.dart';
 
 class StoreSplashPage extends StatefulWidget {
-  final User user;
+  final User? user;
 
   StoreSplashPage({this.user});
 
@@ -29,7 +25,7 @@ class _StoreSplashPageState extends State<StoreSplashPage> {
 
   /// Splash 페이지의 로딩 process
   loading() async {
-    List result = await _getProducts();
+    List? result = await _getProducts();
     var res = await _checkExistCart();
     _isExist = res;
     await Future.delayed(Duration(seconds: 1));
@@ -38,15 +34,15 @@ class _StoreSplashPageState extends State<StoreSplashPage> {
         MaterialPageRoute(
             builder: (context) => StoreMainPage(
                   user: widget.user,
-                  product: result,
+                  product: result as List<Product>?,
                   existCart: res,
                 )));
   }
 
   /// 장바구니에 데이터가 존재하는지 체크 요청을 하는 작업
   Future<bool> _checkExistCart() async {
-    String uri = 'http://nacha01.dothome.co.kr/sin/arlimi_checkCart.php';
-    final response = await http.get(uri + '?uid=${widget.user.uid}');
+    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_checkCart.php';
+    final response = await http.get(Uri.parse(url + '?uid=${widget.user!.uid}'));
 
     if (response.statusCode == 200) {
       String result = utf8
@@ -66,9 +62,9 @@ class _StoreSplashPageState extends State<StoreSplashPage> {
   }
 
   /// 모든 상품 데이터를 요청하는 작업
-  Future<List<Product>> _getProducts() async {
+  Future<List<Product>?> _getProducts() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getProduct.php';
-    final response = await http.get(url);
+    final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
       print(response.body);
@@ -123,7 +119,7 @@ class _StoreSplashPageState extends State<StoreSplashPage> {
                           height: size.height * 0.02,
                         ),
                         Text(
-                          widget.user.isAdmin ? '관리자 권한으로 접근합니다...' : '',
+                          widget.user!.isAdmin ? '관리자 권한으로 접근합니다...' : '',
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 13),
                         ),

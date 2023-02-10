@@ -9,7 +9,7 @@ import 'DrawTriangle.dart';
 import 'package:http/http.dart' as http;
 
 class MemoryGamePage extends StatefulWidget {
-  final User user;
+  final User? user;
 
   MemoryGamePage({this.user});
 
@@ -18,7 +18,7 @@ class MemoryGamePage extends StatefulWidget {
 }
 
 class _MemoryGamePageState extends State<MemoryGamePage> {
-  List<Widget> _shapeList = []; // 생성된 도형들을 담는 리스트
+  List<Widget?> _shapeList = []; // 생성된 도형들을 담는 리스트
   List<List> _shapeSize = []; // 원, 사각형, 삼각형 크기 리스트를 담는 2차원 List
   List<double> _triangleSizes = [
     25.0,
@@ -29,8 +29,8 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
   List<double> _circleSizes = [12.0, 15.0, 18.0, 21.0]; // 원의 랜덤한 크기들을 담은 리스트
   List<double> _rectSizes = [25.0, 30.0, 35.0, 40.0]; // 사각형의 랜덤한 크기를 담은 리스트
   List<double> _lifeOpacityList = [1.0, 1.0, 1.0]; // 목숨 위젯에 대한 투명도 리스트 (목숨 3개)
-  List<Widget> _emptyList = []; // 새로운 도형 출현하기 전 깜빡임을 위한 눈속임용 비어있는 리스트
-  Timer _timer; // 게임 타이머
+  List<Widget?> _emptyList = []; // 새로운 도형 출현하기 전 깜빡임을 위한 눈속임용 비어있는 리스트
+  Timer? _timer; // 게임 타이머
   int _start = 35; // 게임 타이머 시간초 값
   int _currentOpacityIndex = 2; // 목숨에 대한 Stack Index
   int _myRecord = 0; // 현재 나의 기록 값
@@ -66,8 +66,8 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
   /// 존재하면 true, 아니면 false
   Future<bool> _isThereRecord() async {
     String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_searchRecordMG.php?uid=${widget.user.uid}';
-    final response = await http.get(url);
+        'http://nacha01.dothome.co.kr/sin/arlimi_searchRecordMG.php?uid=${widget.user!.uid}';
+    final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
       String result = utf8
@@ -91,8 +91,8 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
   /// @return : 해당 유저의 게임 기록 값
   Future<int> _getCurrentRecord() async {
     String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_getCurRecord.php?uid=${widget.user.uid}';
-    final response = await http.get(url);
+        'http://nacha01.dothome.co.kr/sin/arlimi_getCurRecord.php?uid=${widget.user!.uid}';
+    final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
       String result = utf8
@@ -117,8 +117,8 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
   /// @return : 기록 업데이트 성공 여부
   Future<bool> _updateRecord() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_updateRecord.php';
-    final response = await http.post(url, body: <String, String>{
-      'uid': widget.user.uid,
+    final response = await http.post(Uri.parse(url), body: <String, String?>{
+      'uid': widget.user!.uid,
       'record': _myRecord.toString()
     });
 
@@ -193,7 +193,7 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
   void _addShape() async {
     var shapeRv = Random().nextInt(3);
     var sizeRv = Random().nextInt(4);
-    Widget obj;
+    Widget? obj;
     switch (shapeRv) {
       case 0: // 삼각형
         obj = _getTriangleObject(
@@ -284,8 +284,7 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
                 textAlign: TextAlign.center,
               ),
               actions: [
-                FlatButton(
-                    padding: EdgeInsets.all(0),
+                TextButton(
                     onPressed: () {
                       setState(() {
                         _isRenew = false;
@@ -298,8 +297,7 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
                       style: TextStyle(
                           color: Colors.lightBlue, fontWeight: FontWeight.bold),
                     )),
-                FlatButton(
-                    padding: EdgeInsets.all(0),
+                TextButton(
                     onPressed: () {
                       Navigator.pop(ctx);
                       _terminateScreen();
@@ -314,7 +312,7 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
 
   /// 화면에 배치될 랜덤한 색과 랜덤한 위치와 랜덤한 크기를 갖는 삼각형 오브젝트를 반환하는 함수
   /// @return : 모든 특성을 가진 삼각형 객체 반환
-  Widget _getTriangleObject({double size, Color color, Key posKey}) {
+  Widget _getTriangleObject({required double size, required Color color, Key? posKey}) {
     return Align(
       key: posKey,
       alignment: _getRandomLocation(),
@@ -323,7 +321,7 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
           if (_shapeList.length == 1) {
             _startTimer();
           }
-          if (posKey == _shapeList[_shapeList.length - 1].key) {
+          if (posKey == _shapeList[_shapeList.length - 1]!.key) {
             setState(() {
               _addShape();
               _currentPoint++;
@@ -334,7 +332,7 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
             });
             if (_currentOpacityIndex == -1) {
               setState(() {
-                _timer.cancel();
+                _timer!.cancel();
               });
               _showGameOverDialog();
             }
@@ -350,7 +348,7 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
 
   /// 화면에 배치될 랜덤한 색과 랜덤한 위치와 랜덤한 크기를 갖는 원 오브젝트를 반환하는 함수
   /// @return : 모든 특성을 가진 원 객체 반환
-  Widget _getCircleObject({double size, Color color, Key posKey}) {
+  Widget _getCircleObject({required double size, required Color color, Key? posKey}) {
     return Align(
       key: posKey,
       alignment: _getRandomLocation(),
@@ -359,7 +357,7 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
           if (_shapeList.length == 1) {
             _startTimer();
           }
-          if (posKey == _shapeList[_shapeList.length - 1].key) {
+          if (posKey == _shapeList[_shapeList.length - 1]!.key) {
             setState(() {
               _addShape();
               _currentPoint++;
@@ -370,7 +368,7 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
             });
             if (_currentOpacityIndex == -1) {
               setState(() {
-                _timer.cancel();
+                _timer!.cancel();
               });
               _showGameOverDialog();
             }
@@ -386,7 +384,7 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
 
   /// 화면에 배치될 랜덤한 색과 랜덤한 위치와 랜덤한 크기를 갖는 사각형 오브젝트를 반환하는 함수
   /// @return : 모든 특성을 가진 사각형 객체 반환
-  Widget _getRectangleObject({double size, Color color, Key posKey}) {
+  Widget _getRectangleObject({required double size, required Color color, Key? posKey}) {
     return Align(
       key: posKey,
       alignment: _getRandomLocation(),
@@ -395,7 +393,7 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
           if (_shapeList.length == 1) {
             _startTimer();
           }
-          if (posKey == _shapeList[_shapeList.length - 1].key) {
+          if (posKey == _shapeList[_shapeList.length - 1]!.key) {
             setState(() {
               _addShape();
               _currentPoint++;
@@ -406,7 +404,7 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
             });
             if (_currentOpacityIndex == -1) {
               setState(() {
-                _timer.cancel();
+                _timer!.cancel();
               });
               _showGameOverDialog();
             }
@@ -567,7 +565,7 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
               color: Colors.black,
               width: size.width,
               padding: EdgeInsets.all(size.width * 0.02),
-              child: Stack(children: _shapeList),
+              child: Stack(children: _shapeList as List<Widget>),
             ),
           ),
         ],

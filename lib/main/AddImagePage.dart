@@ -1,7 +1,5 @@
 import 'dart:io';
-import 'dart:ui';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
@@ -13,7 +11,7 @@ class AddImagePage extends StatefulWidget {
 }
 
 class _AddImagePageState extends State<AddImagePage> {
-  PickedFile _selectedImage;
+  PickedFile? _selectedImage;
 
   Future<void> _getImageFromGallery() async {
     var image = await ImagePicker().getImage(source: ImageSource.gallery);
@@ -46,7 +44,7 @@ class _AddImagePageState extends State<AddImagePage> {
 
   Future<bool> _insertImageInfo(DateTime current, String fileName) async {
     String url = 'http://nacha01.dothome.co.kr/sin/main_addImageInfo.php';
-    final response = await http.post(url, body: <String, String>{
+    final response = await http.post(Uri.parse(url), body: <String, String>{
       'purpose': 'banner',
       'date': current.toString(),
       'imgName': '64_main' + fileName + '.jpg'
@@ -140,7 +138,7 @@ class _AddImagePageState extends State<AddImagePage> {
                               border: Border.all(width: 3, color: Colors.grey)),
                         )
                       : Image.file(
-                          File(_selectedImage.path),
+                          File(_selectedImage!.path),
                           fit: BoxFit.cover,
                           width: size.width,
                           height: 210,
@@ -175,7 +173,7 @@ class _AddImagePageState extends State<AddImagePage> {
                     _formatting(now.minute) +
                     _formatting(now.second);
                 var img =
-                    await _storeImage(_selectedImage, 'main' + identified);
+                    await _storeImage(_selectedImage!, 'main' + identified);
                 if (img) {
                   var res = await _insertImageInfo(now, identified);
                   if (res) {

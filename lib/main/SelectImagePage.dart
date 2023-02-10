@@ -1,9 +1,7 @@
 import 'dart:convert';
-import 'dart:ui';
 
 import 'package:asgshighschool/main/AddImagePage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -20,7 +18,7 @@ class _SelectImagePageState extends State<SelectImagePage> {
 
   Future<bool> _getAllImageData() async {
     String url = 'http://nacha01.dothome.co.kr/sin/main_getAllImage.php';
-    final response = await http.get(url);
+    final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
       String result = utf8
@@ -50,10 +48,10 @@ class _SelectImagePageState extends State<SelectImagePage> {
     }
   }
 
-  Future<bool> _updateSelectionState(String num, int value) async {
+  Future<bool> _updateSelectionState(String? num, int value) async {
     String url = 'http://nacha01.dothome.co.kr/sin/main_updateSelectState.php';
-    final response = await http.post(url,
-        body: <String, String>{'selection': value.toString(), 'num': num});
+    final response = await http.post(Uri.parse(url),
+        body: <String, String?>{'selection': value.toString(), 'num': num});
     if (response.statusCode == 200) {
       print(response.body);
       return true;

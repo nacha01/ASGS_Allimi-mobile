@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'dart:ui';
-
 import 'package:asgshighschool/data/category.dart';
 import 'package:asgshighschool/data/product.dart';
 import 'package:asgshighschool/data/user.dart';
@@ -9,19 +7,17 @@ import 'package:asgshighschool/store/EventPage.dart';
 import '../storeAdmin/product/AddProduct.dart';
 import '../storeAdmin/product/UpdateProduct.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
 class StoreHomePage extends StatefulWidget {
   StoreHomePage({this.user, this.product, this.existCart});
 
-  final User user;
-  final List<Product> product;
-  final bool existCart;
+  final User? user;
+  final List<Product>? product;
+  final bool? existCart;
 
   @override
   _StoreHomePageState createState() => _StoreHomePageState();
@@ -31,10 +27,10 @@ class _StoreHomePageState extends State<StoreHomePage>
     with TickerProviderStateMixin {
   TextEditingController _searchController = TextEditingController();
   TextEditingController _adminKeyController = TextEditingController();
-  TabController _tabController;
-  ScrollController _scrollViewController;
+  TabController? _tabController;
+  ScrollController? _scrollViewController;
   int _selectedCategory = 0; // MENU 탭에서 어느 카테고리인지에 대한 값
-  int _selectRadio = 0; // 정렬 기준 선택 라디오 버튼 값
+  int? _selectRadio = 0; // 정렬 기준 선택 라디오 버튼 값
   List _sortTitleList = ['등록순', '이름순', '가격순']; // 정렬 기준 라디오 버튼 title 리스트
   bool _isAsc = true; // true : 오름차순 , false : 내림차순
   bool _isSearch = false; // 검색 기능 사용했는지 판단
@@ -111,7 +107,7 @@ class _StoreHomePageState extends State<StoreHomePage>
   /// 0 : 등록순 - prodID 필드 기준으로 정렬
   /// 1 : 이름순 - prodName 필드 기준으로 정렬
   /// 2 : 가격순 - price 필드 기준으로 정렬
-  void _sortProductByIndex(int sortMethod, Size size) {
+  void _sortProductByIndex(int? sortMethod, Size size) {
     switch (sortMethod) {
       case 0:
         _productList.sort((a, b) => a.prodID.compareTo(b.prodID));
@@ -119,9 +115,9 @@ class _StoreHomePageState extends State<StoreHomePage>
         if (!_isAsc) _productList = List.from(_productList.reversed);
         for (int i = 0; i < _productList.length; ++i) {
           _productLayoutList.add(itemTile(
-              _productList[i].imgUrl1,
+              _productList[i].imgUrl1!,
               _productList[i].price,
-              _productList[i].prodName,
+              _productList[i].prodName!,
               false,
               _productList[i],
               size));
@@ -131,9 +127,9 @@ class _StoreHomePageState extends State<StoreHomePage>
         if (!_isAsc) _foodProductList = List.from(_foodProductList.reversed);
         for (int i = 0; i < _foodProductList.length; ++i) {
           _foodProductLayoutList.add(itemTile(
-              _foodProductList[i].imgUrl1,
+              _foodProductList[i].imgUrl1!,
               _foodProductList[i].price,
-              _foodProductList[i].prodName,
+              _foodProductList[i].prodName!,
               false,
               _foodProductList[i],
               size));
@@ -143,9 +139,9 @@ class _StoreHomePageState extends State<StoreHomePage>
         if (!_isAsc) _snackProductList = List.from(_snackProductList.reversed);
         for (int i = 0; i < _snackProductList.length; ++i) {
           _snackProductLayoutList.add(itemTile(
-              _snackProductList[i].imgUrl1,
+              _snackProductList[i].imgUrl1!,
               _snackProductList[i].price,
-              _snackProductList[i].prodName,
+              _snackProductList[i].prodName!,
               false,
               _snackProductList[i],
               size));
@@ -156,9 +152,9 @@ class _StoreHomePageState extends State<StoreHomePage>
           _beverageProductList = List.from(_beverageProductList.reversed);
         for (int i = 0; i < _beverageProductList.length; ++i) {
           _beverageProductLayoutList.add(itemTile(
-              _beverageProductList[i].imgUrl1,
+              _beverageProductList[i].imgUrl1!,
               _beverageProductList[i].price,
-              _beverageProductList[i].prodName,
+              _beverageProductList[i].prodName!,
               false,
               _beverageProductList[i],
               size));
@@ -169,9 +165,9 @@ class _StoreHomePageState extends State<StoreHomePage>
           _stationeryProductList = List.from(_stationeryProductList.reversed);
         for (int i = 0; i < _stationeryProductList.length; ++i) {
           _stationeryProductLayoutList.add(itemTile(
-              _stationeryProductList[i].imgUrl1,
+              _stationeryProductList[i].imgUrl1!,
               _stationeryProductList[i].price,
-              _stationeryProductList[i].prodName,
+              _stationeryProductList[i].prodName!,
               false,
               _stationeryProductList[i],
               size));
@@ -182,9 +178,9 @@ class _StoreHomePageState extends State<StoreHomePage>
           _handmadeProductList = List.from(_handmadeProductList.reversed);
         for (int i = 0; i < _handmadeProductList.length; ++i) {
           _handmadeProductLayoutList.add(itemTile(
-              _handmadeProductList[i].imgUrl1,
+              _handmadeProductList[i].imgUrl1!,
               _handmadeProductList[i].price,
-              _handmadeProductList[i].prodName,
+              _handmadeProductList[i].prodName!,
               false,
               _handmadeProductList[i],
               size));
@@ -194,9 +190,9 @@ class _StoreHomePageState extends State<StoreHomePage>
         if (!_isAsc) _bestProductList = List.from(_bestProductList.reversed);
         for (int i = 0; i < _bestProductList.length; ++i) {
           _bestProductLayoutList.add(itemTile(
-              _bestProductList[i].imgUrl1,
+              _bestProductList[i].imgUrl1!,
               _bestProductList[i].price,
-              _bestProductList[i].prodName,
+              _bestProductList[i].prodName!,
               false,
               _bestProductList[i],
               size));
@@ -207,111 +203,111 @@ class _StoreHomePageState extends State<StoreHomePage>
         if (!_isAsc) _newProductList = List.from(_newProductList.reversed);
         for (int i = 0; i < _newProductList.length; ++i) {
           _newProductLayoutList.add(itemTile(
-              _newProductList[i].imgUrl1,
+              _newProductList[i].imgUrl1!,
               _newProductList[i].price,
-              _newProductList[i].prodName,
+              _newProductList[i].prodName!,
               false,
               _newProductList[i],
               size));
         }
         break;
       case 1:
-        _productList.sort((a, b) => a.prodName.compareTo(b.prodName));
+        _productList.sort((a, b) => a.prodName!.compareTo(b.prodName!));
         _productLayoutList.clear();
         if (!_isAsc) _productList = List.from(_productList.reversed);
         for (int i = 0; i < _productList.length; ++i) {
           _productLayoutList.add(itemTile(
-              _productList[i].imgUrl1,
+              _productList[i].imgUrl1!,
               _productList[i].price,
-              _productList[i].prodName,
+              _productList[i].prodName!,
               false,
               _productList[i],
               size));
         }
-        _foodProductList.sort((a, b) => a.prodName.compareTo(b.prodName));
+        _foodProductList.sort((a, b) => a.prodName!.compareTo(b.prodName!));
         _foodProductLayoutList.clear();
         if (!_isAsc) _foodProductList = List.from(_foodProductList.reversed);
         for (int i = 0; i < _foodProductList.length; ++i) {
           _foodProductLayoutList.add(itemTile(
-              _foodProductList[i].imgUrl1,
+              _foodProductList[i].imgUrl1!,
               _foodProductList[i].price,
-              _foodProductList[i].prodName,
+              _foodProductList[i].prodName!,
               false,
               _foodProductList[i],
               size));
         }
-        _snackProductList.sort((a, b) => a.prodName.compareTo(b.prodName));
+        _snackProductList.sort((a, b) => a.prodName!.compareTo(b.prodName!));
         _snackProductLayoutList.clear();
         if (!_isAsc) _snackProductList = List.from(_snackProductList.reversed);
         for (int i = 0; i < _snackProductList.length; ++i) {
           _snackProductLayoutList.add(itemTile(
-              _snackProductList[i].imgUrl1,
+              _snackProductList[i].imgUrl1!,
               _snackProductList[i].price,
-              _snackProductList[i].prodName,
+              _snackProductList[i].prodName!,
               false,
               _snackProductList[i],
               size));
         }
-        _beverageProductList.sort((a, b) => a.prodName.compareTo(b.prodName));
+        _beverageProductList.sort((a, b) => a.prodName!.compareTo(b.prodName!));
         _beverageProductLayoutList.clear();
         if (!_isAsc)
           _beverageProductList = List.from(_beverageProductList.reversed);
         for (int i = 0; i < _beverageProductList.length; ++i) {
           _beverageProductLayoutList.add(itemTile(
-              _beverageProductList[i].imgUrl1,
+              _beverageProductList[i].imgUrl1!,
               _beverageProductList[i].price,
-              _beverageProductList[i].prodName,
+              _beverageProductList[i].prodName!,
               false,
               _beverageProductList[i],
               size));
         }
-        _stationeryProductList.sort((a, b) => a.prodName.compareTo(b.prodName));
+        _stationeryProductList.sort((a, b) => a.prodName!.compareTo(b.prodName!));
         _stationeryProductLayoutList.clear();
         if (!_isAsc)
           _stationeryProductList = List.from(_stationeryProductList.reversed);
         for (int i = 0; i < _stationeryProductList.length; ++i) {
           _stationeryProductLayoutList.add(itemTile(
-              _stationeryProductList[i].imgUrl1,
+              _stationeryProductList[i].imgUrl1!,
               _stationeryProductList[i].price,
-              _stationeryProductList[i].prodName,
+              _stationeryProductList[i].prodName!,
               false,
               _stationeryProductList[i],
               size));
         }
-        _handmadeProductList.sort((a, b) => a.prodName.compareTo(b.prodName));
+        _handmadeProductList.sort((a, b) => a.prodName!.compareTo(b.prodName!));
         _handmadeProductLayoutList.clear();
         if (!_isAsc)
           _handmadeProductList = List.from(_handmadeProductList.reversed);
         for (int i = 0; i < _handmadeProductList.length; ++i) {
           _handmadeProductLayoutList.add(itemTile(
-              _handmadeProductList[i].imgUrl1,
+              _handmadeProductList[i].imgUrl1!,
               _handmadeProductList[i].price,
-              _handmadeProductList[i].prodName,
+              _handmadeProductList[i].prodName!,
               false,
               _handmadeProductList[i],
               size));
         }
-        _bestProductList.sort((a, b) => a.prodName.compareTo(b.prodName));
+        _bestProductList.sort((a, b) => a.prodName!.compareTo(b.prodName!));
         _bestProductLayoutList.clear();
         if (!_isAsc) _bestProductList = List.from(_bestProductList.reversed);
         for (int i = 0; i < _bestProductList.length; ++i) {
           _bestProductLayoutList.add(itemTile(
-              _bestProductList[i].imgUrl1,
+              _bestProductList[i].imgUrl1!,
               _bestProductList[i].price,
-              _bestProductList[i].prodName,
+              _bestProductList[i].prodName!,
               false,
               _bestProductList[i],
               size));
         }
 
-        _newProductList.sort((a, b) => a.prodName.compareTo(b.prodName));
+        _newProductList.sort((a, b) => a.prodName!.compareTo(b.prodName!));
         _newProductLayoutList.clear();
         if (!_isAsc) _newProductList = List.from(_newProductList.reversed);
         for (int i = 0; i < _newProductList.length; ++i) {
           _newProductLayoutList.add(itemTile(
-              _newProductList[i].imgUrl1,
+              _newProductList[i].imgUrl1!,
               _newProductList[i].price,
-              _newProductList[i].prodName,
+              _newProductList[i].prodName!,
               false,
               _newProductList[i],
               size));
@@ -323,9 +319,9 @@ class _StoreHomePageState extends State<StoreHomePage>
         if (!_isAsc) _productList = List.from(_productList.reversed);
         for (int i = 0; i < _productList.length; ++i) {
           _productLayoutList.add(itemTile(
-              _productList[i].imgUrl1,
+              _productList[i].imgUrl1!,
               _productList[i].price,
-              _productList[i].prodName,
+              _productList[i].prodName!,
               false,
               _productList[i],
               size));
@@ -335,9 +331,9 @@ class _StoreHomePageState extends State<StoreHomePage>
         if (!_isAsc) _foodProductList = List.from(_foodProductList.reversed);
         for (int i = 0; i < _foodProductList.length; ++i) {
           _foodProductLayoutList.add(itemTile(
-              _foodProductList[i].imgUrl1,
+              _foodProductList[i].imgUrl1!,
               _foodProductList[i].price,
-              _foodProductList[i].prodName,
+              _foodProductList[i].prodName!,
               false,
               _foodProductList[i],
               size));
@@ -347,9 +343,9 @@ class _StoreHomePageState extends State<StoreHomePage>
         if (!_isAsc) _snackProductList = List.from(_snackProductList.reversed);
         for (int i = 0; i < _snackProductList.length; ++i) {
           _snackProductLayoutList.add(itemTile(
-              _snackProductList[i].imgUrl1,
+              _snackProductList[i].imgUrl1!,
               _snackProductList[i].price,
-              _snackProductList[i].prodName,
+              _snackProductList[i].prodName!,
               false,
               _snackProductList[i],
               size));
@@ -360,9 +356,9 @@ class _StoreHomePageState extends State<StoreHomePage>
           _beverageProductList = List.from(_beverageProductList.reversed);
         for (int i = 0; i < _beverageProductList.length; ++i) {
           _beverageProductLayoutList.add(itemTile(
-              _beverageProductList[i].imgUrl1,
+              _beverageProductList[i].imgUrl1!,
               _beverageProductList[i].price,
-              _beverageProductList[i].prodName,
+              _beverageProductList[i].prodName!,
               false,
               _beverageProductList[i],
               size));
@@ -373,9 +369,9 @@ class _StoreHomePageState extends State<StoreHomePage>
           _stationeryProductList = List.from(_stationeryProductList.reversed);
         for (int i = 0; i < _stationeryProductList.length; ++i) {
           _stationeryProductLayoutList.add(itemTile(
-              _stationeryProductList[i].imgUrl1,
+              _stationeryProductList[i].imgUrl1!,
               _stationeryProductList[i].price,
-              _stationeryProductList[i].prodName,
+              _stationeryProductList[i].prodName!,
               false,
               _stationeryProductList[i],
               size));
@@ -386,9 +382,9 @@ class _StoreHomePageState extends State<StoreHomePage>
           _handmadeProductList = List.from(_handmadeProductList.reversed);
         for (int i = 0; i < _handmadeProductList.length; ++i) {
           _handmadeProductLayoutList.add(itemTile(
-              _handmadeProductList[i].imgUrl1,
+              _handmadeProductList[i].imgUrl1!,
               _handmadeProductList[i].price,
-              _handmadeProductList[i].prodName,
+              _handmadeProductList[i].prodName!,
               false,
               _handmadeProductList[i],
               size));
@@ -398,9 +394,9 @@ class _StoreHomePageState extends State<StoreHomePage>
         if (!_isAsc) _bestProductList = List.from(_bestProductList.reversed);
         for (int i = 0; i < _bestProductList.length; ++i) {
           _bestProductLayoutList.add(itemTile(
-              _bestProductList[i].imgUrl1,
+              _bestProductList[i].imgUrl1!,
               _bestProductList[i].price,
-              _bestProductList[i].prodName,
+              _bestProductList[i].prodName!,
               false,
               _bestProductList[i],
               size));
@@ -411,9 +407,9 @@ class _StoreHomePageState extends State<StoreHomePage>
         if (!_isAsc) _newProductList = List.from(_newProductList.reversed);
         for (int i = 0; i < _newProductList.length; ++i) {
           _newProductLayoutList.add(itemTile(
-              _newProductList[i].imgUrl1,
+              _newProductList[i].imgUrl1!,
               _newProductList[i].price,
-              _newProductList[i].prodName,
+              _newProductList[i].prodName!,
               false,
               _newProductList[i],
               size));
@@ -426,17 +422,17 @@ class _StoreHomePageState extends State<StoreHomePage>
   /// parameter로 들어온 검색하고 싶은 키워드로 상품들을 검색하여 검색 List 에 추가하는 작업
   /// @param : 검색하고자 하는 문자열
   void _searchProducts(String toSearch, Size size) {
-    _tabController.index = 0;
+    _tabController!.index = 0;
     _isSearch = true;
     _searchProductList.clear();
     _searchProductLayoutList.clear();
     for (int i = 0; i < _productList.length; ++i) {
-      if (_productList[i].prodName.contains('$toSearch')) {
+      if (_productList[i].prodName!.contains('$toSearch')) {
         _searchProductList.add(_productList[i]);
         _searchProductLayoutList.add(itemTile(
-            _productList[i].imgUrl1,
+            _productList[i].imgUrl1!,
             _productList[i].price,
-            _productList[i].prodName,
+            _productList[i].prodName!,
             false,
             _productList[i],
             size));
@@ -479,7 +475,7 @@ class _StoreHomePageState extends State<StoreHomePage>
     for (int i = 0; i < _newProductList.length; ++i) {
       var tmp = _newProductList[i];
       _newProductLayoutList.add(
-          itemTile(tmp.imgUrl1, tmp.price, tmp.prodName, false, tmp, size));
+          itemTile(tmp.imgUrl1!, tmp.price, tmp.prodName!, false, tmp, size));
     }
   }
 
@@ -488,7 +484,7 @@ class _StoreHomePageState extends State<StoreHomePage>
     for (int i = 0; i < _bestProductList.length; ++i) {
       var tmp = _bestProductList[i];
       _bestProductLayoutList.add(
-          itemTile(tmp.imgUrl1, tmp.price, tmp.prodName, false, tmp, size));
+          itemTile(tmp.imgUrl1!, tmp.price, tmp.prodName!, false, tmp, size));
     }
   }
 
@@ -497,7 +493,7 @@ class _StoreHomePageState extends State<StoreHomePage>
     for (int i = 0; i < _foodProductList.length; ++i) {
       var tmp = _foodProductList[i];
       _foodProductLayoutList.add(
-          itemTile(tmp.imgUrl1, tmp.price, tmp.prodName, false, tmp, size));
+          itemTile(tmp.imgUrl1!, tmp.price, tmp.prodName!, false, tmp, size));
     }
   }
 
@@ -506,7 +502,7 @@ class _StoreHomePageState extends State<StoreHomePage>
     for (int i = 0; i < _snackProductList.length; ++i) {
       var tmp = _snackProductList[i];
       _snackProductLayoutList.add(
-          itemTile(tmp.imgUrl1, tmp.price, tmp.prodName, false, tmp, size));
+          itemTile(tmp.imgUrl1!, tmp.price, tmp.prodName!, false, tmp, size));
     }
   }
 
@@ -515,7 +511,7 @@ class _StoreHomePageState extends State<StoreHomePage>
     for (int i = 0; i < _beverageProductList.length; ++i) {
       var tmp = _beverageProductList[i];
       _beverageProductLayoutList.add(
-          itemTile(tmp.imgUrl1, tmp.price, tmp.prodName, false, tmp, size));
+          itemTile(tmp.imgUrl1!, tmp.price, tmp.prodName!, false, tmp, size));
     }
   }
 
@@ -524,7 +520,7 @@ class _StoreHomePageState extends State<StoreHomePage>
     for (int i = 0; i < _stationeryProductList.length; ++i) {
       var tmp = _stationeryProductList[i];
       _stationeryProductLayoutList.add(
-          itemTile(tmp.imgUrl1, tmp.price, tmp.prodName, false, tmp, size));
+          itemTile(tmp.imgUrl1!, tmp.price, tmp.prodName!, false, tmp, size));
     }
   }
 
@@ -533,7 +529,7 @@ class _StoreHomePageState extends State<StoreHomePage>
     for (int i = 0; i < _handmadeProductList.length; ++i) {
       var tmp = _handmadeProductList[i];
       _handmadeProductLayoutList.add(
-          itemTile(tmp.imgUrl1, tmp.price, tmp.prodName, false, tmp, size));
+          itemTile(tmp.imgUrl1!, tmp.price, tmp.prodName!, false, tmp, size));
     }
   }
 
@@ -563,12 +559,12 @@ class _StoreHomePageState extends State<StoreHomePage>
   /// @result : X [중간 과정에 상품을 분류하는 작업을 함]
   Future<void> _getProducts() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getProduct.php';
-    final response = await http.get(url);
+    final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
       if (response.body.contains('일일 트래픽을 모두 사용하였습니다.')) {
         print('일일 트래픽 모두 사용');
-        return [];
+        return ;
       }
       String result = utf8
           .decode(response.bodyBytes)
@@ -602,7 +598,7 @@ class _StoreHomePageState extends State<StoreHomePage>
       for (int i = 0; i < _productList.length; ++i) {
         var tmp = _productList[i];
         _productLayoutList.add(
-            itemTile(tmp.imgUrl1, tmp.price, tmp.prodName, false, tmp, size));
+            itemTile(tmp.imgUrl1!, tmp.price, tmp.prodName!, false, tmp, size));
       }
       setState(() {
         _groupingProduct(size);
@@ -618,7 +614,7 @@ class _StoreHomePageState extends State<StoreHomePage>
   /// @result : 삭제가 정상적으로 되었는지에 대한 bool 값
   Future<bool> _deleteProductRequest(int productID) async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_deleteProduct.php';
-    final response = await http.get(url + '?id=$productID');
+    final response = await http.get(Uri.parse(url + '?id=$productID'));
     if (response.statusCode == 200) {
       if (response.body.contains('DELETED')) {
         return true;
@@ -633,9 +629,9 @@ class _StoreHomePageState extends State<StoreHomePage>
   /// @param : HTTP GET : UID 값과 ADMIN KEY 값
   /// @result : 관리자 인증이 되었는지에 대한 bool 값
   Future<bool> _certifyAdminAccess() async {
-    String uri = 'http://nacha01.dothome.co.kr/sin/arlimi_adminCertified.php';
+    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_adminCertified.php';
     final response = await http
-        .get(uri + '?uid=${widget.user.uid}&key=${_adminKeyController.text}');
+        .get(Uri.parse(url + '?uid=${widget.user!.uid}&key=${_adminKeyController.text}'));
 
     if (response.statusCode == 200) {
       if (response.body.contains('CERTIFIED')) {
@@ -650,7 +646,7 @@ class _StoreHomePageState extends State<StoreHomePage>
 
   /// 토스트 메세지 출력
   /// @param : message : 출력할 메세지, fail : 특정 동작에 대해 에러 발생 시 true
-  Future<bool> showToast(String message, bool fail) {
+  Future<bool?> showToast(String message, bool fail) {
     return Fluttertoast.showToast(
         msg: message,
         toastLength: Toast.LENGTH_SHORT,
@@ -685,10 +681,9 @@ class _StoreHomePageState extends State<StoreHomePage>
               leading: Container(
                   margin: EdgeInsets.only(left: 7),
                   alignment: Alignment.center,
-                  child: FlatButton(
-                    padding: EdgeInsets.all(0),
+                  child: TextButton(
                     onPressed: () {
-                      _tabController.index = 0;
+                      _tabController!.index = 0;
                     },
                     child: Image.asset(
                       'assets/images/duruduru_logo.png',
@@ -1455,7 +1450,7 @@ class _StoreHomePageState extends State<StoreHomePage>
       },
       onLongPress: () async {
         // 상품 수정 및 삭제 기능 -> 어드민 권한으로 동작
-        if (widget.user.isAdmin) {
+        if (widget.user!.isAdmin) {
           // 메뉴에서 선택한 값(value)를 리턴함
           var selected = await showMenu(
             color: Colors.cyan[100],
@@ -1516,10 +1511,10 @@ class _StoreHomePageState extends State<StoreHomePage>
                           ],
                         ),
                         actions: [
-                          FlatButton(
+                          TextButton(
                               onPressed: () => Navigator.pop(context),
                               child: Text('아니요')),
-                          FlatButton(
+                          TextButton(
                               onPressed: () {
                                 Navigator.pop(context);
                                 showDialog(
@@ -1530,7 +1525,7 @@ class _StoreHomePageState extends State<StoreHomePage>
                                             decoration: BoxDecoration(
                                                 border: Border.all(
                                                     width: 1,
-                                                    color: Colors.orange[200]),
+                                                    color: Colors.orange[200]!),
                                                 color: Colors.blue[100]),
                                             child: TextField(
                                               inputFormatters: [
@@ -1543,11 +1538,11 @@ class _StoreHomePageState extends State<StoreHomePage>
                                             ),
                                           ),
                                           actions: [
-                                            FlatButton(
+                                            TextButton(
                                                 onPressed: () =>
                                                     Navigator.pop(ctx),
                                                 child: Text('취소')),
-                                            FlatButton(
+                                            TextButton(
                                                 onPressed: () async {
                                                   var result =
                                                       await _certifyAdminAccess(); // 어드민 키 인증
@@ -1694,7 +1689,7 @@ class _StoreHomePageState extends State<StoreHomePage>
   }
 
   Widget addProductForAdmin(Size size) {
-    return widget.user.isAdmin ? managerAddingProductLayout(size) : SizedBox();
+    return widget.user!.isAdmin ? managerAddingProductLayout(size) : SizedBox();
   }
 
   Widget _getItemTileOfCurrentCategory(int index, int position) {
@@ -1755,7 +1750,7 @@ class _StoreHomePageState extends State<StoreHomePage>
           color: Color(0xFF9EE1E5).withOpacity(0.7),
           borderRadius: BorderRadius.circular(15),
           border: Border.all(color: Color(0xFF9EE1E5), width: 2)),
-      child: FlatButton(
+      child: TextButton(
         onPressed: () {
           setState(() {
             _isSearch = false;

@@ -1,16 +1,13 @@
 import 'dart:convert';
-import 'dart:ui';
-
 import 'package:asgshighschool/data/user.dart';
 import 'package:asgshighschool/store/DetailQnAPage.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class MyQnAPage extends StatefulWidget {
   MyQnAPage({this.user});
 
-  final User user;
+  final User? user;
 
   @override
   _MyQnAPageState createState() => _MyQnAPageState();
@@ -23,7 +20,7 @@ class _MyQnAPageState extends State<MyQnAPage> {
   /// 나(uid)의 모든 문의 내역 데이터들을 요청하는 작업
   Future<bool> _getMyQnAData() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getUserQnA.php';
-    final response = await http.get(url + '?uid=${widget.user.uid}');
+    final response = await http.get(Uri.parse(url + '?uid=${widget.user!.uid}'));
 
     if (response.statusCode == 200) {
       String result = utf8
@@ -102,8 +99,8 @@ class _MyQnAPageState extends State<MyQnAPage> {
     );
   }
 
-  Widget _itemTile(String title, String date, String category, bool isAnswer,
-      Size size, Map data) {
+  Widget _itemTile(String title, String date, String? category, bool isAnswer,
+      Size size, Map? data) {
     return GestureDetector(
       onTap: () {
         Navigator.push(

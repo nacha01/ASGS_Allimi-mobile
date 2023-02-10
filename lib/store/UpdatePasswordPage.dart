@@ -1,16 +1,13 @@
 import 'dart:convert';
-import 'dart:ui';
-
 import 'package:asgshighschool/data/user.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
 class UpdatePasswordPage extends StatefulWidget {
   UpdatePasswordPage({this.user});
 
-  final User user;
+  final User? user;
 
   @override
   _UpdatePasswordPageState createState() => _UpdatePasswordPageState();
@@ -25,8 +22,8 @@ class _UpdatePasswordPageState extends State<UpdatePasswordPage> {
   /// 새로운 비밀번호 업데이트 요청을 하는 작업
   Future<int> _updatePasswordRequest() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_updatePassword.php';
-    final response = await http.post(url, body: <String, String>{
-      'uid': widget.user.uid,
+    final response = await http.post(Uri.parse(url), body: <String, String?>{
+      'uid': widget.user!.uid,
       'origin': _currentController.text,
       'new': _newController.text
     });
@@ -187,7 +184,7 @@ class _UpdatePasswordPageState extends State<UpdatePasswordPage> {
                 border: Border.all(width: 0.5, color: Colors.black),
                 borderRadius: BorderRadius.circular(6),
                 color: Colors.white24),
-            child: FlatButton(
+            child: TextButton(
                 onPressed: () async {
                   if (_newController.text != _againController.text) {
                     setState(() {

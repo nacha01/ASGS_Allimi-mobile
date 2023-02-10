@@ -1,17 +1,13 @@
 import 'dart:convert';
-import 'dart:ui';
-
 import 'package:asgshighschool/data/category.dart';
 import '../data/provider/exist_cart.dart';
 import 'package:asgshighschool/data/product.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:crypto/crypto.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:hex/hex.dart';
 import 'package:http/http.dart' as http;
-import 'package:cp949/cp949.dart' as cp949;
+import 'package:cp949_dart/cp949_dart.dart' as cp949;
 import 'package:provider/provider.dart';
 
 class PaymentCompletePage extends StatefulWidget {
@@ -29,18 +25,18 @@ class PaymentCompletePage extends StatefulWidget {
       this.option,
       this.receiveMethod});
 
-  final int totalPrice;
-  final Map responseData;
-  final bool isCart;
-  final Product direct; // 바로 결제 시 그 단일 상품 하나
-  final List<Map> cart; // 장바구니에서 결제시 장바구니 리스트 Map 데이터
-  final int productCount; // 바로 결제시 상품의 개수
-  final User user;
-  final List optionList;
-  final List selectList;
-  final String receiveMethod;
-  final String option;
-  final String location;
+  final int? totalPrice;
+  final Map? responseData;
+  final bool? isCart;
+  final Product? direct; // 바로 결제 시 그 단일 상품 하나
+  final List<Map?>? cart; // 장바구니에서 결제시 장바구니 리스트 Map 데이터
+  final int? productCount; // 바로 결제시 상품의 개수
+  final User? user;
+  final List? optionList;
+  final List? selectList;
+  final String? receiveMethod;
+  final String? option;
+  final String? location;
 
   @override
   _PaymentCompletePageState createState() => _PaymentCompletePageState();
@@ -48,10 +44,10 @@ class PaymentCompletePage extends StatefulWidget {
 
 class _PaymentCompletePageState extends State<PaymentCompletePage> {
   bool _isCreditSuccess = true;
-  String _resultMessage = '';
+  String? _resultMessage = '';
   bool _isFinished = false;
-  Map _cancelResponse;
-  String _resultCode = '';
+  Map? _cancelResponse;
+  String? _resultCode = '';
   static const _KEY =
       '0DVRz8vSDD5HvkWRwSxpjVhhx7OlXEViTciw5lBQAvSyYya9yf0K0Is+JbwiR9yYC96rEH2XIbfzeHXgqzSAFQ==';
   static const _MID = 'asgscoop1m';
@@ -90,17 +86,17 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
   /// 주문을 등록하는 요청
   Future<bool> _addOrderRequest() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_addOrder.php';
-    final response = await http.post(url, body: <String, String>{
-      'oid': widget.responseData['Moid'],
-      'uid': widget.user.uid,
+    final response = await http.post(Uri.parse(url), body: <String, String?>{
+      'oid': widget.responseData!['Moid'],
+      'uid': widget.user!.uid,
       'oDate': DateTime.now().toString(),
-      'price': int.parse(widget.responseData['Amt']).toString(),
+      'price': int.parse(widget.responseData!['Amt']).toString(),
       'oState': '1', // '결제완료' 상태
       'recvMethod': widget.receiveMethod,
       'pay': '0', // 신용카드
       'option': widget.option.toString().trim(),
       'location': widget.location,
-      'TID': widget.responseData['TID'],
+      'TID': widget.responseData!['TID'],
     });
     if (response.statusCode == 200) {
       return true;
@@ -110,10 +106,10 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
   }
 
   /// orderDetail 테이블에 oid인 값에 대하여 어떤 상품인지 등록하는 http 요청
-  Future<bool> _addOrderDetailRequest(int pid, int quantity) async {
+  Future<bool> _addOrderDetailRequest(int pid, int? quantity) async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_addOrderDetail.php';
-    final response = await http.post(url, body: <String, String>{
-      'oid': widget.responseData['Moid'],
+    final response = await http.post(Uri.parse(url), body: <String, String?>{
+      'oid': widget.responseData!['Moid'],
       'pid': pid.toString(),
       'quantity': quantity.toString()
     });
@@ -130,23 +126,23 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
 
     if (!orderRes) return false;
 
-    if (widget.isCart) {
-      for (int i = 0; i < widget.cart.length; ++i) {
+    if (widget.isCart!) {
+      for (int i = 0; i < widget.cart!.length; ++i) {
         var cartRes = await _addOrderDetailRequest(
-            int.parse(widget.cart[i]['cPID']),
-            int.parse(widget.cart[i]['quantity']));
+            int.parse(widget.cart![i]!['cPID']),
+            int.parse(widget.cart![i]!['quantity']));
 
         var deleteRes =
-            await _deleteCartRequest(int.parse(widget.cart[i]['cID']));
+            await _deleteCartRequest(int.parse(widget.cart![i]!['cID']));
 
         var renewCountRes = await _updateProductCountRequest(
-            int.parse(widget.cart[i]['cPID']),
-            int.parse(widget.cart[i]['quantity']),
+            int.parse(widget.cart![i]!['cPID']),
+            int.parse(widget.cart![i]!['quantity']),
             '-');
 
         var sellCountRes = await _updateEachProductSellCountRequest(
-            int.parse(widget.cart[i]['cPID']),
-            int.parse(widget.cart[i]['quantity']),
+            int.parse(widget.cart![i]!['cPID']),
+            int.parse(widget.cart![i]!['quantity']),
             '+');
 
         var buyerCountRes = await _updateUserBuyCountRequest('+');
@@ -159,12 +155,12 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
       }
     } else {
       var detRes = await _addOrderDetailRequest(
-          widget.direct.prodID, widget.productCount);
+          widget.direct!.prodID, widget.productCount);
       var renewCountRes = await _updateProductCountRequest(
-          widget.direct.prodID, widget.productCount, '-');
+          widget.direct!.prodID, widget.productCount, '-');
 
       var sellCountRes = await _updateEachProductSellCountRequest(
-          widget.direct.prodID, widget.productCount, '+');
+          widget.direct!.prodID, widget.productCount, '+');
 
       var buyerCountRes = await _updateUserBuyCountRequest('+');
 
@@ -181,17 +177,17 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
     if (code == '2001') {
       var res = await _updateOrderState(4);
       if (!res) return false;
-      if (widget.isCart) {
-        for (int i = 0; i < widget.cart.length; ++i) {
+      if (widget.isCart!) {
+        for (int i = 0; i < widget.cart!.length; ++i) {
           var renewCountRes = await _updateProductCountRequest(
-              int.parse(widget.cart[i]['cPID']),
-              int.parse(widget.cart[i]['quantity']),
+              int.parse(widget.cart![i]!['cPID']),
+              int.parse(widget.cart![i]!['quantity']),
               '+');
           // 재고 수정
 
           var sellCountRes = await _updateEachProductSellCountRequest(
-              int.parse(widget.cart[i]['cPID']),
-              int.parse(widget.cart[i]['quantity']),
+              int.parse(widget.cart![i]!['cPID']),
+              int.parse(widget.cart![i]!['quantity']),
               '-');
           // 누적 판매수 수정
 
@@ -204,10 +200,10 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
         }
       } else {
         var renewCountRes = await _updateProductCountRequest(
-            widget.direct.prodID, widget.productCount, '+');
+            widget.direct!.prodID, widget.productCount, '+');
 
         var sellCountRes = await _updateEachProductSellCountRequest(
-            widget.direct.prodID, widget.productCount, '-');
+            widget.direct!.prodID, widget.productCount, '-');
 
         var buyerCountRes = await _updateUserBuyCountRequest('-');
 
@@ -223,8 +219,8 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
 
   Future<bool> _updateOrderState(int state) async {
     String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_updateOrderState.php?oid=${widget.responseData['Moid']}&state=$state';
-    final response = await http.get(url);
+        'http://nacha01.dothome.co.kr/sin/arlimi_updateOrderState.php?oid=${widget.responseData!['Moid']}&state=$state';
+    final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
       return true;
     } else {
@@ -236,7 +232,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
   Future<bool> _deleteCartRequest(int cid) async {
     String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_deleteCart.php?cid=$cid';
-    final response = await http.get(url);
+    final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
       return true;
@@ -247,10 +243,10 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
 
   /// 각 상품의 수량을 [quantity]만큼 [operator] 연산자로 수정하는 요청
   Future<bool> _updateProductCountRequest(
-      int pid, int quantity, String operator) async {
+      int pid, int? quantity, String operator) async {
     String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_updateProductCount.php';
-    final response = await http.post(url, body: <String, String>{
+    final response = await http.post(Uri.parse(url), body: <String, String>{
       'pid': pid.toString(),
       'quantity': quantity.toString(),
       'oper': operator
@@ -264,11 +260,11 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
 
   /// 각 상품의 누적 판매수를 반영하는 요청
   Future<bool> _updateEachProductSellCountRequest(
-      int pid, int quantity, String operator) async {
+      int pid, int? quantity, String operator) async {
     String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_updateProductSellCount.php';
     final response =
-        await http.get(url + '?pid=$pid&quantity=$quantity&oper=$operator');
+        await http.get(Uri.parse(url + '?pid=$pid&quantity=$quantity&oper=$operator'));
     if (response.statusCode == 200) {
       return true;
     } else {
@@ -279,8 +275,8 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
   /// 이 주문을 요청한 사용자의 누적 구매수를 [operator]대로 연산하는 요청
   Future<bool> _updateUserBuyCountRequest(String operator) async {
     String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_updateUserBuyCount.php?uid=${widget.user.uid}&oper=$operator';
-    final response = await http.get(url);
+        'http://nacha01.dothome.co.kr/sin/arlimi_updateUserBuyCount.php?uid=${widget.user!.uid}&oper=$operator';
+    final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
       return true;
@@ -289,7 +285,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
     }
   }
 
-  Future<String> _cancelPaymentRequest() async {
+  Future<String?> _cancelPaymentRequest() async {
     String url = 'https://webapi.nicepay.co.kr/webapi/cancel_process.jsp';
     _ediDate = DateTime.now()
         .toString()
@@ -297,22 +293,22 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
         .replaceAll(' ', '')
         .replaceAll(':', '')
         .split('.')[0];
-    final response = await http.post(url, body: <String, String>{
-      'TID': widget.responseData['TID'],
+    final response = await http.post(Uri.parse(url), body: <String, String?>{
+      'TID': widget.responseData!['TID'],
       'MID': _MID,
-      'Moid': widget.responseData['Moid'],
-      'CancelAmt': int.parse(widget.responseData['Amt']).toString(),
+      'Moid': widget.responseData!['Moid'],
+      'CancelAmt': int.parse(widget.responseData!['Amt']).toString(),
       'CancelMsg': '결제자의 요청에 의한 취소',
       'PartialCancelCode': '0',
       'EdiDate': _ediDate,
-      'SignData': _getSignData(int.parse(widget.responseData['Amt'])),
+      'SignData': _getSignData(int.parse(widget.responseData!['Amt'])),
       'CharSet': 'euc-kr',
       'EdiType': 'JSON'
     });
 
     if (response.statusCode == 200) {
       _cancelResponse = jsonDecode(cp949.decode(response.bodyBytes)); //???
-      return _cancelResponse['ResultCode'];
+      return _cancelResponse!['ResultCode'];
     } else {
       return 'Error';
     }
@@ -321,9 +317,9 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
   @override
   void initState() {
     _isCreditSuccess =
-        widget.responseData['ResultCode'] == '3001' ? true : false;
-    _resultMessage = widget.responseData['ResultMsg'];
-    _resultCode = widget.responseData['ResultCode'];
+        widget.responseData!['ResultCode'] == '3001' ? true : false;
+    _resultMessage = widget.responseData!['ResultMsg'];
+    _resultCode = widget.responseData!['ResultCode'];
     super.initState();
     _processAfterPaying();
   }
@@ -402,7 +398,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
     );
   }
 
-  Widget _layoutAccordingToResultCode(String resultCode, Size size) {
+  Widget _layoutAccordingToResultCode(String? resultCode, Size size) {
     switch (resultCode) {
       case '3001': // 카드 결제 성공
         return SingleChildScrollView(
@@ -432,7 +428,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
                 height: size.height * 0.01,
               ),
               Text(
-                '주문번호 ${widget.responseData['Moid']}',
+                '주문번호 ${widget.responseData!['Moid']}',
                 style: TextStyle(
                     fontWeight: FontWeight.bold, color: Colors.lightBlue),
               ),
@@ -445,7 +441,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
               SizedBox(
                 height: size.height * 0.01,
               ),
-              widget.option.isNotEmpty //여기는 뭐지? ???
+              widget.option!.isNotEmpty //여기는 뭐지? ???
                   ? Container(
                       width: size.width * 0.8,
                       padding: EdgeInsets.all(size.width * 0.02),
@@ -462,7 +458,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
                                 color: Colors.black54),
                           ),
                           Text(
-                            widget.option,
+                            widget.option!,
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 12),
                           ),
@@ -479,7 +475,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
                   width: size.width * 0.6,
                   padding: EdgeInsets.all(size.width * 0.02),
                   child: Text(
-                    '결제 금액  ${_formatPrice(int.parse(widget.responseData['Amt']))}원',
+                    '결제 금액  ${_formatPrice(int.parse(widget.responseData!['Amt']))}원',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                   ),
                 ),
@@ -578,7 +574,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
                                                           color: Colors.green,
                                                           fontSize: 16)),
                                                   content: Text(
-                                                      '${_cancelResponse['ResultMsg']}',
+                                                      '${_cancelResponse!['ResultMsg']}',
                                                       //여기가 취소 성공이라는 메세지인가?
                                                       style: TextStyle(
                                                           fontWeight:
@@ -611,7 +607,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
                                                         fontSize: 16),
                                                   ),
                                                   content: Text(
-                                                      '${_cancelResponse['ResultMsg']} (code-${_cancelResponse['ResultCode']}',
+                                                      '${_cancelResponse!['ResultMsg']} (code-${_cancelResponse!['ResultCode']}',
                                                       style: TextStyle(
                                                           fontWeight:
                                                               FontWeight.bold,
@@ -744,7 +740,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
                                         fontWeight: FontWeight.bold,
                                         color: Colors.green,
                                         fontSize: 16)),
-                                content: Text('${_cancelResponse['ResultMsg']}',
+                                content: Text('${_cancelResponse!['ResultMsg']}',
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 14)),
@@ -770,7 +766,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
                                       fontSize: 16),
                                 ),
                                 content: Text(
-                                    '${_cancelResponse['ResultMsg']} (code-${_cancelResponse['ResultCode']}',
+                                    '${_cancelResponse!['ResultMsg']} (code-${_cancelResponse!['ResultCode']}',
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 14)),
@@ -809,7 +805,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
                 height: size.height * 0.03,
               ),
               Text(
-                ' | 실패 사유 |\n$_resultMessage (code-${widget.responseData['ResultCode']})',
+                ' | 실패 사유 |\n$_resultMessage (code-${widget.responseData!['ResultCode']})',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                 ),
@@ -834,7 +830,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
     }
   }
 
-  Widget _productLayout(String name, int quantity, int category, Size size) {
+  Widget _productLayout(String? name, int? quantity, int category, Size size) {
     return Container(
       width: size.width * 0.8,
       alignment: Alignment.center,
@@ -864,17 +860,17 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
 
   List<Widget> _getProductList(Size size) {
     List<Widget> list = [];
-    if (widget.isCart) {
-      for (int i = 0; i < widget.cart.length; ++i) {
+    if (widget.isCart!) {
+      for (int i = 0; i < widget.cart!.length; ++i) {
         list.add(_productLayout(
-            widget.cart[i]['prodName'],
-            int.parse(widget.cart[i]['quantity']),
-            int.parse(widget.cart[i]['category']),
+            widget.cart![i]!['prodName'],
+            int.parse(widget.cart![i]!['quantity']),
+            int.parse(widget.cart![i]!['category']),
             size));
       }
     } else {
-      list.add(_productLayout(widget.direct.prodName, widget.productCount,
-          widget.direct.category, size));
+      list.add(_productLayout(widget.direct!.prodName, widget.productCount,
+          widget.direct!.category, size));
     }
     return list;
   }

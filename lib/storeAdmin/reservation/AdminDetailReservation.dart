@@ -1,20 +1,15 @@
-import 'dart:convert';
-import 'dart:ui';
-
 import 'package:asgshighschool/LocalNotifyManager.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'ReservationListPage.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 
 class AdminDetailReservation extends StatefulWidget {
-  final List reservationList;
-  final User user;
-  final ProductCount productCount;
+  final List? reservationList;
+  final User? user;
+  final ProductCount? productCount;
 
   AdminDetailReservation({this.reservationList, this.user, this.productCount});
 
@@ -28,18 +23,18 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
   List<int> _indexList = [];
   bool _simulationOn = false;
   TextEditingController _countController = TextEditingController();
-  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
   /// 넘겨받은 모든 예약 정보들 중에서 예약 처리가 필요한 예약 데이터만 분류하는 전처리 작업
   void _preProcessing() {
-    for (int i = 0; i < widget.reservationList.length; ++i) {
-      if (widget.productCount.pid ==
-              int.parse(widget.reservationList[i]['detail'][0]['oPID']) &&
-          int.parse(widget.reservationList[i]['orderState']) != 0 &&
-          (int.parse(widget.reservationList[i]['orderState']) >= 1 &&
-              int.parse(widget.reservationList[i]['orderState']) < 3 &&
-              int.parse(widget.reservationList[i]['resvState']) == 1)) {
-        _productReservationList.add(widget.reservationList[i]);
+    for (int i = 0; i < widget.reservationList!.length; ++i) {
+      if (widget.productCount!.pid ==
+              int.parse(widget.reservationList![i]['detail'][0]['oPID']) &&
+          int.parse(widget.reservationList![i]['orderState']) != 0 &&
+          (int.parse(widget.reservationList![i]['orderState']) >= 1 &&
+              int.parse(widget.reservationList![i]['orderState']) < 3 &&
+              int.parse(widget.reservationList![i]['resvState']) == 1)) {
+        _productReservationList.add(widget.reservationList![i]);
       }
     }
     _productReservationList = List.from(_productReservationList.reversed);
@@ -53,8 +48,8 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
   /// @return : 업데이트 성공 여부
   Future<bool> _updateNewCount(int count) async {
     String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_updateProductCountForResv.php?pid=${widget.productCount.pid.toString() + '&count=$count'}';
-    final response = await http.get(url);
+        'http://nacha01.dothome.co.kr/sin/arlimi_updateProductCountForResv.php?pid=${widget.productCount!.pid.toString() + '&count=$count'}';
+    final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
       return true;
@@ -69,10 +64,10 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
   Future<bool> _sendPushMessage(Map data) async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_sendPushForResv.php';
     print(data['token']);
-    final response = await http.post(url, body: <String, String>{
+    final response = await http.post(Uri.parse(url), body: <String, String?>{
       'token': data['token'],
       'title': '[두루두루 상품 입고]',
-      'message': '예약하신 "${widget.productCount.name}" 상품이 입고되었습니다.\n 상품 수령바랍니다.'
+      'message': '예약하신 "${widget.productCount!.name}" 상품이 입고되었습니다.\n 상품 수령바랍니다.'
     });
 
     if (response.statusCode == 200) {
@@ -84,9 +79,9 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
   }
 
   /// push notification 을 보냄에 따라 '수령 준비' 상태로 변경하기 위해 주문 DB의 orderState 의 값을 2로 변경을 요청하는 작업
-  Future<bool> _convertOrderState(String oid) async {
+  Future<bool> _convertOrderState(String? oid) async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_convertState.php';
-    final response = await http.get(url + '?oid=$oid');
+    final response = await http.get(Uri.parse(url + '?oid=$oid'));
     if (response.statusCode == 200) {
       print(response.body);
       return true;
@@ -150,41 +145,41 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
     _preProcessing();
     super.initState();
     print(widget.reservationList);
-    _firebaseMessaging.configure(
-      onMessage: (Map<String, dynamic> message) async {
-        localNotifyManager.showNotification(message['notification']["title"],
-            message["notification"]["body"].toString(), message);
-      },
-      onLaunch: (Map<String, dynamic> message) async {
-        localNotifyManager.showNotification(message['notification']["title"],
-            message["notification"]["body"].toString(), message);
-        print("onLaunch: $message");
-      },
-      onResume: (Map<String, dynamic> message) async {
-        localNotifyManager.showNotification(message['notification']["title"],
-            message["notification"]["body"].toString(), message);
-        print("onResume: $message");
-      },
-    );
-    _firebaseMessaging.requestNotificationPermissions(
-        const IosNotificationSettings(sound: true, badge: true, alert: true));
-
-    _firebaseMessaging.onIosSettingsRegistered
-        .listen((IosNotificationSettings settings) {
-      print("Settings registered: $settings");
-    });
-    localNotifyManager.setOnNotificationClick(onNotificationClick);
-    localNotifyManager.setOnNotificationReceive(onNotificationReceive);
+    // _firebaseMessaging.configure(
+    //   onMessage: (Map<String, dynamic> message) async {
+    //     localNotifyManager.showNotification(message['notification']["title"],
+    //         message["notification"]["body"].toString(), message);
+    //   },
+    //   onLaunch: (Map<String, dynamic> message) async {
+    //     localNotifyManager.showNotification(message['notification']["title"],
+    //         message["notification"]["body"].toString(), message);
+    //     print("onLaunch: $message");
+    //   },
+    //   onResume: (Map<String, dynamic> message) async {
+    //     localNotifyManager.showNotification(message['notification']["title"],
+    //         message["notification"]["body"].toString(), message);
+    //     print("onResume: $message");
+    //   },
+    // );
+    // _firebaseMessaging.requestNotificationPermissions(
+    //     const IosNotificationSettings(sound: true, badge: true, alert: true));
+    //
+    // _firebaseMessaging.onIosSettingsRegistered
+    //     .listen((IosNotificationSettings settings) {
+    //   print("Settings registered: $settings");
+    // });
+    // localNotifyManager.setOnNotificationClick(onNotificationClick);
+    // localNotifyManager.setOnNotificationReceive(onNotificationReceive);
   }
 
-  onNotificationClick(String payload) {
-    print(payload);
-    Map message = json.decode(payload);
-  }
-
-  onNotificationReceive(ReceiveNotification notification) {
-    print('notification Receive : ${notification.id}');
-  }
+  // onNotificationClick(String payload) {
+  //   print(payload);
+  //   Map message = json.decode(payload);
+  // }
+  //
+  // onNotificationReceive(ReceiveNotification notification) {
+  //   print('notification Receive : ${notification.id}');
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -198,7 +193,7 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
         appBar: AppBar(
           backgroundColor: Color(0xFF9EE1E5),
           title: Text(
-            '[${widget.productCount.name}] 예약 정보',
+            '[${widget.productCount!.name}] 예약 정보',
             style: TextStyle(
                 color: Colors.black, fontWeight: FontWeight.bold, fontSize: 14),
           ),
@@ -269,7 +264,7 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
                 Container(
                   width: size.width * 0.23,
                   height: size.height * 0.04,
-                  child: FlatButton(
+                  child: TextButton(
                     onPressed: () {
                       showDialog(
                           context: context,
@@ -277,7 +272,7 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
                                 title: Text('재고 수정'),
                                 content: Text('정말로 수정하시겠습니까?'),
                                 actions: [
-                                  FlatButton(
+                                  TextButton(
                                       onPressed: () async {
                                         await _updateNewCount(
                                             int.parse(_countController.text));
@@ -288,7 +283,7 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
                                         Navigator.pop(context);
                                       },
                                       child: Text('예')),
-                                  FlatButton(
+                                  TextButton(
                                       onPressed: () => Navigator.pop(context),
                                       child: Text('아니오'))
                                 ],
@@ -351,7 +346,7 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
               children: [
                 Container(
                   margin: EdgeInsets.all(size.width * 0.01),
-                  child: FlatButton(
+                  child: TextButton(
                     onPressed: int.parse(_productReservationList[0]['detail'][0]
                                     ['pInfo']['stockCount']) <
                                 1 ||
@@ -410,7 +405,7 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
                 ),
                 Container(
                   margin: EdgeInsets.all(size.width * 0.01),
-                  child: FlatButton(
+                  child: TextButton(
                     onPressed: int.parse(_productReservationList[0]['detail'][0]
                                     ['pInfo']['stockCount']) <
                                 1 ||
@@ -439,7 +434,7 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
                                           ),
                                         ),
                                         actions: [
-                                          FlatButton(
+                                          TextButton(
                                             onPressed: () =>
                                                 Navigator.pop(context),
                                             child: Text(
@@ -447,7 +442,6 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold),
                                             ),
-                                            padding: EdgeInsets.all(0),
                                           )
                                         ],
                                       ));

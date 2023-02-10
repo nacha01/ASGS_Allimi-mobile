@@ -1,21 +1,18 @@
 import 'dart:convert';
-import 'dart:ui';
 
 import 'package:asgshighschool/data/announce.dart';
 import '../data/provider/renew_user.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:asgshighschool/store/DetailAnnouncePage.dart';
 import '../storeAdmin/post/AddAnnouncePage.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 class AnnouncePage extends StatefulWidget {
   AnnouncePage({this.user});
 
-  final User user;
+  final User? user;
 
   @override
   _AnnouncePageState createState() => _AnnouncePageState();
@@ -27,7 +24,7 @@ class _AnnouncePageState extends State<AnnouncePage> {
   TextEditingController _searchController = TextEditingController();
   List _searchCategoryList = ['제목', '날짜', '작성자'];
   List<Announce> _searchList = [];
-  var _selectedCategory = '제목';
+  String? _selectedCategory = '제목';
   bool _isSearch = false;
   bool _isLoading = true; // 로딩 중인지 판단
   bool _corporationInfoClicked = false;
@@ -35,7 +32,7 @@ class _AnnouncePageState extends State<AnnouncePage> {
   /// 모든 공지사항 데이터를 요청하는 작업
   Future<bool> _getAnnounceRequest() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getAnnounce.php';
-    final response = await http.get(url);
+    final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
       String result = utf8
           .decode(response.bodyBytes)
@@ -60,9 +57,9 @@ class _AnnouncePageState extends State<AnnouncePage> {
 
   /// 특정 공지사항 글에 대해서 조회수 증가 요청
   Future<int> _increaseViewCountRequest(int anID) async {
-    String uri =
+    String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_increaseViewCount.php';
-    final response = await http.get(uri + '?anID=$anID');
+    final response = await http.get(Uri.parse(url + '?anID=$anID'));
 
     if (response.statusCode == 200) {
       String result = utf8
@@ -87,7 +84,7 @@ class _AnnouncePageState extends State<AnnouncePage> {
 
   /// parameter로 들어온 검색 기준에 따라 검색 하고자 하는 단어가 포함되는 공지사항 데이터를
   /// List 에 추가하는 작업
-  void _searchAnnounceByCategory(String category, String toSearch) {
+  void _searchAnnounceByCategory(String? category, String toSearch) {
     if (toSearch.isEmpty) {
       setState(() {
         _isSearch = false;
@@ -98,21 +95,21 @@ class _AnnouncePageState extends State<AnnouncePage> {
     switch (category) {
       case '제목':
         for (int i = 0; i < _announceList.length; ++i) {
-          if (_announceList[i].title.contains(toSearch)) {
+          if (_announceList[i].title!.contains(toSearch)) {
             _searchList.add(_announceList[i]);
           }
         }
         break;
       case '날짜':
         for (int i = 0; i < _announceList.length; ++i) {
-          if (_announceList[i].writeDate.contains(toSearch)) {
+          if (_announceList[i].writeDate!.contains(toSearch)) {
             _searchList.add(_announceList[i]);
           }
         }
         break;
       case '작성자':
         for (int i = 0; i < _announceList.length; ++i) {
-          if (_announceList[i].writer.contains(toSearch)) {
+          if (_announceList[i].writer!.contains(toSearch)) {
             _searchList.add(_announceList[i]);
           }
         }
@@ -211,7 +208,7 @@ class _AnnouncePageState extends State<AnnouncePage> {
                         value: value,
                       );
                     }).toList(),
-                    onChanged: (value) {
+                    onChanged: (dynamic value) {
                       setState(() {
                         _selectedCategory = value;
                       });
@@ -227,7 +224,7 @@ class _AnnouncePageState extends State<AnnouncePage> {
               SizedBox(
                 height: size.height * 0.01,
               ),
-              providedUser.user.isAdmin
+              providedUser.user!.isAdmin
                   ? Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
@@ -240,7 +237,7 @@ class _AnnouncePageState extends State<AnnouncePage> {
                                 border:
                                     Border.all(width: 2, color: Colors.black54),
                                 borderRadius: BorderRadius.circular(8)),
-                            child: FlatButton(
+                            child: TextButton(
                                 onPressed: () async {
                                   var res = await Navigator.push(
                                       context,
@@ -302,11 +299,11 @@ class _AnnouncePageState extends State<AnnouncePage> {
                                   child: ListView.builder(
                                     itemBuilder: (context, index) =>
                                         _announceItemLayout(
-                                            title: _searchList[index].title,
-                                            writer: _searchList[index].writer,
+                                            title: _searchList[index].title!,
+                                            writer: _searchList[index].writer!,
                                             date: _searchList[index].writeDate,
                                             isNew: _compareDateIsNew(
-                                                _searchList[index].writeDate),
+                                                _searchList[index].writeDate!),
                                             size: size,
                                             announce: _searchList[index]),
                                     itemCount: _searchList.length,
@@ -316,11 +313,11 @@ class _AnnouncePageState extends State<AnnouncePage> {
                               child: ListView.builder(
                                 itemBuilder: (context, index) =>
                                     _announceItemLayout(
-                                        title: _announceList[index].title,
-                                        writer: _announceList[index].writer,
+                                        title: _announceList[index].title!,
+                                        writer: _announceList[index].writer!,
                                         date: _announceList[index].writeDate,
                                         isNew: _compareDateIsNew(
-                                            _announceList[index].writeDate),
+                                            _announceList[index].writeDate!),
                                         size: size,
                                         announce: _announceList[index]),
                                 itemCount: _announceList.length,
@@ -405,15 +402,15 @@ class _AnnouncePageState extends State<AnnouncePage> {
   }
 
   Widget _announceItemLayout(
-      {String title,
-      String writer,
-      String date,
-      bool isNew,
-      Size size,
-      Announce announce}) {
+      {required String title,
+      required String writer,
+      String? date,
+      required bool isNew,
+      required Size size,
+      Announce? announce}) {
     return GestureDetector(
       onTap: () async {
-        int renew = await _increaseViewCountRequest(announce.announceID);
+        int renew = await _increaseViewCountRequest(announce!.announceID);
         var res = await Navigator.push(
             context,
             MaterialPageRoute(
@@ -458,7 +455,7 @@ class _AnnouncePageState extends State<AnnouncePage> {
                               borderRadius: BorderRadius.circular(8),
                               color: Colors.yellowAccent[100],
                               border: Border.all(
-                                  width: 1, color: Colors.redAccent[200])),
+                                  width: 1, color: Colors.redAccent[200]!)),
                           width: size.width * 0.1,
                         )
                       : SizedBox(
@@ -514,7 +511,7 @@ class _AnnouncePageState extends State<AnnouncePage> {
           color: Color(0xFF9EE1E5).withOpacity(0.7),
           borderRadius: BorderRadius.circular(15),
           border: Border.all(color: Color(0xFF9EE1E5), width: 2)),
-      child: FlatButton(
+      child: TextButton(
         onPressed: () {
           setState(() {
             _isSearch = false;

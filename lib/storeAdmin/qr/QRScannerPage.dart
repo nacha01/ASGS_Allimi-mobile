@@ -1,7 +1,4 @@
 import 'dart:io';
-import 'dart:ui';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
@@ -10,7 +7,7 @@ import 'package:http/http.dart' as http;
 class QRScannerPage extends StatefulWidget {
   QRScannerPage({this.oID});
 
-  final String oID;
+  final String? oID;
 
   @override
   _QRScannerPageState createState() => _QRScannerPageState();
@@ -18,8 +15,8 @@ class QRScannerPage extends StatefulWidget {
 
 class _QRScannerPageState extends State<QRScannerPage> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
-  Barcode result;
-  QRViewController controller;
+  Barcode? result;
+  QRViewController? controller;
   bool _isForValidate = false;
   bool _completed = false;
   bool _isUsed = false;
@@ -27,7 +24,7 @@ class _QRScannerPageState extends State<QRScannerPage> {
 
   Future<bool> _orderCompleteRequest() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_completeOrder.php';
-    final response = await http.get(url + '?oid=${widget.oID}');
+    final response = await http.get(Uri.parse(url + '?oid=${widget.oID}'));
 
     if (response.statusCode == 200) {
       print(response.body);
@@ -41,9 +38,9 @@ class _QRScannerPageState extends State<QRScannerPage> {
   void reassemble() {
     super.reassemble();
     if (Platform.isAndroid) {
-      controller.pauseCamera();
+      controller!.pauseCamera();
     }
-    controller.resumeCamera();
+    controller!.resumeCamera();
   }
 
   @override
@@ -182,7 +179,7 @@ class _QRScannerPageState extends State<QRScannerPage> {
                                           fontSize: 15),
                                     ),
                                     Text(
-                                      '올바른 주문임이 인증되었습니다. [${result.code}]',
+                                      '올바른 주문임이 인증되었습니다. [${result!.code}]',
                                       style: TextStyle(
                                           fontSize: 13,
                                           fontWeight: FontWeight.bold),
@@ -198,7 +195,7 @@ class _QRScannerPageState extends State<QRScannerPage> {
                                           color: Colors.red),
                                     ),
                                     Text(
-                                      '올바른 주문 번호가 아닙니다. [${result.code}]',
+                                      '올바른 주문 번호가 아닙니다. [${result!.code}]',
                                       style: TextStyle(
                                           fontSize: 12,
                                           fontWeight: FontWeight.bold),
@@ -220,7 +217,7 @@ class _QRScannerPageState extends State<QRScannerPage> {
                                                 color: Colors.black26),
                                             borderRadius:
                                                 BorderRadius.circular(10)),
-                                        child: FlatButton(
+                                        child: TextButton(
                                             onPressed: () {
                                               if (_isChecked)
                                                 Navigator.pop(context, true);
@@ -242,7 +239,7 @@ class _QRScannerPageState extends State<QRScannerPage> {
                                                 color: Colors.black26),
                                             borderRadius:
                                                 BorderRadius.circular(10)),
-                                        child: FlatButton(
+                                        child: TextButton(
                                             onPressed: _isChecked
                                                 ? null
                                                 : () async {
@@ -252,7 +249,7 @@ class _QRScannerPageState extends State<QRScannerPage> {
                                                             (ctx) =>
                                                                 AlertDialog(
                                                                   actions: [
-                                                                    FlatButton(
+                                                                    TextButton(
                                                                         onPressed:
                                                                             () async {
                                                                           var res =
@@ -276,7 +273,7 @@ class _QRScannerPageState extends State<QRScannerPage> {
                                                                         },
                                                                         child: Text(
                                                                             '예')),
-                                                                    FlatButton(
+                                                                    TextButton(
                                                                         onPressed: () =>
                                                                             Navigator.pop(
                                                                                 ctx),
@@ -318,7 +315,7 @@ class _QRScannerPageState extends State<QRScannerPage> {
                                                 color: Colors.black26),
                                             borderRadius:
                                                 BorderRadius.circular(10)),
-                                        child: FlatButton(
+                                        child: TextButton(
                                             onPressed: () =>
                                                 Navigator.pop(context, false),
                                             child: Text(
@@ -336,7 +333,7 @@ class _QRScannerPageState extends State<QRScannerPage> {
                                                 color: Colors.black26),
                                             borderRadius:
                                                 BorderRadius.circular(10)),
-                                        child: FlatButton(
+                                        child: TextButton(
                                             onPressed: () async {
                                               setState(() {
                                                 _completed = false;
@@ -375,7 +372,7 @@ class _QRScannerPageState extends State<QRScannerPage> {
                                 border: Border.all(
                                     width: 0.5, color: Colors.black26),
                                 borderRadius: BorderRadius.circular(10)),
-                            child: FlatButton(
+                            child: TextButton(
                                 onPressed: () => Navigator.pop(context, false),
                                 child: Text(
                                   '뒤로가기',
@@ -421,8 +418,8 @@ class _QRScannerPageState extends State<QRScannerPage> {
     controller.scannedDataStream.listen((scanData) {
       setState(() {
         result = scanData;
-        _completed = result.code == widget.oID ? true : false;
-        if (!_isUsed) _showValidDialog(result.code);
+        _completed = result!.code == widget.oID ? true : false;
+        if (!_isUsed) _showValidDialog(result!.code);
       });
     });
   }
@@ -442,7 +439,7 @@ class _QRScannerPageState extends State<QRScannerPage> {
     }
   }
 
-  void _showValidDialog(String result) {
+  void _showValidDialog(String? result) {
     _isUsed = true;
     showDialog(
         context: context,
@@ -453,8 +450,7 @@ class _QRScannerPageState extends State<QRScannerPage> {
                 borderRadius: BorderRadius.circular(12),
               ),
               actions: [
-                FlatButton(
-                    padding: EdgeInsets.all(0),
+                TextButton(
                     onPressed: () => Navigator.pop(context),
                     child: Text(
                       '확인',

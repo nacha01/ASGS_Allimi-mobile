@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import '../data/provider/renew_user.dart';
 import 'package:asgshighschool/data/status.dart';
 import 'package:asgshighschool/data/user.dart';
@@ -13,14 +11,13 @@ import 'package:asgshighschool/storeAdmin/PushNotificationPage.dart';
 import '../storeAdmin/post/QnAListPage.dart';
 import '../storeAdmin/reservation/ReservationListPage.dart';
 import '../storeAdmin/statistics/StatisticsPage.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class StoreMyPage extends StatefulWidget {
   StoreMyPage({this.user});
 
-  final User user;
+  final User? user;
 
   @override
   _StoreMyPageState createState() => _StoreMyPageState();
@@ -82,7 +79,7 @@ class _StoreMyPageState extends State<StoreMyPage> {
                           fontWeight: FontWeight.bold),
                     ),
                   ),
-                  FlatButton(
+                  TextButton(
                     onPressed: () {
                       Navigator.pop(context);
                     },
@@ -134,11 +131,11 @@ class _StoreMyPageState extends State<StoreMyPage> {
                             ),
                           ),
                           title: Text(
-                              Status.statusList[data.user.identity - 1] +
+                              Status.statusList[data.user!.identity - 1] +
                                   ' ' +
-                                  (data.user.isAdmin ? '[관리자] ' : '')),
+                                  (data.user!.isAdmin ? '[관리자] ' : '')),
                           subtitle: Text(
-                              '${data.user.nickName} ${data.user.studentId == null ? '' : data.user.studentId} [${data.user.name}]'),
+                              '${data.user!.nickName} ${data.user!.studentId == null ? '' : data.user!.studentId} [${data.user!.name}]'),
                         ),
                       ),
                     )
@@ -177,8 +174,7 @@ class _StoreMyPageState extends State<StoreMyPage> {
                 ),
               ),
               */
-              FlatButton(
-                padding: EdgeInsets.all(size.width * 0.015),
+              TextButton(
                 onPressed: () {
                   Navigator.push(
                       context,
@@ -202,8 +198,7 @@ class _StoreMyPageState extends State<StoreMyPage> {
                   ),
                 ),
               ),
-              FlatButton(
-                padding: EdgeInsets.all(size.width * 0.015),
+              TextButton(
                 onPressed: () {
                   Navigator.push(
                       context,
@@ -240,8 +235,7 @@ class _StoreMyPageState extends State<StoreMyPage> {
                   ],
                 ),
               ),
-              FlatButton(
-                padding: EdgeInsets.all(size.width * 0.015),
+              TextButton(
                 onPressed: () {
                   Navigator.push(
                       context,
@@ -299,8 +293,7 @@ class _StoreMyPageState extends State<StoreMyPage> {
                 ),
               ),
                */
-              FlatButton(
-                padding: EdgeInsets.all(size.width * 0.015),
+              TextButton(
                 onPressed: () {
                   Navigator.push(
                       context,
@@ -324,7 +317,7 @@ class _StoreMyPageState extends State<StoreMyPage> {
                   ),
                 ),
               ),
-              if (data.user.isAdmin)
+              if (data.user!.isAdmin)
                 Column(
                   children: [
                     dividerForContents(size),
@@ -387,8 +380,7 @@ class _StoreMyPageState extends State<StoreMyPage> {
                     ),
 
                      */
-                    FlatButton(
-                      padding: EdgeInsets.all(size.width * 0.015),
+                    TextButton(
                       onPressed: () {
                         Navigator.push(
                             context,
@@ -438,8 +430,7 @@ class _StoreMyPageState extends State<StoreMyPage> {
                       ),
                     ),
                      */
-                    FlatButton(
-                      padding: EdgeInsets.all(size.width * 0.015),
+                    TextButton(
                       onPressed: () {
                         Navigator.push(
                             context,
@@ -463,8 +454,7 @@ class _StoreMyPageState extends State<StoreMyPage> {
                         ),
                       ),
                     ),
-                    FlatButton(
-                      padding: EdgeInsets.all(size.width * 0.015),
+                    TextButton(
                       onPressed: () {
                         Navigator.push(
                             context,
@@ -488,8 +478,7 @@ class _StoreMyPageState extends State<StoreMyPage> {
                         ),
                       ),
                     ),
-                    FlatButton(
-                      padding: EdgeInsets.all(size.width * 0.015),
+                    TextButton(
                       onPressed: () {
                         Navigator.push(
                             context,
@@ -513,8 +502,7 @@ class _StoreMyPageState extends State<StoreMyPage> {
                         ),
                       ),
                     ),
-                    FlatButton(
-                      padding: EdgeInsets.all(size.width * 0.015),
+                    TextButton(
                       onPressed: () {
                         Navigator.push(
                             context,

@@ -1,16 +1,13 @@
-import 'dart:ui';
-
 import 'package:asgshighschool/data/category.dart';
 import 'package:asgshighschool/data/user.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class DetailOrderStatePage extends StatefulWidget {
   DetailOrderStatePage({this.order, this.user});
 
-  final Map order;
-  final User user;
+  final Map? order;
+  final User? user;
 
   @override
   _DetailOrderStatePageState createState() => _DetailOrderStatePageState();
@@ -102,9 +99,9 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
   /// 이 주문에 포함된 상품들의 원가격에 대한 총 가격을 구하는 작업
   int _getOriginTotalPrice() {
     int sum = 0;
-    for (int i = 0; i < widget.order['detail'].length; ++i) {
-      sum += int.parse(widget.order['detail'][i]['pInfo']['price']) *
-          int.parse(widget.order['detail'][i]['quantity']);
+    for (int i = 0; i < widget.order!['detail'].length; ++i) {
+      sum += int.parse(widget.order!['detail'][i]['pInfo']['price']) *
+          int.parse(widget.order!['detail'][i]['quantity']);
     }
     return sum;
   }
@@ -112,16 +109,16 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
   /// 이 주문에 포함된 상품들의 총 할인 가격을 구하는 작업
   int _getTotalDiscount() {
     int sum = 0;
-    for (int i = 0; i < widget.order['detail'].length; ++i) {
-      sum += ((int.parse(widget.order['detail'][i]['pInfo']['price']) *
-                  (double.parse(widget.order['detail'][i]['pInfo']['discount'])
+    for (int i = 0; i < widget.order!['detail'].length; ++i) {
+      sum += ((int.parse(widget.order!['detail'][i]['pInfo']['price']) *
+                  (double.parse(widget.order!['detail'][i]['pInfo']['discount'])
                               .toString() ==
                           '0.0'
                       ? 0
                       : double.parse(
-                              widget.order['detail'][i]['pInfo']['discount']) /
+                              widget.order!['detail'][i]['pInfo']['discount']) /
                           100)) *
-              int.parse(widget.order['detail'][i]['quantity']))
+              int.parse(widget.order!['detail'][i]['quantity']))
           .round();
     }
     return sum;
@@ -163,13 +160,13 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
                 height: size.height * 0.015,
               ),
               Text(
-                '주문 번호  ${widget.order['oID']}',
+                '주문 번호  ${widget.order!['oID']}',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               SizedBox(
                 height: size.height * 0.015,
               ),
-              Text('주문일자  ${_formatDate(widget.order['oDate'])}',
+              Text('주문일자  ${_formatDate(widget.order!['oDate'])}',
                   style: TextStyle(color: Colors.grey, fontSize: 13)),
               SizedBox(
                 height: size.height * 0.015,
@@ -181,10 +178,10 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    '[ ${_getTextAccordingToOrderState(int.parse(widget.order['orderState']))} ]',
+                    '[ ${_getTextAccordingToOrderState(int.parse(widget.order!['orderState']))} ]',
                     style: TextStyle(
                         color: _getColorAccordingToOrderState(
-                            int.parse(widget.order['orderState']))),
+                            int.parse(widget.order!['orderState']))),
                   )
                 ],
               ),
@@ -264,15 +261,15 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
               SizedBox(
                 height: size.height * 0.015,
               ),
-              int.parse(widget.order['orderState']) == 3 ||
-                      int.parse(widget.order['orderState']) == 4
+              int.parse(widget.order!['orderState']) == 3 ||
+                      int.parse(widget.order!['orderState']) == 4
                   ? Center(
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          int.parse(widget.order['orderState']) == 3
+                          int.parse(widget.order!['orderState']) == 3
                               ? '이미 수령하셨기 때문에 만료되었습니다.'
-                              : int.parse(widget.order['orderState']) == 4
+                              : int.parse(widget.order!['orderState']) == 4
                                   ? '결제 취소 및 주문이 취소되었습니다.'
                                   : '',
                           style: TextStyle(
@@ -284,7 +281,7 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
                     )
                   : Center(
                       child: QrImage(
-                      data: widget.order['oID'],
+                      data: widget.order!['oID'],
                       size: 250,
                     )),
               Divider(
@@ -300,17 +297,17 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    '[ ${int.parse(widget.order['receiveMethod']) == 0 ? '직접 수령' : '배달'} ]',
+                    '[ ${int.parse(widget.order!['receiveMethod']) == 0 ? '직접 수령' : '배달'} ]',
                     style: TextStyle(
                         color: Colors.indigo, fontWeight: FontWeight.bold),
                   )
                 ],
               ),
-              int.parse(widget.order['receiveMethod']) == 1
+              int.parse(widget.order!['receiveMethod']) == 1
                   ? Padding(
                       padding: EdgeInsets.all(size.width * 0.04),
                       child: Text(
-                        '장소 : ${widget.order['location'] == null ? '' : widget.order['location']}',
+                        '장소 : ${widget.order!['location'] == null ? '' : widget.order!['location']}',
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 17,
@@ -325,7 +322,7 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
                 children: [
                   Text('결제 방식 ', style: TextStyle(fontWeight: FontWeight.bold)),
                   Text(
-                      ' [ ${widget.order['payMethod'] == '0' ? '신용카드' : '간편결제'} ]')
+                      ' [ ${widget.order!['payMethod'] == '0' ? '신용카드' : '간편결제'} ]')
                 ],
               ),
               SizedBox(
@@ -335,7 +332,7 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
-                    '${widget.order['options'].toString().trim() == '' ? 'X' : widget.order['options']}'),
+                    '${widget.order!['options'].toString().trim() == '' ? 'X' : widget.order!['options']}'),
               ),
               Divider(
                 thickness: 10,
@@ -416,7 +413,7 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
                     child: Padding(
                       padding: EdgeInsets.all(size.width * 0.04),
                       child: Text(
-                        '최종 결제 금액 ${_formatPrice(int.parse(widget.order['totalPrice']))}원',
+                        '최종 결제 금액 ${_formatPrice(int.parse(widget.order!['totalPrice']))}원',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 16),
                       ),
@@ -488,9 +485,9 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
 
   List<Widget> _productLayoutList(Size size) {
     List<Widget> list = [];
-    for (int i = 0; i < widget.order['detail'].length; ++i) {
-      list.add(_productItemLayout(widget.order['detail'][i]['pInfo'],
-          int.parse(widget.order['detail'][i]['quantity']), size));
+    for (int i = 0; i < widget.order!['detail'].length; ++i) {
+      list.add(_productItemLayout(widget.order!['detail'][i]['pInfo'],
+          int.parse(widget.order!['detail'][i]['quantity']), size));
     }
     return list;
   }

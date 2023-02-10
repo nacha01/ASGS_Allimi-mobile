@@ -1,11 +1,7 @@
-// Script
 import 'dart:async';
-import 'dart:ui';
 import 'SignIn.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-
-// Flutter Default Setting
 
 class SplashPage extends StatefulWidget {
   @override
@@ -15,7 +11,7 @@ class SplashPage extends StatefulWidget {
 class _SplashPageState extends State<SplashPage> {
   var _token;
   String _message = '';
-  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
   @override
   void initState() {
@@ -24,7 +20,7 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   getToken() {
-    _firebaseMessaging.getToken().then((String token) {
+    _firebaseMessaging.getToken().then((String? token) {
       setState(() {
         _token = token;
         print("Token : $token");
@@ -67,14 +63,14 @@ class _SplashPageState extends State<SplashPage> {
               '$_message',
               style: Theme.of(context)
                   .textTheme
-                  .bodyText1
+                  .bodyText1!
                   .copyWith(color: Colors.white),
             ),
             Text(
               'Copyright 테라바이트',
               style: Theme.of(context)
                   .textTheme
-                  .caption
+                  .caption!
                   .copyWith(color: Colors.white),
             )
           ],

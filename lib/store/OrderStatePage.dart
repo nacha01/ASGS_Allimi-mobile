@@ -1,20 +1,17 @@
 import 'dart:convert';
-import 'dart:ui';
-
 import 'package:asgshighschool/data/category.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:asgshighschool/store/DetailOrderStatePage.dart';
 import 'package:crypto/crypto.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hex/hex.dart';
 import 'package:http/http.dart' as http;
-import 'package:cp949/cp949.dart' as cp949;
+import 'package:cp949_dart/cp949_dart.dart' as cp949;
 
 class OrderStatePage extends StatefulWidget {
   OrderStatePage({this.user});
 
-  final User user;
+  final User? user;
 
   @override
   _OrderStatePageState createState() => _OrderStatePageState();
@@ -22,7 +19,7 @@ class OrderStatePage extends StatefulWidget {
 
 class _OrderStatePageState extends State<OrderStatePage> {
   List _orderMap = [];
-  Map _cancelResponse;
+  Map? _cancelResponse;
 
   //final bool isCart;
   String _ediDate = '';
@@ -33,8 +30,8 @@ class _OrderStatePageState extends State<OrderStatePage> {
   /// 나(uid)의 모든 주문한 내역(현황)들을 요청하는 작업
   Future<bool> _getOrderInfoRequest() async {
     String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_getAllOrderInfo.php?uid=${widget.user.uid}';
-    final response = await http.get(url);
+        'http://nacha01.dothome.co.kr/sin/arlimi_getAllOrderInfo.php?uid=${widget.user!.uid}';
+    final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
       /// json decode 를 3번 해야한다. detail 까지 위해서는
       String result = utf8
@@ -151,7 +148,7 @@ class _OrderStatePageState extends State<OrderStatePage> {
   /// 목록에서 어떤 상품을 구매했는지에 대한 간략 소개를 위한 텍스트 작업
   /// @param : 특정 주문 데이터에 대한 상품 목록 List
   /// format : 상품이 한 종류 시, xxx n개 | 두 종류 이상 시, xxx n개 외 y개
-  String _extractDetailProductText(List detail) {
+  String? _extractDetailProductText(List detail) {
     if (detail.length == 1) {
       return detail[0]['pInfo']['pName'] + ' ' + detail[0]['quantity'] + '개';
     } else {
@@ -168,7 +165,7 @@ class _OrderStatePageState extends State<OrderStatePage> {
         .bytes);
   }
 
-  Future<String> _cancelPaymentRequest(orderJson) async {
+  Future<String?> _cancelPaymentRequest(orderJson) async {
     String url = 'https://webapi.nicepay.co.kr/webapi/cancel_process.jsp';
     _ediDate = DateTime.now()
         .toString()
@@ -177,7 +174,7 @@ class _OrderStatePageState extends State<OrderStatePage> {
         .replaceAll(':', '')
         .split('.')[0];
 
-    final response = await http.post(url, body: <String, String>{
+    final response = await http.post(Uri.parse(url), body: <String, String?>{
       'TID': orderJson['tid'],
       'MID': _MID,
       'Moid': orderJson['oID'],
@@ -192,7 +189,7 @@ class _OrderStatePageState extends State<OrderStatePage> {
     print(response.statusCode);
     if (response.statusCode == 200) {
       _cancelResponse = jsonDecode(cp949.decode(response.bodyBytes)); //???
-      return _cancelResponse['ResultCode'];
+      return _cancelResponse!['ResultCode'];
     } else {
       return 'Error';
     }
@@ -203,7 +200,7 @@ class _OrderStatePageState extends State<OrderStatePage> {
     String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_updateOrderState.php?oid=$_oID&state=$state';
     // 'http://nacha01.dothome.co.kr/sin/arlimi_updateOrderState.php?oid=${widget.responseData['Moid']}&state=$state';
-    final response = await http.get(url);
+    final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
       return true;
     } else {
@@ -216,7 +213,7 @@ class _OrderStatePageState extends State<OrderStatePage> {
       int pid, int quantity, String operator) async {
     String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_updateProductCount.php';
-    final response = await http.post(url, body: <String, String>{
+    final response = await http.post(Uri.parse(url), body: <String, String>{
       'pid': pid.toString(),
       'quantity': quantity.toString(),
       'oper': operator
@@ -230,11 +227,11 @@ class _OrderStatePageState extends State<OrderStatePage> {
 
   /// 각 상품의 누적 판매수를 반영하는 요청
   Future<bool> _updateEachProductSellCountRequest(
-      int pid, int quantity, String operator) async {
+      int? pid, int? quantity, String operator) async {
     String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_updateProductSellCount.php';
     final response =
-        await http.get(url + '?pid=$pid&quantity=$quantity&oper=$operator');
+        await http.get(Uri.parse(url + '?pid=$pid&quantity=$quantity&oper=$operator'));
     if (response.statusCode == 200) {
       return true;
     } else {
@@ -245,8 +242,8 @@ class _OrderStatePageState extends State<OrderStatePage> {
   /// 이 주문을 요청한 사용자의 누적 구매수를 [operator]대로 연산하는 요청
   Future<bool> _updateUserBuyCountRequest(String operator) async {
     String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_updateUserBuyCount.php?uid=${widget.user.uid}&oper=$operator';
-    final response = await http.get(url);
+        'http://nacha01.dothome.co.kr/sin/arlimi_updateUserBuyCount.php?uid=${widget.user!.uid}&oper=$operator';
+    final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
       return true;
@@ -434,7 +431,7 @@ class _OrderStatePageState extends State<OrderStatePage> {
                                                             color: Colors.green,
                                                             fontSize: 16)),
                                                     content: Text(
-                                                        '${_cancelResponse['ResultMsg']}',
+                                                        '${_cancelResponse!['ResultMsg']}',
                                                         //여기가 취소 성공이라는 메세지인가?
                                                         style: TextStyle(
                                                             fontWeight:
@@ -467,7 +464,7 @@ class _OrderStatePageState extends State<OrderStatePage> {
                                                           fontSize: 16),
                                                     ),
                                                     content: Text(
-                                                        '${_cancelResponse['ResultMsg']} (code-${_cancelResponse['ResultCode']}',
+                                                        '${_cancelResponse!['ResultMsg']} (code-${_cancelResponse!['ResultCode']}',
                                                         style: TextStyle(
                                                             fontWeight:
                                                                 FontWeight.bold,

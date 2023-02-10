@@ -1,14 +1,14 @@
 class Product {
   int _prodID;
-  String _prodName;
-  String _prodInfo;
+  String? _prodName;
+  String? _prodInfo;
   int _category;
   int _price;
   int _stockCount;
   double _discount;
-  String _imgUrl1;
-  String _imgUrl2;
-  String _imgUrl3;
+  String? _imgUrl1;
+  String? _imgUrl2;
+  String? _imgUrl3;
   int _isBest;
   int _isNew;
   int _cumulBuyCount;
@@ -52,7 +52,7 @@ class Product {
     _prodID = value;
   }
 
-  String get prodName => _prodName;
+  String? get prodName => _prodName;
 
   int get cumulBuyCount => _cumulBuyCount;
 
@@ -78,21 +78,21 @@ class Product {
     _isBest = value;
   }
 
-  String get imgUrl3 => _imgUrl3;
+  String? get imgUrl3 => _imgUrl3;
 
-  set imgUrl3(String value) {
+  set imgUrl3(String? value) {
     _imgUrl3 = value;
   }
 
-  String get imgUrl2 => _imgUrl2;
+  String? get imgUrl2 => _imgUrl2;
 
-  set imgUrl2(String value) {
+  set imgUrl2(String? value) {
     _imgUrl2 = value;
   }
 
-  String get imgUrl1 => _imgUrl1;
+  String? get imgUrl1 => _imgUrl1;
 
-  set imgUrl1(String value) {
+  set imgUrl1(String? value) {
     _imgUrl1 = value;
   }
 
@@ -120,13 +120,13 @@ class Product {
     _category = value;
   }
 
-  String get prodInfo => _prodInfo;
+  String? get prodInfo => _prodInfo;
 
-  set prodInfo(String value) {
+  set prodInfo(String? value) {
     _prodInfo = value;
   }
 
-  set prodName(String value) {
+  set prodName(String? value) {
     _prodName = value;
   }
 }

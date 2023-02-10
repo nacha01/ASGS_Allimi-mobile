@@ -1,18 +1,15 @@
-import 'dart:ui';
-
 import 'package:asgshighschool/data/category.dart';
 import 'package:asgshighschool/data/order_state.dart';
 import 'package:asgshighschool/data/status.dart';
 import 'package:asgshighschool/data/user.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
 class ScanInfoPage extends StatefulWidget {
-  final Map orderData;
-  final User user;
-  final User admin;
+  final Map? orderData;
+  final User? user;
+  final User? admin;
 
   ScanInfoPage({this.orderData, this.user, this.admin});
 
@@ -57,7 +54,7 @@ class _ScanInfoPageState extends State<ScanInfoPage> {
 
   Future<bool> _orderCompleteRequest() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_completeOrder.php';
-    final response = await http.get(url + '?oid=${widget.orderData['oID']}');
+    final response = await http.get(Uri.parse(url + '?oid=${widget.orderData!['oID']}'));
 
     if (response.statusCode == 200) {
       print(response.body);
@@ -70,9 +67,9 @@ class _ScanInfoPageState extends State<ScanInfoPage> {
 
   Future<bool> _updateCharger() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_updateCharger.php';
-    final response = await http.post(url, body: <String, String>{
-      'charger_id': widget.admin.uid,
-      'oid': widget.orderData['oID']
+    final response = await http.post(Uri.parse(url), body: <String, String?>{
+      'charger_id': widget.admin!.uid,
+      'oid': widget.orderData!['oID']
     });
     if (response.statusCode == 200) {
       return true;
@@ -129,35 +126,35 @@ class _ScanInfoPageState extends State<ScanInfoPage> {
                         Padding(
                           padding: EdgeInsets.all(size.width * 0.01),
                           child: Text(
-                            'ID:  ${widget.user.uid}',
+                            'ID:  ${widget.user!.uid}',
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ),
                         Padding(
                           padding: EdgeInsets.all(size.width * 0.01),
-                          child: Text('이름:  ${widget.user.name}',
+                          child: Text('이름:  ${widget.user!.name}',
                               style: TextStyle(fontWeight: FontWeight.bold)),
                         ),
                         Padding(
                           padding: EdgeInsets.all(size.width * 0.01),
                           child: Text(
-                              '신분:  ${Status.statusList[widget.user.identity - 1]}',
+                              '신분:  ${Status.statusList[widget.user!.identity - 1]}',
                               style: TextStyle(fontWeight: FontWeight.bold)),
                         ),
                         Padding(
                           padding: EdgeInsets.all(size.width * 0.01),
                           child: Text(
-                              '학번:  ${widget.user.studentId == null || widget.user.studentId == '' ? 'X' : widget.user.studentId}',
+                              '학번:  ${widget.user!.studentId == null || widget.user!.studentId == '' ? 'X' : widget.user!.studentId}',
                               style: TextStyle(fontWeight: FontWeight.bold)),
                         ),
                         Padding(
                           padding: EdgeInsets.all(size.width * 0.01),
-                          child: Text('닉네임:  ${widget.user.nickName}',
+                          child: Text('닉네임:  ${widget.user!.nickName}',
                               style: TextStyle(fontWeight: FontWeight.bold)),
                         ),
                         Padding(
                           padding: EdgeInsets.all(size.width * 0.01),
-                          child: Text('이메일:  ${widget.user.email}',
+                          child: Text('이메일:  ${widget.user!.email}',
                               style: TextStyle(fontWeight: FontWeight.bold)),
                         ),
                       ],
@@ -184,24 +181,24 @@ class _ScanInfoPageState extends State<ScanInfoPage> {
                   children: [
                     Padding(
                       padding: EdgeInsets.all(size.width * 0.01),
-                      child: Text('주문번호:  ${widget.orderData['oID']}',
+                      child: Text('주문번호:  ${widget.orderData!['oID']}',
                           style: TextStyle(fontWeight: FontWeight.bold)),
                     ),
                     Padding(
                       padding: EdgeInsets.all(size.width * 0.01),
-                      child: Text('주문 일자:  ${widget.orderData['oDate']}',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.all(size.width * 0.01),
-                      child: Text(
-                          '주문 완료 일자:  ${widget.orderData['eDate'] == '0000-00-00 00:00:00' ? '-' : widget.orderData['eDate']}',
+                      child: Text('주문 일자:  ${widget.orderData!['oDate']}',
                           style: TextStyle(fontWeight: FontWeight.bold)),
                     ),
                     Padding(
                       padding: EdgeInsets.all(size.width * 0.01),
                       child: Text(
-                          '결제 금액:  ${_formatPrice(int.parse(widget.orderData['totalPrice']))}원',
+                          '주문 완료 일자:  ${widget.orderData!['eDate'] == '0000-00-00 00:00:00' ? '-' : widget.orderData!['eDate']}',
+                          style: TextStyle(fontWeight: FontWeight.bold)),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(size.width * 0.01),
+                      child: Text(
+                          '결제 금액:  ${_formatPrice(int.parse(widget.orderData!['totalPrice']))}원',
                           style: TextStyle(fontWeight: FontWeight.bold)),
                     ),
                     Padding(
@@ -211,10 +208,10 @@ class _ScanInfoPageState extends State<ScanInfoPage> {
                           Text('주문 상태:  ',
                               style: TextStyle(fontWeight: FontWeight.bold)),
                           Text(
-                            '${OrderState.orderStateList[int.parse(widget.orderData['orderState'])]}',
+                            '${OrderState.orderStateList[int.parse(widget.orderData!['orderState'])]}',
                             style: TextStyle(
                                 color: OrderState.colorState[
-                                    int.parse(widget.orderData['orderState'])]),
+                                    int.parse(widget.orderData!['orderState'])]),
                           )
                         ],
                       ),
@@ -229,7 +226,7 @@ class _ScanInfoPageState extends State<ScanInfoPage> {
                             Text('요청 사항:  ',
                                 style: TextStyle(fontWeight: FontWeight.bold)),
                             Text(
-                                '${widget.orderData['options'] == null || widget.orderData['options'].toString().trim() == '' ? 'X' : widget.orderData['options']}')
+                                '${widget.orderData!['options'] == null || widget.orderData!['options'].toString().trim() == '' ? 'X' : widget.orderData!['options']}')
                           ],
                         ),
                       ),
@@ -249,22 +246,22 @@ class _ScanInfoPageState extends State<ScanInfoPage> {
               ),
             ),
             Column(
-              children: _item(widget.orderData['detail'], size),
+              children: _item(widget.orderData!['detail'], size),
             ),
             Divider(
               thickness: 2,
             ),
-            int.parse(widget.orderData['orderState']) == 3 ||
-                    int.parse(widget.orderData['orderState']) == 4
+            int.parse(widget.orderData!['orderState']) == 3 ||
+                    int.parse(widget.orderData!['orderState']) == 4
                 ? Container(
                     color: Colors.red,
                     padding: EdgeInsets.all(size.width * 0.015),
                     alignment: Alignment.center,
                     width: size.width,
                     child: Text(
-                      int.parse(widget.orderData['orderState']) == 3
+                      int.parse(widget.orderData!['orderState']) == 3
                           ? '이미 수령 완료된 주문입니다.'
-                          : int.parse(widget.orderData['orderState']) == 4
+                          : int.parse(widget.orderData!['orderState']) == 4
                               ? '결제가 취소된 주문입니다.'
                               : '',
                       style: TextStyle(

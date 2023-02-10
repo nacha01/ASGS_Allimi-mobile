@@ -1,6 +1,3 @@
-import 'dart:ui';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
@@ -16,7 +13,7 @@ class _ReportBugPageState extends State<ReportBugPage> {
 
   Future<void> _sendErrorReport() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_addReport.php';
-    final response = await http.post(url, body: <String, String>{
+    final response = await http.post(Uri.parse(url), body: <String, String>{
       'errorMessage': _titleController.text,
       'date': DateTime.now().toString(),
       'extra': _contentController.text,

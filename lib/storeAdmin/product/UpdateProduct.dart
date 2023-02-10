@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:ui';
-
 import 'package:asgshighschool/data/category.dart';
 import 'package:asgshighschool/data/product.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +24,7 @@ List<List<DetailWidget>> _classList = []; // 리스트의 인덱스와 위젯이
 class UpdatingProductPage extends StatefulWidget {
   UpdatingProductPage({this.product});
 
-  final Product product;
+  final Product? product;
 
   @override
   _UpdatingProductPageState createState() => _UpdatingProductPageState();
@@ -42,12 +40,12 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
   var _cumulativeSellCount = TextEditingController();
   var _reservationCountController = TextEditingController();
   List _initOptionList = [];
-  PickedFile _mainImage;
-  PickedFile _subImage1;
-  PickedFile _subImage2;
+  PickedFile? _mainImage;
+  PickedFile? _subImage1;
+  PickedFile? _subImage2;
 
-  bool _isBest = false;
-  bool _isNew = false;
+  bool? _isBest = false;
+  bool? _isNew = false;
   bool _isReservation = false;
   bool _useOptions = false;
   bool _imageInitial = true;
@@ -58,10 +56,10 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
   int _index = 0;
   int _clickCount = 0;
 
-  String _mainName;
-  String _sub1Name;
-  String _sub2Name;
-  String _selectedCategory = Category.c1; // 드롭다운 아이템 default
+  late String _mainName;
+  late String _sub1Name;
+  late String _sub2Name;
+  String? _selectedCategory = Category.c1; // 드롭다운 아이템 default
   String serverImageUri =
       'http://nacha01.dothome.co.kr/sin/arlimi_productImage/'; // 이미지 저장 서버 URI
 
@@ -109,7 +107,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
 
   /// 최종 요청하기 전 수정하고자 하는 이미지를 서버에 업데이트 요청을 하는 작업
   Future<bool> _updateImageBeforeRequest(
-      PickedFile img, String fileName, String originName) async {
+      PickedFile img, String fileName, String? originName) async {
     var request = http.MultipartRequest(
         'POST',
         Uri.parse(
@@ -155,8 +153,8 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
   /// 상품을 수정하는 요청을 하는 작업
   Future<bool> _updateProductRequest() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_updateProduct.php';
-    final response = await http.post(url, body: <String, String>{
-      'prodID': widget.product.prodID.toString(),
+    final response = await http.post(Uri.parse(url), body: <String, String>{
+      'prodID': widget.product!.prodID.toString(),
       'prodName': _productNameController.text,
       'prodInfo': _productExplainController.text,
       'category':
@@ -164,8 +162,8 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
       'price': _productPriceController.text,
       'stockCount': _productCountController.text,
       'discount': _productDiscountController.text,
-      'isBest': _isBest ? '1' : '0',
-      'isNew': _isNew ? '1' : '0',
+      'isBest': _isBest! ? '1' : '0',
+      'isNew': _isNew! ? '1' : '0',
       'img1': _mainImage == null ? 'NOT' : serverImageUri + _mainName + '.jpg',
       'img2': _useSub1 ? serverImageUri + _sub1Name + '.jpg' : 'None',
       'img3': _useSub2 ? serverImageUri + _sub2Name + '.jpg' : 'None',
@@ -191,8 +189,8 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
             int.parse(_reservationCountController.text) != -1
         ? -1
         : int.parse(_reservationCountController.text);
-    final response = await http.post(url, body: <String, String>{
-      'pid': widget.product.prodID.toString(),
+    final response = await http.post(Uri.parse(url), body: <String, String>{
+      'pid': widget.product!.prodID.toString(),
       'max_count': value.toString()
     });
 
@@ -218,31 +216,31 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
   /// 이미지 업데이트, 상품 변경 내용 업데이트
   Future<int> _doUpdateForProduct() async {
     if (_useSub1) {
-      _sub1Name = _getFileNameByRule(widget.product.imgUrl2
+      _sub1Name = _getFileNameByRule(widget.product!.imgUrl2!
           .replaceAll(serverImageUri, '')
           .replaceAll('.jpg', ''));
 
       var sub1Result = await _updateImageBeforeRequest(
-          _subImage1, _sub1Name, widget.product.imgUrl2);
+          _subImage1!, _sub1Name, widget.product!.imgUrl2);
 
       if (!sub1Result) return 402;
     }
     if (_useSub2) {
-      _sub2Name = _getFileNameByRule(widget.product.imgUrl3
+      _sub2Name = _getFileNameByRule(widget.product!.imgUrl3!
           .replaceAll(serverImageUri, '')
           .replaceAll('.jpg', ''));
 
       var sub2Result = await _updateImageBeforeRequest(
-          _subImage2, _sub2Name, widget.product.imgUrl3);
+          _subImage2!, _sub2Name, widget.product!.imgUrl3);
 
       if (!sub2Result) return 403;
     }
     if (_mainImage != null) {
-      _mainName = _getFileNameByRule(widget.product.imgUrl1
+      _mainName = _getFileNameByRule(widget.product!.imgUrl1!
           .replaceAll(serverImageUri, '')
           .replaceAll('.jpg', ''));
       var mainResult = await _updateImageBeforeRequest(
-          _mainImage, _mainName, widget.product.imgUrl1);
+          _mainImage!, _mainName, widget.product!.imgUrl1);
       if (!mainResult) return 401;
     }
     var registerResult = await _updateProductRequest();
@@ -259,8 +257,8 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
 
   Future<bool> _deleteAllOptions() async {
     String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_deleteProductOptions.php?pid=${widget.product.prodID}';
-    final response = await http.get(url);
+        'http://nacha01.dothome.co.kr/sin/arlimi_deleteProductOptions.php?pid=${widget.product!.prodID}';
+    final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
       return true;
     } else {
@@ -270,9 +268,9 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
 
   Future<void> _getCountLimit() async {
     String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_getResvCount.php?pid=${widget.product.prodID}';
+        'http://nacha01.dothome.co.kr/sin/arlimi_getResvCount.php?pid=${widget.product!.prodID}';
 
-    final response = await http.get(url);
+    final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
       String result = utf8
           .decode(response.bodyBytes)
@@ -289,8 +287,8 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
 
   Future<void> _getAllOptions() async {
     String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_getProductOptions.php?pid=${widget.product.prodID}';
-    final response = await http.get(url);
+        'http://nacha01.dothome.co.kr/sin/arlimi_getProductOptions.php?pid=${widget.product!.prodID}';
+    final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
       String result = utf8
@@ -355,7 +353,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
   Future<int> _registerOptionCategory(String optionCategory) async {
     String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_registerOptionCategory.php';
-    final response = await http.post(url, body: <String, String>{
+    final response = await http.post(Uri.parse(url), body: <String, String>{
       'pName': _productNameController.text,
       'pInfo': _productExplainController.text,
       'category':
@@ -381,8 +379,8 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
       String optionCategory, String optionName, String optionPrice) async {
     String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_registerOptionDetail.php';
-    final response = await http.post(url, body: <String, String>{
-      'pid': widget.product.prodID.toString(),
+    final response = await http.post(Uri.parse(url), body: <String, String>{
+      'pid': widget.product!.prodID.toString(),
       'optionCategory': optionCategory,
       'optionName': optionName,
       'optionPrice': optionPrice
@@ -428,17 +426,17 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
 
   @override
   void initState() {
-    _productNameController.text = widget.product.prodName;
-    _productExplainController.text = widget.product.prodInfo;
-    _productPriceController.text = widget.product.price.toString();
-    _productCountController.text = widget.product.stockCount.toString();
+    _productNameController.text = widget.product!.prodName!;
+    _productExplainController.text = widget.product!.prodInfo!;
+    _productPriceController.text = widget.product!.price.toString();
+    _productCountController.text = widget.product!.stockCount.toString();
     _selectedCategory =
-        Category.categoryIndexToStringMap[widget.product.category];
-    _isBest = widget.product.isBest == 1 ? true : false;
-    _isNew = widget.product.isNew == 1 ? true : false;
-    _cumulativeSellCount.text = widget.product.cumulBuyCount.toString();
-    _productDiscountController.text = widget.product.discount.toString();
-    _isReservation = widget.product.isReservation;
+        Category.categoryIndexToStringMap[widget.product!.category];
+    _isBest = widget.product!.isBest == 1 ? true : false;
+    _isNew = widget.product!.isNew == 1 ? true : false;
+    _cumulativeSellCount.text = widget.product!.cumulBuyCount.toString();
+    _productDiscountController.text = widget.product!.discount.toString();
+    _isReservation = widget.product!.isReservation;
     _getCountLimit();
     _getAllOptions();
     super.initState();
@@ -479,7 +477,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
           ),
           backgroundColor: Color(0xFF9EE1E5),
           title: Text(
-            '상품 수정하기 [${widget.product.prodID}]',
+            '상품 수정하기 [${widget.product!.prodID}]',
             style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
           ),
           centerTitle: true,
@@ -617,7 +615,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
                           value: value,
                         );
                       }).toList(),
-                      onChanged: (value) {
+                      onChanged: (dynamic value) {
                         setState(() {
                           _selectedCategory = value;
                         });
@@ -925,7 +923,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            FlatButton(
+                            TextButton(
                                 onPressed: () {
                                   _optionDetailList.add([]);
                                   _detailTitleControllerList.add([]);
@@ -1099,7 +1097,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
                       ? Column(
                           children: [
                             Image.network(
-                              widget.product.imgUrl1,
+                              widget.product!.imgUrl1!,
                               width: size.width * 0.9,
                               height: size.width * 0.9 * 1.4,
                               fit: BoxFit.cover,
@@ -1117,7 +1115,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
                       : _mainImage == null
                           ? imageLoadLayout(size)
                           : Image.file(
-                              File(_mainImage.path),
+                              File(_mainImage!.path),
                               fit: BoxFit.cover,
                               width: size.width * 0.9,
                               height: size.width * 0.9 * 1.4,
@@ -1199,7 +1197,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
                         _subImage1 == null
                             ? imageLoadLayout(size)
                             : Image.file(
-                                File(_subImage1.path),
+                                File(_subImage1!.path),
                                 fit: BoxFit.cover,
                                 width: size.width * 0.9,
                                 height: size.width * 0.9 * 1.4,
@@ -1282,7 +1280,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
                         _subImage2 == null
                             ? imageLoadLayout(size)
                             : Image.file(
-                                File(_subImage2.path),
+                                File(_subImage2!.path),
                                 fit: BoxFit.cover,
                                 width: size.width * 0.9,
                                 height: size.width * 0.9 * 1.4,
@@ -1388,7 +1386,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
                       return;
                     }
                     var result = await _doUpdateForProduct();
-                    String message;
+                    late String message;
                     switch (result) {
                       case 200:
                         message = '상품 수정에 성공하였습니다! 목록을 새로고침하세요';
@@ -1425,10 +1423,10 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
   }
 
   Widget textFieldLayoutWidget(
-      {double height,
-      double width,
-      TextEditingController controller,
-      int maxCharNum,
+      {double? height,
+      double? width,
+      TextEditingController? controller,
+      int? maxCharNum,
       bool validation = false,
       int maxLine = 1,
       bool formatType = false,
@@ -1459,7 +1457,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
   }
 
   Widget titleLayoutWidget(
-      {@required String title, @required bool require, @required Size size}) {
+      {required String title, required bool require, required Size size}) {
     return Container(
       margin: EdgeInsets.all(5),
       alignment: Alignment.center,
@@ -1494,7 +1492,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
               title: Text('문제 발생'),
               content: Text('입력사항을 재확인 바랍니다.\n[$errorLocation]'),
               actions: [
-                FlatButton(
+                TextButton(
                     onPressed: () => Navigator.pop(context), child: Text('확인'))
               ],
             ));
@@ -1555,7 +1553,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
                           index); // index 에 해당하는 옵션 리스트의 동적 인덱스를 갖는 선택지 객체를 지운다.
                       _index--; // 옵션 리스트의 index 를 하나 줄인다. (옵션 리스트의 동적 인덱스 역할)
                     });
-                    StreamSubscription sub;
+                    late StreamSubscription sub;
                     sub = _streamControllerList[index].stream.listen((event) {
                       sub.cancel(); // index 에 해당하는 옵션 리스트의 연결되어 있는 스트림 통로를 끊는다.
                     });
@@ -1590,7 +1588,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               return Column(
-                children: snapshot.data,
+                children: snapshot.data as List<Widget>,
               );
             } else {
               return SizedBox(
@@ -1602,7 +1600,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
         ),
         Row(
           children: [
-            FlatButton(
+            TextButton(
                 onPressed: () {
                   _detailPriceControllerList[index].add(
                       TextEditingController()); // index 에 해당하는 옵션에 가격 컨트롤러 하나를 추가한다.

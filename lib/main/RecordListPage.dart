@@ -1,18 +1,15 @@
 import 'dart:convert';
-import 'dart:ui';
 
 import 'package:asgshighschool/data/status.dart';
 import 'package:asgshighschool/data/user.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 
 /// 게임코드
 /// 1 : 기억력 게임(Memory game)
 class RecordListPage extends StatefulWidget {
-  final int gameCode;
-  final User user;
+  final int? gameCode;
+  final User? user;
 
   RecordListPage({this.gameCode, this.user});
 
@@ -21,7 +18,7 @@ class RecordListPage extends StatefulWidget {
 }
 
 class _RecordListPageState extends State<RecordListPage> {
-  String _appBarTitle;
+  String? _appBarTitle;
   List _rankList = [];
 
   @override
@@ -37,7 +34,7 @@ class _RecordListPageState extends State<RecordListPage> {
   /// 기억력 게임에 대한 모든 유저의 기록을 가져오는 요청
   Future<void> _getRankingListOnGameCode() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getRankOnMemory.php';
-    final response = await http.get(url);
+    final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
       String result = utf8
@@ -61,7 +58,7 @@ class _RecordListPageState extends State<RecordListPage> {
   /// @return : 리스트에서 본인에 해당하는 인덱스 정수 값
   int _findMyIndexInRankList() {
     for (int i = 0; i < _rankList.length; ++i) {
-      if (_rankList[i]['nickname'] == widget.user.nickName) {
+      if (_rankList[i]['nickname'] == widget.user!.nickName) {
         return i;
       }
     }
@@ -115,7 +112,7 @@ class _RecordListPageState extends State<RecordListPage> {
                     ),
                     title: Center(
                         child: GestureDetector(
-                      onTap: widget.user.isAdmin
+                      onTap: widget.user!.isAdmin
                           ? () {
                               showDialog(
                                   context: context,
@@ -154,14 +151,13 @@ class _RecordListPageState extends State<RecordListPage> {
                                           ],
                                         ),
                                         actions: [
-                                          FlatButton(
+                                          TextButton(
                                             onPressed: () =>
                                                 Navigator.pop(context),
                                             child: Text('확인',
                                                 style: TextStyle(
                                                     fontWeight: FontWeight.bold,
                                                     color: Colors.blueAccent)),
-                                            padding: EdgeInsets.all(0),
                                           )
                                         ],
                                       ));
@@ -172,7 +168,7 @@ class _RecordListPageState extends State<RecordListPage> {
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontStyle: FontStyle.italic,
-                            decoration: widget.user.isAdmin
+                            decoration: widget.user!.isAdmin
                                 ? TextDecoration.underline
                                 : TextDecoration.none),
                       ),

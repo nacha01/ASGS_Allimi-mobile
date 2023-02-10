@@ -1,14 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
-import 'dart:ui';
 
 import 'package:asgshighschool/data/status.dart';
 import 'package:asgshighschool/main/ReportBugPage.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:yaml/yaml.dart';
 
@@ -22,7 +18,7 @@ import 'package:http/http.dart' as http;
 import '../LocalNotifyManager.dart';
 
 class SignInPage extends StatefulWidget {
-  SignInPage({Key key, this.token}) : super(key: key);
+  SignInPage({Key? key, this.token}) : super(key: key);
   final token;
 
   @override
@@ -46,14 +42,14 @@ class _SignInPageState extends State<SignInPage> {
   TextEditingController _findEmailControllerPW = TextEditingController();
   TextEditingController _findNameControllerPW = TextEditingController();
   TextEditingController _findGradeControllerPW = TextEditingController();
-  SharedPreferences _pref;
-  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+  SharedPreferences? _pref;
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   String _key = '';
   String _resultID = '';
   String _resultPW = '';
   bool _isChecked = false;
   int _tapState = 1;
-  var _selectedValue = '재학생';
+  String? _selectedValue = '재학생';
   final _hexValueList = [
     '0',
     '1',
@@ -84,9 +80,9 @@ class _SignInPageState extends State<SignInPage> {
     return true;
   }
 
-  Future<String> _getLatestVersion() async {
+  Future<String?> _getLatestVersion() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getLatestVersion.php';
-    final response = await http.get(url);
+    final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
       String result = utf8
           .decode(response.bodyBytes)
@@ -94,14 +90,14 @@ class _SignInPageState extends State<SignInPage> {
               '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
               '')
           .trim();
-      Map json = jsonDecode(result);
+      Map? json = jsonDecode(result);
 
       if (Platform.isIOS) // ios 디바이스라면
-        return json['ios']; // 최신 ios 앱 버전 리턴
+        return json!['ios']; // 최신 ios 앱 버전 리턴
       else if (Platform.isAndroid) // android 디바이스라면
-        return json['android']; // 최신 android 앱 버전 리턴
+        return json!['android']; // 최신 android 앱 버전 리턴
 
-      return json['ios'];
+      return json!['ios'];
     } else {
       return null;
     }
@@ -144,36 +140,55 @@ class _SignInPageState extends State<SignInPage> {
     _checkCurrentAppVersion(); //서버에 있는 버전과 앱 버전의 차이 찾기
     super.initState();
 
-    _firebaseMessaging.configure(
-      onMessage: (Map<String, dynamic> message) async {
-        localNotifyManager.showNotification(message['notification']["title"],
-            message["notification"]["body"].toString(), message);
-        String screenLoc = message['data']['screen'];
-        selectLocation(screenLoc);
-        print("onMessage: $message");
-      },
-      onLaunch: (Map<String, dynamic> message) async {
-        String screenLoc = message['data']['screen'];
-        selectLocation(screenLoc);
-        print("onLaunch: $message");
-      },
-      onResume: (Map<String, dynamic> message) async {
-        String screenLoc = message['data']['screen'];
-        selectLocation(screenLoc);
-        print("onResume: $message");
-      },
-    );
-    if (Platform.isIOS) {
-      _firebaseMessaging.requestNotificationPermissions(
-          const IosNotificationSettings(sound: true, badge: true, alert: true));
+    // _firebaseMessaging.configure(
+    //   onMessage: (Map<String, dynamic> message) async {
+    //     localNotifyManager.showNotification(message['notification']["title"],
+    //         message["notification"]["body"].toString(), message);
+    //     String screenLoc = message['data']['screen'];
+    //     selectLocation(screenLoc);
+    //     print("onMessage: $message");
+    //   },
+    //   onLaunch: (Map<String, dynamic> message) async {
+    //     String screenLoc = message['data']['screen'];
+    //     selectLocation(screenLoc);
+    //     print("onLaunch: $message");
+    //   },
+    //   onResume: (Map<String, dynamic> message) async {
+    //     String screenLoc = message['data']['screen'];
+    //     selectLocation(screenLoc);
+    //     print("onResume: $message");
+    //   },
+    // );
+    // if (Platform.isIOS) {
+    //   _firebaseMessaging.requestNotificationPermissions(
+    //       const IosNotificationSettings(sound: true, badge: true, alert: true));
+    //
+    //   _firebaseMessaging.onIosSettingsRegistered
+    //       .listen((IosNotificationSettings settings) {
+    //     print("Settings registered: $settings");
+    //   });
+    // }
+    // localNotifyManager.setOnNotificationClick(onNotificationClick);
+    // localNotifyManager.setOnNotificationReceive(onNotificationReceive);
 
-      _firebaseMessaging.onIosSettingsRegistered
-          .listen((IosNotificationSettings settings) {
-        print("Settings registered: $settings");
-      });
-    }
-    localNotifyManager.setOnNotificationClick(onNotificationClick);
-    localNotifyManager.setOnNotificationReceive(onNotificationReceive);
+    FirebaseMessaging.instance
+        .getInitialMessage()
+        .then((RemoteMessage? initialMessage) {
+      print('initialMessage data: ${initialMessage?.data}');
+    });
+
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      print('onMessageOpenedApp data: ${message.data}');
+    });
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print('Got a message whilst in the foreground!');
+      print('onMessage data: ${message.data}');
+
+      if (message.notification != null) {
+        print('Message also contained a notification: ${message.notification}');
+      }
+    });
   }
 
   void selectLocation(String screenLoc) {
@@ -242,10 +257,10 @@ class _SignInPageState extends State<SignInPage> {
     _pref = await SharedPreferences.getInstance();
     if (_pref != null) {
       setState(() {
-        _isChecked = _pref.getBool('checked') ?? false;
+        _isChecked = _pref!.getBool('checked') ?? false;
         if (_isChecked) {
-          _idController.text = _pref.getString('uid') ?? '';
-          _passwordController.text = _pref.getString('password') ?? '';
+          _idController.text = _pref!.getString('uid') ?? '';
+          _passwordController.text = _pref!.getString('password') ?? '';
         }
       });
       if (_isChecked) {
@@ -291,17 +306,16 @@ class _SignInPageState extends State<SignInPage> {
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                     ),
                     actions: [
-                      FlatButton(
+                      TextButton(
                         onPressed: () => Navigator.pop(context),
                         child: Text('확인',
                             style: TextStyle(fontWeight: FontWeight.bold)),
-                        padding: EdgeInsets.all(0),
                       )
                     ],
                   ));
           return;
         } else {
-          if (result.email.isEmpty) {
+          if (result.email!.isEmpty) {
             await showDialog(
                 barrierDismissible: false,
                 context: context,
@@ -394,7 +408,7 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   void _moveScreenAccordingToPush(
-      {@required String title, @required String url}) {
+      {required String title, required String url}) {
     Navigator.push(
         context,
         MaterialPageRoute(
@@ -406,7 +420,7 @@ class _SignInPageState extends State<SignInPage> {
 
   Future<bool> _updateEmailRequest() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_updateEmail.php';
-    final response = await http.post(url, body: <String, String>{
+    final response = await http.post(Uri.parse(url), body: <String, String>{
       'uid': _idController.text,
       'email': _updateEmailController.text
     });
@@ -430,7 +444,7 @@ class _SignInPageState extends State<SignInPage> {
 
   Future<String> _getFoundUserID() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_findUserID.php';
-    final response = await http.post(url, body: <String, String>{
+    final response = await http.post(Uri.parse(url), body: <String, String>{
       'name': _findNameControllerID.text,
       'email': _findEmailControllerID.text,
       'grade': _findGradeControllerID.text.isEmpty
@@ -458,7 +472,7 @@ class _SignInPageState extends State<SignInPage> {
   Future<bool> _changeRandomPassword(String pw) async {
     String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_changePasswordForFind.php';
-    final response = await http.post(url, body: <String, String>{
+    final response = await http.post(Uri.parse(url), body: <String, String>{
       'uid': _findIdControllerPW.text,
       'email': _findEmailControllerPW.text,
       'name': _findNameControllerPW.text,
@@ -488,10 +502,10 @@ class _SignInPageState extends State<SignInPage> {
 
   Future<void> _postRegisterRequest() async {
     Navigator.pop(context);
-    String uri = 'http://nacha01.dothome.co.kr/sin/arlimi_register.php';
-    http.Response response = await http.post(uri, headers: <String, String>{
+    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_register.php';
+    http.Response response = await http.post(Uri.parse(url), headers: <String, String>{
       'Content-Type': 'application/x-www-form-urlencoded',
-    }, body: <String, String>{
+    }, body: <String, String?>{
       'uid': _idRegisterController.text.toString(),
       'pw': _passwordRegisterController.text.toString(),
       'token': widget.token,
@@ -516,7 +530,7 @@ class _SignInPageState extends State<SignInPage> {
                       style:
                           TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                   actions: [
-                    FlatButton(
+                    TextButton(
                         onPressed: () => Navigator.pop(context),
                         child: Text('확인',
                             style: TextStyle(fontWeight: FontWeight.bold)))
@@ -533,7 +547,7 @@ class _SignInPageState extends State<SignInPage> {
                       style:
                           TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                   actions: [
-                    FlatButton(
+                    TextButton(
                         onPressed: () async {
                           var res = await _getUserData();
                           if (res == null) {
@@ -562,10 +576,10 @@ class _SignInPageState extends State<SignInPage> {
     }
   }
 
-  Future<User> _getUserData() async {
-    String uri =
+  Future<User?> _getUserData() async {
+    String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_login.php?uid=${_idRegisterController.text}&pw=${_passwordRegisterController.text}';
-    final response = await http.get(uri, headers: <String, String>{
+    final response = await http.get(Uri.parse(url), headers: <String, String>{
       'Content-Type': 'application/x-www-form-urlencoded'
     });
     if (response.statusCode == 200) {
@@ -581,7 +595,7 @@ class _SignInPageState extends State<SignInPage> {
     }
   }
 
-  Future<User> _requestLogin() async {
+  Future<User?> _requestLogin() async {
     String uri =
         'http://nacha01.dothome.co.kr/sin/arlimi_login.php?uid=${_idController.text}&pw=${_passwordController.text}';
     final response = await http.get(Uri.parse(uri), headers: <String, String>{
@@ -610,9 +624,9 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   Future<bool> _judgeIsAdminAccount() async {
-    String uri =
+    String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_isAdmin.php?uid=${_idController.text}';
-    final response = await http.get(uri, headers: <String, String>{
+    final response = await http.get(Uri.parse(url), headers: <String, String>{
       'Content-Type': 'application/x-www-form-urlencoded'
     });
     if (response.statusCode == 200) {
@@ -632,15 +646,15 @@ class _SignInPageState extends State<SignInPage> {
     }
   }
 
-  onNotificationClick(String payload) {
-    print(payload);
-    Map message = json.decode(payload);
-    selectLocation(message['data']['screen']);
-  }
-
-  onNotificationReceive(ReceiveNotification notification) {
-    print('notification Receive : ${notification.id}');
-  }
+  // onNotificationClick(String payload) {
+  //   print(payload);
+  //   Map message = json.decode(payload);
+  //   selectLocation(message['data']['screen']);
+  // }
+  //
+  // onNotificationReceive(ReceiveNotification notification) {
+  //   print('notification Receive : ${notification.id}');
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -750,7 +764,7 @@ class _SignInPageState extends State<SignInPage> {
         height: size.height * 0.95,
         decoration: BoxDecoration(
             gradient: LinearGradient(
-          colors: [Color(0xFFF9F7F8), Color(0xFFF9F7F8), Colors.lightBlue[100]],
+          colors: [Color(0xFFF9F7F8), Color(0xFFF9F7F8), Colors.lightBlue[100]!],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         )),
@@ -802,7 +816,7 @@ class _SignInPageState extends State<SignInPage> {
                       obscureText: true,
                     ),
                   ),
-                  FlatButton(
+                  TextButton(
                       onPressed: () {
                         setState(() {
                           _isChecked = !_isChecked;
@@ -825,7 +839,7 @@ class _SignInPageState extends State<SignInPage> {
             SizedBox(
               height: size.height * 0.02,
             ),
-            FlatButton(
+            TextButton(
                 onPressed: () async {
                   if (_idController.text.isEmpty ||
                       _passwordController.text.isEmpty) {
@@ -837,7 +851,7 @@ class _SignInPageState extends State<SignInPage> {
                                 style: TextStyle(
                                     fontSize: 16, fontWeight: FontWeight.bold)),
                             actions: [
-                              FlatButton(
+                              TextButton(
                                   onPressed: () => Navigator.pop(context),
                                   child: Text('확인',
                                       style: TextStyle(
@@ -850,10 +864,10 @@ class _SignInPageState extends State<SignInPage> {
                   if (_pref == null) {
                     _pref = await SharedPreferences.getInstance();
                   }
-                  await _pref.setString('uid', _idController.text.toString());
-                  await _pref.setString(
+                  await _pref!.setString('uid', _idController.text.toString());
+                  await _pref!.setString(
                       'password', _passwordController.text.toString());
-                  await _pref.setBool('checked', _isChecked);
+                  await _pref!.setBool('checked', _isChecked);
 
                   showDialog(
                       barrierDismissible: false,
@@ -897,18 +911,17 @@ class _SignInPageState extends State<SignInPage> {
                                     fontWeight: FontWeight.bold, fontSize: 14),
                               ),
                               actions: [
-                                FlatButton(
+                                TextButton(
                                   onPressed: () => Navigator.pop(context),
                                   child: Text('확인',
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold)),
-                                  padding: EdgeInsets.all(0),
                                 )
                               ],
                             ));
                     return;
                   } else {
-                    if (result.email.isEmpty) {
+                    if (result.email!.isEmpty) {
                       await showDialog(
                           barrierDismissible: false,
                           context: context,
@@ -1004,8 +1017,6 @@ class _SignInPageState extends State<SignInPage> {
                                 )));
                   }
                 },
-                padding: EdgeInsets.all(size.width * 0.02),
-                highlightColor: Colors.blue[200],
                 child: Container(
                   padding: EdgeInsets.all(size.width * 0.01),
                   width: size.width * 0.4,
@@ -1070,7 +1081,7 @@ class _SignInPageState extends State<SignInPage> {
         height: size.height * 0.95,
         decoration: BoxDecoration(
             gradient: LinearGradient(
-          colors: [Color(0xFFF9F7F8), Color(0xFFF9F7F8), Colors.lightBlue[100]],
+          colors: [Color(0xFFF9F7F8), Color(0xFFF9F7F8), Colors.lightBlue[100]!],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         )),
@@ -1110,10 +1121,10 @@ class _SignInPageState extends State<SignInPage> {
                           value: value,
                         );
                       }).toList(),
-                      onChanged: (value) {
+                      onChanged: (dynamic value) {
                         setState(() {
                           _selectedValue = value;
-                          if (Status.statusMap[_selectedValue] > 1) {
+                          if (Status.statusMap[_selectedValue]! > 1) {
                             _gradeController.text = '';
                           }
                         });
@@ -1200,7 +1211,7 @@ class _SignInPageState extends State<SignInPage> {
             SizedBox(
               height: size.height * 0.02,
             ),
-            FlatButton(
+            TextButton(
                 onPressed: () async {
                   if (_idRegisterController.text.isEmpty ||
                       _nameController.text.isEmpty ||
@@ -1214,12 +1225,11 @@ class _SignInPageState extends State<SignInPage> {
                                       fontWeight: FontWeight.bold,
                                       fontSize: 14)),
                               actions: [
-                                FlatButton(
+                                TextButton(
                                   onPressed: () => Navigator.pop(context),
                                   child: Text('확인',
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold)),
-                                  padding: EdgeInsets.all(0),
                                 )
                               ],
                             ));
@@ -1234,12 +1244,11 @@ class _SignInPageState extends State<SignInPage> {
                                       fontWeight: FontWeight.bold,
                                       fontSize: 14)),
                               actions: [
-                                FlatButton(
+                                TextButton(
                                   onPressed: () => Navigator.pop(context),
                                   child: Text('확인',
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold)),
-                                  padding: EdgeInsets.all(0),
                                 )
                               ],
                             ));
@@ -1254,12 +1263,11 @@ class _SignInPageState extends State<SignInPage> {
                                       fontWeight: FontWeight.bold,
                                       fontSize: 14)),
                               actions: [
-                                FlatButton(
+                                TextButton(
                                   onPressed: () => Navigator.pop(context),
                                   child: Text('확인',
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold)),
-                                  padding: EdgeInsets.all(0),
                                 )
                               ],
                             ));
@@ -1299,14 +1307,14 @@ class _SignInPageState extends State<SignInPage> {
                             ],
                           ),
                           actions: [
-                            FlatButton(
+                            TextButton(
                                 onPressed: () async {
                                   await _postRegisterRequest();
                                 },
                                 child: Text('예',
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold))),
-                            FlatButton(
+                            TextButton(
                                 onPressed: () {
                                   Navigator.pop(context);
                                 },
@@ -1317,8 +1325,6 @@ class _SignInPageState extends State<SignInPage> {
                         );
                       });
                 },
-                padding: EdgeInsets.all(size.width * 0.02),
-                highlightColor: Colors.blue[200],
                 child: Container(
                   padding: EdgeInsets.all(size.width * 0.01),
                   width: size.width * 0.4,
@@ -1347,7 +1353,7 @@ class _SignInPageState extends State<SignInPage> {
       height: size.height * 0.9,
       decoration: BoxDecoration(
           gradient: LinearGradient(
-        colors: [Color(0xFFF9F7F8), Color(0xFFF9F7F8), Colors.lightBlue[100]],
+        colors: [Color(0xFFF9F7F8), Color(0xFFF9F7F8), Colors.lightBlue[100]!],
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
       )),

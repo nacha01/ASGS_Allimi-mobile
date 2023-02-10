@@ -1,9 +1,6 @@
-import 'dart:ui';
-
 import 'package:asgshighschool/data/category.dart';
 import 'package:asgshighschool/data/user.dart';
 import '../qr/QRScannerPage.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
@@ -11,8 +8,8 @@ import 'package:http/http.dart' as http;
 class AdminDetailOrder extends StatefulWidget {
   AdminDetailOrder({this.data, this.user});
 
-  final Map data;
-  final User user;
+  final Map? data;
+  final User? user;
 
   @override
   _AdminDetailOrderState createState() => _AdminDetailOrderState();
@@ -90,9 +87,9 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
   /// chargerID 필드 업데이트 및 orderState 필드 업데이트
   Future<bool> _chargeOrderRequest() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_chargeOrder.php';
-    final response = await http.post(url, body: <String, String>{
-      'uid': widget.user.uid,
-      'oid': widget.data['oID']
+    final response = await http.post(Uri.parse(url), body: <String, String?>{
+      'uid': widget.user!.uid,
+      'oid': widget.data!['oID']
     });
 
     if (response.statusCode == 200) {
@@ -104,14 +101,14 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
 
   @override
   void initState() {
-    _isCharged = (int.parse(widget.data['orderState']) == 3 ||
-            int.parse(widget.data['orderState']) == 2)
+    _isCharged = (int.parse(widget.data!['orderState']) == 3 ||
+            int.parse(widget.data!['orderState']) == 2)
         ? true
         : false;
-    if (int.parse(widget.data['orderState']) == 4) {
+    if (int.parse(widget.data!['orderState']) == 4) {
       _isCharged = true;
     }
-    _state = int.parse(widget.data['orderState']);
+    _state = int.parse(widget.data!['orderState']);
     super.initState();
   }
 
@@ -127,7 +124,7 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
         appBar: AppBar(
           backgroundColor: Color(0xFF9EE1E5),
           title: Text(
-            '주문 [${widget.data['oID']}]',
+            '주문 [${widget.data!['oID']}]',
             style: TextStyle(
                 color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
           ),
@@ -149,7 +146,7 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
                           context,
                           MaterialPageRoute(
                               builder: (context) => QRScannerPage(
-                                    oID: widget.data['oID'],
+                                    oID: widget.data!['oID'],
                                   )));
                       if (res) Navigator.pop(context, true);
                     },
@@ -177,14 +174,14 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
                   thickness: 1,
                 ),
                 Text(
-                  '주문자 ID  ${widget.data['uID']}',
+                  '주문자 ID  ${widget.data!['uID']}',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 SizedBox(
                   height: size.height * 0.015,
                 ),
                 Text(
-                  '주문 번호  ${widget.data['oID']}',
+                  '주문 번호  ${widget.data!['oID']}',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 SizedBox(
@@ -192,10 +189,10 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
                 ),
                 Row(
                   children: [
-                    Text('주문 일자: ${_formatDate(widget.data['oDate'])}',
+                    Text('주문 일자: ${_formatDate(widget.data!['oDate'])}',
                         style: TextStyle(color: Colors.grey, fontSize: 13)),
                     Text(
-                      ' (${_formatDateTimeForToday(widget.data['oDate'])})',
+                      ' (${_formatDateTimeForToday(widget.data!['oDate'])})',
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
@@ -206,10 +203,10 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
                 Row(
                   children: [
                     Text(
-                        '주문 완료 일자: ${widget.data['eDate'] == null || widget.data['eDate'] == '0000-00-00 00:00:00' ? '-' : _formatDate(widget.data['eDate'])}',
+                        '주문 완료 일자: ${widget.data!['eDate'] == null || widget.data!['eDate'] == '0000-00-00 00:00:00' ? '-' : _formatDate(widget.data!['eDate'])}',
                         style: TextStyle(color: Colors.grey, fontSize: 13)),
                     Text(
-                        ' (${widget.data['eDate'] == null || widget.data['eDate'] == '0000-00-00 00:00:00' ? '-' : _formatDateTimeForToday(widget.data['eDate'])})',
+                        ' (${widget.data!['eDate'] == null || widget.data!['eDate'] == '0000-00-00 00:00:00' ? '-' : _formatDateTimeForToday(widget.data!['eDate'])})',
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 12,
@@ -226,17 +223,17 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     Text(
-                      '[ ${int.parse(widget.data['receiveMethod']) == 0 ? '직접 수령' : '배달'} ]',
+                      '[ ${int.parse(widget.data!['receiveMethod']) == 0 ? '직접 수령' : '배달'} ]',
                       style: TextStyle(
                           color: Colors.lightBlue, fontWeight: FontWeight.bold),
                     )
                   ],
                 ),
-                int.parse(widget.data['receiveMethod']) == 1
+                int.parse(widget.data!['receiveMethod']) == 1
                     ? Padding(
                         padding: EdgeInsets.all(size.width * 0.04),
                         child: Text(
-                          '장소 : ${widget.data['location'] == null ? '' : widget.data['location']}',
+                          '장소 : ${widget.data!['location'] == null ? '' : widget.data!['location']}',
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 19,
@@ -252,7 +249,7 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
                     Text('결제 방식 ',
                         style: TextStyle(fontWeight: FontWeight.bold)),
                     Text(
-                        ' [ ${widget.data['payMethod'] == '0' ? '신용카드' : '간편결제'} ]')
+                        ' [ ${widget.data!['payMethod'] == '0' ? '신용카드' : '간편결제'} ]')
                   ],
                 ),
                 SizedBox(
@@ -262,7 +259,7 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                      '${widget.data['options'].toString().trim() == '' ? 'X' : widget.data['options']}'),
+                      '${widget.data!['options'].toString().trim() == '' ? 'X' : widget.data!['options']}'),
                 ),
                 Divider(
                   thickness: 6,
@@ -278,7 +275,7 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
                   height: size.height * 0.015,
                 ),
                 Column(
-                  children: _item(widget.data['detail'], size),
+                  children: _item(widget.data!['detail'], size),
                 ),
                 Divider(
                   thickness: 6,
@@ -291,7 +288,7 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
                         alignment: Alignment.center,
                         padding: EdgeInsets.all(size.width * 0.02),
                         child: Text(
-                          '총 결제 금액  ${_formatPrice(int.parse(widget.data['totalPrice']))}원',
+                          '총 결제 금액  ${_formatPrice(int.parse(widget.data!['totalPrice']))}원',
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 19),
                         ),
@@ -309,12 +306,12 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
                     ? Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          FlatButton(
+                          TextButton(
                             onPressed: () async {
                               var res = await _chargeOrderRequest();
                               if (res) {
                                 Fluttertoast.showToast(
-                                    msg: '주문 번호 ${widget.data['oID']} 담당 완료 ',
+                                    msg: '주문 번호 ${widget.data!['oID']} 담당 완료 ',
                                     gravity: ToastGravity.BOTTOM,
                                     toastLength: Toast.LENGTH_SHORT);
                                 setState(() {
@@ -375,7 +372,7 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
                     fontSize: 15,
                     color: Colors.lightBlue)),
             Text(
-                '${widget.data['chargerID'] == null ? widget.user.uid : widget.data['chargerID']}',
+                '${widget.data!['chargerID'] == null ? widget.user!.uid : widget.data!['chargerID']}',
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 15,
@@ -399,7 +396,7 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
               height: 5,
             ),
             Text(
-              '담당자 ID  : ${widget.data['chargerID']}',
+              '담당자 ID  : ${widget.data!['chargerID']}',
               style: TextStyle(fontWeight: FontWeight.bold),
             )
           ],

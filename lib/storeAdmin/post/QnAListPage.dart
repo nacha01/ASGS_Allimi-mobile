@@ -1,9 +1,6 @@
 import 'dart:convert';
-import 'dart:ui';
-
 import 'package:asgshighschool/data/user.dart';
 import 'AnswerQnAPage.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -13,15 +10,15 @@ import 'package:http/http.dart' as http;
 class QnAListPage extends StatefulWidget {
   QnAListPage({this.user});
 
-  final User user;
+  final User? user;
 
   @override
   _QnAListPageState createState() => _QnAListPageState();
 }
 
 class _QnAListPageState extends State<QnAListPage> {
-  List<Map> _qnaDateList = [];
-  List<Map> _noneQnAList = [];
+  List<Map?> _qnaDateList = [];
+  List<Map?> _noneQnAList = [];
   bool _isChecked = true;
   bool _isFinished = false;
   Map _categoryMap = {0: '상품', 1: '교환/환불', 2: '계정', 3: '앱 이용', 4: '기타'};
@@ -50,16 +47,16 @@ class _QnAListPageState extends State<QnAListPage> {
   /// 문의 글을 날짜 순으로 정렬하는 작업
   void _sortListOrderByTime() {
     _qnaDateList
-        .sort((a, b) => b['qDate'].toString().compareTo(a['qDate'].toString()));
+        .sort((a, b) => b!['qDate'].toString().compareTo(a!['qDate'].toString()));
     _noneQnAList
-        .sort((a, b) => b['qDate'].toString().compareTo(a['qDate'].toString()));
+        .sort((a, b) => b!['qDate'].toString().compareTo(a!['qDate'].toString()));
   }
 
   /// 모든 문의 글 데이터를 요청하는 작업
   /// 답변이 된 글과 되지 않은 글을 각 List에 구분하여 추가
   Future<bool> _getAllQnAData() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getAllQnA.php';
-    final response = await http.get(url);
+    final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
       String result = utf8
@@ -75,12 +72,12 @@ class _QnAListPageState extends State<QnAListPage> {
 
       for (int i = 0; i < map.length; ++i) {
         _qnaDateList.add(jsonDecode(map[i]));
-        if (int.parse(_qnaDateList[i]['isAnswer']) == 0) {
+        if (int.parse(_qnaDateList[i]!['isAnswer']) == 0) {
           _noneQnAList.add(_qnaDateList[i]);
         } else {
-          for (int j = 0; j < _qnaDateList[i]['answer'].length; ++j) {
-            _qnaDateList[i]['answer'][j] =
-                jsonDecode(_qnaDateList[i]['answer'][j]);
+          for (int j = 0; j < _qnaDateList[i]!['answer'].length; ++j) {
+            _qnaDateList[i]!['answer'][j] =
+                jsonDecode(_qnaDateList[i]!['answer'][j]);
           }
         }
       }
@@ -126,7 +123,7 @@ class _QnAListPageState extends State<QnAListPage> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Container(
-                  child: FlatButton(
+                  child: TextButton(
                     child: Row(
                       children: [
                         Icon(
@@ -162,12 +159,12 @@ class _QnAListPageState extends State<QnAListPage> {
                             child: ListView.builder(
                             itemBuilder: (context, index) {
                               return _itemTile(
-                                  _noneQnAList[index]['qTitle'],
-                                  _noneQnAList[index]['qUID'],
-                                  _noneQnAList[index]['qDate'],
+                                  _noneQnAList[index]!['qTitle'],
+                                  _noneQnAList[index]!['qUID'],
+                                  _noneQnAList[index]!['qDate'],
                                   _categoryMap[int.parse(
-                                      _noneQnAList[index]['qCategory'])],
-                                  int.parse(_noneQnAList[index]['isAnswer']) ==
+                                      _noneQnAList[index]!['qCategory'])],
+                                  int.parse(_noneQnAList[index]!['isAnswer']) ==
                                           1
                                       ? true
                                       : false,
@@ -189,12 +186,12 @@ class _QnAListPageState extends State<QnAListPage> {
                             child: ListView.builder(
                             itemBuilder: (context, index) {
                               return _itemTile(
-                                  _qnaDateList[index]['qTitle'],
-                                  _qnaDateList[index]['qUID'],
-                                  _qnaDateList[index]['qDate'],
+                                  _qnaDateList[index]!['qTitle'],
+                                  _qnaDateList[index]!['qUID'],
+                                  _qnaDateList[index]!['qDate'],
                                   _categoryMap[int.parse(
-                                      _qnaDateList[index]['qCategory'])],
-                                  int.parse(_qnaDateList[index]['isAnswer']) ==
+                                      _qnaDateList[index]!['qCategory'])],
+                                  int.parse(_qnaDateList[index]!['isAnswer']) ==
                                           1
                                       ? true
                                       : false,
@@ -219,9 +216,9 @@ class _QnAListPageState extends State<QnAListPage> {
     );
   }
 
-  Widget _itemTile(String title, String uid, String date, String category,
-      bool isAnswer, Map data, Size size) {
-    return FlatButton(
+  Widget _itemTile(String? title, String? uid, String date, String? category,
+      bool isAnswer, Map? data, Size size) {
+    return TextButton(
       onPressed: () async {
         var res = await Navigator.push(
             context,

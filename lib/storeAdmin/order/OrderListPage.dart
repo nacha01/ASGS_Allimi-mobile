@@ -1,13 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:ui';
-
 import 'package:asgshighschool/data/status.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'AdminDetailOrder.dart';
 import 'package:asgshighschool/storeAdmin/FullListPage.dart';
 import '../qr/QrSearchScannerPage.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 //import 'package:audioplayers/audio_cache.dart';
@@ -17,7 +14,7 @@ import 'package:http/http.dart' as http;
 class OrderListPage extends StatefulWidget {
   OrderListPage({this.user});
 
-  final User user;
+  final User? user;
 
   @override
   _OrderListPageState createState() => _OrderListPageState();
@@ -53,10 +50,10 @@ class _OrderListPageState extends State<OrderListPage> {
     }
   }
 
-  Future<User> _getUserInformation(String uid) async {
+  Future<User?> _getUserInformation(String? uid) async {
     String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_getOneUser.php?uid=$uid';
-    final response = await http.get(url);
+    final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
       String result = utf8
@@ -75,7 +72,7 @@ class _OrderListPageState extends State<OrderListPage> {
   /// 이미 주문 처리가 된 것과 안된 것을 구분하여 각각의 List 에 저장
   Future<bool> _getAllOrderData() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getAllOrder.php';
-    final response = await http.get(url);
+    final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
       String result = utf8
@@ -113,10 +110,10 @@ class _OrderListPageState extends State<OrderListPage> {
   }
 
   /// 특정 uid 값을 통해 그 관리자의 사용자 정보를 가져오는 요청
-  Future<Map> _getAdminUserInfoByID(String uid) async {
+  Future<Map?> _getAdminUserInfoByID(String uid) async {
     String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_getUserInfo.php?uid=' + uid;
-    final response = await http.get(url);
+    final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
       String result = utf8
@@ -303,8 +300,8 @@ class _OrderListPageState extends State<OrderListPage> {
     );
   }
 
-  Widget _itemTile(String oid, String uid, int recv, String oDate, String eDate,
-      int orderState, Map data, Size size) {
+  Widget _itemTile(String? oid, String? uid, int recv, String oDate, String? eDate,
+      int orderState, Map? data, Size size) {
     return Container(
       width: size.width,
       margin: EdgeInsets.all(size.width * 0.01),
@@ -312,7 +309,7 @@ class _OrderListPageState extends State<OrderListPage> {
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(6),
           border: Border.all(width: 0.5, color: Colors.black)),
-      child: FlatButton(
+      child: TextButton(
         onPressed: () async {
           var res = await Navigator.push(
               context,
@@ -362,7 +359,7 @@ class _OrderListPageState extends State<OrderListPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  '아이디 : ${user.uid}',
+                                  '아이디 : ${user!.uid}',
                                   style: TextStyle(fontWeight: FontWeight.bold),
                                 ),
                                 Text('이름 : ${user.name}',
@@ -382,13 +379,12 @@ class _OrderListPageState extends State<OrderListPage> {
                               ],
                             ),
                             actions: [
-                              FlatButton(
+                              TextButton(
                                 onPressed: () => Navigator.pop(context),
                                 child: Text('확인',
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         color: Colors.blueAccent)),
-                                padding: EdgeInsets.all(0),
                               )
                             ],
                           ));
@@ -456,7 +452,7 @@ class _OrderListPageState extends State<OrderListPage> {
                                                 CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                'ID : ${user['uid']}',
+                                                'ID : ${user!['uid']}',
                                                 style: TextStyle(
                                                     fontWeight:
                                                         FontWeight.bold),
@@ -474,7 +470,7 @@ class _OrderListPageState extends State<OrderListPage> {
                                             ],
                                           ),
                                           actions: [
-                                            FlatButton(
+                                            TextButton(
                                                 onPressed: () =>
                                                     Navigator.pop(context),
                                                 child: Text('닫기'))
@@ -488,7 +484,7 @@ class _OrderListPageState extends State<OrderListPage> {
                                     style:
                                         TextStyle(fontWeight: FontWeight.bold),
                                   ),
-                                  Text(data['chargerID'],
+                                  Text(data!['chargerID'],
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           color: Colors.blue)),

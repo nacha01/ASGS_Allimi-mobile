@@ -1,21 +1,18 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-
 import 'package:asgshighschool/data/user.dart';
 
 class MobileStudentCard extends StatefulWidget {
   MobileStudentCard({this.user});
 
-  final User user;
+  final User? user;
 
   @override
   _MobileStudentCardState createState() => _MobileStudentCardState();
 }
 
 class _MobileStudentCardState extends State<MobileStudentCard> {
-  String _prefixId = 'A';
+  String? _prefixId = 'A';
 
   void onChanged(value) {
     print(value);
@@ -26,7 +23,7 @@ class _MobileStudentCardState extends State<MobileStudentCard> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.user.uid);
+    print(widget.user!.uid);
     final size = MediaQuery.of(context).size;
     return Scaffold(
         appBar: AppBar(
@@ -58,7 +55,7 @@ class _MobileStudentCardState extends State<MobileStudentCard> {
                             fontWeight: FontWeight.bold, fontSize: 20.0),
                       ),
                       Text(
-                        '${widget.user.uid}',
+                        '${widget.user!.uid}',
                         style: TextStyle(fontSize: 20.0),
                       )
                     ]),
@@ -71,7 +68,7 @@ class _MobileStudentCardState extends State<MobileStudentCard> {
                           fontWeight: FontWeight.bold, fontSize: 20.0),
                     ),
                     Text(
-                      '${widget.user.name}',
+                      '${widget.user!.name}',
                       style: TextStyle(fontSize: 20.0),
                     )
                   ],
@@ -97,7 +94,7 @@ class _MobileStudentCardState extends State<MobileStudentCard> {
                   children: [
                     Center(
                       child: QrImage(
-                        data: '${_prefixId}_${widget.user.uid}',
+                        data: '${_prefixId}_${widget.user!.uid}',
                         size: 250,
                       ),
                     )

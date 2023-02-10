@@ -1,34 +1,32 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:asgshighschool/data/product.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:asgshighschool/store/PaymentCompletePage.dart';
 import 'package:crypto/crypto.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:hex/hex.dart';
-import 'package:cp949/cp949.dart' as cp949;
+import 'package:cp949_dart/cp949_dart.dart' as cp949;
 import 'package:url_launcher/url_launcher.dart';
 
 class PaymentWebViewPage extends StatefulWidget {
-  final String oID; // 생성한 order ID
-  final bool isCart; // 장바구니 결제인지 단일 상품 결제인지 판단하는 flag
+  final String? oID; // 생성한 order ID
+  final bool? isCart; // 장바구니 결제인지 단일 상품 결제인지 판단하는 flag
 
-  final List<Map> cart; // 장바구니에서 결제시 장바구니 리스트 Map 데이터
-  final Product direct; // 바로 결제 시 그 단일 상품 하나
-  final int productCount; // 바로 결제시 상품의 개수
-  final User user;
-  final List optionList; // 바로 결제 시 단일 상품에 대한 옵션 리스트
-  final List selectList; // 바로 결제 시 단일 상품에 대한 옵션 리스트에 대해 선택한 인덱스 리스트
-  final int additionalPrice; // 상품 옵션의 총 가격
+  final List<Map?>? cart; // 장바구니에서 결제시 장바구니 리스트 Map 데이터
+  final Product? direct; // 바로 결제 시 그 단일 상품 하나
+  final int? productCount; // 바로 결제시 상품의 개수
+  final User? user;
+  final List? optionList; // 바로 결제 시 단일 상품에 대한 옵션 리스트
+  final List? selectList; // 바로 결제 시 단일 상품에 대한 옵션 리스트에 대해 선택한 인덱스 리스트
+  final int? additionalPrice; // 상품 옵션의 총 가격
 
-  final String receiveMethod; // 수령 방법
-  final String option; // 추가 요청
-  final String location; // 배달 시 위치정보
+  final String? receiveMethod; // 수령 방법
+  final String? option; // 추가 요청
+  final String? location; // 배달 시 위치정보
 
   PaymentWebViewPage(
       {this.oID,
@@ -49,7 +47,7 @@ class PaymentWebViewPage extends StatefulWidget {
 }
 
 class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
-  InAppWebViewController _inAppWebViewController;
+  late InAppWebViewController _inAppWebViewController;
   static const platform = MethodChannel('asgs');
   static const _KEY =
       '0DVRz8vSDD5HvkWRwSxpjVhhx7OlXEViTciw5lBQAvSyYya9yf0K0Is+JbwiR9yYC96rEH2XIbfzeHXgqzSAFQ==';
@@ -57,7 +55,7 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
   static const _RETURN_URL = 'http://nacha01.dothome.co.kr/sin/result_test.php';
   String _ediDate = '';
   bool _isCart = true;
-  String _goodsName = '';
+  String? _goodsName = '';
   int _totalPrice = 0;
 
   String _getSignData() {
@@ -75,7 +73,7 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
         appScheme != 'about';
   }
 
-  Future<String> getAppUrlForAndroid(String url) async {
+  Future<String?> getAppUrlForAndroid(String url) async {
     if (Platform.isAndroid) {
       return await platform
           .invokeMethod('getAppUrl', <String, Object>{'url': url});
@@ -84,7 +82,7 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
     }
   }
 
-  Future<String> getMarketUrlForAndroid(String url) async {
+  Future<String?> getMarketUrlForAndroid(String url) async {
     if (Platform.isAndroid) {
       return await platform
           .invokeMethod('getMarketUrl', <String, Object>{'url': url});
@@ -140,36 +138,36 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
 
   void _setGoodsName() {
     if (_isCart) {
-      if (widget.cart.length > 1) {
+      if (widget.cart!.length > 1) {
         _goodsName =
-            widget.cart[0]['prodName'] + ' 외 ${widget.cart.length - 1}개';
+            widget.cart![0]!['prodName'] + ' 외 ${widget.cart!.length - 1}개';
       } else {
-        _goodsName = widget.cart[0]['prodName'];
+        _goodsName = widget.cart![0]!['prodName'];
       }
     } else {
-      _goodsName = widget.direct.prodName;
+      _goodsName = widget.direct!.prodName;
     }
   }
 
   int _obtainTotalPrice() {
     int sum = 0;
     if (_isCart) {
-      for (int i = 0; i < widget.cart.length; ++i) {
-        sum += (int.parse(widget.cart[i]['price']) *
+      for (int i = 0; i < widget.cart!.length; ++i) {
+        sum += (int.parse(widget.cart![i]!['price']) *
                 (1 -
-                        (widget.cart[i]['discount'].toString() == '0.0'
+                        (widget.cart![i]!['discount'].toString() == '0.0'
                                 ? 0
-                                : double.parse(widget.cart[i]['discount'])) /
+                                : double.parse(widget.cart![i]!['discount'])) /
                             100.0)
                     .round()) *
-            int.parse(widget.cart[i]['quantity']);
+            int.parse(widget.cart![i]!['quantity']);
       }
-      sum += widget.additionalPrice;
+      sum += widget.additionalPrice!;
     } else {
-      sum += widget.direct.price *
-          (1 - (widget.direct.discount / 100.0)).round() *
-          widget.productCount;
-      sum += widget.additionalPrice;
+      sum += widget.direct!.price *
+          (1 - (widget.direct!.discount / 100.0)).round() *
+          widget.productCount!;
+      sum += widget.additionalPrice!;
     }
     return sum;
   }
@@ -214,17 +212,17 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
       body: InAppWebView(
         onLoadStart: (controller, uri) async {
           if (Platform.isAndroid) {
-            if (uri.scheme == 'about') {
+            if (uri!.scheme == 'about') {
               _inAppWebViewController.goBack();
             }
             if (uri.scheme == 'intent') {
               var url = uri.toString();
               _inAppWebViewController.stopLoading();
               getAppUrlForAndroid(url).then((value) async {
-                if (await canLaunch(value)) {
+                if (await canLaunch(value!)) {
                   await launch(value);
                 } else {
-                  final market = await getMarketUrlForAndroid(url);
+                  final market = (await getMarketUrlForAndroid(url))!;
                   await launch(market);
                 }
               });
@@ -325,7 +323,7 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
                   'SignData=${_getSignData()}&'
                   'CharSet=euc-kr&'
                   'PayMethod=CARD&'
-                  'BuyerName=${widget.user.name}')));
+                  'BuyerName=${widget.user!.name}')));
         },
       ),
     );

@@ -1,14 +1,11 @@
 import 'dart:convert';
-import 'dart:ui';
-
 import 'package:asgshighschool/data/user.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class FullListPage extends StatefulWidget {
-  final User user;
-  final bool isResv;
+  final User? user;
+  final bool? isResv;
 
   FullListPage({this.user, this.isResv});
 
@@ -33,7 +30,7 @@ class _FullListPageState extends State<FullListPage> {
   Future<bool> _getReservationList() async {
     String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_getAllReservation.php';
-    final response = await http.get(url);
+    final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
       String result = utf8
@@ -64,7 +61,7 @@ class _FullListPageState extends State<FullListPage> {
 
   Future<bool> _getOrderList() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getAllOrder.php';
-    final response = await http.get(url);
+    final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
       String result = utf8
           .decode(response.bodyBytes)
@@ -114,7 +111,7 @@ class _FullListPageState extends State<FullListPage> {
 
   @override
   void initState() {
-    if (widget.isResv) {
+    if (widget.isResv!) {
       _getReservationList();
     } else {
       _getOrderList();
@@ -134,7 +131,7 @@ class _FullListPageState extends State<FullListPage> {
         appBar: AppBar(
           backgroundColor: Color(0xFF9EE1E5),
           title: Text(
-            '전체 ${widget.isResv ? '예약 리스트' : '구매 리스트'}',
+            '전체 ${widget.isResv! ? '예약 리스트' : '구매 리스트'}',
             style: TextStyle(
                 color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
           ),
@@ -193,10 +190,10 @@ class _FullListPageState extends State<FullListPage> {
                       itemBuilder: (context, index) => _itemEach(
                           size,
                           index,
-                          widget.isResv
+                          widget.isResv!
                               ? _reservationList[index]
                               : _orderList[index]),
-                      itemCount: widget.isResv
+                      itemCount: widget.isResv!
                           ? _reservationList.length
                           : _orderList.length,
                     ),
@@ -218,7 +215,7 @@ class _FullListPageState extends State<FullListPage> {
   }
 
   Widget _itemEach(Size size, int index, Map data) {
-    return FlatButton(
+    return TextButton(
       onPressed: () {
         showDialog(
             context: (context),
@@ -229,7 +226,7 @@ class _FullListPageState extends State<FullListPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '* ${widget.isResv ? '예약 일시: ' : '구매 일시: '} ${data['oDate']}',
+                        '* ${widget.isResv! ? '예약 일시: ' : '구매 일시: '} ${data['oDate']}',
                         style: TextStyle(
                             fontSize: 12, fontWeight: FontWeight.bold),
                       ),
@@ -246,7 +243,7 @@ class _FullListPageState extends State<FullListPage> {
                     ],
                   ),
                   actions: [
-                    FlatButton(
+                    TextButton(
                         onPressed: () => Navigator.pop(context),
                         child: Text('확인'))
                   ],
@@ -260,7 +257,7 @@ class _FullListPageState extends State<FullListPage> {
                   content: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: widget.isResv
+                    children: widget.isResv!
                         ? [
                             Text(
                                 '결제 상태 : ${_payState[int.parse(data['orderState'])]}'),
@@ -273,13 +270,12 @@ class _FullListPageState extends State<FullListPage> {
                           ],
                   ),
                   actions: [
-                    FlatButton(
+                    TextButton(
                         onPressed: () => Navigator.pop(context),
                         child: Text('확인'))
                   ],
                 ));
       },
-      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       child: Container(
         width: size.width,
         margin: EdgeInsets.all(size.width * 0.015),
@@ -302,7 +298,7 @@ class _FullListPageState extends State<FullListPage> {
             SizedBox(
               width: size.width * 0.01,
             ),
-            widget.isResv
+            widget.isResv!
                 ? Text(
                     '${data['detail'][0]['pInfo']['pName']}  ${data['detail'][0]['quantity']}개 ',
                     style: TextStyle(

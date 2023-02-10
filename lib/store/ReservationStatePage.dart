@@ -1,15 +1,12 @@
 import 'dart:convert';
-import 'dart:ui';
-
 import 'package:asgshighschool/data/category.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:asgshighschool/store/DetailReservationStatePage.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class ReservationStatePage extends StatefulWidget {
-  final User user;
+  final User? user;
 
   ReservationStatePage({this.user});
 
@@ -26,8 +23,8 @@ class _ReservationStatePageState extends State<ReservationStatePage> {
   /// 중간 과정으로 예약 완료 처리된 데이터를 구분하고 파싱하는 작업
   Future<bool> _getReservationFromUser() async {
     String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_getOneResv.php?uid=${widget.user.uid}';
-    final response = await http.get(url);
+        'http://nacha01.dothome.co.kr/sin/arlimi_getOneResv.php?uid=${widget.user!.uid}';
+    final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
       String result = utf8
           .decode(response.bodyBytes)
@@ -92,7 +89,7 @@ class _ReservationStatePageState extends State<ReservationStatePage> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               Container(
-                child: FlatButton(
+                child: TextButton(
                   child: Row(
                     children: [
                       Icon(
