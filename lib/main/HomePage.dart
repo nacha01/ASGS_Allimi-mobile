@@ -70,8 +70,8 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   Future<bool> _checkUserToken(String? uid) async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_checkUserToken.php';
-    final response = await http
-        .post(Uri.parse(url), body: <String, String?>{'uid': uid, 'token': widget.token});
+    final response = await http.post(Uri.parse(url),
+        body: <String, String?>{'uid': uid, 'token': widget.token});
     if (response.statusCode == 200) {
       String result = utf8
           .decode(response.bodyBytes)
@@ -135,7 +135,8 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   Future<bool> _checkExistCart() async {
     String uri = 'http://nacha01.dothome.co.kr/sin/arlimi_checkCart.php';
-    final response = await http.get(Uri.parse(uri + '?uid=${widget.user!.uid}'));
+    final response =
+        await http.get(Uri.parse(uri + '?uid=${widget.user!.uid}'));
 
     if (response.statusCode == 200) {
       String result = utf8
@@ -157,8 +158,8 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Future<bool> _withdrawAccount(String pw) async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_withdrawAccount.php';
 
-    final response = await http
-        .post(Uri.parse(url), body: <String, String?>{'uid': widget.user!.uid, 'pw': pw});
+    final response = await http.post(Uri.parse(url),
+        body: <String, String?>{'uid': widget.user!.uid, 'pw': pw});
 
     if (response.statusCode == 200) {
       String result = utf8
@@ -393,8 +394,8 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
     return Stack();
   }
 
-  Future<bool?> _onBackPressed() {
-    return showDialog(
+  Future<bool> _onBackPressed() async {
+    return await showDialog(
         context: context,
         builder: (context) => AlertDialog(
               title: Text(
@@ -415,7 +416,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     child: Text('아니오',
                         style: TextStyle(fontWeight: FontWeight.bold)))
               ],
-            ));
+            )) as bool;
   }
 
   Widget slidePage() {
