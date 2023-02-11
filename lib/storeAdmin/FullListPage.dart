@@ -3,6 +3,8 @@ import 'package:asgshighschool/data/user.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import '../component/DefaultButtonComp.dart';
+
 class FullListPage extends StatefulWidget {
   final User? user;
   final bool? isResv;
@@ -215,7 +217,7 @@ class _FullListPageState extends State<FullListPage> {
   }
 
   Widget _itemEach(Size size, int index, Map data) {
-    return TextButton(
+    return DefaultButtonComp(
       onPressed: () {
         showDialog(
             context: (context),
@@ -243,7 +245,7 @@ class _FullListPageState extends State<FullListPage> {
                     ],
                   ),
                   actions: [
-                    TextButton(
+                    DefaultButtonComp(
                         onPressed: () => Navigator.pop(context),
                         child: Text('확인'))
                   ],
@@ -270,7 +272,7 @@ class _FullListPageState extends State<FullListPage> {
                           ],
                   ),
                   actions: [
-                    TextButton(
+                    DefaultButtonComp(
                         onPressed: () => Navigator.pop(context),
                         child: Text('확인'))
                   ],

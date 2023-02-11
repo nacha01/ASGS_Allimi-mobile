@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:asgshighschool/data/category.dart';
 import '../component/CorporationComp.dart';
+import '../component/DefaultButtonComp.dart';
 import '../data/provider/exist_cart.dart';
 import 'package:asgshighschool/data/product.dart';
 import 'package:asgshighschool/data/user.dart';
@@ -546,7 +547,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
               SizedBox(
                 height: size.height * 0.02,
               ),
-              TextButton(
+              DefaultButtonComp(
                   onPressed: () {
                     showDialog(
                         context: context,
@@ -560,7 +561,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
                                       fontWeight: FontWeight.bold,
                                       fontSize: 13)),
                               actions: [
-                                TextButton(
+                                DefaultButtonComp(
                                     onPressed: () async {
                                       var res = await _cancelOrderHandling();
                                       if (res) {
@@ -582,7 +583,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
                                                               FontWeight.bold,
                                                           fontSize: 14)),
                                                   actions: [
-                                                    TextButton(
+                                                    DefaultButtonComp(
                                                         onPressed: () {
                                                           Navigator.pop(
                                                               context);
@@ -614,7 +615,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
                                                               FontWeight.bold,
                                                           fontSize: 14)),
                                                   actions: [
-                                                    TextButton(
+                                                    DefaultButtonComp(
                                                         onPressed: () {
                                                           Navigator.pop(
                                                               context);
@@ -627,7 +628,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
                                       }
                                     },
                                     child: Text('예')),
-                                TextButton(
+                                DefaultButtonComp(
                                     onPressed: () => Navigator.pop(context),
                                     child: Text('아니오'))
                               ],
@@ -728,7 +729,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
                       color: Colors.grey),
                 ),
               ),
-              TextButton(
+              DefaultButtonComp(
                   onPressed: () async {
                     var res = await _cancelPaymentRequest();
                     if (res == '2001') {
@@ -746,7 +747,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
                                         fontWeight: FontWeight.bold,
                                         fontSize: 14)),
                                 actions: [
-                                  TextButton(
+                                  DefaultButtonComp(
                                       onPressed: () {
                                         Navigator.pop(context);
                                         Navigator.pop(this.context);
@@ -772,7 +773,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
                                         fontWeight: FontWeight.bold,
                                         fontSize: 14)),
                                 actions: [
-                                  TextButton(
+                                  DefaultButtonComp(
                                       onPressed: () {
                                         Navigator.pop(context);
                                       },

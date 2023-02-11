@@ -8,6 +8,8 @@ import 'package:hex/hex.dart';
 import 'package:http/http.dart' as http;
 import 'package:cp949_dart/cp949_dart.dart' as cp949;
 
+import '../component/DefaultButtonComp.dart';
+
 class OrderStatePage extends StatefulWidget {
   OrderStatePage({this.user});
 
@@ -401,7 +403,7 @@ class _OrderStatePageState extends State<OrderStatePage> {
               ],
             ),
             int.parse(orderJson['orderState']) == 1
-                ? TextButton(
+                ? DefaultButtonComp(
                     onPressed: () {
                       showDialog(
                           context: context,
@@ -415,7 +417,7 @@ class _OrderStatePageState extends State<OrderStatePage> {
                                         fontWeight: FontWeight.bold,
                                         fontSize: 13)),
                                 actions: [
-                                  TextButton(
+                                  DefaultButtonComp(
                                       onPressed: () async {
                                         var res = await _cancelOrderHandling(
                                             orderJson);
@@ -438,7 +440,7 @@ class _OrderStatePageState extends State<OrderStatePage> {
                                                                 FontWeight.bold,
                                                             fontSize: 14)),
                                                     actions: [
-                                                      TextButton(
+                                                      DefaultButtonComp(
                                                           onPressed: () {
                                                             Navigator.pop(
                                                                 context);
@@ -470,7 +472,7 @@ class _OrderStatePageState extends State<OrderStatePage> {
                                                                 FontWeight.bold,
                                                             fontSize: 14)),
                                                     actions: [
-                                                      TextButton(
+                                                      DefaultButtonComp(
                                                           onPressed: () {
                                                             Navigator.pop(
                                                                 context);
@@ -483,7 +485,7 @@ class _OrderStatePageState extends State<OrderStatePage> {
                                         }
                                       },
                                       child: Text('예')),
-                                  TextButton(
+                                  DefaultButtonComp(
                                       onPressed: () => Navigator.pop(context),
                                       child: Text('아니오'))
                                 ],

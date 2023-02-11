@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:asgshighschool/data/user.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
+import '../component/DefaultButtonComp.dart';
 import 'DrawCircle.dart';
 import 'DrawRectangle.dart';
 import 'DrawTriangle.dart';
@@ -284,7 +285,7 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
                 textAlign: TextAlign.center,
               ),
               actions: [
-                TextButton(
+                DefaultButtonComp(
                     onPressed: () {
                       setState(() {
                         _isRenew = false;
@@ -297,7 +298,7 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
                       style: TextStyle(
                           color: Colors.lightBlue, fontWeight: FontWeight.bold),
                     )),
-                TextButton(
+                DefaultButtonComp(
                     onPressed: () {
                       Navigator.pop(ctx);
                       _terminateScreen();

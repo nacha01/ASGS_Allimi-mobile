@@ -7,6 +7,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:http/http.dart' as http;
 
+import '../component/DefaultButtonComp.dart';
+
 class DetailReservationStatePage extends StatefulWidget {
   final User? user;
   final Map? data;
@@ -447,7 +449,7 @@ class _DetailReservationStatePageState
                                           ],
                                         ),
                                         actions: [
-                                          TextButton(
+                                          DefaultButtonComp(
                                               onPressed: () =>
                                                   Navigator.pop(context),
                                               child: Text('확인'))
@@ -502,7 +504,7 @@ class _DetailReservationStatePageState
                 ),
               ),
               int.parse(widget.data!['orderState']) == 0
-                  ? TextButton(
+                  ? DefaultButtonComp(
                       onPressed: () {
                         showDialog(
                             context: context,
@@ -514,7 +516,7 @@ class _DetailReservationStatePageState
                                         TextStyle(fontWeight: FontWeight.bold),
                                   ),
                                   actions: [
-                                    TextButton(
+                                    DefaultButtonComp(
                                         onPressed: () async {
                                           var res = await _cancelReservation();
                                           if (res) {
@@ -540,7 +542,7 @@ class _DetailReservationStatePageState
                                               fontWeight: FontWeight.bold,
                                               color: Colors.blueAccent),
                                         )),
-                                    TextButton(
+                                    DefaultButtonComp(
                                         onPressed: () => Navigator.pop(context),
                                         child: Text(
                                           '아니오',

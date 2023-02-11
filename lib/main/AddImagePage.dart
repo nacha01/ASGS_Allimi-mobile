@@ -5,6 +5,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 
+import '../component/DefaultButtonComp.dart';
+
 class AddImagePage extends StatefulWidget {
   @override
   _AddImagePageState createState() => _AddImagePageState();
@@ -109,7 +111,7 @@ class _AddImagePageState extends State<AddImagePage> {
                                   Border.all(width: 0.5, color: Colors.black),
                               borderRadius: BorderRadius.circular(8),
                               color: Colors.lightGreen),
-                          child: TextButton(
+                          child: DefaultButtonComp(
                               onPressed: () async {
                                 await _getImageFromGallery();
                               },
@@ -164,7 +166,7 @@ class _AddImagePageState extends State<AddImagePage> {
                 ],
               ),
             ),
-            TextButton(
+            DefaultButtonComp(
               onPressed: () async {
                 var now = DateTime.now();
                 String identified = _formatting(now.month) +

@@ -1,5 +1,6 @@
 import 'package:asgshighschool/data/category.dart';
 import 'package:asgshighschool/data/user.dart';
+import '../../component/DefaultButtonComp.dart';
 import '../qr/QRScannerPage.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -306,7 +307,7 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
                     ? Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          TextButton(
+                          DefaultButtonComp(
                             onPressed: () async {
                               var res = await _chargeOrderRequest();
                               if (res) {

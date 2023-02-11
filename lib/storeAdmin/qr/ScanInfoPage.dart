@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
+import '../../component/DefaultButtonComp.dart';
+
 class ScanInfoPage extends StatefulWidget {
   final Map? orderData;
   final User? user;
@@ -273,13 +275,13 @@ class _ScanInfoPageState extends State<ScanInfoPage> {
                 : Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      TextButton(
+                      DefaultButtonComp(
                           onPressed: () async {
                             await showDialog(
                                 context: context,
                                 builder: (ctx) => AlertDialog(
                                       actions: [
-                                        TextButton(
+                                        DefaultButtonComp(
                                             onPressed: () async {
                                               var res =
                                                   await _orderCompleteRequest();
@@ -303,7 +305,7 @@ class _ScanInfoPageState extends State<ScanInfoPage> {
                                               Navigator.pop(ctx);
                                             },
                                             child: Text('예')),
-                                        TextButton(
+                                        DefaultButtonComp(
                                             onPressed: () => Navigator.pop(ctx),
                                             child: Text('아니오'))
                                       ],

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
+import '../component/DefaultButtonComp.dart';
+
 class ReportBugPage extends StatefulWidget {
   @override
   _ReportBugPageState createState() => _ReportBugPageState();
@@ -201,7 +203,7 @@ class _ReportBugPageState extends State<ReportBugPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                TextButton(
+                DefaultButtonComp(
                     onPressed: () {
                       if (_titleController.text.isEmpty ||
                           _contentController.text.isEmpty) {
@@ -220,10 +222,10 @@ class _ReportBugPageState extends State<ReportBugPage> {
                                         fontSize: 14,
                                         fontWeight: FontWeight.bold)),
                                 actions: [
-                                  TextButton(
+                                  DefaultButtonComp(
                                       onPressed: () => Navigator.pop(context),
                                       child: Text('아니오')),
-                                  TextButton(
+                                  DefaultButtonComp(
                                       onPressed: () async {
                                         await _sendErrorReport();
                                         Navigator.pop(context);
@@ -245,7 +247,7 @@ class _ReportBugPageState extends State<ReportBugPage> {
                                                             FontWeight.bold),
                                                   ),
                                                   actions: [
-                                                    TextButton(
+                                                    DefaultButtonComp(
                                                         onPressed: () {
                                                           Navigator.pop(
                                                               context);

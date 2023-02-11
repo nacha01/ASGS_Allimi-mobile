@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:asgshighschool/data/announce.dart';
 import '../component/CorporationComp.dart';
+import '../component/DefaultButtonComp.dart';
 import '../data/provider/renew_user.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:asgshighschool/store/DetailAnnouncePage.dart';
@@ -238,7 +239,7 @@ class _AnnouncePageState extends State<AnnouncePage> {
                                 border:
                                     Border.all(width: 2, color: Colors.black54),
                                 borderRadius: BorderRadius.circular(8)),
-                            child: TextButton(
+                            child: DefaultButtonComp(
                                 onPressed: () async {
                                   var res = await Navigator.push(
                                       context,
@@ -452,7 +453,7 @@ class _AnnouncePageState extends State<AnnouncePage> {
           color: Color(0xFF9EE1E5).withOpacity(0.7),
           borderRadius: BorderRadius.circular(15),
           border: Border.all(color: Color(0xFF9EE1E5), width: 2)),
-      child: TextButton(
+      child: DefaultButtonComp(
         onPressed: () {
           setState(() {
             _isSearch = false;

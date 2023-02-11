@@ -1,5 +1,6 @@
 import 'package:asgshighschool/data/announce.dart';
 import 'package:asgshighschool/data/user.dart';
+import '../component/DefaultButtonComp.dart';
 import '../storeAdmin/post/AddAnnouncePage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -165,10 +166,10 @@ class _DetailAnnouncePageState extends State<DetailAnnouncePage> {
                                   ],
                                 ),
                                 actions: [
-                                  TextButton(
+                                  DefaultButtonComp(
                                       onPressed: () => Navigator.pop(context),
                                       child: Text('아니요')),
-                                  TextButton(
+                                  DefaultButtonComp(
                                       onPressed: () {
                                         Navigator.pop(context);
                                         showDialog(
@@ -199,11 +200,11 @@ class _DetailAnnouncePageState extends State<DetailAnnouncePage> {
                                                     ),
                                                   ),
                                                   actions: [
-                                                    TextButton(
+                                                    DefaultButtonComp(
                                                         onPressed: () =>
                                                             Navigator.pop(ctx),
                                                         child: Text('취소')),
-                                                    TextButton(
+                                                    DefaultButtonComp(
                                                         onPressed: () async {
                                                           var result =
                                                               await _certifyAdminAccess(); // 어드민 키 인증

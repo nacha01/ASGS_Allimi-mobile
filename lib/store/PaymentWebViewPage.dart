@@ -12,6 +12,8 @@ import 'package:hex/hex.dart';
 import 'package:cp949_dart/cp949_dart.dart' as cp949;
 import 'package:url_launcher/url_launcher_string.dart';
 
+import '../component/DefaultButtonComp.dart';
+
 class PaymentWebViewPage extends StatefulWidget {
   final String? oID; // 생성한 order ID
   final bool? isCart; // 장바구니 결제인지 단일 상품 결제인지 판단하는 flag
@@ -276,7 +278,7 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
                               style: TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 14)),
                           actions: [
-                            TextButton(
+                            DefaultButtonComp(
                                 onPressed: () {
                                   Navigator.pop(context);
                                   Navigator.pop(this.context);

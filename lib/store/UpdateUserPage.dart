@@ -1,4 +1,5 @@
 import 'dart:convert';
+import '../component/DefaultButtonComp.dart';
 import '../data/provider/renew_user.dart';
 import 'package:asgshighschool/data/status.dart';
 import 'package:asgshighschool/data/user.dart';
@@ -480,7 +481,7 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
                         border: Border.all(width: 0.5, color: Colors.black),
                         borderRadius: BorderRadius.circular(6),
                         color: Colors.white24),
-                    child: TextButton(
+                    child: DefaultButtonComp(
                         onPressed: () async {
                           showDialog(
                               context: context,
@@ -497,11 +498,11 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
                                       ),
                                     ),
                                     actions: [
-                                      TextButton(
+                                      DefaultButtonComp(
                                           onPressed: () =>
                                               Navigator.pop(context),
                                           child: Text('취소')),
-                                      TextButton(
+                                      DefaultButtonComp(
                                           onPressed: () async {
                                             var res =
                                                 await _certifyMyselfRequest();
@@ -549,7 +550,7 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
                         border: Border.all(width: 0.5, color: Colors.black),
                         borderRadius: BorderRadius.circular(6),
                         color: Colors.white24),
-                    child: TextButton(
+                    child: DefaultButtonComp(
                         onPressed: () {
                           Navigator.push(
                               context,

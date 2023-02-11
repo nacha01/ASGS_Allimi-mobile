@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:yaml/yaml.dart';
 
+import '../component/DefaultButtonComp.dart';
 import 'HomePage.dart';
 import 'package:asgshighschool/WebView.dart';
 import '../data/user.dart';
@@ -121,7 +122,7 @@ class _SignInPageState extends State<SignInPage> {
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                   ),
                   actions: [
-                    TextButton(
+                    DefaultButtonComp(
                         onPressed: () {
                           //exit(0);
                           Navigator.pop(context);
@@ -306,7 +307,7 @@ class _SignInPageState extends State<SignInPage> {
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                     ),
                     actions: [
-                      TextButton(
+                      DefaultButtonComp(
                         onPressed: () => Navigator.pop(context),
                         child: Text('확인',
                             style: TextStyle(fontWeight: FontWeight.bold)),
@@ -353,7 +354,7 @@ class _SignInPageState extends State<SignInPage> {
                         ],
                       ),
                       actions: [
-                        TextButton(
+                        DefaultButtonComp(
                             onPressed: () async {
                               if (_updateEmailController.text.isEmpty ||
                                   !_updateEmailController.text.contains('@')) {
@@ -530,7 +531,7 @@ class _SignInPageState extends State<SignInPage> {
                       style:
                           TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                   actions: [
-                    TextButton(
+                    DefaultButtonComp(
                         onPressed: () => Navigator.pop(context),
                         child: Text('확인',
                             style: TextStyle(fontWeight: FontWeight.bold)))
@@ -547,7 +548,7 @@ class _SignInPageState extends State<SignInPage> {
                       style:
                           TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                   actions: [
-                    TextButton(
+                    DefaultButtonComp(
                         onPressed: () async {
                           var res = await _getUserData();
                           if (res == null) {
@@ -665,10 +666,8 @@ class _SignInPageState extends State<SignInPage> {
         children: [
           Row(
             children: [
-              TextButton(
-                style: TextButton.styleFrom(
-                  padding: EdgeInsets.all(0),
-                ),
+              DefaultButtonComp(
+                padding: 0,
                 child: Container(
                   padding: EdgeInsets.all(size.width * 0.01),
                   child: Text(
@@ -689,10 +688,8 @@ class _SignInPageState extends State<SignInPage> {
                   });
                 },
               ),
-              TextButton(
-                style: TextButton.styleFrom(
-                  padding: EdgeInsets.all(0),
-                ),
+              DefaultButtonComp(
+                padding: 0,
                 child: Container(
                   padding: EdgeInsets.all(size.width * 0.01),
                   child: Text('회원가입 하기\nJoin Membership',
@@ -713,10 +710,8 @@ class _SignInPageState extends State<SignInPage> {
               ),
               Expanded(
                 //왜 확장인가???
-                child: TextButton(
-                  style: TextButton.styleFrom(
-                    padding: EdgeInsets.all(0),
-                  ),
+                child: DefaultButtonComp(
+                  padding: 0,
                   child: Container(
                     padding: EdgeInsets.all(size.width * 0.01),
                     child: Text('ID/PW 찾기\nFind ID/PW',
@@ -816,7 +811,7 @@ class _SignInPageState extends State<SignInPage> {
                       obscureText: true,
                     ),
                   ),
-                  TextButton(
+                  DefaultButtonComp(
                       onPressed: () {
                         setState(() {
                           _isChecked = !_isChecked;
@@ -839,7 +834,7 @@ class _SignInPageState extends State<SignInPage> {
             SizedBox(
               height: size.height * 0.02,
             ),
-            TextButton(
+            DefaultButtonComp(
                 onPressed: () async {
                   if (_idController.text.isEmpty ||
                       _passwordController.text.isEmpty) {
@@ -851,7 +846,7 @@ class _SignInPageState extends State<SignInPage> {
                                 style: TextStyle(
                                     fontSize: 16, fontWeight: FontWeight.bold)),
                             actions: [
-                              TextButton(
+                              DefaultButtonComp(
                                   onPressed: () => Navigator.pop(context),
                                   child: Text('확인',
                                       style: TextStyle(
@@ -911,7 +906,7 @@ class _SignInPageState extends State<SignInPage> {
                                     fontWeight: FontWeight.bold, fontSize: 14),
                               ),
                               actions: [
-                                TextButton(
+                                DefaultButtonComp(
                                   onPressed: () => Navigator.pop(context),
                                   child: Text('확인',
                                       style: TextStyle(
@@ -963,7 +958,7 @@ class _SignInPageState extends State<SignInPage> {
                                   ],
                                 ),
                                 actions: [
-                                  TextButton(
+                                  DefaultButtonComp(
                                       onPressed: () async {
                                         if (_updateEmailController
                                                 .text.isEmpty ||
@@ -1040,7 +1035,7 @@ class _SignInPageState extends State<SignInPage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  TextButton(
+                  DefaultButtonComp(
                     onPressed: () {
                       Navigator.push(
                           context,
@@ -1211,7 +1206,7 @@ class _SignInPageState extends State<SignInPage> {
             SizedBox(
               height: size.height * 0.02,
             ),
-            TextButton(
+            DefaultButtonComp(
                 onPressed: () async {
                   if (_idRegisterController.text.isEmpty ||
                       _nameController.text.isEmpty ||
@@ -1225,7 +1220,7 @@ class _SignInPageState extends State<SignInPage> {
                                       fontWeight: FontWeight.bold,
                                       fontSize: 14)),
                               actions: [
-                                TextButton(
+                                DefaultButtonComp(
                                   onPressed: () => Navigator.pop(context),
                                   child: Text('확인',
                                       style: TextStyle(
@@ -1244,7 +1239,7 @@ class _SignInPageState extends State<SignInPage> {
                                       fontWeight: FontWeight.bold,
                                       fontSize: 14)),
                               actions: [
-                                TextButton(
+                                DefaultButtonComp(
                                   onPressed: () => Navigator.pop(context),
                                   child: Text('확인',
                                       style: TextStyle(
@@ -1263,7 +1258,7 @@ class _SignInPageState extends State<SignInPage> {
                                       fontWeight: FontWeight.bold,
                                       fontSize: 14)),
                               actions: [
-                                TextButton(
+                                DefaultButtonComp(
                                   onPressed: () => Navigator.pop(context),
                                   child: Text('확인',
                                       style: TextStyle(
@@ -1307,14 +1302,14 @@ class _SignInPageState extends State<SignInPage> {
                             ],
                           ),
                           actions: [
-                            TextButton(
+                            DefaultButtonComp(
                                 onPressed: () async {
                                   await _postRegisterRequest();
                                 },
                                 child: Text('예',
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold))),
-                            TextButton(
+                            DefaultButtonComp(
                                 onPressed: () {
                                   Navigator.pop(context);
                                 },
@@ -1421,7 +1416,7 @@ class _SignInPageState extends State<SignInPage> {
             SizedBox(
               height: size.height * 0.01,
             ),
-            TextButton(
+            DefaultButtonComp(
                 onPressed: () async {
                   var res = await _getFoundUserID();
                   setState(() {
@@ -1527,7 +1522,7 @@ class _SignInPageState extends State<SignInPage> {
                     hintStyle: TextStyle(fontSize: 13)),
               ),
             ),
-            TextButton(
+            DefaultButtonComp(
                 onPressed: () async {
                   var changedPW = _getRandomPassword();
                   var result = await _changeRandomPassword(changedPW);

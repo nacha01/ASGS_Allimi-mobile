@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:asgshighschool/data/category.dart';
 import 'package:asgshighschool/data/user.dart';
+import '../../component/DefaultButtonComp.dart';
 import 'StatisticsGuidePage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -551,7 +552,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
           children: [
             Row(
               children: [
-                TextButton(
+                DefaultButtonComp(
                   onPressed: () {
                     setState(() {
                       _isClicked = false;
@@ -572,7 +573,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                         border: Border.all(width: 0.2, color: Colors.grey)),
                   ),
                 ),
-                TextButton(
+                DefaultButtonComp(
                   onPressed: () {
                     setState(() {
                       _isClicked = false;
@@ -594,7 +595,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                   ),
                 ),
                 Expanded(
-                    child: TextButton(
+                    child: DefaultButtonComp(
                   onPressed: () {
                     setState(() {
                       _isClicked = false;
@@ -918,7 +919,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
               '결과 기준',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
             ),
-            TextButton(
+            DefaultButtonComp(
               onPressed: () {
                 setState(() {
                   _salesOption = 0;
@@ -940,7 +941,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                 ],
               ),
             ),
-            TextButton(
+            DefaultButtonComp(
               onPressed: () {
                 setState(() {
                   _salesOption = 1;
@@ -960,7 +961,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                 ],
               ),
             ),
-            TextButton(
+            DefaultButtonComp(
               onPressed: () {
                 setState(() {
                   _salesOption = 2;
@@ -988,7 +989,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            TextButton(
+            DefaultButtonComp(
                 onPressed: () async {
                   int flag = _dateUnitList.indexOf(_selectedDate);
                   await _getTotalSales(flag);
@@ -1120,7 +1121,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                 ' 구매 설정',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11),
               ),
-              TextButton(
+              DefaultButtonComp(
                 onPressed: () {
                   setState(() {
                     _noPayedOrder = false;
@@ -1151,7 +1152,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                 height: size.height * 0.03,
                 color: Colors.black,
               ),
-              TextButton(
+              DefaultButtonComp(
                 onPressed: () {
                   setState(() {
                     _noPayedOrder = true;
@@ -1176,7 +1177,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                   ],
                 ),
               ),
-              TextButton(
+              DefaultButtonComp(
                 onPressed: () {
                   setState(() {
                     _noPayedOrder = true;
@@ -1201,7 +1202,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                   ],
                 ),
               ),
-              TextButton(
+              DefaultButtonComp(
                 onPressed: () {
                   setState(() {
                     _noPayedOrder = true;
@@ -1240,7 +1241,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                 ' 예약 설정',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11),
               ),
-              TextButton(
+              DefaultButtonComp(
                 onPressed: () {
                   setState(() {
                     _noPayedResv = false;
@@ -1271,7 +1272,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                 height: size.height * 0.03,
                 color: Colors.black,
               ),
-              TextButton(
+              DefaultButtonComp(
                 onPressed: () {
                   setState(() {
                     _noPayedResv = true;
@@ -1297,7 +1298,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                   ],
                 ),
               ),
-              TextButton(
+              DefaultButtonComp(
                 onPressed: () {
                   setState(() {
                     _noPayedResv = true;
@@ -1323,7 +1324,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                   ],
                 ),
               ),
-              TextButton(
+              DefaultButtonComp(
                 onPressed: () {
                   setState(() {
                     _noPayedResv = true;
@@ -1355,7 +1356,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            TextButton(
+            DefaultButtonComp(
                 onPressed: () async {
                   await _getAllOrderDataInProduct();
                   await _getAllReservationDataInProduct();

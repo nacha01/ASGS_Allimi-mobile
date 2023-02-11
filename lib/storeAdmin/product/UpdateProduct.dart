@@ -9,6 +9,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 
+import '../../component/DefaultButtonComp.dart';
+
 List<List<Widget>> _optionDetailList = []; // 선택지 항목 위젯에 대한 2차원 리스트
 List<Widget> _optionCategoryList = []; // 옵션 항목 위젯에 대한 리스트
 List<List<TextEditingController>> _detailTitleControllerList =
@@ -923,7 +925,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            TextButton(
+                            DefaultButtonComp(
                                 onPressed: () {
                                   _optionDetailList.add([]);
                                   _detailTitleControllerList.add([]);
@@ -1336,7 +1338,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
                     color: Colors.deepOrange,
                     border: Border.all(width: 1, color: Colors.indigo),
                     borderRadius: BorderRadius.circular(12)),
-                child: TextButton(
+                child: DefaultButtonComp(
                   child: Text(
                     '최종 수정하기',
                     style: TextStyle(
@@ -1492,7 +1494,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
               title: Text('문제 발생'),
               content: Text('입력사항을 재확인 바랍니다.\n[$errorLocation]'),
               actions: [
-                TextButton(
+                DefaultButtonComp(
                     onPressed: () => Navigator.pop(context), child: Text('확인'))
               ],
             ));
@@ -1600,7 +1602,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
         ),
         Row(
           children: [
-            TextButton(
+            DefaultButtonComp(
                 onPressed: () {
                   _detailPriceControllerList[index].add(
                       TextEditingController()); // index 에 해당하는 옵션에 가격 컨트롤러 하나를 추가한다.

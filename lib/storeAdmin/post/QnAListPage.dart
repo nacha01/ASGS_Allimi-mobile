@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:asgshighschool/data/user.dart';
+import '../../component/DefaultButtonComp.dart';
 import 'AnswerQnAPage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -123,7 +124,7 @@ class _QnAListPageState extends State<QnAListPage> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Container(
-                  child: TextButton(
+                  child: DefaultButtonComp(
                     child: Row(
                       children: [
                         Icon(
@@ -218,7 +219,7 @@ class _QnAListPageState extends State<QnAListPage> {
 
   Widget _itemTile(String? title, String? uid, String date, String? category,
       bool isAnswer, Map? data, Size size) {
-    return TextButton(
+    return DefaultButtonComp(
       onPressed: () async {
         var res = await Navigator.push(
             context,

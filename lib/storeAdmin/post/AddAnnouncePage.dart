@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:asgshighschool/data/announce.dart';
+import '../../component/DefaultButtonComp.dart';
 import '../../data/provider/renew_user.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:flutter/material.dart';
@@ -305,7 +306,7 @@ class _AddAnnouncePageState extends State<AddAnnouncePage> {
                     child: Container(
                         decoration: BoxDecoration(color: Colors.lightBlue),
                         width: size.width * 0.5,
-                        child: TextButton(
+                        child: DefaultButtonComp(
                           child: Text(
                             widget.isUpdate ? '수정하기' : '등록하기',
                             style: TextStyle(

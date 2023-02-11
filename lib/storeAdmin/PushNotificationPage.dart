@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
+import '../component/DefaultButtonComp.dart';
+
 class PushNotificationPage extends StatefulWidget {
   final User? user;
 
@@ -314,7 +316,7 @@ class _PushNotificationPageState extends State<PushNotificationPage> {
                 ),
                 Align(
                   alignment: Alignment.center,
-                  child: TextButton(
+                  child: DefaultButtonComp(
                       onPressed: () async {
                         if (_titleController.text.isEmpty) {
                           Fluttertoast.showToast(msg: '제목을 입력하세요!');
@@ -331,7 +333,7 @@ class _PushNotificationPageState extends State<PushNotificationPage> {
                                   content: Text(
                                       '정말로 전송하시겠습니까? [${_targetList[_currentTap]}]'),
                                   actions: [
-                                    TextButton(
+                                    DefaultButtonComp(
                                         onPressed: () async {
                                           _successCount = 0;
                                           _failCount = 0;
@@ -395,7 +397,7 @@ class _PushNotificationPageState extends State<PushNotificationPage> {
                                           });
                                         },
                                         child: Text('예')),
-                                    TextButton(
+                                    DefaultButtonComp(
                                         onPressed: () => Navigator.pop(context),
                                         child: Text('아니오'))
                                   ],
@@ -503,7 +505,7 @@ class _PushNotificationPageState extends State<PushNotificationPage> {
               '학년',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
             ),
-            TextButton(
+            DefaultButtonComp(
                 onPressed: () {
                   setState(() {
                     _selectedGrade = 1;
@@ -522,7 +524,7 @@ class _PushNotificationPageState extends State<PushNotificationPage> {
                       borderRadius: BorderRadius.circular(6),
                       color: _selectedGrade == 1 ? Colors.blue : Colors.white),
                 )),
-            TextButton(
+            DefaultButtonComp(
                 onPressed: () {
                   setState(() {
                     _selectedGrade = 2;
@@ -540,7 +542,7 @@ class _PushNotificationPageState extends State<PushNotificationPage> {
                       borderRadius: BorderRadius.circular(6),
                       color: _selectedGrade == 2 ? Colors.blue : Colors.white),
                 )),
-            TextButton(
+            DefaultButtonComp(
                 onPressed: () {
                   setState(() {
                     _selectedGrade = 3;
@@ -670,7 +672,7 @@ class _PushNotificationPageState extends State<PushNotificationPage> {
               : Column(
                   children: _eachLayoutList,
                 ),
-          TextButton(
+          DefaultButtonComp(
               onPressed: () async {
                 await showDialog(
                     context: context,
@@ -694,7 +696,7 @@ class _PushNotificationPageState extends State<PushNotificationPage> {
                       ),
                     ),
                     actions: [
-                      TextButton(
+                      DefaultButtonComp(
                         onPressed: () => Navigator.pop(context),
                         child: Text('닫기'),
                       )

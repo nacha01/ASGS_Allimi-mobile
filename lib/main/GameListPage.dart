@@ -3,6 +3,8 @@ import 'package:asgshighschool/main/RecordListPage.dart';
 import 'package:asgshighschool/memoryGame/MemoryGamePage.dart';
 import 'package:flutter/material.dart';
 
+import '../component/DefaultButtonComp.dart';
+
 class GameListPage extends StatefulWidget {
   final User? user;
 
@@ -68,7 +70,7 @@ class _GameListPageState extends State<GameListPage> {
   Widget _boardLayout(
       {String? title,
       String? info,
-      void Function()? press,
+      required void Function() press,
       required Size size,
       void Function()? record}) {
     return Container(
@@ -106,7 +108,7 @@ class _GameListPageState extends State<GameListPage> {
                     border: Border.all(width: 0.3),
                     borderRadius: BorderRadius.circular(6),
                     color: Colors.lightGreen),
-                child: TextButton(
+                child: DefaultButtonComp(
                   onPressed: press,
                   child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,

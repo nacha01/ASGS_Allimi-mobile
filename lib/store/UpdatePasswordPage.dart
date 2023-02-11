@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
+import '../component/DefaultButtonComp.dart';
+
 class UpdatePasswordPage extends StatefulWidget {
   UpdatePasswordPage({this.user});
 
@@ -184,7 +186,7 @@ class _UpdatePasswordPageState extends State<UpdatePasswordPage> {
                 border: Border.all(width: 0.5, color: Colors.black),
                 borderRadius: BorderRadius.circular(6),
                 color: Colors.white24),
-            child: TextButton(
+            child: DefaultButtonComp(
                 onPressed: () async {
                   if (_newController.text != _againController.text) {
                     setState(() {

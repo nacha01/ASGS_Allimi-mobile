@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:asgshighschool/data/user.dart';
+import '../../component/DefaultButtonComp.dart';
 import 'FinalReservationPage.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
@@ -268,7 +269,7 @@ class _QrReservationPageState extends State<QrReservationPage> {
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   actions: [
-                    TextButton(
+                    DefaultButtonComp(
                         onPressed: () {
                           _isUsed = false;
                           Navigator.pop(context);

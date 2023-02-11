@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:flutter_swiper_view/flutter_swiper_view.dart';
 
+import '../component/DefaultButtonComp.dart';
 import '../data/provider/exist_cart.dart';
 import '../data/provider/renew_user.dart';
 import 'package:asgshighschool/main/GameListPage.dart';
@@ -403,7 +404,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
               actions: [
-                TextButton(
+                DefaultButtonComp(
                     onPressed: () {
                       while (Navigator.canPop(context)) {
                         Navigator.pop(context, true);
@@ -411,7 +412,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     },
                     child: Text('예',
                         style: TextStyle(fontWeight: FontWeight.bold))),
-                TextButton(
+                DefaultButtonComp(
                     onPressed: () => Navigator.pop(context, false),
                     child: Text('아니오',
                         style: TextStyle(fontWeight: FontWeight.bold)))
@@ -474,12 +475,12 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             builder: (context) => AlertDialog(
                                   title: Text('정말로 종료하시겠습니까?'),
                                   actions: [
-                                    TextButton(
+                                    DefaultButtonComp(
                                         onPressed: () async {
                                           exit(0);
                                         },
                                         child: Text('예')),
-                                    TextButton(
+                                    DefaultButtonComp(
                                         onPressed: () =>
                                             Navigator.pop(context, false),
                                         child: Text('아니오'))
@@ -491,7 +492,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 ),
                 Row(
                   children: [
-                    TextButton(
+                    DefaultButtonComp(
                       onPressed: () async {
                         await Navigator.push(
                             context,
@@ -519,7 +520,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 ),
                 Row(
                   children: [
-                    TextButton(
+                    DefaultButtonComp(
                       onPressed: () async {
                         await Navigator.push(
                             context,
@@ -645,7 +646,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       EdgeInsets.all(MediaQuery.of(context).size.width * 0.01),
                   child: Row(
                     children: [
-                      TextButton(
+                      DefaultButtonComp(
                         onPressed: () {
                           showDialog(
                               context: context,
@@ -653,11 +654,11 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                     title: Text('회원 탈퇴'),
                                     content: Text('정말로 계정을 탈퇴하시겠습니까?'),
                                     actions: [
-                                      TextButton(
+                                      DefaultButtonComp(
                                           onPressed: () =>
                                               Navigator.pop(context),
                                           child: Text('취소')),
-                                      TextButton(
+                                      DefaultButtonComp(
                                           onPressed: () {
                                             Navigator.pop(context);
                                             showDialog(
@@ -686,12 +687,12 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                         ),
                                                       ),
                                                       actions: [
-                                                        TextButton(
+                                                        DefaultButtonComp(
                                                             onPressed: () =>
                                                                 Navigator.pop(
                                                                     context),
                                                             child: Text('취소')),
-                                                        TextButton(
+                                                        DefaultButtonComp(
                                                             onPressed:
                                                                 () async {
                                                               var result =

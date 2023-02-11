@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:asgshighschool/data/category.dart';
 import 'package:asgshighschool/data/status.dart';
 import 'package:asgshighschool/data/user.dart';
+import '../../component/DefaultButtonComp.dart';
 import 'AdminDetailReservation.dart';
 import 'package:asgshighschool/storeAdmin/FullListPage.dart';
 import 'QrReservationPage.dart';
@@ -306,7 +307,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              TextButton(
+              DefaultButtonComp(
                 onPressed: () {
                   setState(() {
                     _isOrderTime = true;
@@ -325,7 +326,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
                   ],
                 ),
               ),
-              TextButton(
+              DefaultButtonComp(
                 onPressed: () {
                   setState(() {
                     _isOrderTime = false;
@@ -419,7 +420,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
   }
 
   Widget _itemTileForTime(Map data, Size size, int index) {
-    return TextButton(
+    return DefaultButtonComp(
       onLongPress: () async {
         await showDialog(
             context: context,
@@ -430,7 +431,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                   ),
                   actions: [
-                    TextButton(
+                    DefaultButtonComp(
                         onPressed: () async {
                           var res = await _forceCancellationForReservation(
                               data['oID']);
@@ -451,7 +452,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
                           Navigator.pop(context);
                         },
                         child: Text('예')),
-                    TextButton(
+                    DefaultButtonComp(
                         onPressed: () => Navigator.pop(context),
                         child: Text('아니오'))
                   ],
@@ -473,7 +474,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
                       textAlign: TextAlign.center,
                     ),
                     actions: [
-                      TextButton(
+                      DefaultButtonComp(
                           
                           onPressed: () => Navigator.pop(context),
                           child: Text(
@@ -502,7 +503,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
                       ],
                     ),
                     actions: [
-                      TextButton(
+                      DefaultButtonComp(
                           
                           onPressed: () async {
                             await _updateOrderState(data['oID'], '1');
@@ -516,7 +517,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
                             '예',
                             style: TextStyle(color: Colors.blue),
                           )),
-                      TextButton(
+                      DefaultButtonComp(
                           
                           onPressed: () => Navigator.pop(context),
                           child: Text(
@@ -544,7 +545,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
                       ],
                     ),
                     actions: [
-                      TextButton(
+                      DefaultButtonComp(
                           
                           onPressed: () async {
                             await _updateOrderState(data['oID'], '0');
@@ -558,7 +559,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
                             '예',
                             style: TextStyle(color: Colors.blue),
                           )),
-                      TextButton(
+                      DefaultButtonComp(
                           
                           onPressed: () => Navigator.pop(context),
                           child: Text(
@@ -660,7 +661,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
                                       ),
                                     ),
                                     actions: [
-                                      TextButton(
+                                      DefaultButtonComp(
                                         onPressed: () => Navigator.pop(context),
                                         child: Text(
                                           '확인',
@@ -692,7 +693,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
                                           fontWeight: FontWeight.bold),
                                     ),
                                     actions: [
-                                      TextButton(
+                                      DefaultButtonComp(
                                         onPressed: () => Navigator.pop(context),
                                         child: Text('확인'),
                                         
@@ -757,7 +758,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
                                       ],
                                     ),
                                     actions: [
-                                      TextButton(
+                                      DefaultButtonComp(
                                         onPressed: () => Navigator.pop(context),
                                         child: Text('확인',
                                             style: TextStyle(
@@ -818,7 +819,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(3),
           border: Border.all(width: 0.5, color: Colors.black)),
-      child: TextButton(
+      child: DefaultButtonComp(
         onPressed: () async {
           var res = await Navigator.push(
               context,

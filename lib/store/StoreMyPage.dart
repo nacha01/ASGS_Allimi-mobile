@@ -1,4 +1,5 @@
 import 'package:asgshighschool/component/CorporationComp.dart';
+import 'package:asgshighschool/component/DefaultButtonComp.dart';
 
 import '../data/provider/renew_user.dart';
 import 'package:asgshighschool/data/status.dart';
@@ -26,7 +27,6 @@ class StoreMyPage extends StatefulWidget {
 }
 
 class _StoreMyPageState extends State<StoreMyPage> {
-
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -51,7 +51,7 @@ class _StoreMyPageState extends State<StoreMyPage> {
                           fontWeight: FontWeight.bold),
                     ),
                   ),
-                  TextButton(
+                  DefaultButtonComp(
                     onPressed: () {
                       Navigator.pop(context);
                     },
@@ -123,7 +123,7 @@ class _StoreMyPageState extends State<StoreMyPage> {
                   style: TextStyle(color: Color(0xFF9EE1E5), fontSize: 17),
                 ),
               ),
-              TextButton(
+              DefaultButtonComp(
                 onPressed: () {
                   Navigator.push(
                       context,
@@ -147,7 +147,7 @@ class _StoreMyPageState extends State<StoreMyPage> {
                   ),
                 ),
               ),
-              TextButton(
+              DefaultButtonComp(
                 onPressed: () {
                   Navigator.push(
                       context,
@@ -184,7 +184,7 @@ class _StoreMyPageState extends State<StoreMyPage> {
                   ],
                 ),
               ),
-              TextButton(
+              DefaultButtonComp(
                 onPressed: () {
                   Navigator.push(
                       context,
@@ -221,28 +221,7 @@ class _StoreMyPageState extends State<StoreMyPage> {
                   ],
                 ),
               ),
-              /*FlatButton(
-                onPressed: () {
-                  _dialogNotImplement();
-                },
-                child: Container(
-                  margin: EdgeInsets.all(10),
-                  padding: EdgeInsets.all(5),
-                  child: Row(
-                    children: [
-                      Icon(Icons.settings,
-                          color: Colors.grey, size: size.width * 0.1),
-                      SizedBox(
-                        width: size.width * 0.03,
-                      ),
-                      Text('설정',
-                          style: TextStyle(fontSize: 19, color: Colors.grey))
-                    ],
-                  ),
-                ),
-              ),
-               */
-              TextButton(
+              DefaultButtonComp(
                 onPressed: () {
                   Navigator.push(
                       context,
@@ -283,35 +262,34 @@ class _StoreMyPageState extends State<StoreMyPage> {
                         ],
                       ),
                     ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => OrderListPage(
-                                      user: widget.user,
-                                    )));
-                      },
-                      child: Container(
-                        margin: EdgeInsets.all(size.width * 0.01),
-                        padding: EdgeInsets.all(size.width * 0.01),
-                        child: Row(
-                          children: [
-                            Icon(Icons.timer,
-                                color: Colors.grey, size: size.width * 0.1),
-                            SizedBox(
-                              width: size.width * 0.03,
-                            ),
-                            Text('실시간 주문(구매) 현황 목록',
-                                style: TextStyle(
-                                    fontSize: 19,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.deepOrangeAccent))
-                          ],
-                        ),
-                      ),
-                    ),
-                    TextButton(
+                    DefaultButtonComp(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => OrderListPage(
+                                        user: widget.user,
+                                      )));
+                        },
+                        child: Container(
+                          margin: EdgeInsets.all(size.width * 0.01),
+                          padding: EdgeInsets.all(size.width * 0.01),
+                          child: Row(
+                            children: [
+                              Icon(Icons.timer,
+                                  color: Colors.grey, size: size.width * 0.1),
+                              SizedBox(
+                                width: size.width * 0.03,
+                              ),
+                              Text('실시간 주문(구매) 현황 목록',
+                                  style: TextStyle(
+                                      fontSize: 19,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.deepOrangeAccent))
+                            ],
+                          ),
+                        )),
+                    DefaultButtonComp(
                       onPressed: () {
                         Navigator.push(
                             context,
@@ -335,7 +313,7 @@ class _StoreMyPageState extends State<StoreMyPage> {
                         ),
                       ),
                     ),
-                    TextButton(
+                    DefaultButtonComp(
                       onPressed: () {
                         Navigator.push(
                             context,
@@ -359,31 +337,30 @@ class _StoreMyPageState extends State<StoreMyPage> {
                         ),
                       ),
                     ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => PushNotificationPage(
-                                      user: widget.user,
-                                    )));
-                      },
-                      child: Container(
-                        margin: EdgeInsets.all(size.width * 0.01),
-                        padding: EdgeInsets.all(size.width * 0.01),
-                        child: Row(
-                          children: [
-                            Icon(Icons.notifications_active,
-                                color: Colors.grey, size: size.width * 0.1),
-                            SizedBox(
-                              width: size.width * 0.03,
-                            ),
-                            Text('푸시 알림 보내기', style: TextStyle(fontSize: 19))
-                          ],
-                        ),
-                      ),
-                    ),
-                    TextButton(
+                    DefaultButtonComp(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => PushNotificationPage(
+                                        user: widget.user,
+                                      )));
+                        },
+                        child: Container(
+                          margin: EdgeInsets.all(size.width * 0.01),
+                          padding: EdgeInsets.all(size.width * 0.01),
+                          child: Row(
+                            children: [
+                              Icon(Icons.notifications_active,
+                                  color: Colors.grey, size: size.width * 0.1),
+                              SizedBox(
+                                width: size.width * 0.03,
+                              ),
+                              Text('푸시 알림 보내기', style: TextStyle(fontSize: 19))
+                            ],
+                          ),
+                        )),
+                    DefaultButtonComp(
                       onPressed: () {
                         Navigator.push(
                             context,
@@ -406,7 +383,7 @@ class _StoreMyPageState extends State<StoreMyPage> {
                           ],
                         ),
                       ),
-                    ),
+                    )
                   ],
                 )
               else
@@ -427,5 +404,4 @@ class _StoreMyPageState extends State<StoreMyPage> {
       thickness: 2,
     );
   }
-
 }

@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
+import '../component/DefaultButtonComp.dart';
+
 class InquirePage extends StatefulWidget {
   InquirePage({this.user});
 
@@ -178,7 +180,7 @@ class _InquirePageState extends State<InquirePage> {
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
                   color: Colors.lightBlueAccent),
-              child: TextButton(
+              child: DefaultButtonComp(
                 onPressed: () async {
                   var res = await _registerNewQnA();
                   if (res) {

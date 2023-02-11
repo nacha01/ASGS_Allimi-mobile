@@ -5,6 +5,8 @@ import 'package:asgshighschool/store/DetailReservationStatePage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import '../component/DefaultButtonComp.dart';
+
 class ReservationStatePage extends StatefulWidget {
   final User? user;
 
@@ -89,7 +91,7 @@ class _ReservationStatePageState extends State<ReservationStatePage> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               Container(
-                child: TextButton(
+                child: DefaultButtonComp(
                   child: Row(
                     children: [
                       Icon(

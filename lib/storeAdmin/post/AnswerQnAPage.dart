@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
+import '../../component/DefaultButtonComp.dart';
+
 /// 문의글에 답변하기
 /// 답변 시
 /// arlimi_answer DB에 record 추가
@@ -244,7 +246,7 @@ class _AnswerQnAPageState extends State<AnswerQnAPage> {
                       alignment: Alignment.center,
                       width: size.width * 0.17,
                       height: size.height * 0.05,
-                      child: TextButton(
+                      child: DefaultButtonComp(
                         onPressed: () async {
                           var res = await _registerAnswerToDB();
                           if (res) {

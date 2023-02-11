@@ -69,7 +69,7 @@ void main() async {
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 actions: [
-                  TextButton(
+                  DefaultButtonComp(
                     onPressed: () async {
                       await _sendErrorReport(e.toString());
                       Navigator.pop(navigatorKey.currentContext);

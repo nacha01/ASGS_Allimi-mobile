@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:asgshighschool/data/category.dart';
 import '../component/CorporationComp.dart';
+import '../component/DefaultButtonComp.dart';
 import '../data/provider/exist_cart.dart';
 import 'package:asgshighschool/data/product.dart';
 import 'package:asgshighschool/data/user.dart';
@@ -563,7 +564,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                                           content: Text(
                                               '장바구니에 상품을 추가하는데 문제가 발생했습니다!\n${_errorMessage.trim() == 'EXCESS' ? '→현재 장바구니에 존재하는 이 상품의 수량과 현재 지정한 수량의 합이 상품 재고를 초과했습니다.' : _errorMessage} '),
                                           actions: [
-                                            TextButton(
+                                            DefaultButtonComp(
                                                 onPressed: () =>
                                                     Navigator.pop(context),
                                                 child: Text('확인'))
@@ -650,7 +651,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                       ],
                     ),
                   )
-                : TextButton(
+                : DefaultButtonComp(
                     onPressed: widget.product!.stockCount < 1 &&
                             !widget.product!.isReservation
                         ? null
@@ -667,7 +668,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                                         content: Text(
                                             '현재 상품의 재고가 없어 예약만 가능합니다. 예약하러 가시겠습니까?'),
                                         actions: [
-                                          TextButton(
+                                          DefaultButtonComp(
                                               onPressed: () {
                                                 Navigator.pushReplacement(
                                                     context,
@@ -691,7 +692,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                                                 style: TextStyle(
                                                     color: Colors.lightBlue),
                                               )),
-                                          TextButton(
+                                          DefaultButtonComp(
                                               onPressed: () {
                                                 Navigator.pop(context);
                                               },
@@ -783,7 +784,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
 
   Widget _optionDetailSelectLayout(
       Map data, Size size, int cIndex, int dIndex) {
-    return TextButton(
+    return DefaultButtonComp(
       onPressed: () {
         setState(() {
           if (_selectedOptionIndex[cIndex] != dIndex) {

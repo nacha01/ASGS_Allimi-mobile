@@ -9,6 +9,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 
+import '../../component/DefaultButtonComp.dart';
+
 List<List<Widget>> _optionDetailList = []; // 선택지 항목 위젯에 대한 2차원 리스트
 List<Widget> _optionCategoryList = []; // 옵션 항목 위젯에 대한 리스트
 List<List<TextEditingController>> _detailTitleControllerList =
@@ -365,7 +367,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
               title: Text('문제 발생'),
               content: Text('입력사항을 재확인 바랍니다.\n[$errorLocation]'),
               actions: [
-                TextButton(
+                DefaultButtonComp(
                     onPressed: () => Navigator.pop(context), child: Text('확인'))
               ],
             ));
@@ -863,7 +865,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
-                                    TextButton(
+                                    DefaultButtonComp(
                                         onPressed: () {
                                           _optionDetailList.add([]);
                                           _detailTitleControllerList.add([]);
@@ -1161,7 +1163,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                       SizedBox(
                         height: 10,
                       ),
-                      TextButton(
+                      DefaultButtonComp(
                         onPressed: _useSub1 && _useSub2
                             ? null
                             : () {
@@ -1209,7 +1211,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                             color: Colors.deepOrange,
                             border: Border.all(width: 1, color: Colors.indigo),
                             borderRadius: BorderRadius.circular(12)),
-                        child: TextButton(
+                        child: DefaultButtonComp(
                           child: Text(
                             '최종 등록하기',
                             style: TextStyle(
@@ -1303,7 +1305,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                           color: Colors.blueGrey),
                                       width: size.width * 0.45,
                                       height: size.height * 0.06,
-                                      child: TextButton(
+                                      child: DefaultButtonComp(
                                           onPressed: () =>
                                               Navigator.pop(context, true),
                                           child: Text(
@@ -1366,7 +1368,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                               border: Border.all(
                                                   color: Colors.black,
                                                   width: 1)),
-                                          child: TextButton(
+                                          child: DefaultButtonComp(
                                               onPressed: () =>
                                                   Navigator.pop(context),
                                               child: Text('이전')),
@@ -1382,7 +1384,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                               border: Border.all(
                                                   color: Colors.black,
                                                   width: 1)),
-                                          child: TextButton(
+                                          child: DefaultButtonComp(
                                               onPressed: () {
                                                 setState(() {
                                                   _isNotRegister =
@@ -1446,7 +1448,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                             color: Colors.orange,
                                             border: Border.all(
                                                 color: Colors.black, width: 1)),
-                                        child: TextButton(
+                                        child: DefaultButtonComp(
                                             onPressed: () =>
                                                 Navigator.pop(context),
                                             child: Text('이전')),
@@ -1461,7 +1463,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                             color: Colors.orange,
                                             border: Border.all(
                                                 color: Colors.black, width: 1)),
-                                        child: TextButton(
+                                        child: DefaultButtonComp(
                                             onPressed: () {
                                               setState(() {
                                                 _isNotRegister =
@@ -1668,7 +1670,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
         ),
         Row(
           children: [
-            TextButton(
+            DefaultButtonComp(
                 onPressed: () {
                   _detailPriceControllerList[index].add(
                       TextEditingController()); // index 에 해당하는 옵션에 가격 컨트롤러 하나를 추가한다.

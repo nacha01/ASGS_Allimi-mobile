@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import '../component/CorporationComp.dart';
+import '../component/DefaultButtonComp.dart';
 import 'ReservationCompletePage.dart';
 
 class ReservationPage extends StatefulWidget {
@@ -268,7 +269,7 @@ class _ReservationPageState extends State<ReservationPage> {
                               border: Border.all(width: 1, color: Colors.black),
                               borderRadius: BorderRadius.circular(8),
                               color: Colors.redAccent),
-                          child: TextButton(
+                          child: DefaultButtonComp(
                             onPressed: () {
                               showDialog(
                                   context: context,
@@ -307,11 +308,11 @@ class _ReservationPageState extends State<ReservationPage> {
                                           ],
                                         ),
                                         actions: [
-                                          TextButton(
+                                          DefaultButtonComp(
                                               onPressed: () =>
                                                   Navigator.pop(context),
                                               child: Text('취소')),
-                                          TextButton(
+                                          DefaultButtonComp(
                                               onPressed: () async {
                                                 var res =
                                                     await _setReservationCountLimit();
@@ -656,7 +657,7 @@ class _ReservationPageState extends State<ReservationPage> {
                   ),
                   Row(
                     children: [
-                      TextButton(
+                      DefaultButtonComp(
                         onPressed: () {
                           showDialog(
                               context: context,
@@ -694,7 +695,7 @@ class _ReservationPageState extends State<ReservationPage> {
                                       ],
                                     ),
                                     actions: [
-                                      TextButton(
+                                      DefaultButtonComp(
                                           onPressed: () =>
                                               Navigator.pop(context),
                                           child: Text('확인'))
@@ -725,7 +726,7 @@ class _ReservationPageState extends State<ReservationPage> {
               ),
             ),
           ),
-          TextButton(
+          DefaultButtonComp(
             onPressed: () {
               setState(() {
                 _isAgreed = !_isAgreed;
@@ -741,7 +742,7 @@ class _ReservationPageState extends State<ReservationPage> {
               ],
             ),
           ),
-          TextButton(
+          DefaultButtonComp(
               onPressed: () async {
                 if (!_isAgreed) return;
                 await _getReservationCurrent();
@@ -758,7 +759,7 @@ class _ReservationPageState extends State<ReservationPage> {
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                             actions: [
-                              TextButton(
+                              DefaultButtonComp(
                                   onPressed: () => Navigator.pop(context),
                                   child: Text('확인'))
                             ],

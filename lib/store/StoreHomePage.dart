@@ -5,6 +5,7 @@ import 'package:asgshighschool/data/product.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:asgshighschool/store/DetailProductPage.dart';
 import 'package:asgshighschool/store/EventPage.dart';
+import '../component/DefaultButtonComp.dart';
 import '../storeAdmin/product/AddProduct.dart';
 import '../storeAdmin/product/UpdateProduct.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -682,7 +683,7 @@ class _StoreHomePageState extends State<StoreHomePage>
               leading: Container(
                   margin: EdgeInsets.only(left: 7),
                   alignment: Alignment.center,
-                  child: TextButton(
+                  child: DefaultButtonComp(
                     onPressed: () {
                       _tabController!.index = 0;
                     },
@@ -1512,10 +1513,10 @@ class _StoreHomePageState extends State<StoreHomePage>
                           ],
                         ),
                         actions: [
-                          TextButton(
+                          DefaultButtonComp(
                               onPressed: () => Navigator.pop(context),
                               child: Text('아니요')),
-                          TextButton(
+                          DefaultButtonComp(
                               onPressed: () {
                                 Navigator.pop(context);
                                 showDialog(
@@ -1539,11 +1540,11 @@ class _StoreHomePageState extends State<StoreHomePage>
                                             ),
                                           ),
                                           actions: [
-                                            TextButton(
+                                            DefaultButtonComp(
                                                 onPressed: () =>
                                                     Navigator.pop(ctx),
                                                 child: Text('취소')),
-                                            TextButton(
+                                            DefaultButtonComp(
                                                 onPressed: () async {
                                                   var result =
                                                       await _certifyAdminAccess(); // 어드민 키 인증
@@ -1751,7 +1752,7 @@ class _StoreHomePageState extends State<StoreHomePage>
           color: Color(0xFF9EE1E5).withOpacity(0.7),
           borderRadius: BorderRadius.circular(15),
           border: Border.all(color: Color(0xFF9EE1E5), width: 2)),
-      child: TextButton(
+      child: DefaultButtonComp(
         onPressed: () {
           setState(() {
             _isSearch = false;

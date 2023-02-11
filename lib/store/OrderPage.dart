@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import '../component/CorporationComp.dart';
+import '../component/DefaultButtonComp.dart';
 
 class OrderPage extends StatefulWidget {
   OrderPage(
@@ -506,7 +507,7 @@ class _OrderPageState extends State<OrderPage> {
                 ),
               ),
             ),
-            TextButton(
+            DefaultButtonComp(
               onPressed: () async {
                 await showDialog(
                     context: context,
@@ -550,7 +551,7 @@ class _OrderPageState extends State<OrderPage> {
                                 style: TextStyle(
                                     fontSize: 13, fontWeight: FontWeight.bold)),
                             actions: [
-                              TextButton(
+                              DefaultButtonComp(
                                   onPressed: () => Navigator.pop(context),
                                   child: Text('확인'))
                             ],

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:asgshighschool/component/CorporationComp.dart';
 import 'package:asgshighschool/data/category.dart';
+import '../component/DefaultButtonComp.dart';
 import '../data/provider/exist_cart.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:asgshighschool/store/OrderPage.dart';
@@ -275,7 +276,7 @@ class _CartPageState extends State<CartPage> {
                       itemCount: _cartProductList.length),
                 ),
                 CorporationInfo(isOpenable: true),
-                TextButton(
+                DefaultButtonComp(
                   onPressed: () async {
                     _renewCartCount();
                     await _getCartForUserRequest();
@@ -423,7 +424,7 @@ class _CartPageState extends State<CartPage> {
                                         ),
                                       ),
                                       actions: [
-                                        TextButton(
+                                        DefaultButtonComp(
                                             onPressed: () =>
                                                 Navigator.pop(context),
                                             child: Text('확인'))

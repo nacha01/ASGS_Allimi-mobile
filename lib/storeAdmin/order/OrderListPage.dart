@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:asgshighschool/data/status.dart';
 import 'package:asgshighschool/data/user.dart';
+import '../../component/DefaultButtonComp.dart';
 import 'AdminDetailOrder.dart';
 import 'package:asgshighschool/storeAdmin/FullListPage.dart';
 import '../qr/QrSearchScannerPage.dart';
@@ -212,7 +213,7 @@ class _OrderListPageState extends State<OrderListPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              TextButton(
+              DefaultButtonComp(
                 child: Row(
                   children: [
                     Icon(
@@ -309,7 +310,7 @@ class _OrderListPageState extends State<OrderListPage> {
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(6),
           border: Border.all(width: 0.5, color: Colors.black)),
-      child: TextButton(
+      child: DefaultButtonComp(
         onPressed: () async {
           var res = await Navigator.push(
               context,
@@ -379,7 +380,7 @@ class _OrderListPageState extends State<OrderListPage> {
                               ],
                             ),
                             actions: [
-                              TextButton(
+                              DefaultButtonComp(
                                 onPressed: () => Navigator.pop(context),
                                 child: Text('확인',
                                     style: TextStyle(
@@ -470,7 +471,7 @@ class _OrderListPageState extends State<OrderListPage> {
                                             ],
                                           ),
                                           actions: [
-                                            TextButton(
+                                            DefaultButtonComp(
                                                 onPressed: () =>
                                                     Navigator.pop(context),
                                                 child: Text('닫기'))

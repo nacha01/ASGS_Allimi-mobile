@@ -5,6 +5,8 @@ import 'package:asgshighschool/data/user.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import '../component/DefaultButtonComp.dart';
+
 /// 게임코드
 /// 1 : 기억력 게임(Memory game)
 class RecordListPage extends StatefulWidget {
@@ -151,7 +153,7 @@ class _RecordListPageState extends State<RecordListPage> {
                                           ],
                                         ),
                                         actions: [
-                                          TextButton(
+                                          DefaultButtonComp(
                                             onPressed: () =>
                                                 Navigator.pop(context),
                                             child: Text('확인',

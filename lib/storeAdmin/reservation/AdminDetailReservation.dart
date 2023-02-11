@@ -1,5 +1,6 @@
 import 'package:asgshighschool/LocalNotifyManager.dart';
 import 'package:asgshighschool/data/user.dart';
+import '../../component/DefaultButtonComp.dart';
 import 'ReservationListPage.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -264,7 +265,7 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
                 Container(
                   width: size.width * 0.23,
                   height: size.height * 0.04,
-                  child: TextButton(
+                  child: DefaultButtonComp(
                     onPressed: () {
                       showDialog(
                           context: context,
@@ -272,7 +273,7 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
                                 title: Text('재고 수정'),
                                 content: Text('정말로 수정하시겠습니까?'),
                                 actions: [
-                                  TextButton(
+                                  DefaultButtonComp(
                                       onPressed: () async {
                                         await _updateNewCount(
                                             int.parse(_countController.text));
@@ -283,7 +284,7 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
                                         Navigator.pop(context);
                                       },
                                       child: Text('예')),
-                                  TextButton(
+                                  DefaultButtonComp(
                                       onPressed: () => Navigator.pop(context),
                                       child: Text('아니오'))
                                 ],
@@ -346,7 +347,7 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
               children: [
                 Container(
                   margin: EdgeInsets.all(size.width * 0.01),
-                  child: TextButton(
+                  child: DefaultButtonComp(
                     onPressed: int.parse(_productReservationList[0]['detail'][0]
                                     ['pInfo']['stockCount']) <
                                 1 ||
@@ -405,7 +406,7 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
                 ),
                 Container(
                   margin: EdgeInsets.all(size.width * 0.01),
-                  child: TextButton(
+                  child: DefaultButtonComp(
                     onPressed: int.parse(_productReservationList[0]['detail'][0]
                                     ['pInfo']['stockCount']) <
                                 1 ||
@@ -434,7 +435,7 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
                                           ),
                                         ),
                                         actions: [
-                                          TextButton(
+                                          DefaultButtonComp(
                                             onPressed: () =>
                                                 Navigator.pop(context),
                                             child: Text(

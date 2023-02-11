@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:asgshighschool/data/user.dart';
+import '../../component/DefaultButtonComp.dart';
 import 'ScanInfoPage.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
@@ -74,7 +75,7 @@ class _QrSearchScannerPageState extends State<QrSearchScannerPage> {
                     ],
                   ),
                   actions: [
-                    TextButton(
+                    DefaultButtonComp(
                         onPressed: () {
                           _isScanned = false;
                           Navigator.pop(context);
@@ -112,7 +113,7 @@ class _QrSearchScannerPageState extends State<QrSearchScannerPage> {
                       ],
                     ),
                     actions: [
-                      TextButton(
+                      DefaultButtonComp(
                           onPressed: () {
                             _isScanned = false;
                             Navigator.pop(context);
@@ -267,7 +268,7 @@ class _QrSearchScannerPageState extends State<QrSearchScannerPage> {
                       decoration: BoxDecoration(
                           border: Border.all(width: 0.5, color: Colors.black26),
                           borderRadius: BorderRadius.circular(10)),
-                      child: TextButton(
+                      child: DefaultButtonComp(
                           onPressed: () => Navigator.pop(context, true),
                           child: Text(
                             '뒤로가기',

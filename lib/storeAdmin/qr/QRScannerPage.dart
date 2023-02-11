@@ -4,6 +4,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:http/http.dart' as http;
 
+import '../../component/DefaultButtonComp.dart';
+
 class QRScannerPage extends StatefulWidget {
   QRScannerPage({this.oID});
 
@@ -217,7 +219,7 @@ class _QRScannerPageState extends State<QRScannerPage> {
                                                 color: Colors.black26),
                                             borderRadius:
                                                 BorderRadius.circular(10)),
-                                        child: TextButton(
+                                        child: DefaultButtonComp(
                                             onPressed: () {
                                               if (_isChecked)
                                                 Navigator.pop(context, true);
@@ -239,7 +241,7 @@ class _QRScannerPageState extends State<QRScannerPage> {
                                                 color: Colors.black26),
                                             borderRadius:
                                                 BorderRadius.circular(10)),
-                                        child: TextButton(
+                                        child: DefaultButtonComp(
                                             onPressed: _isChecked
                                                 ? null
                                                 : () async {
@@ -249,7 +251,7 @@ class _QRScannerPageState extends State<QRScannerPage> {
                                                             (ctx) =>
                                                                 AlertDialog(
                                                                   actions: [
-                                                                    TextButton(
+                                                                    DefaultButtonComp(
                                                                         onPressed:
                                                                             () async {
                                                                           var res =
@@ -273,7 +275,7 @@ class _QRScannerPageState extends State<QRScannerPage> {
                                                                         },
                                                                         child: Text(
                                                                             '예')),
-                                                                    TextButton(
+                                                                    DefaultButtonComp(
                                                                         onPressed: () =>
                                                                             Navigator.pop(
                                                                                 ctx),
@@ -315,7 +317,7 @@ class _QRScannerPageState extends State<QRScannerPage> {
                                                 color: Colors.black26),
                                             borderRadius:
                                                 BorderRadius.circular(10)),
-                                        child: TextButton(
+                                        child: DefaultButtonComp(
                                             onPressed: () =>
                                                 Navigator.pop(context, false),
                                             child: Text(
@@ -333,7 +335,7 @@ class _QRScannerPageState extends State<QRScannerPage> {
                                                 color: Colors.black26),
                                             borderRadius:
                                                 BorderRadius.circular(10)),
-                                        child: TextButton(
+                                        child: DefaultButtonComp(
                                             onPressed: () async {
                                               setState(() {
                                                 _completed = false;
@@ -372,7 +374,7 @@ class _QRScannerPageState extends State<QRScannerPage> {
                                 border: Border.all(
                                     width: 0.5, color: Colors.black26),
                                 borderRadius: BorderRadius.circular(10)),
-                            child: TextButton(
+                            child: DefaultButtonComp(
                                 onPressed: () => Navigator.pop(context, false),
                                 child: Text(
                                   '뒤로가기',
@@ -450,7 +452,7 @@ class _QRScannerPageState extends State<QRScannerPage> {
                 borderRadius: BorderRadius.circular(12),
               ),
               actions: [
-                TextButton(
+                DefaultButtonComp(
                     onPressed: () => Navigator.pop(context),
                     child: Text(
                       '확인',
