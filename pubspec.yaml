@@ -30,8 +30,6 @@ dependencies:
   firebase_core: ^2.5.0
   provider: ^6.0.5
 
-  iamport_flutter: ^0.10.7
-  webview_flutter: ^4.0.2
   async: ^2.10.0
   intl: ^0.18.0
   flutter_swiper_view: ^1.1.8
