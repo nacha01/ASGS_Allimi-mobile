@@ -6,6 +6,8 @@ import 'package:asgshighschool/store/StoreMainPage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import '../component/CorporationComp.dart';
+
 class OrderPage extends StatefulWidget {
   OrderPage(
       {this.direct,
@@ -265,14 +267,6 @@ class _OrderPageState extends State<OrderPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(
-                      height: size.height * 0.03,
-                    ),
-                    Divider(
-                      thickness: 0.5,
-                      indent: 5,
-                      endIndent: 5,
-                    ),
-                    SizedBox(
                       height: size.height * 0.02,
                     ),
                     Text(
@@ -507,43 +501,7 @@ class _OrderPageState extends State<OrderPage> {
                     SizedBox(
                       height: size.height * 0.02,
                     ),
-                    Container(
-                      width: size.width,
-                      padding: EdgeInsets.all(size.width * 0.02),
-                      color: Colors.grey[200],
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '회사 정보',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 10),
-                          ),
-                          SizedBox(
-                            height: size.height * 0.005,
-                          ),
-                          Text(
-                            '사업자 번호: 135-82-17822',
-                            style: TextStyle(color: Colors.grey, fontSize: 9),
-                          ),
-                          Text('회사명: 안산강서고등학교 교육경제공동체 사회적협동조합',
-                              style:
-                                  TextStyle(color: Colors.grey, fontSize: 9)),
-                          Text('대표자: 김은미',
-                              style:
-                                  TextStyle(color: Colors.grey, fontSize: 9)),
-                          Text(
-                              '위치: 경기도 안산시 단원구 와동 삼일로 367, 5층 공작관 다목적실 (안산강서고등학교)',
-                              style:
-                                  TextStyle(color: Colors.grey, fontSize: 9)),
-                          Text('대표 전화: 031-485-9742',
-                              style:
-                                  TextStyle(color: Colors.grey, fontSize: 9)),
-                          Text('대표 이메일: asgscoop@naver.com',
-                              style: TextStyle(color: Colors.grey, fontSize: 9))
-                        ],
-                      ),
-                    ),
+                    CorporationInfo(isOpenable: false)
                   ],
                 ),
               ),
