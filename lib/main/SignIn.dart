@@ -10,7 +10,7 @@ import 'package:yaml/yaml.dart';
 
 import '../component/DefaultButtonComp.dart';
 import 'HomePage.dart';
-import 'package:asgshighschool/WebView.dart';
+import 'package:asgshighschool/WebViewPage.dart';
 import '../data/user.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -274,10 +274,10 @@ class _SignInPageState extends State<SignInPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      '로그인 중입니다.\n(3초 이상 지속될 경우 앱을 껐다 켜주세요)',
+                      '로그인 중입니다.',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 13,
+                        fontSize: 15,
                         decoration: TextDecoration.none,
                         fontWeight: FontWeight.normal,
                       ),
@@ -873,10 +873,10 @@ class _SignInPageState extends State<SignInPage> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                '로그인 중입니다.\n(3초 이상 지속될 경우 앱을 껐다 켜주세요)',
+                                '로그인 중입니다.',
                                 style: TextStyle(
                                     color: Colors.white,
-                                    fontSize: 13,
+                                    fontSize: 15,
                                     decoration: TextDecoration.none,
                                     fontWeight: FontWeight.normal),
                                 textAlign: TextAlign.center,

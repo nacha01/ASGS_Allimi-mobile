@@ -83,7 +83,7 @@ class _StoreMyPageState extends State<StoreMyPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                      width: size.width * 0.9,
+                      width: size.width * 0.95,
                       child: Card(
                         child: ListTile(
                           onTap: () async {
@@ -120,7 +120,10 @@ class _StoreMyPageState extends State<StoreMyPage> {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   '쇼핑',
-                  style: TextStyle(color: Color(0xFF9EE1E5), fontSize: 17),
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold),
                 ),
               ),
               DefaultButtonComp(
@@ -142,7 +145,7 @@ class _StoreMyPageState extends State<StoreMyPage> {
                       SizedBox(
                         width: size.width * 0.03,
                       ),
-                      Text('내 주문 현황', style: TextStyle(fontSize: 19))
+                      Text('내 주문 현황', style: TextStyle(fontSize: 17))
                     ],
                   ),
                 ),
@@ -166,7 +169,7 @@ class _StoreMyPageState extends State<StoreMyPage> {
                       SizedBox(
                         width: size.width * 0.03,
                       ),
-                      Text('내 예약 현황', style: TextStyle(fontSize: 19))
+                      Text('내 예약 현황', style: TextStyle(fontSize: 17))
                     ],
                   ),
                 ),
@@ -179,7 +182,10 @@ class _StoreMyPageState extends State<StoreMyPage> {
                   children: [
                     Text(
                       '활동',
-                      style: TextStyle(color: Color(0xFF9EE1E5), fontSize: 17),
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold),
                     )
                   ],
                 ),
@@ -203,7 +209,7 @@ class _StoreMyPageState extends State<StoreMyPage> {
                       SizedBox(
                         width: size.width * 0.03,
                       ),
-                      Text('내 문의 내역', style: TextStyle(fontSize: 19))
+                      Text('내 문의 내역', style: TextStyle(fontSize: 17))
                     ],
                   ),
                 ),
@@ -216,7 +222,10 @@ class _StoreMyPageState extends State<StoreMyPage> {
                   children: [
                     Text(
                       '기타',
-                      style: TextStyle(color: Color(0xFF9EE1E5), fontSize: 17),
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold),
                     )
                   ],
                 ),
@@ -240,7 +249,7 @@ class _StoreMyPageState extends State<StoreMyPage> {
                       SizedBox(
                         width: size.width * 0.03,
                       ),
-                      Text('문의하기', style: TextStyle(fontSize: 19))
+                      Text('문의하기', style: TextStyle(fontSize: 17))
                     ],
                   ),
                 ),
@@ -257,7 +266,9 @@ class _StoreMyPageState extends State<StoreMyPage> {
                           Text(
                             '관리자',
                             style: TextStyle(
-                                color: Colors.redAccent, fontSize: 17),
+                                color: Colors.red,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold),
                           )
                         ],
                       ),
@@ -281,11 +292,10 @@ class _StoreMyPageState extends State<StoreMyPage> {
                               SizedBox(
                                 width: size.width * 0.03,
                               ),
-                              Text('실시간 주문(구매) 현황 목록',
+                              Text('주문 현황 목록',
                                   style: TextStyle(
-                                      fontSize: 19,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.deepOrangeAccent))
+                                    fontSize: 17,
+                                  ))
                             ],
                           ),
                         )),
@@ -308,7 +318,7 @@ class _StoreMyPageState extends State<StoreMyPage> {
                             SizedBox(
                               width: size.width * 0.03,
                             ),
-                            Text('문의 목록', style: TextStyle(fontSize: 19))
+                            Text('문의 목록', style: TextStyle(fontSize: 17))
                           ],
                         ),
                       ),
@@ -332,7 +342,7 @@ class _StoreMyPageState extends State<StoreMyPage> {
                             SizedBox(
                               width: size.width * 0.03,
                             ),
-                            Text('예약 목록', style: TextStyle(fontSize: 19))
+                            Text('예약 목록', style: TextStyle(fontSize: 17))
                           ],
                         ),
                       ),
@@ -356,7 +366,7 @@ class _StoreMyPageState extends State<StoreMyPage> {
                               SizedBox(
                                 width: size.width * 0.03,
                               ),
-                              Text('푸시 알림 보내기', style: TextStyle(fontSize: 19))
+                              Text('푸시 알림 보내기', style: TextStyle(fontSize: 17))
                             ],
                           ),
                         )),
@@ -379,7 +389,7 @@ class _StoreMyPageState extends State<StoreMyPage> {
                             SizedBox(
                               width: size.width * 0.03,
                             ),
-                            Text('통계', style: TextStyle(fontSize: 19))
+                            Text('통계', style: TextStyle(fontSize: 17))
                           ],
                         ),
                       ),

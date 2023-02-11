@@ -74,7 +74,7 @@ class _CorporationInfoState extends State<CorporationInfo> {
     final size = MediaQuery.of(context).size;
     return Container(
         width: size.width,
-        padding: EdgeInsets.all(size.width * 0.01),
+        padding: EdgeInsets.all(size.width * 0.015),
         color: Colors.grey[100],
         child: _columnCrossAxisStart([
           widget.isOpenable ? _clickableTitle(size) : _titleText(),

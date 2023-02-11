@@ -21,7 +21,7 @@ import 'SettingPage.dart';
 import '../data/user.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import '../WebView.dart';
+import '../WebViewPage.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key? key, this.user, this.token}) : super(key: key);
