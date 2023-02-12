@@ -1,8 +1,6 @@
-import 'package:asgshighschool/LocalNotifyManager.dart';
 import 'package:asgshighschool/data/user.dart';
 import '../../component/DefaultButtonComp.dart';
 import 'ReservationListPage.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -24,7 +22,6 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
   List<int> _indexList = [];
   bool _simulationOn = false;
   TextEditingController _countController = TextEditingController();
-  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
   /// 넘겨받은 모든 예약 정보들 중에서 예약 처리가 필요한 예약 데이터만 분류하는 전처리 작업
   void _preProcessing() {
@@ -145,42 +142,7 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
   void initState() {
     _preProcessing();
     super.initState();
-    print(widget.reservationList);
-    // _firebaseMessaging.configure(
-    //   onMessage: (Map<String, dynamic> message) async {
-    //     localNotifyManager.showNotification(message['notification']["title"],
-    //         message["notification"]["body"].toString(), message);
-    //   },
-    //   onLaunch: (Map<String, dynamic> message) async {
-    //     localNotifyManager.showNotification(message['notification']["title"],
-    //         message["notification"]["body"].toString(), message);
-    //     print("onLaunch: $message");
-    //   },
-    //   onResume: (Map<String, dynamic> message) async {
-    //     localNotifyManager.showNotification(message['notification']["title"],
-    //         message["notification"]["body"].toString(), message);
-    //     print("onResume: $message");
-    //   },
-    // );
-    // _firebaseMessaging.requestNotificationPermissions(
-    //     const IosNotificationSettings(sound: true, badge: true, alert: true));
-    //
-    // _firebaseMessaging.onIosSettingsRegistered
-    //     .listen((IosNotificationSettings settings) {
-    //   print("Settings registered: $settings");
-    // });
-    // localNotifyManager.setOnNotificationClick(onNotificationClick);
-    // localNotifyManager.setOnNotificationReceive(onNotificationReceive);
   }
-
-  // onNotificationClick(String payload) {
-  //   print(payload);
-  //   Map message = json.decode(payload);
-  // }
-  //
-  // onNotificationReceive(ReceiveNotification notification) {
-  //   print('notification Receive : ${notification.id}');
-  // }
 
   @override
   Widget build(BuildContext context) {
