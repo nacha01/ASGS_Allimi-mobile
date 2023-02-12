@@ -16,6 +16,13 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
+
+    FirebaseMessaging.instance.getInitialMessage().then((value) => setState((){
+      print(value?.data.toString());
+    }));
+    FirebaseMessaging.onMessageOpenedApp.listen((event) {
+      print(event.toMap());
+    });
     loading();
   }
 
@@ -29,7 +36,7 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   loading() async {
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(Duration(milliseconds: 500));
     setState(() {
       _message = '접속 중입니다...';
     });
@@ -63,14 +70,14 @@ class _SplashPageState extends State<SplashPage> {
               '$_message',
               style: Theme.of(context)
                   .textTheme
-                  .bodyText1!
+                  .bodyLarge!
                   .copyWith(color: Colors.white),
             ),
             Text(
               'Copyright 테라바이트',
               style: Theme.of(context)
                   .textTheme
-                  .caption!
+                  .bodySmall!
                   .copyWith(color: Colors.white),
             )
           ],
