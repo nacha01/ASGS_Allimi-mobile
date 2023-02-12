@@ -2,6 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:asgshighschool/data/foreground_noti.dart';
+import 'package:asgshighschool/notification/NotificationAction.dart';
+import 'package:asgshighschool/util/GlobalVariable.dart';
 import 'package:flutter_swiper_view/flutter_swiper_view.dart';
 
 import '../component/DefaultButtonComp.dart';
@@ -50,6 +53,8 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   @override
   void initState() {
+    GlobalVariable.isAuthorized = true;
+
     super.initState();
     _getBannerImage();
     _checkUserToken(widget.user!.uid);
@@ -108,6 +113,14 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
       setState(() {
         _controllerWaiting = false;
       });
+      callNotificationPayload();
+    }
+  }
+
+  void callNotificationPayload() {
+    if (NotificationPayload.isTap) {
+      NotificationPayload.isTap = false;
+      NotificationAction.selectLocation(NotificationPayload.payload!);
     }
   }
 
@@ -127,12 +140,12 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
     _isMoved = false;
   }
 
-  // @override
-  // void dispose() {
-  //   // _scrollViewController.dispose();
-  //   // tabController.dispose();
-  //   super.dispose();
-  // }
+  @override
+  void dispose() {
+    _scrollViewController?.dispose();
+    tabController?.dispose();
+    super.dispose();
+  }
 
   Future<bool> _checkExistCart() async {
     String uri = 'http://nacha01.dothome.co.kr/sin/arlimi_checkCart.php';

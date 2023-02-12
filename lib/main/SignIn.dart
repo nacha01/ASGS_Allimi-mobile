@@ -2,22 +2,19 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:asgshighschool/data/foreground_noti.dart';
 import 'package:asgshighschool/data/status.dart';
 import 'package:asgshighschool/main/ReportBugPage.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:yaml/yaml.dart';
 
 import '../component/DefaultButtonComp.dart';
 import 'HomePage.dart';
-import 'package:asgshighschool/WebViewPage.dart';
 import '../data/user.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
-import '../LocalNotifyManager.dart';
 
 class SignInPage extends StatefulWidget {
   SignInPage({Key? key, this.token}) : super(key: key);
@@ -45,7 +42,6 @@ class _SignInPageState extends State<SignInPage> {
   TextEditingController _findNameControllerPW = TextEditingController();
   TextEditingController _findGradeControllerPW = TextEditingController();
   SharedPreferences? _pref;
-  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   String _key = '';
   String _resultID = '';
   String _resultPW = '';
@@ -105,69 +101,6 @@ class _SignInPageState extends State<SignInPage> {
     }
   }
 
-  void _moveScreenAccordingToPush(
-      {required String title, required String url}) {
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => WebViewPage(
-              title: title,
-              baseUrl: url,
-            )));
-  }
-
-  void selectLocation(String screenLoc) {
-    switch (screenLoc) {
-      case '공지사항':
-        _moveScreenAccordingToPush(
-            title: '공지사항',
-            url:
-            'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030100&searchMasterSid=3');
-        break;
-      case '학교 행사':
-        _moveScreenAccordingToPush(
-            title: '학교 행사',
-            url:
-            'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030200&searchMasterSid=4');
-        break;
-      case '학습 자료실':
-        _moveScreenAccordingToPush(
-            title: '학습 자료실',
-            url:
-            'http://www.asgs.hs.kr/home/formError.do?code=NONE_LEVEL&menugrp=040300&gm=http%3A%2F%2Fgm7.goeia.go.kr&siteKey=QzlWVUd0ZVZHdFR1R3I3QXlpeHgzNDI1YVRkQk5sT09LbWhZSWlnbjA5bz0%3D');
-        break;
-      case '학교 앨범':
-        _moveScreenAccordingToPush(
-            title: '학교 앨범',
-            url:
-            'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030600&searchMasterSid=6');
-        break;
-      case '오늘의 식단':
-        _moveScreenAccordingToPush(
-            title: '오늘의 식단',
-            url: 'http://www.asgs.hs.kr/meal/formList.do?menugrp=040801');
-        break;
-      case '이 달의 일정':
-        _moveScreenAccordingToPush(
-            title: '이 달의 일정',
-            url:
-            'http://www.asgs.hs.kr/diary/formList.do?menugrp=030500&searchMasterSid=1');
-        break;
-      case '가정 통신문':
-        _moveScreenAccordingToPush(
-            title: '가정 통신문',
-            url:
-            'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030400&searchMasterSid=49');
-        break;
-      case '도서 검색':
-        _moveScreenAccordingToPush(
-            title: '도서 검색',
-            url:
-            'https://reading.gglec.go.kr/r/newReading/search/schoolCodeSetting.jsp?schoolCode=895&returnUrl=');
-        break;
-    }
-  }
-
   void _checkCurrentAppVersion() async {
     var latest = await _getLatestVersion(); // DB에 저장된 최신버전
 
@@ -204,44 +137,7 @@ class _SignInPageState extends State<SignInPage> {
   void initState() {
     _checkCurrentAppVersion(); //서버에 있는 버전과 앱 버전의 차이 찾기
     super.initState();
-
-    // _firebaseMessaging.configure(
-    //   onMessage: (Map<String, dynamic> message) async {
-    //     localNotifyManager.showNotification(message['notification']["title"],
-    //         message["notification"]["body"].toString(), message);
-    //     String screenLoc = message['data']['screen'];
-    //     selectLocation(screenLoc);
-    //     print("onMessage: $message");
-    //   },
-    //   onLaunch: (Map<String, dynamic> message) async {
-    //     String screenLoc = message['data']['screen'];
-    //     selectLocation(screenLoc);
-    //     print("onLaunch: $message");
-    //   },
-    //   onResume: (Map<String, dynamic> message) async {
-    //     String screenLoc = message['data']['screen'];
-    //     selectLocation(screenLoc);
-    //     print("onResume: $message");
-    //   },
-    // );
-    // if (Platform.isIOS) {
-    //   _firebaseMessaging.requestNotificationPermissions(
-    //       const IosNotificationSettings(sound: true, badge: true, alert: true));
-    //
-    //   _firebaseMessaging.onIosSettingsRegistered
-    //       .listen((IosNotificationSettings settings) {
-    //     print("Settings registered: $settings");
-    //   });
-    // }
-    // localNotifyManager.setOnNotificationClick(onNotificationClick);
-    // localNotifyManager.setOnNotificationReceive(onNotificationReceive);
-
-
   }
-
-
-
-
 
   String _getRandomPassword() {
     // 0~F 까지의 랜덤 값을 6자리로 생성
@@ -400,14 +296,15 @@ class _SignInPageState extends State<SignInPage> {
                         token: widget.token,
                       )));
         }
+      } else {
+        if (NotificationPayload.isTap)
+          Fluttertoast.showToast(msg: '로그인이 필요합니다.');
       }
     } else {
       Fluttertoast.showToast(msg: 'pref value is null');
       _pref = await SharedPreferences.getInstance();
     }
   }
-
-
 
   Future<bool> _updateEmailRequest() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_updateEmail.php';

@@ -1,4 +1,5 @@
 import 'dart:async';
+import '../data/foreground_noti.dart';
 import 'SignIn.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -17,11 +18,18 @@ class _SplashPageState extends State<SplashPage> {
   void initState() {
     super.initState();
 
-    FirebaseMessaging.instance.getInitialMessage().then((value) => setState((){
-      print(value?.data.toString());
-    }));
+    // Background message 클릭 시 호출
+    _firebaseMessaging.getInitialMessage().then((value) => setState(() {
+          if (value != null) {
+            NotificationPayload.isTap = true;
+            NotificationPayload.setPayload(value.data['screen']);
+          }
+        }));
+
+    // Background message 처리 (종료된 상태에서의 처리 x)
     FirebaseMessaging.onMessageOpenedApp.listen((event) {
-      print(event.toMap());
+      NotificationPayload.isTap = true;
+      NotificationPayload.setPayload(event.data['screen']);
     });
     loading();
   }
