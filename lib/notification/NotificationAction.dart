@@ -64,6 +64,8 @@ class NotificationAction {
             url:
                 'https://reading.gglec.go.kr/r/newReading/search/schoolCodeSetting.jsp?schoolCode=895&returnUrl=');
         break;
+      default:
+        break;
     }
   }
 }
