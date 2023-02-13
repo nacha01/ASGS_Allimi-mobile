@@ -6,6 +6,7 @@ import 'package:asgshighschool/data/foreground_noti.dart';
 import 'package:asgshighschool/notification/NotificationAction.dart';
 import 'package:asgshighschool/util/GlobalVariable.dart';
 import 'package:flutter_swiper_view/flutter_swiper_view.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../component/DefaultButtonComp.dart';
 import '../data/provider/exist_cart.dart';
@@ -27,9 +28,8 @@ import 'package:http/http.dart' as http;
 import '../WebViewPage.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({Key? key, this.user, this.token}) : super(key: key);
+  HomePage({Key? key, this.user}) : super(key: key);
   final User? user;
-  final String? token;
 
   @override
   HomePageState createState() => HomePageState();
@@ -50,6 +50,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
   List<String?> _bannerImgNameList = [];
   var _swiperController = SwiperController();
   TextEditingController _withdrawPasswordController = TextEditingController();
+  late SharedPreferences _pref;
 
   @override
   void initState() {
@@ -77,7 +78,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Future<bool> _checkUserToken(String? uid) async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_checkUserToken.php';
     final response = await http.post(Uri.parse(url),
-        body: <String, String?>{'uid': uid, 'token': widget.token});
+        body: <String, String?>{'uid': uid, 'token': GlobalVariable.token});
     if (response.statusCode == 200) {
       String result = utf8
           .decode(response.bodyBytes)
@@ -664,6 +665,39 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           showDialog(
                               context: context,
                               builder: (context) => AlertDialog(
+                                    title: Text('로그아웃'),
+                                    content: Text('정말로 로그아웃 하시겠습니까?'),
+                                    actions: [
+                                      DefaultButtonComp(
+                                          onPressed: () =>
+                                              Navigator.pop(context),
+                                          child: Text('취소')),
+                                      DefaultButtonComp(
+                                          onPressed: () async {
+                                            GlobalVariable.isAuthorized = false;
+                                            _pref = await SharedPreferences
+                                                .getInstance();
+                                            _pref.setBool('checked', false);
+                                            Navigator.pushReplacement(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        SignInPage()));
+                                          },
+                                          child: Text('로그아웃'))
+                                    ],
+                                  ));
+                        },
+                        child: Text(
+                          '로그아웃',
+                          style: TextStyle(color: Colors.grey, fontSize: 13),
+                        ),
+                      ),
+                      DefaultButtonComp(
+                        onPressed: () {
+                          showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
                                     title: Text('회원 탈퇴'),
                                     content: Text('정말로 계정을 탈퇴하시겠습니까?'),
                                     actions: [
@@ -716,10 +750,10 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                               if (result)
                                                                 Navigator.pushReplacement(
                                                                     context,
-                                                                    new MaterialPageRoute(
-                                                                        builder: (context) => SignInPage(
-                                                                              token: widget.token,
-                                                                            )));
+                                                                    MaterialPageRoute(
+                                                                        builder:
+                                                                            (context) =>
+                                                                                SignInPage()));
                                                               else
                                                                 Fluttertoast
                                                                     .showToast(

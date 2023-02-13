@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:asgshighschool/data/foreground_noti.dart';
 import 'package:asgshighschool/data/status.dart';
 import 'package:asgshighschool/main/ReportBugPage.dart';
+import 'package:asgshighschool/util/GlobalVariable.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:yaml/yaml.dart';
@@ -17,8 +18,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
 class SignInPage extends StatefulWidget {
-  SignInPage({Key? key, this.token}) : super(key: key);
-  final token;
+  SignInPage({Key? key}) : super(key: key);
 
   @override
   _SignInPageState createState() => _SignInPageState();
@@ -293,7 +293,6 @@ class _SignInPageState extends State<SignInPage> {
               MaterialPageRoute(
                   builder: (context) => HomePage(
                         user: result,
-                        token: widget.token,
                       )));
         }
       } else {
@@ -397,7 +396,7 @@ class _SignInPageState extends State<SignInPage> {
     }, body: <String, String?>{
       'uid': _idRegisterController.text.toString(),
       'pw': _passwordRegisterController.text.toString(),
-      'token': widget.token,
+      'token': GlobalVariable.token,
       'name': _nameController.text.toString(),
       'nickname': _nickNameController.text.toString(),
       'identity': Status.statusMap[_selectedValue].toString(),
@@ -451,7 +450,6 @@ class _SignInPageState extends State<SignInPage> {
                                 MaterialPageRoute(
                                     builder: (context) => HomePage(
                                           user: res,
-                                          token: widget.token,
                                         )));
                           }
                         },
@@ -900,7 +898,6 @@ class _SignInPageState extends State<SignInPage> {
                         MaterialPageRoute(
                             builder: (context) => HomePage(
                                   user: result,
-                                  token: widget.token,
                                 )));
                   }
                 },
