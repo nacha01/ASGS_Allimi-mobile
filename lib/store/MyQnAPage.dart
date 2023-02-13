@@ -59,7 +59,7 @@ class _MyQnAPageState extends State<MyQnAPage> {
       body: Column(
         children: [
           SizedBox(
-            height: size.height * 0.08,
+            height: size.height * 0.01,
           ),
           _qnaList.length == 0
               ? Expanded(

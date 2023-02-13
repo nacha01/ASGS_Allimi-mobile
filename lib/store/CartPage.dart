@@ -328,8 +328,8 @@ class _CartPageState extends State<CartPage> {
           BoxDecoration(border: Border.all(width: 0.5, color: Colors.grey)),
       width: size.width,
       height: size.height * 0.2,
-      padding: EdgeInsets.all(size.width * 0.03),
-      margin: EdgeInsets.all(size.width * 0.006),
+      padding: EdgeInsets.all(size.width * 0.02),
+      margin: EdgeInsets.all(size.width * 0.005),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
@@ -357,7 +357,6 @@ class _CartPageState extends State<CartPage> {
             alignment: Alignment.center,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              // crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Align(
                   alignment: Alignment.topLeft,
@@ -369,15 +368,18 @@ class _CartPageState extends State<CartPage> {
                     ),
                     Text(
                       '  [${Category.categoryIndexToStringMap[int.parse(cartItem['category'])]}]',
-                      style: TextStyle(color: Colors.grey, fontSize: 14),
+                      style: TextStyle(color: Colors.grey, fontSize: 13),
                     )
                   ]),
                 ),
-                Text('· 정가 : ${_formatPrice(int.parse(cartItem['price']))}원'),
+                Text(
+                  '· 정가 : ${_formatPrice(int.parse(cartItem['price']))}원',
+                  style: TextStyle(fontSize: 13),
+                ),
                 double.parse(cartItem['discount']).toString() != '0.0'
                     ? Text(
                         '[ ${double.parse(cartItem['discount'])}% 할인 ]',
-                        style: TextStyle(color: Colors.black54),
+                        style: TextStyle(color: Colors.black54, fontSize: 12),
                       )
                     : SizedBox(),
                 Row(
