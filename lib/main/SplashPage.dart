@@ -14,7 +14,6 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
-  var _token;
   String _message = '';
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
@@ -48,7 +47,7 @@ class _SplashPageState extends State<SplashPage> {
   getToken() {
     _firebaseMessaging.getToken().then((String? token) {
       setState(() {
-        _token = token;
+        GlobalVariable.token = token!;
         print("Token : $token");
       });
     });
@@ -61,11 +60,7 @@ class _SplashPageState extends State<SplashPage> {
     });
     await getToken();
     Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-            builder: (context) => SignInPage(
-                  token: _token,
-                )));
+        context, MaterialPageRoute(builder: (context) => SignInPage()));
   }
 
   @override
