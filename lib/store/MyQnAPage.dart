@@ -4,6 +4,8 @@ import 'package:asgshighschool/store/DetailQnAPage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import '../component/ThemeAppBar.dart';
+
 class MyQnAPage extends StatefulWidget {
   MyQnAPage({this.user});
 
@@ -20,7 +22,8 @@ class _MyQnAPageState extends State<MyQnAPage> {
   /// 나(uid)의 모든 문의 내역 데이터들을 요청하는 작업
   Future<bool> _getMyQnAData() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getUserQnA.php';
-    final response = await http.get(Uri.parse(url + '?uid=${widget.user!.uid}'));
+    final response =
+        await http.get(Uri.parse(url + '?uid=${widget.user!.uid}'));
 
     if (response.statusCode == 200) {
       String result = utf8
@@ -52,20 +55,7 @@ class _MyQnAPageState extends State<MyQnAPage> {
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color(0xFF9EE1E5),
-        title: Text(
-          '내 문의내역',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-        leading: IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: Icon(
-              Icons.arrow_back,
-              color: Colors.black,
-            )),
-      ),
+      appBar: ThemeAppBar(barTitle: '내 문의내역'),
       body: Column(
         children: [
           SizedBox(

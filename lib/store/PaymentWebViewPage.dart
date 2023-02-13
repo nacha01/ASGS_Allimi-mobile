@@ -13,6 +13,7 @@ import 'package:cp949_dart/cp949_dart.dart' as cp949;
 import 'package:url_launcher/url_launcher_string.dart';
 
 import '../component/DefaultButtonComp.dart';
+import '../component/ThemeAppBar.dart';
 
 class PaymentWebViewPage extends StatefulWidget {
   final String? oID; // 생성한 order ID
@@ -192,20 +193,7 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-          backgroundColor: Color(0xFF9EE1E5),
-          title: Text(
-            '결제하기',
-            style: TextStyle(
-                color: Colors.black, fontWeight: FontWeight.bold, fontSize: 14),
-          ),
-          centerTitle: true,
-          leading: IconButton(
-              onPressed: () => Navigator.pop(context),
-              icon: Icon(
-                Icons.arrow_back,
-                color: Colors.black,
-              ))),
+      appBar: ThemeAppBar(barTitle: '결제하기'),
       body: InAppWebView(
         onLoadResourceCustomScheme: (controller, url) async {
           await controller.stopLoading();

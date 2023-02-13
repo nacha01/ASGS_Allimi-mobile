@@ -1,3 +1,4 @@
+import 'package:asgshighschool/component/ThemeAppBar.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:asgshighschool/data/user.dart';
@@ -26,20 +27,7 @@ class _MobileStudentCardState extends State<MobileStudentCard> {
     print(widget.user!.uid);
     final size = MediaQuery.of(context).size;
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Color(0xFF9EE1E5),
-          title: Text(
-            '모바일 학생증',
-            style: TextStyle(color: Colors.black),
-          ),
-          centerTitle: true,
-          leading: IconButton(
-              onPressed: () => Navigator.pop(context, true),
-              icon: Icon(
-                Icons.arrow_back,
-                color: Colors.black,
-              )),
-        ),
+        appBar: ThemeAppBar(barTitle: '모바일 학생증'),
         body: Padding(
           padding: EdgeInsets.all(size.width * 0.02),
           child: SingleChildScrollView(

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import '../component/DefaultButtonComp.dart';
+import '../component/ThemeAppBar.dart';
 
 class ReservationStatePage extends StatefulWidget {
   final User? user;
@@ -70,21 +71,7 @@ class _ReservationStatePageState extends State<ReservationStatePage> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color(0xFF9EE1E5),
-        title: Text(
-          '내 예약 현황',
-          style: TextStyle(
-              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 14),
-        ),
-        centerTitle: true,
-        leading: IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: Icon(
-              Icons.arrow_back,
-              color: Colors.black,
-            )),
-      ),
+      appBar: ThemeAppBar(barTitle: '내 예약 현황'),
       body: Column(
         children: [
           Row(

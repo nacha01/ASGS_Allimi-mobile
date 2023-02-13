@@ -5,6 +5,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
 import '../../component/DefaultButtonComp.dart';
+import '../../component/ThemeAppBar.dart';
 
 /// 문의글에 답변하기
 /// 답변 시
@@ -62,20 +63,8 @@ class _AnswerQnAPageState extends State<AnswerQnAPage> {
         return false;
       },
       child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Color(0xFF9EE1E5),
-          title: Text(
-            '답변하기',
-            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-          ),
-          centerTitle: true,
-          leading: IconButton(
-              onPressed: () => Navigator.pop(context, true),
-              icon: Icon(
-                Icons.arrow_back,
-                color: Colors.black,
-              )),
-        ),
+        appBar: ThemeAppBar(
+            barTitle: '답변하기', leadingClick: () => Navigator.pop(context, true)),
         body: SingleChildScrollView(
           child: Column(
             children: [

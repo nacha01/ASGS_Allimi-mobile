@@ -1,6 +1,7 @@
 import 'package:asgshighschool/data/announce.dart';
 import 'package:asgshighschool/data/user.dart';
 import '../component/DefaultButtonComp.dart';
+import '../component/ThemeAppBar.dart';
 import '../storeAdmin/post/AddAnnouncePage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -41,8 +42,8 @@ class _DetailAnnouncePageState extends State<DetailAnnouncePage> {
   /// @result : 관리자 인증이 되었는지에 대한 bool 값
   Future<bool> _certifyAdminAccess() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_adminCertified.php';
-    final response = await http
-        .get(Uri.parse(url + '?uid=${widget.user!.uid}&key=${_adminKeyController.text}'));
+    final response = await http.get(Uri.parse(
+        url + '?uid=${widget.user!.uid}&key=${_adminKeyController.text}'));
 
     if (response.statusCode == 200) {
       if (response.body.contains('CERTIFIED')) {
@@ -90,20 +91,9 @@ class _DetailAnnouncePageState extends State<DetailAnnouncePage> {
         return false;
       },
       child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Color(0xFF9EE1E5),
-          title: Text(
-            '공지사항',
-            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-          ),
-          centerTitle: true,
-          leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back,
-              color: Colors.black,
-            ),
-            onPressed: () => Navigator.pop(context, true),
-          ),
+        appBar: ThemeAppBar(
+          barTitle: '공지사항',
+          leadingClick: () => Navigator.pop(context, true),
           actions: [
             widget.user!.isAdmin
                 ? IconButton(

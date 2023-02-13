@@ -10,6 +10,7 @@ import 'package:http/http.dart' as http;
 import 'dart:async';
 
 import '../../component/DefaultButtonComp.dart';
+import '../../component/ThemeAppBar.dart';
 
 List<List<Widget>> _optionDetailList = []; // 선택지 항목 위젯에 대한 2차원 리스트
 List<Widget> _optionCategoryList = []; // 옵션 항목 위젯에 대한 리스트
@@ -152,7 +153,8 @@ class _AddingProductPageState extends State<AddingProductPage> {
   /// @response : "1"
   Future<bool> _postRequestForInsertProduct() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_insertProduct.php';
-    http.Response response = await http.post(Uri.parse(url), headers: <String, String>{
+    http.Response response =
+        await http.post(Uri.parse(url), headers: <String, String>{
       'Content-Type': 'application/x-www-form-urlencoded'
     }, body: <String, String>{
       'prodName': _productNameController.text,
@@ -404,22 +406,9 @@ class _AddingProductPageState extends State<AddingProductPage> {
         return false;
       },
       child: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            onPressed: () => Navigator.pop(context, true),
-            color: Colors.black,
-            icon: Icon(
-              Icons.arrow_back,
-              color: Colors.black,
-            ),
-          ),
-          backgroundColor: Color(0xFF9EE1E5),
-          title: Text(
-            '상품 등록하기',
-            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-          ),
-          centerTitle: true,
-        ),
+        appBar: ThemeAppBar(
+            barTitle: '상품 등록하기',
+            leadingClick: () => Navigator.pop(context, true)),
         body: SafeArea(
           child: SingleChildScrollView(
             child: _isNotRegister

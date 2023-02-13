@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:asgshighschool/component/ThemeAppBar.dart';
 import 'package:asgshighschool/data/category.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:flutter/material.dart';
@@ -124,21 +125,9 @@ class _DetailReservationStatePageState
         return false;
       },
       child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Color(0xFF9EE1E5),
-          title: Text(
-            '예약 정보 [${widget.data!['oID']}]',
-            style: TextStyle(
-                color: Colors.black, fontWeight: FontWeight.bold, fontSize: 14),
-          ),
-          centerTitle: true,
-          leading: IconButton(
-              onPressed: () => Navigator.pop(context, true),
-              icon: Icon(
-                Icons.arrow_back,
-                color: Colors.black,
-              )),
-        ),
+        appBar: ThemeAppBar(
+            barTitle: '예약 정보 [${widget.data!['oID']}]',
+            leadingClick: () => Navigator.pop(context, true)),
         body: Padding(
           padding: EdgeInsets.all(size.width * 0.02),
           child: Column(
@@ -176,8 +165,8 @@ class _DetailReservationStatePageState
                                     ? Colors.deepOrangeAccent
                                     : (int.parse(widget.data!['orderState']) ==
                                                 3 &&
-                                            int.parse(
-                                                    widget.data!['resvState']) ==
+                                            int.parse(widget
+                                                    .data!['resvState']) ==
                                                 2)
                                         ? Colors.lightGreen
                                         : Colors.blueAccent),
@@ -195,9 +184,10 @@ class _DetailReservationStatePageState
                               '[${int.parse(widget.data!['orderState']) == 0 ? '미결제' : '결제 완료'}]',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                color: int.parse(widget.data!['orderState']) == 0
-                                    ? Colors.redAccent
-                                    : Colors.teal,
+                                color:
+                                    int.parse(widget.data!['orderState']) == 0
+                                        ? Colors.redAccent
+                                        : Colors.teal,
                               ))
                         ],
                       ),

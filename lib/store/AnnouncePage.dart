@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:asgshighschool/data/announce.dart';
 import '../component/CorporationComp.dart';
 import '../component/DefaultButtonComp.dart';
+import '../component/ThemeAppBar.dart';
 import '../data/provider/renew_user.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:asgshighschool/store/DetailAnnouncePage.dart';
@@ -29,7 +30,6 @@ class _AnnouncePageState extends State<AnnouncePage> {
   String? _selectedCategory = '제목';
   bool _isSearch = false;
   bool _isLoading = true; // 로딩 중인지 판단
-  bool _corporationInfoClicked = false;
 
   /// 모든 공지사항 데이터를 요청하는 작업
   Future<bool> _getAnnounceRequest() async {
@@ -133,14 +133,9 @@ class _AnnouncePageState extends State<AnnouncePage> {
     final Size size = MediaQuery.of(context).size;
     var providedUser = Provider.of<RenewUserData>(context);
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color(0xFF9EE1E5),
-        title: Text(
-          '두루두루 소식',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-        leading: SizedBox(),
+      appBar: ThemeAppBar(
+        barTitle: '두루두루 소식',
+        allowLeading: false,
       ),
       body: Center(
         child: RefreshIndicator(

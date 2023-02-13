@@ -1,5 +1,6 @@
 import 'dart:convert';
 import '../component/DefaultButtonComp.dart';
+import '../component/ThemeAppBar.dart';
 import '../data/provider/renew_user.dart';
 import 'package:asgshighschool/data/status.dart';
 import 'package:asgshighschool/data/user.dart';
@@ -80,8 +81,8 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
   /// 본인 인증을 하기 위한 요청
   Future<bool> _certifyMyselfRequest() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_certifyMyself.php';
-    final response = await http
-        .get(Uri.parse(url + '?uid=${widget.user!.uid}&pw=${_pwController.text}'));
+    final response = await http.get(
+        Uri.parse(url + '?uid=${widget.user!.uid}&pw=${_pwController.text}'));
 
     if (response.statusCode == 200) {
       String result = utf8
@@ -148,26 +149,13 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
         return false;
       },
       child: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            onPressed: () async {
+        appBar: ThemeAppBar(
+            barTitle: '개인정보 수정하기',
+            leadingClick: () async {
               await _getUserInfoRequest();
               data.setNewUser(_tmpUser);
               Navigator.pop(context, _tmpUser);
-            },
-            color: Colors.black,
-            icon: Icon(
-              Icons.arrow_back,
-              color: Colors.black,
-            ),
-          ),
-          backgroundColor: Color(0xFF9EE1E5),
-          title: Text(
-            '개인정보 수정하기',
-            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-          ),
-          centerTitle: true,
-        ),
+            }),
         body: SingleChildScrollView(
           child: Column(
             children: [

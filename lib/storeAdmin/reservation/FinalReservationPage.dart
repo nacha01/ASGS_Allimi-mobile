@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:asgshighschool/component/ThemeAppBar.dart';
 import 'package:asgshighschool/data/category.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -82,21 +83,9 @@ class _FinalReservationPageState extends State<FinalReservationPage> {
         return false;
       },
       child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Color(0xFF9EE1E5),
-          title: Text(
-            '예약정보 조회 완료',
-            style: TextStyle(
-                color: Colors.black, fontWeight: FontWeight.bold, fontSize: 14),
-          ),
-          centerTitle: true,
-          leading: IconButton(
-              onPressed: () => Navigator.pop(context, true),
-              icon: Icon(
-                Icons.arrow_back,
-                color: Colors.black,
-              )),
-        ),
+        appBar: ThemeAppBar(
+            barTitle: '예약정보 조회 완료',
+            leadingClick: () => Navigator.pop(context, true)),
         body: Column(
           children: [
             Expanded(

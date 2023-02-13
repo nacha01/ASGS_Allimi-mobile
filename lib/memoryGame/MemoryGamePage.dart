@@ -4,6 +4,7 @@ import 'package:asgshighschool/data/user.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 import '../component/DefaultButtonComp.dart';
+import '../component/ThemeAppBar.dart';
 import 'DrawCircle.dart';
 import 'DrawRectangle.dart';
 import 'DrawTriangle.dart';
@@ -426,20 +427,7 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Memory Game',
-          style: TextStyle(color: Colors.black),
-        ),
-        leading: IconButton(
-          onPressed: () => Navigator.pop(context),
-          icon: Icon(
-            Icons.arrow_back,
-            color: Colors.black,
-          ),
-        ),
-        backgroundColor: Color(0xFF9EE1E5),
-      ),
+      appBar: ThemeAppBar(barTitle: 'Memory Game'),
       body: Column(
         children: [
           Container(

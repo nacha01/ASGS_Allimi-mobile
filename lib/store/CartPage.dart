@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:asgshighschool/component/CorporationComp.dart';
 import 'package:asgshighschool/data/category.dart';
 import '../component/DefaultButtonComp.dart';
+import '../component/ThemeAppBar.dart';
 import '../data/provider/exist_cart.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:asgshighschool/store/OrderPage.dart';
@@ -43,7 +44,8 @@ class _CartPageState extends State<CartPage> {
   /// @return : 요청 성공 여부
   Future<bool> _getCartForUserRequest() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getAllCart.php';
-    final response = await http.get(Uri.parse(url + '?uid=${widget.user!.uid}'));
+    final response =
+        await http.get(Uri.parse(url + '?uid=${widget.user!.uid}'));
     if (response.statusCode == 200) {
       String result = utf8
           .decode(response.bodyBytes)
@@ -203,22 +205,7 @@ class _CartPageState extends State<CartPage> {
     var data = Provider.of<ExistCart>(context);
     final size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(
-        leading: widget.isFromDetail
-            ? IconButton(
-                onPressed: () => Navigator.pop(context),
-                icon: Icon(
-                  Icons.arrow_back,
-                  color: Colors.black,
-                ))
-            : SizedBox(),
-        backgroundColor: Color(0xFF9EE1E5),
-        title: Text(
-          '장바구니',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-      ),
+      appBar: ThemeAppBar(barTitle: '장바구니', allowLeading: widget.isFromDetail),
       body: _cartProductList.length == 0
           ? _isLoading
               ? Center(

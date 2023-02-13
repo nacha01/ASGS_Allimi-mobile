@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:asgshighschool/data/status.dart';
 import 'package:asgshighschool/data/user.dart';
 import '../../component/DefaultButtonComp.dart';
+import '../../component/ThemeAppBar.dart';
 import 'AdminDetailOrder.dart';
 import 'package:asgshighschool/storeAdmin/FullListPage.dart';
 import '../qr/QrSearchScannerPage.dart';
@@ -160,20 +161,8 @@ class _OrderListPageState extends State<OrderListPage> {
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color(0xFF9EE1E5),
-        title: Text(
-          '실시간 주문(구매) 목록',
-          style: TextStyle(
-              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
-        ),
-        centerTitle: true,
-        leading: IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: Icon(
-              Icons.arrow_back,
-              color: Colors.black,
-            )),
+      appBar: ThemeAppBar(
+        barTitle: '주문 목록',
         actions: [
           IconButton(
             onPressed: () async {
@@ -301,8 +290,8 @@ class _OrderListPageState extends State<OrderListPage> {
     );
   }
 
-  Widget _itemTile(String? oid, String? uid, int recv, String oDate, String? eDate,
-      int orderState, Map? data, Size size) {
+  Widget _itemTile(String? oid, String? uid, int recv, String oDate,
+      String? eDate, int orderState, Map? data, Size size) {
     return Container(
       width: size.width,
       margin: EdgeInsets.all(size.width * 0.01),

@@ -3,6 +3,7 @@ import 'package:asgshighschool/data/category.dart';
 import 'package:asgshighschool/data/status.dart';
 import 'package:asgshighschool/data/user.dart';
 import '../../component/DefaultButtonComp.dart';
+import '../../component/ThemeAppBar.dart';
 import 'AdminDetailReservation.dart';
 import 'package:asgshighschool/storeAdmin/FullListPage.dart';
 import 'QrReservationPage.dart';
@@ -198,9 +199,8 @@ class _ReservationListPageState extends State<ReservationListPage> {
           (int.parse(_reservationListForTime[i]['orderState']) >= 1 &&
               int.parse(_reservationListForTime[i]['orderState']) < 3 &&
               int.parse(_reservationListForTime[i]['resvState']) == 1)) {
-        _productCountMap[
-                int.parse(_reservationListForTime[i]['detail'][0]['oPID'])]!
-            ['count']++;
+        _productCountMap[int.parse(
+            _reservationListForTime[i]['detail'][0]['oPID'])]!['count']++;
       } else if (int.parse(_reservationListForTime[i]['orderState']) != 0 &&
           (int.parse(_reservationListForTime[i]['orderState']) >= 1 &&
               int.parse(_reservationListForTime[i]['orderState']) < 3 &&
@@ -209,21 +209,17 @@ class _ReservationListPageState extends State<ReservationListPage> {
             int.parse(_reservationListForTime[i]['detail'][0]['oPID'])] = {
           'count': 1
         };
-        _productCountMap[
-                    int.parse(_reservationListForTime[i]['detail'][0]['oPID'])]!
-                ['pName'] =
+        _productCountMap[int.parse(
+                _reservationListForTime[i]['detail'][0]['oPID'])]!['pName'] =
             _reservationListForTime[i]['detail'][0]['pInfo']['pName'];
-        _productCountMap[
-                    int.parse(_reservationListForTime[i]['detail'][0]['oPID'])]!
-                ['category'] =
+        _productCountMap[int.parse(
+                _reservationListForTime[i]['detail'][0]['oPID'])]!['category'] =
             _reservationListForTime[i]['detail'][0]['pInfo']['category'];
-        _productCountMap[
-                    int.parse(_reservationListForTime[i]['detail'][0]['oPID'])]!
-                ['price'] =
+        _productCountMap[int.parse(
+                _reservationListForTime[i]['detail'][0]['oPID'])]!['price'] =
             _reservationListForTime[i]['detail'][0]['pInfo']['price'];
-        _productCountMap[
-                    int.parse(_reservationListForTime[i]['detail'][0]['oPID'])]!
-                ['imgUrl'] =
+        _productCountMap[int.parse(
+                _reservationListForTime[i]['detail'][0]['oPID'])]!['imgUrl'] =
             _reservationListForTime[i]['detail'][0]['pInfo']['imgUrl'];
       }
     }
@@ -248,20 +244,8 @@ class _ReservationListPageState extends State<ReservationListPage> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color(0xFF9EE1E5),
-        title: Text(
-          '예약 목록 [관리자]',
-          style: TextStyle(
-              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 14),
-        ),
-        centerTitle: true,
-        leading: IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: Icon(
-              Icons.arrow_back,
-              color: Colors.black,
-            )),
+      appBar: ThemeAppBar(
+        barTitle: '예약 목록[관리자]',
         actions: [
           IconButton(
               iconSize: 32,
@@ -475,7 +459,6 @@ class _ReservationListPageState extends State<ReservationListPage> {
                     ),
                     actions: [
                       DefaultButtonComp(
-                          
                           onPressed: () => Navigator.pop(context),
                           child: Text(
                             '확인',
@@ -504,7 +487,6 @@ class _ReservationListPageState extends State<ReservationListPage> {
                     ),
                     actions: [
                       DefaultButtonComp(
-                          
                           onPressed: () async {
                             await _updateOrderState(data['oID'], '1');
                             setState(() {
@@ -518,7 +500,6 @@ class _ReservationListPageState extends State<ReservationListPage> {
                             style: TextStyle(color: Colors.blue),
                           )),
                       DefaultButtonComp(
-                          
                           onPressed: () => Navigator.pop(context),
                           child: Text(
                             '아니요',
@@ -546,7 +527,6 @@ class _ReservationListPageState extends State<ReservationListPage> {
                     ),
                     actions: [
                       DefaultButtonComp(
-                          
                           onPressed: () async {
                             await _updateOrderState(data['oID'], '0');
                             setState(() {
@@ -560,7 +540,6 @@ class _ReservationListPageState extends State<ReservationListPage> {
                             style: TextStyle(color: Colors.blue),
                           )),
                       DefaultButtonComp(
-                          
                           onPressed: () => Navigator.pop(context),
                           child: Text(
                             '아니요',
@@ -571,7 +550,6 @@ class _ReservationListPageState extends State<ReservationListPage> {
           await _getAllReservationData();
         }
       },
-      
       child: Container(
         width: size.width,
         padding: EdgeInsets.all(size.width * 0.02),
@@ -696,7 +674,6 @@ class _ReservationListPageState extends State<ReservationListPage> {
                                       DefaultButtonComp(
                                         onPressed: () => Navigator.pop(context),
                                         child: Text('확인'),
-                                        
                                       )
                                     ],
                                   ));
@@ -764,7 +741,6 @@ class _ReservationListPageState extends State<ReservationListPage> {
                                             style: TextStyle(
                                                 fontWeight: FontWeight.bold,
                                                 color: Colors.blueAccent)),
-                                        
                                       )
                                     ],
                                   ));

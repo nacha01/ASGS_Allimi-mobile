@@ -7,6 +7,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
 import '../../component/DefaultButtonComp.dart';
+import '../../component/ThemeAppBar.dart';
 
 class ScanInfoPage extends StatefulWidget {
   final Map? orderData;
@@ -56,7 +57,8 @@ class _ScanInfoPageState extends State<ScanInfoPage> {
 
   Future<bool> _orderCompleteRequest() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_completeOrder.php';
-    final response = await http.get(Uri.parse(url + '?oid=${widget.orderData!['oID']}'));
+    final response =
+        await http.get(Uri.parse(url + '?oid=${widget.orderData!['oID']}'));
 
     if (response.statusCode == 200) {
       print(response.body);
@@ -88,21 +90,7 @@ class _ScanInfoPageState extends State<ScanInfoPage> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color(0xFF9EE1E5),
-        title: Text(
-          '주문 QR 코드 조회 결과',
-          style: TextStyle(
-              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
-        ),
-        centerTitle: true,
-        leading: IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: Icon(
-              Icons.arrow_back,
-              color: Colors.black,
-            )),
-      ),
+      appBar: ThemeAppBar(barTitle: '주문 QR 코드 조회 결과'),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -212,8 +200,8 @@ class _ScanInfoPageState extends State<ScanInfoPage> {
                           Text(
                             '${OrderState.orderStateList[int.parse(widget.orderData!['orderState'])]}',
                             style: TextStyle(
-                                color: OrderState.colorState[
-                                    int.parse(widget.orderData!['orderState'])]),
+                                color: OrderState.colorState[int.parse(
+                                    widget.orderData!['orderState'])]),
                           )
                         ],
                       ),

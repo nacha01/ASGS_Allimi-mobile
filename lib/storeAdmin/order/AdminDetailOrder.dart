@@ -1,6 +1,7 @@
 import 'package:asgshighschool/data/category.dart';
 import 'package:asgshighschool/data/user.dart';
 import '../../component/DefaultButtonComp.dart';
+import '../../component/ThemeAppBar.dart';
 import '../qr/QRScannerPage.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -122,21 +123,9 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
         return false;
       },
       child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Color(0xFF9EE1E5),
-          title: Text(
-            '주문 [${widget.data!['oID']}]',
-            style: TextStyle(
-                color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
-          ),
-          centerTitle: true,
-          leading: IconButton(
-              onPressed: () => Navigator.pop(context, true),
-              icon: Icon(
-                Icons.arrow_back,
-                color: Colors.black,
-              )),
-        ),
+        appBar: ThemeAppBar(
+            barTitle: '주문 [${widget.data!['oID']}]',
+            leadingClick: () => Navigator.pop(context, true)),
         floatingActionButton: _isCharged
             ? _state == 3 || _state == 4
                 ? null

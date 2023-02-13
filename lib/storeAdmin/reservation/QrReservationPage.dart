@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:asgshighschool/data/user.dart';
 import '../../component/DefaultButtonComp.dart';
+import '../../component/ThemeAppBar.dart';
 import 'FinalReservationPage.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
@@ -84,21 +85,9 @@ class _QrReservationPageState extends State<QrReservationPage> {
         return false;
       },
       child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Color(0xFF9EE1E5),
-          title: Text(
-            '예약 QR Reader',
-            style: TextStyle(
-                color: Colors.black, fontWeight: FontWeight.bold, fontSize: 14),
-          ),
-          centerTitle: true,
-          leading: IconButton(
-              onPressed: () => Navigator.pop(context, true),
-              icon: Icon(
-                Icons.arrow_back,
-                color: Colors.black,
-              )),
-        ),
+        appBar: ThemeAppBar(
+            barTitle: '예약 QR Reader',
+            leadingClick: () => Navigator.pop(context, true)),
         body: Column(
           children: [
             Expanded(flex: 2, child: _buildQrView(context)),

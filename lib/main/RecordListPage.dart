@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:asgshighschool/component/ThemeAppBar.dart';
 import 'package:asgshighschool/data/status.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:flutter/material.dart';
@@ -85,19 +86,8 @@ class _RecordListPageState extends State<RecordListPage> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          '$_appBarTitle',
-          style: TextStyle(color: Colors.black),
-        ),
-        leading: IconButton(
-          onPressed: () => Navigator.pop(context),
-          icon: Icon(
-            Icons.arrow_back,
-            color: Colors.black,
-          ),
-        ),
-        backgroundColor: Color(0xFF9EE1E5),
+      appBar: ThemeAppBar(
+        barTitle: '$_appBarTitle',
       ),
       body: Padding(
         padding: EdgeInsets.all(size.width * 0.15),

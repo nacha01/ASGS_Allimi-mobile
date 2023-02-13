@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../component/ThemeAppBar.dart';
+
 class StatisticsGuidePage extends StatefulWidget {
   @override
   _StatisticsGuidePageState createState() => _StatisticsGuidePageState();
@@ -10,20 +12,7 @@ class _StatisticsGuidePageState extends State<StatisticsGuidePage> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(
-          backgroundColor: Color(0xFF9EE1E5),
-          title: Text(
-            '통계 가이드',
-            style: TextStyle(
-                color: Colors.black, fontWeight: FontWeight.bold, fontSize: 14),
-          ),
-          centerTitle: true,
-          leading: IconButton(
-              onPressed: () => Navigator.pop(context),
-              icon: Icon(
-                Icons.arrow_back,
-                color: Colors.black,
-              ))),
+      appBar: ThemeAppBar(barTitle: '통계 가이드'),
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.all(size.width * 0.03),

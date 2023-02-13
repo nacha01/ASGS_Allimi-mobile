@@ -5,6 +5,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
 import '../component/DefaultButtonComp.dart';
+import '../component/ThemeAppBar.dart';
 
 class UpdatePasswordPage extends StatefulWidget {
   UpdatePasswordPage({this.user});
@@ -51,22 +52,7 @@ class _UpdatePasswordPageState extends State<UpdatePasswordPage> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          onPressed: () => Navigator.pop(context),
-          color: Colors.black,
-          icon: Icon(
-            Icons.arrow_back,
-            color: Colors.black,
-          ),
-        ),
-        backgroundColor: Color(0xFF9EE1E5),
-        title: Text(
-          '비밀번호 변경하기',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-      ),
+      appBar: ThemeAppBar(barTitle: '비밀번호 변경하기'),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [

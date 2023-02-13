@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:asgshighschool/data/announce.dart';
 import '../../component/DefaultButtonComp.dart';
+import '../../component/ThemeAppBar.dart';
 import '../../data/provider/renew_user.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:flutter/material.dart';
@@ -151,22 +152,10 @@ class _AddAnnouncePageState extends State<AddAnnouncePage> {
         return false;
       },
       child: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back,
-              color: Colors.black,
-            ),
-            onPressed: () => Navigator.pop(
-                context, widget.isUpdate ? _updatedAnnounceObj : true),
-          ),
-          backgroundColor: Color(0xFF9EE1E5),
-          title: Text(
-            widget.isUpdate ? '공지사항 수정하기' : '공지사항 글 쓰기',
-            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-          ),
-          centerTitle: true,
-        ),
+        appBar: ThemeAppBar(
+            barTitle: widget.isUpdate ? '공지사항 수정하기' : '공지사항 글 쓰기',
+            leadingClick: () => Navigator.pop(
+                context, widget.isUpdate ? _updatedAnnounceObj : true)),
         body: SafeArea(
           child: SingleChildScrollView(
             child: Padding(

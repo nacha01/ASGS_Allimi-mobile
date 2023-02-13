@@ -7,6 +7,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import '../component/CorporationComp.dart';
 import '../component/DefaultButtonComp.dart';
+import '../component/ThemeAppBar.dart';
 import 'ReservationCompletePage.dart';
 
 class ReservationPage extends StatefulWidget {
@@ -84,7 +85,8 @@ class _ReservationPageState extends State<ReservationPage> {
             [widget.selectList![i]]['optionPrice']);
         _optionString += widget.optionList![i]['optionCategory'] +
             ' ' +
-            widget.optionList![i]['detail'][widget.selectList![i]]['optionName'] +
+            widget.optionList![i]['detail'][widget.selectList![i]]
+                ['optionName'] +
             ' , ';
       }
     }
@@ -219,20 +221,7 @@ class _ReservationPageState extends State<ReservationPage> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color(0xFF9EE1E5),
-        title: Text(
-          '예약하기',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-        leading: IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: Icon(
-              Icons.arrow_back,
-              color: Colors.black,
-            )),
-      ),
+      appBar: ThemeAppBar(barTitle: '예약하기'),
       body: Column(
         children: [
           Expanded(
@@ -822,5 +811,4 @@ class _ReservationPageState extends State<ReservationPage> {
       ),
     );
   }
-
 }

@@ -1,3 +1,4 @@
+import 'package:asgshighschool/component/ThemeAppBar.dart';
 import 'package:asgshighschool/data/user.dart';
 import '../../component/DefaultButtonComp.dart';
 import 'ReservationListPage.dart';
@@ -153,21 +154,9 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
         return false;
       },
       child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Color(0xFF9EE1E5),
-          title: Text(
-            '[${widget.productCount!.name}] 예약 정보',
-            style: TextStyle(
-                color: Colors.black, fontWeight: FontWeight.bold, fontSize: 14),
-          ),
-          centerTitle: true,
-          leading: IconButton(
-              onPressed: () => Navigator.pop(context, true),
-              icon: Icon(
-                Icons.arrow_back,
-                color: Colors.black,
-              )),
-        ),
+        appBar: ThemeAppBar(
+            barTitle: '[${widget.productCount!.name}] 예약 정보',
+            leadingClick: () => Navigator.pop(context, true)),
         body: Column(
           children: [
             SizedBox(

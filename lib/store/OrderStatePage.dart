@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:asgshighschool/component/ThemeAppBar.dart';
 import 'package:asgshighschool/data/category.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:asgshighschool/store/DetailOrderStatePage.dart';
@@ -232,8 +233,8 @@ class _OrderStatePageState extends State<OrderStatePage> {
       int? pid, int? quantity, String operator) async {
     String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_updateProductSellCount.php';
-    final response =
-        await http.get(Uri.parse(url + '?pid=$pid&quantity=$quantity&oper=$operator'));
+    final response = await http
+        .get(Uri.parse(url + '?pid=$pid&quantity=$quantity&oper=$operator'));
     if (response.statusCode == 200) {
       return true;
     } else {
@@ -285,25 +286,7 @@ class _OrderStatePageState extends State<OrderStatePage> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          color: Colors.black,
-          icon: Icon(
-            Icons.arrow_back,
-            color: Colors.black,
-          ),
-        ),
-        backgroundColor: Color(0xFF9EE1E5),
-        title: Text(
-          '내 주문 현황',
-          style: TextStyle(
-              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 14),
-        ),
-        centerTitle: true,
-      ),
+      appBar: ThemeAppBar(barTitle: '내 주문 현황'),
       body: Column(
         children: [
           _orderMap.length == 0

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:asgshighschool/component/ThemeAppBar.dart';
 import 'package:asgshighschool/main/AddImagePage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -85,22 +86,8 @@ class _SelectImagePageState extends State<SelectImagePage> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          onPressed: () => Navigator.pop(context),
-          color: Colors.black,
-          icon: Icon(
-            Icons.arrow_back,
-            color: Colors.black,
-          ),
-        ),
-        backgroundColor: Color(0xFF9EE1E5),
-        title: Text(
-          '알리미 배너 사진 관리페이지',
-          style: TextStyle(
-              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 13),
-        ),
-        centerTitle: true,
+      appBar: ThemeAppBar(
+        barTitle: '알리미 배너 사진 관리페이지',
         actions: [
           IconButton(
               onPressed: () async {

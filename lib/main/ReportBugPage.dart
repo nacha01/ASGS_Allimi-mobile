@@ -1,3 +1,4 @@
+import 'package:asgshighschool/component/ThemeAppBar.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
@@ -34,22 +35,8 @@ class _ReportBugPageState extends State<ReportBugPage> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          onPressed: () => Navigator.pop(context),
-          color: Colors.black,
-          icon: Icon(
-            Icons.arrow_back,
-            color: Colors.black,
-          ),
-        ),
-        backgroundColor: Color(0xFF9EE1E5),
-        title: Text(
-          '버그 제보하기',
-          style: TextStyle(
-              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 14),
-        ),
-        centerTitle: true,
+      appBar: ThemeAppBar(
+        barTitle: '버그 제보하기',
       ),
       body: SingleChildScrollView(
         child: Column(

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:asgshighschool/component/ThemeAppBar.dart';
 import 'package:asgshighschool/data/category.dart';
 import '../component/CorporationComp.dart';
 import '../component/DefaultButtonComp.dart';
@@ -54,7 +55,6 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
       '0DVRz8vSDD5HvkWRwSxpjVhhx7OlXEViTciw5lBQAvSyYya9yf0K0Is+JbwiR9yYC96rEH2XIbfzeHXgqzSAFQ==';
   static const _MID = 'asgscoop1m';
   String _ediDate = '';
-  bool _corporationInfoClicked = false;
 
   /// 일반 숫자에 ,를 붙여서 직관적인 가격을 보이게 하는 작업
   /// @param : 직관적인 가격을 보여줄 실제 int 가격[price]
@@ -265,8 +265,8 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
       int pid, int? quantity, String operator) async {
     String url =
         'http://nacha01.dothome.co.kr/sin/arlimi_updateProductSellCount.php';
-    final response =
-        await http.get(Uri.parse(url + '?pid=$pid&quantity=$quantity&oper=$operator'));
+    final response = await http
+        .get(Uri.parse(url + '?pid=$pid&quantity=$quantity&oper=$operator'));
     if (response.statusCode == 200) {
       return true;
     } else {
@@ -354,25 +354,9 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
         return false;
       },
       child: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            onPressed: () {
-              Navigator.pop(context, true);
-            },
-            color: Colors.black,
-            icon: Icon(
-              Icons.arrow_back,
-              color: Colors.black,
-            ),
-          ),
-          backgroundColor: Color(0xFF9EE1E5),
-          title: Text(
-            '결제 결과 페이지',
-            style: TextStyle(
-                color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
-          ),
-          centerTitle: true,
-        ),
+        appBar: ThemeAppBar(
+            barTitle: '결제 결과 페이지',
+            leadingClick: () => Navigator.pop(context, true)),
         body: _isFinished
             ? Column(
                 children: [
@@ -742,7 +726,8 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
                                         fontWeight: FontWeight.bold,
                                         color: Colors.green,
                                         fontSize: 16)),
-                                content: Text('${_cancelResponse!['ResultMsg']}',
+                                content: Text(
+                                    '${_cancelResponse!['ResultMsg']}',
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 14)),
@@ -876,5 +861,4 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
     }
     return list;
   }
-
 }

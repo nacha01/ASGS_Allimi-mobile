@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:asgshighschool/component/ThemeAppBar.dart';
 import 'package:asgshighschool/data/user.dart';
 import '../../component/DefaultButtonComp.dart';
 import 'AnswerQnAPage.dart';
@@ -47,10 +48,10 @@ class _QnAListPageState extends State<QnAListPage> {
 
   /// 문의 글을 날짜 순으로 정렬하는 작업
   void _sortListOrderByTime() {
-    _qnaDateList
-        .sort((a, b) => b!['qDate'].toString().compareTo(a!['qDate'].toString()));
-    _noneQnAList
-        .sort((a, b) => b!['qDate'].toString().compareTo(a!['qDate'].toString()));
+    _qnaDateList.sort(
+        (a, b) => b!['qDate'].toString().compareTo(a!['qDate'].toString()));
+    _noneQnAList.sort(
+        (a, b) => b!['qDate'].toString().compareTo(a!['qDate'].toString()));
   }
 
   /// 모든 문의 글 데이터를 요청하는 작업
@@ -102,20 +103,7 @@ class _QnAListPageState extends State<QnAListPage> {
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color(0xFF9EE1E5),
-        title: Text(
-          '문의 글 목록',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-        leading: IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: Icon(
-              Icons.arrow_back,
-              color: Colors.black,
-            )),
-      ),
+      appBar: ThemeAppBar(barTitle: '문의 글 목록'),
       body: RefreshIndicator(
         onRefresh: _getAllQnAData,
         child: Column(

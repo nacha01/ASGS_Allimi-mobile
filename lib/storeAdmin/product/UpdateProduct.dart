@@ -10,6 +10,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 
 import '../../component/DefaultButtonComp.dart';
+import '../../component/ThemeAppBar.dart';
 
 List<List<Widget>> _optionDetailList = []; // 선택지 항목 위젯에 대한 2차원 리스트
 List<Widget> _optionCategoryList = []; // 옵션 항목 위젯에 대한 리스트
@@ -468,22 +469,9 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
         return false;
       },
       child: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            onPressed: () => Navigator.pop(context, true),
-            color: Colors.black,
-            icon: Icon(
-              Icons.arrow_back,
-              color: Colors.black,
-            ),
-          ),
-          backgroundColor: Color(0xFF9EE1E5),
-          title: Text(
-            '상품 수정하기 [${widget.product!.prodID}]',
-            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-          ),
-          centerTitle: true,
-        ),
+        appBar: ThemeAppBar(
+            barTitle: '상품 수정하기',
+            leadingClick: () => Navigator.pop(context, true)),
         body: SafeArea(
           child: SingleChildScrollView(
               child: Column(

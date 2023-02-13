@@ -1,3 +1,4 @@
+import 'package:asgshighschool/component/ThemeAppBar.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:asgshighschool/main/RecordListPage.dart';
 import 'package:asgshighschool/memoryGame/MemoryGamePage.dart';
@@ -19,28 +20,17 @@ class _GameListPageState extends State<GameListPage> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          '게임 목록',
-          style: TextStyle(color: Colors.black),
-        ),
-        leading: IconButton(
-          onPressed: () => Navigator.pop(context),
-          icon: Icon(
-            Icons.arrow_back,
-            color: Colors.black,
-          ),
-        ),
-        backgroundColor: Color(0xFF9EE1E5),
+      appBar: ThemeAppBar(
+        barTitle: '게임 목록',
       ),
       body: GridView.count(
-        childAspectRatio: (size.width * 0.35) / (size.height * 0.25),
-        padding: EdgeInsets.all(size.width * 0.04),
+        childAspectRatio: (size.width * 0.5) / (size.height * 0.3),
+        padding: EdgeInsets.all(size.width * 0.03),
         children: [
           _boardLayout(
               title: '기억력 게임',
               info:
-                  '순발력과 기억력 게임으로, \n 가장 최근에 출현한 도형을 클릭하며, \n제한시간 안에 최대한 많은 도형을 클릭하세요 ',
+                  '순발력과 기억력을 요구합니다. \n 가장 최근에 출현한 도형을 클릭하여 제한시간 안에 최대한 많은 도형을 클릭하세요! ',
               size: size,
               press: () {
                 Navigator.push(
@@ -74,7 +64,7 @@ class _GameListPageState extends State<GameListPage> {
       required Size size,
       void Function()? record}) {
     return Container(
-      padding: EdgeInsets.all(size.width * 0.02),
+      padding: EdgeInsets.all(size.width * 0.015),
       decoration: BoxDecoration(
           border: Border.all(width: 0.3, color: Colors.black),
           borderRadius: BorderRadius.circular(5)),
@@ -87,7 +77,8 @@ class _GameListPageState extends State<GameListPage> {
           ),
           Text(
             '$info',
-            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 12),
+            textAlign: TextAlign.start,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,

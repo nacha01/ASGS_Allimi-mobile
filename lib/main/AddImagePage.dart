@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:asgshighschool/component/ThemeAppBar.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
@@ -77,23 +78,9 @@ class _AddImagePageState extends State<AddImagePage> {
         return false;
       },
       child: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            onPressed: () => Navigator.pop(context, true),
-            color: Colors.black,
-            icon: Icon(
-              Icons.arrow_back,
-              color: Colors.black,
-            ),
-          ),
-          backgroundColor: Color(0xFF9EE1E5),
-          title: Text(
-            '사진 추가하기',
-            style: TextStyle(
-                color: Colors.black, fontWeight: FontWeight.bold, fontSize: 13),
-          ),
-          centerTitle: true,
-        ),
+        appBar: ThemeAppBar(
+            barTitle: '사진 추가하기',
+            leadingClick: () => Navigator.pop(context, true)),
         body: Column(
           children: [
             Expanded(

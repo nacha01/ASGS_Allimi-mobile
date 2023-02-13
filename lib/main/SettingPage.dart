@@ -1,3 +1,4 @@
+import 'package:asgshighschool/component/ThemeAppBar.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -20,8 +21,9 @@ class _SettingPageState extends State<SettingPage> {
     _pref = await SharedPreferences.getInstance();
     if (_pref != null) {
       setState(() {
-        _isChecked =
-            _pref!.getBool('checked') == null ? false : _pref!.getBool('checked');
+        _isChecked = _pref!.getBool('checked') == null
+            ? false
+            : _pref!.getBool('checked');
       });
     } else {
       _pref = await SharedPreferences.getInstance();
@@ -32,23 +34,7 @@ class _SettingPageState extends State<SettingPage> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          onPressed: () => Navigator.pop(context),
-          color: Colors.black,
-          icon: Icon(
-            Icons.arrow_back,
-            color: Colors.black,
-          ),
-        ),
-        backgroundColor: Color(0xFF9EE1E5),
-        title: Text(
-          '환경설정',
-          style: TextStyle(
-              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
-        ),
-        centerTitle: true,
-      ),
+      appBar: ThemeAppBar(barTitle: '환경설정'),
       body: Column(
         children: [
           ListTile(

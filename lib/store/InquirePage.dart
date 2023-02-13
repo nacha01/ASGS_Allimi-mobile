@@ -5,6 +5,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
 import '../component/DefaultButtonComp.dart';
+import '../component/ThemeAppBar.dart';
 
 class InquirePage extends StatefulWidget {
   InquirePage({this.user});
@@ -57,20 +58,7 @@ class _InquirePageState extends State<InquirePage> {
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color(0xFF9EE1E5),
-        title: Text(
-          '문의하기',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-        leading: IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: Icon(
-              Icons.arrow_back,
-              color: Colors.black,
-            )),
-      ),
+      appBar: ThemeAppBar(barTitle: '문의하기'),
       body: SingleChildScrollView(
         child: Column(
           children: [

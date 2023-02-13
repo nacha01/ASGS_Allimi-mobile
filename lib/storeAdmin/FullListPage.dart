@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import '../component/DefaultButtonComp.dart';
+import '../component/ThemeAppBar.dart';
 
 class FullListPage extends StatefulWidget {
   final User? user;
@@ -130,21 +131,9 @@ class _FullListPageState extends State<FullListPage> {
         return false;
       },
       child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Color(0xFF9EE1E5),
-          title: Text(
-            '전체 ${widget.isResv! ? '예약 리스트' : '구매 리스트'}',
-            style: TextStyle(
-                color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
-          ),
-          centerTitle: true,
-          leading: IconButton(
-              onPressed: () => Navigator.pop(context, true),
-              icon: Icon(
-                Icons.arrow_back,
-                color: Colors.black,
-              )),
-        ),
+        appBar: ThemeAppBar(
+            barTitle: '전체 ${widget.isResv! ? '예약 리스트' : '구매 리스트'}',
+            leadingClick: () => Navigator.pop(context, true)),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

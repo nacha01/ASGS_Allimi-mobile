@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 
 import '../component/CorporationComp.dart';
 import '../component/DefaultButtonComp.dart';
+import '../component/ThemeAppBar.dart';
 
 class OrderPage extends StatefulWidget {
   OrderPage(
@@ -104,7 +105,8 @@ class _OrderPageState extends State<OrderPage> {
   /// 최종적으로 결제 하기 전 그 순간에서 재고 상황을 체크하는 작업(단일 상품)
   Future<bool> _checkSynchronousStockCountForProduct() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getOneProduct.php';
-    final response = await http.get(Uri.parse(url + '?pid=${widget.direct!.prodID}'));
+    final response =
+        await http.get(Uri.parse(url + '?pid=${widget.direct!.prodID}'));
 
     if (response.statusCode == 200) {
       String result = utf8
@@ -129,7 +131,8 @@ class _OrderPageState extends State<OrderPage> {
   /// 최종적으로 결제 하기 전 그 순간에서 재고 상황을 체크하는 작업(장바구니)
   Future<bool> _checkSynchronousStockCountForCart() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getAllCart.php';
-    final response = await http.get(Uri.parse(url + '?uid=${widget.user!.uid}'));
+    final response =
+        await http.get(Uri.parse(url + '?uid=${widget.user!.uid}'));
     if (response.statusCode == 200) {
       String result = utf8
           .decode(response.bodyBytes)
@@ -237,29 +240,11 @@ class _OrderPageState extends State<OrderPage> {
         return false;
       },
       child: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            onPressed: () {
-              if (_isCart)
-                Navigator.pop(context, true);
-              else {
-                Navigator.pop(context);
-              }
-            },
-            color: Colors.black,
-            icon: Icon(
-              Icons.arrow_back,
-              color: Colors.black,
-            ),
-          ),
-          backgroundColor: Color(0xFF9EE1E5),
-          title: Text(
-            '주문하기',
-            style: TextStyle(
-                color: Colors.black, fontWeight: FontWeight.bold, fontSize: 13),
-          ),
-          centerTitle: true,
-        ),
+        appBar: ThemeAppBar(
+            barTitle: '주문하기',
+            leadingClick: () => _isCart
+                ? Navigator.pop(context, true)
+                : Navigator.pop(context)),
         body: Column(
           children: [
             Expanded(

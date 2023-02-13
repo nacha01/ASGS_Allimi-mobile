@@ -4,6 +4,8 @@ import 'package:asgshighschool/data/user.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
+import '../component/ThemeAppBar.dart';
+
 class ReservationCompletePage extends StatefulWidget {
   final User? user;
   final int? count;
@@ -58,20 +60,7 @@ class _ReservationCompletePageState extends State<ReservationCompletePage> {
         return false;
       },
       child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Color(0xFF9EE1E5),
-          title: Text(
-            '예약 완료',
-            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-          ),
-          centerTitle: true,
-          leading: IconButton(
-              onPressed: () => Navigator.pop(context, true),
-              icon: Icon(
-                Icons.arrow_back,
-                color: Colors.black,
-              )),
-        ),
+        appBar: ThemeAppBar(barTitle: '예약완료'),
         body: SingleChildScrollView(
           child: Column(
             children: [

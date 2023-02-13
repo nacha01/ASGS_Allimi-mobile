@@ -1,3 +1,4 @@
+import 'package:asgshighschool/component/ThemeAppBar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -53,20 +54,13 @@ class _WebViewPageState extends State<WebViewPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Color(0xFF9EE1E5),
-          title: Text(
-            widget.title!,
-            style: TextStyle(color: Colors.black),
-          ),
-          leading: IconButton(
-              icon: Icon(Icons.arrow_back, color: Colors.black),
-              onPressed: () {
-                Navigator.pop(context);
-                if (HomePageState.tabController != null)
-                  HomePageState.tabController!.index = 0;
-              }),
-        ),
+        appBar: ThemeAppBar(
+            barTitle: widget.title!,
+            leadingClick: () {
+              Navigator.pop(context);
+              if (HomePageState.tabController != null)
+                HomePageState.tabController!.index = 0;
+            }),
         body: InAppWebView(
           key: webViewKey,
           initialUrlRequest: URLRequest(url: Uri.parse(widget.baseUrl!)),

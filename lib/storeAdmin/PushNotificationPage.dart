@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:asgshighschool/component/ThemeAppBar.dart';
 import 'package:asgshighschool/data/status.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:flutter/material.dart';
@@ -134,23 +135,7 @@ class _PushNotificationPageState extends State<PushNotificationPage> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          onPressed: () => Navigator.pop(context),
-          color: Colors.black,
-          icon: Icon(
-            Icons.arrow_back,
-            color: Colors.black,
-          ),
-        ),
-        backgroundColor: Color(0xFF9EE1E5),
-        title: Text(
-          '푸시 알림 보내기 [Push Notification]',
-          style: TextStyle(
-              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 14),
-        ),
-        centerTitle: true,
-      ),
+      appBar: ThemeAppBar(barTitle: '푸시 알림 보내기 [Push Notification]'),
       body: SingleChildScrollView(
         child: Column(
           children: [
