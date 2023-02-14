@@ -4,7 +4,7 @@ import 'package:asgshighschool/util/GlobalVariable.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import '../data/foreground_noti.dart';
-import 'SignIn.dart';
+import 'auth/SignIn.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 

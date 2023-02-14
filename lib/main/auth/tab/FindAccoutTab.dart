@@ -2,7 +2,7 @@ import 'dart:math';
 import 'package:asgshighschool/main/auth/component/AuthFrameComp.dart';
 import 'package:asgshighschool/main/auth/controller/AuthController.dart';
 import 'package:flutter/material.dart';
-import '../../component/DefaultButtonComp.dart';
+import '../../../component/DefaultButtonComp.dart';
 
 class FindAccountTab extends StatefulWidget {
   const FindAccountTab({Key? key}) : super(key: key);

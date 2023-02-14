@@ -2,9 +2,9 @@ import 'package:asgshighschool/main/auth/component/AuthFrameComp.dart';
 import 'package:asgshighschool/main/auth/controller/AuthController.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../component/DefaultButtonComp.dart';
-import '../../data/status.dart';
-import '../HomePage.dart';
+import '../../../component/DefaultButtonComp.dart';
+import '../../../data/status.dart';
+import '../../HomePage.dart';
 
 class RegisterTab extends StatefulWidget {
   const RegisterTab({Key? key}) : super(key: key);

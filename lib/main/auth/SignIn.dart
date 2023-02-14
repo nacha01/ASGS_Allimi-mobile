@@ -6,15 +6,15 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:yaml/yaml.dart';
 
-import '../component/DefaultButtonComp.dart';
-import 'HomePage.dart';
+import '../../component/DefaultButtonComp.dart';
+import '../HomePage.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
-import 'auth/FindAccoutTab.dart';
-import 'auth/LoginTab.dart';
-import 'auth/RegisterTab.dart';
+import 'tab/FindAccoutTab.dart';
+import 'tab/LoginTab.dart';
+import 'tab/RegisterTab.dart';
 
 class SignInPage extends StatefulWidget {
   SignInPage({Key? key}) : super(key: key);

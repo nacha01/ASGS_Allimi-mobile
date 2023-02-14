@@ -3,9 +3,9 @@ import 'package:asgshighschool/main/auth/controller/AuthController.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../component/DefaultButtonComp.dart';
-import '../HomePage.dart';
-import '../ReportBugPage.dart';
+import '../../../component/DefaultButtonComp.dart';
+import '../../HomePage.dart';
+import '../../ReportBugPage.dart';
 
 class LoginTab extends StatefulWidget {
   const LoginTab({Key? key}) : super(key: key);

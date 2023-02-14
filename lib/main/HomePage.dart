@@ -13,7 +13,7 @@ import '../data/provider/exist_cart.dart';
 import '../data/provider/renew_user.dart';
 import 'package:asgshighschool/main/GameListPage.dart';
 import 'package:asgshighschool/main/SelectImagePage.dart';
-import 'package:asgshighschool/main/SignIn.dart';
+import 'package:asgshighschool/main/auth/SignIn.dart';
 import 'package:asgshighschool/store/UpdateUserPage.dart';
 import 'package:asgshighschool/store/MobileStudentCard.dart';
 import 'package:cached_network_image/cached_network_image.dart';
