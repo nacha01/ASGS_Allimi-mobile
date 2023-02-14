@@ -14,6 +14,8 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
+import '../util/UpperCaseTextFormatter.dart';
+
 class StoreHomePage extends StatefulWidget {
   StoreHomePage({this.user, this.product, this.existCart});
 
@@ -1782,17 +1784,6 @@ class _StoreHomePageState extends State<StoreHomePage>
           ],
         ),
       ),
-    );
-  }
-}
-
-class UpperCaseTextFormatter extends TextInputFormatter {
-  @override
-  TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue, TextEditingValue newValue) {
-    return TextEditingValue(
-      text: newValue.text.toUpperCase(),
-      selection: newValue.selection,
     );
   }
 }

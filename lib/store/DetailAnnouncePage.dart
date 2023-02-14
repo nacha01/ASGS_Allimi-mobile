@@ -8,6 +8,8 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
+import '../util/UpperCaseTextFormatter.dart';
+
 class DetailAnnouncePage extends StatefulWidget {
   DetailAnnouncePage({this.announce, this.user, this.isNew, this.newView});
 
@@ -321,17 +323,6 @@ class _DetailAnnouncePageState extends State<DetailAnnouncePage> {
           ),
         ),
       ),
-    );
-  }
-}
-
-class UpperCaseTextFormatter extends TextInputFormatter {
-  @override
-  TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue, TextEditingValue newValue) {
-    return TextEditingValue(
-      text: newValue.text.toUpperCase(),
-      selection: newValue.selection,
     );
   }
 }
