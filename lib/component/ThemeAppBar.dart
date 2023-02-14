@@ -27,7 +27,7 @@ class _ThemeAppBarState extends State<ThemeAppBar> {
       title: Text(
         widget.barTitle,
         style: TextStyle(
-            color: Colors.black, fontWeight: FontWeight.bold, fontSize: 14),
+            color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
       ),
       centerTitle: true,
       leading: widget.allowLeading
