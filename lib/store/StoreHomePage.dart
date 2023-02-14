@@ -37,7 +37,6 @@ class _StoreHomePageState extends State<StoreHomePage>
   bool _isAsc = true; // true : 오름차순 , false : 내림차순
   bool _isSearch = false; // 검색 기능 사용했는지 판단
   bool _isLoading = true; // 상품 데이터 가져오는 동안의 로딩 상태
-  bool _corporationInfoClicked = false;
 
   List<Product> _searchProductList = [];
   List<Widget> _searchProductLayoutList = [];
@@ -263,7 +262,8 @@ class _StoreHomePageState extends State<StoreHomePage>
               _beverageProductList[i],
               size));
         }
-        _stationeryProductList.sort((a, b) => a.prodName!.compareTo(b.prodName!));
+        _stationeryProductList
+            .sort((a, b) => a.prodName!.compareTo(b.prodName!));
         _stationeryProductLayoutList.clear();
         if (!_isAsc)
           _stationeryProductList = List.from(_stationeryProductList.reversed);
@@ -566,7 +566,7 @@ class _StoreHomePageState extends State<StoreHomePage>
     if (response.statusCode == 200) {
       if (response.body.contains('일일 트래픽을 모두 사용하였습니다.')) {
         print('일일 트래픽 모두 사용');
-        return ;
+        return;
       }
       String result = utf8
           .decode(response.bodyBytes)
@@ -632,8 +632,8 @@ class _StoreHomePageState extends State<StoreHomePage>
   /// @result : 관리자 인증이 되었는지에 대한 bool 값
   Future<bool> _certifyAdminAccess() async {
     String url = 'http://nacha01.dothome.co.kr/sin/arlimi_adminCertified.php';
-    final response = await http
-        .get(Uri.parse(url + '?uid=${widget.user!.uid}&key=${_adminKeyController.text}'));
+    final response = await http.get(Uri.parse(
+        url + '?uid=${widget.user!.uid}&key=${_adminKeyController.text}'));
 
     if (response.statusCode == 200) {
       if (response.body.contains('CERTIFIED')) {
@@ -677,11 +677,11 @@ class _StoreHomePageState extends State<StoreHomePage>
             SliverAppBar(
               backgroundColor: Colors.white,
               forceElevated: innerBoxIsScrolled,
-              leadingWidth: size.width * 0.25,
+              leadingWidth: size.width * 0.23,
               centerTitle: true,
               title: aboveTap(size),
               leading: Container(
-                  margin: EdgeInsets.only(left: 7),
+                  margin: EdgeInsets.only(left: size.width * 0.02),
                   alignment: Alignment.center,
                   child: DefaultButtonComp(
                     onPressed: () {
@@ -779,15 +779,13 @@ class _StoreHomePageState extends State<StoreHomePage>
                     )
               : _productLayoutList.length == 0
                   ? _isLoading
-                      ? Expanded(
-                          child: Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text('불러오는 중...'),
-                                CircularProgressIndicator(),
-                              ],
-                            ),
+                      ? Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text('불러오는 중...'),
+                              CircularProgressIndicator(),
+                            ],
                           ),
                         )
                       : RefreshIndicator(
@@ -1423,7 +1421,7 @@ class _StoreHomePageState extends State<StoreHomePage>
                               }),
                         ),
                       ),
-                    CorporationInfo(isOpenable: true)
+                      CorporationInfo(isOpenable: true)
                     ],
                   ),
                 ),
@@ -1614,8 +1612,22 @@ class _StoreHomePageState extends State<StoreHomePage>
                     errorWidget: (context, url, error) {
                       return Container(
                           alignment: Alignment.center,
-                          color: Colors.grey[400],
-                          child: Text('No Image'));
+                          color: Colors.grey[300],
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.camera_alt,
+                                size: 40,
+                                color: Colors.grey,
+                              ),
+                              Text(
+                                '이미지 준비 중입니다.',
+                                style: TextStyle(
+                                    fontSize: 12, fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ));
                       //placeholder 추가하기 -> 로고로
                     },
                   ),
@@ -1772,7 +1784,6 @@ class _StoreHomePageState extends State<StoreHomePage>
       ),
     );
   }
-
 }
 
 class UpperCaseTextFormatter extends TextInputFormatter {

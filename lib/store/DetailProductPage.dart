@@ -39,7 +39,6 @@ class _DetailProductPageState extends State<DetailProductPage> {
   String _optionString = '';
   int _additionalPrice = 0;
   String _errorMessage = '';
-  bool _corporationInfoClicked = false;
 
   /// 일반 숫자에 ,를 붙여서 직관적인 가격을 보이게 하는 작업
   /// @param : 직관적인 가격을 보여줄 실제 int 가격[price]
@@ -224,12 +223,32 @@ class _DetailProductPageState extends State<DetailProductPage> {
                         width: size.width * 0.9,
                         height: size.width * 0.9 * 1.4,
                         child: CachedNetworkImage(
-                          imageUrl: widget.product!.imgUrl1!,
-                          fit: BoxFit.cover,
-                          progressIndicatorBuilder:
-                              (context, string, progress) =>
-                                  Center(child: CircularProgressIndicator()),
-                        )),
+                            imageUrl: widget.product!.imgUrl1!,
+                            fit: BoxFit.cover,
+                            progressIndicatorBuilder:
+                                (context, string, progress) =>
+                                    Center(child: CircularProgressIndicator()),
+                            errorWidget: (context, url, error) {
+                              return Container(
+                                  alignment: Alignment.center,
+                                  color: Colors.grey[300],
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.camera_alt,
+                                        size: 70,
+                                        color: Colors.grey,
+                                      ),
+                                      Text(
+                                        '이미지 준비 중입니다.',
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ],
+                                  ));
+                            })),
                     Divider(
                       thickness: 1,
                       endIndent: 15,
@@ -817,5 +836,4 @@ class _DetailProductPageState extends State<DetailProductPage> {
       ),
     );
   }
-
 }
