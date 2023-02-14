@@ -8,6 +8,7 @@ import 'package:asgshighschool/util/GlobalVariable.dart';
 import 'package:flutter_swiper_view/flutter_swiper_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../api/ApiUtil.dart';
 import '../component/DefaultButtonComp.dart';
 import '../data/provider/exist_cart.dart';
 import '../data/provider/renew_user.dart';
@@ -76,18 +77,11 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   Future<bool> _checkUserToken(String? uid) async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_checkUserToken.php';
-    print(GlobalVariable.token);
+    String url = '${ApiUtil.API_HOST}arlimi_checkUserToken.php';
     final response = await http.post(Uri.parse(url),
         body: <String, String?>{'uid': uid, 'token': GlobalVariable.token});
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
-      print(result);
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       if (!result.contains('SAME')) {}
       return true;
     } else {
@@ -150,17 +144,12 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   Future<bool> _checkExistCart() async {
-    String uri = 'http://nacha01.dothome.co.kr/sin/arlimi_checkCart.php';
+    String uri = '${ApiUtil.API_HOST}arlimi_checkCart.php';
     final response =
         await http.get(Uri.parse(uri + '?uid=${widget.user!.uid}'));
 
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       if (int.parse(result) >= 1) {
         return true;
       } else {
@@ -172,18 +161,13 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   Future<bool> _withdrawAccount(String pw) async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_withdrawAccount.php';
+    String url = '${ApiUtil.API_HOST}arlimi_withdrawAccount.php';
 
     final response = await http.post(Uri.parse(url),
         body: <String, String?>{'uid': widget.user!.uid, 'pw': pw});
 
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
 
       if (result == 'DELETED') {
         return true;
@@ -197,9 +181,6 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    var data = Provider.of<ExistCart>(context);
-    var providedUser = Provider.of<RenewUserData>(context);
     Widget homeTab = SingleChildScrollView(
       child: Column(
         children: <Widget>[
@@ -327,7 +308,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
       ),
     );
     return WillPopScope(
-      onWillPop: _onBackPressed as Future<bool> Function()?,
+      onWillPop: _onBackPressed,
       child: Scaffold(
           resizeToAvoidBottomInset: false, // keyboard not slide
           drawer: slidePage(),
@@ -350,9 +331,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     ),
                   ),
                   leading: Container(),
-                  // hambuger menu hide
                   expandedHeight: 100,
-                  // space area between appbar and tabbar
                   pinned: true,
                   floating: true,
                   forceElevated: innerBoxIsScrolled,

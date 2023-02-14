@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:asgshighschool/api/ApiUtil.dart';
 import 'package:asgshighschool/data/announce.dart';
 import '../../component/DefaultButtonComp.dart';
 import '../../component/ThemeAppBar.dart';
@@ -35,7 +36,7 @@ class _AddAnnouncePageState extends State<AddAnnouncePage> {
   /// @response : 정상적인 성공 시, 문자열 1 응답
   /// @return : 정상적인 등록시 true, 그렇지 않으면 false
   Future<bool> _registerAnnounceRequest(RenewUserData providedUser) async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_addAnnounce.php';
+    String url = '${ApiUtil.API_HOST}arlimi_addAnnounce.php';
     final response = await http.post(Uri.parse(url), body: <String, String?>{
       'writer': _getWriterToString(_writer, providedUser),
       'date': DateTime.now().toString().split('.')[0],
@@ -43,12 +44,7 @@ class _AddAnnouncePageState extends State<AddAnnouncePage> {
       'content': _contentController.text
     });
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       if (result != '1') return false;
       return true;
     } else {
@@ -60,7 +56,7 @@ class _AddAnnouncePageState extends State<AddAnnouncePage> {
   /// @response : none
   /// @return : 정상적인 업데이트 시 true, 그렇지 않으면 false
   Future<bool> _updateAnnounceRequest(RenewUserData providedUser) async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_updateAnnounce.php';
+    String url = '${ApiUtil.API_HOST}arlimi_updateAnnounce.php';
     final response = await http.post(Uri.parse(url), body: <String, String?>{
       'anID': widget.announce!.announceID.toString(),
       'writer': _getWriterToString(_writer, providedUser),
@@ -69,7 +65,6 @@ class _AddAnnouncePageState extends State<AddAnnouncePage> {
       'content': _contentController.text
     });
     if (response.statusCode == 200) {
-      print(response.body);
       await _getUpdatedAnnounceObj();
       return true;
     } else {
@@ -80,16 +75,11 @@ class _AddAnnouncePageState extends State<AddAnnouncePage> {
   /// 공지사항 업데이트 시, 업데이트 된 그 공지사항 하나를 가져오는 요청
   /// 가져온 json 파일을 Announce.fromJson 생성자로 Announce 객체 생성해서 리턴
   Future<bool> _getUpdatedAnnounceObj() async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getOneAnnounce.php';
+    String url = '${ApiUtil.API_HOST}arlimi_getOneAnnounce.php';
     final response =
         await http.get(Uri.parse(url + '?anID=${widget.announce!.announceID}'));
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       _updatedAnnounceObj = Announce.fromJson(json.decode(result));
       return true;
     } else {

@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:asgshighschool/data/category.dart';
 import 'package:async/async.dart';
@@ -9,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 
+import '../../api/ApiUtil.dart';
 import '../../component/DefaultButtonComp.dart';
 import '../../component/ThemeAppBar.dart';
 
@@ -74,8 +74,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
   String pid = '';
   String _errorText = '';
   String? _selectedCategory = Category.c1; // 드롭다운 아이템 default
-  String serverImageUri =
-      'http://nacha01.dothome.co.kr/sin/arlimi_productImage/64_';
+  String serverImageUri = '${ApiUtil.API_HOST}arlimi_productImage/64_';
 
   late AsyncMemoizer<bool> _memoizer;
 
@@ -125,8 +124,8 @@ class _AddingProductPageState extends State<AddingProductPage> {
   /// @response : complete0
   /// ※ Multipart 요청
   Future<bool> _sendImageToServer(PickedFile img, String fileName) async {
-    var request = http.MultipartRequest('POST',
-        Uri.parse('http://nacha01.dothome.co.kr/sin/arlimi_storeImage.php'));
+    var request = http.MultipartRequest(
+        'POST', Uri.parse('${ApiUtil.API_HOST}arlimi_storeImage.php'));
     var picture = await http.MultipartFile.fromPath('imgFile', img.path,
         filename: fileName + '.jpg');
     request.files.add(picture);
@@ -152,11 +151,8 @@ class _AddingProductPageState extends State<AddingProductPage> {
   /// @return 정상적으로 DB에 저장이 되면 true, 그렇지 않으면 false
   /// @response : "1"
   Future<bool> _postRequestForInsertProduct() async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_insertProduct.php';
-    http.Response response =
-        await http.post(Uri.parse(url), headers: <String, String>{
-      'Content-Type': 'application/x-www-form-urlencoded'
-    }, body: <String, String>{
+    String url = '${ApiUtil.API_HOST}arlimi_insertProduct.php';
+    final response = await http.post(Uri.parse(url), body: <String, String>{
       'prodName': _productNameController.text,
       'prodExp': _productExplainController.text,
       'category':
@@ -174,9 +170,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
       if (response.body.contains('일일 트래픽을 모두 사용하였습니다.')) {
         return false;
       }
-      var replace = response.body.replaceAll(
-          '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-          '');
+      var replace = ApiUtil.getPureBody(response.bodyBytes);
       if (!replace.contains('INSERT')) return false;
       pid = replace.replaceAll('INSERT', '');
       return true;
@@ -186,8 +180,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
   }
 
   Future<int> _registerOptionCategory(String optionCategory) async {
-    String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_registerOptionCategory.php';
+    String url = '${ApiUtil.API_HOST}arlimi_registerOptionCategory.php';
     final response = await http.post(Uri.parse(url), body: <String, String>{
       'pName': _productNameController.text,
       'pInfo': _productExplainController.text,
@@ -198,12 +191,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
     });
 
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       return int.parse(result);
     } else {
       return -1;
@@ -212,8 +200,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
 
   Future<bool> _registerOptionDetail(int pid, String optionCategory,
       String optionName, String optionPrice) async {
-    String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_registerOptionDetail.php';
+    String url = '${ApiUtil.API_HOST}arlimi_registerOptionDetail.php';
     final response = await http.post(Uri.parse(url), body: <String, String>{
       'pid': pid.toString(),
       'optionCategory': optionCategory,
@@ -221,19 +208,10 @@ class _AddingProductPageState extends State<AddingProductPage> {
       'optionPrice': optionPrice
     });
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
-      if (result == '1')
-        return true;
-      else
-        return false;
-    } else {
-      return false;
+      String result = ApiUtil.getPureBody(response.bodyBytes);
+      if (result == '1') return true;
     }
+    return false;
   }
 
   /// 최종적으로 상품을 등록하는 작업
@@ -311,7 +289,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
   }
 
   Future<bool> _setReservationCountLimit() async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_resvLimit.php';
+    String url = '${ApiUtil.API_HOST}arlimi_resvLimit.php';
     int value = int.parse(_reservationCountController.text) < 0 &&
             int.parse(_reservationCountController.text) != -1
         ? -1
@@ -320,21 +298,13 @@ class _AddingProductPageState extends State<AddingProductPage> {
         body: <String, String>{'pid': pid, 'max_count': value.toString()});
 
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
 
       if (result == 'UPDATE1' || result == 'INSERT1') {
         return true;
-      } else {
-        return false;
       }
-    } else {
-      return false;
     }
+    return false;
   }
 
   Future<bool> _addOptionCategory() async {

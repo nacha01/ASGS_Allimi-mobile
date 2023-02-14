@@ -1,4 +1,4 @@
-import 'dart:convert';
+import 'package:asgshighschool/api/ApiUtil.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -24,7 +24,7 @@ class _UpdatePasswordPageState extends State<UpdatePasswordPage> {
 
   /// 새로운 비밀번호 업데이트 요청을 하는 작업
   Future<int> _updatePasswordRequest() async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_updatePassword.php';
+    String url = '${ApiUtil.API_HOST}arlimi_updatePassword.php';
     final response = await http.post(Uri.parse(url), body: <String, String?>{
       'uid': widget.user!.uid,
       'origin': _currentController.text,
@@ -32,12 +32,7 @@ class _UpdatePasswordPageState extends State<UpdatePasswordPage> {
     });
 
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       if (result.contains('INVALID')) {
         return 0;
       } else {

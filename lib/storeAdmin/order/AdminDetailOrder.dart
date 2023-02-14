@@ -1,5 +1,6 @@
 import 'package:asgshighschool/data/category.dart';
 import 'package:asgshighschool/data/user.dart';
+import '../../api/ApiUtil.dart';
 import '../../component/DefaultButtonComp.dart';
 import '../../component/ThemeAppBar.dart';
 import '../qr/QRScannerPage.dart';
@@ -88,7 +89,7 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
   /// 현재 관리자 user가 이 주문을 맡겠다는 요청 작업
   /// chargerID 필드 업데이트 및 orderState 필드 업데이트
   Future<bool> _chargeOrderRequest() async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_chargeOrder.php';
+    String url = '${ApiUtil.API_HOST}arlimi_chargeOrder.php';
     final response = await http.post(Uri.parse(url), body: <String, String?>{
       'uid': widget.user!.uid,
       'oid': widget.data!['oID']

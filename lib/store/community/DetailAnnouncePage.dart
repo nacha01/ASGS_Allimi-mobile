@@ -1,5 +1,6 @@
 import 'package:asgshighschool/data/announce.dart';
 import 'package:asgshighschool/data/user.dart';
+import '../../api/ApiUtil.dart';
 import '../../component/DefaultButtonComp.dart';
 import '../../component/ThemeAppBar.dart';
 import '../../storeAdmin/post/AddAnnouncePage.dart';
@@ -43,19 +44,16 @@ class _DetailAnnouncePageState extends State<DetailAnnouncePage> {
   /// @param : HTTP GET : UID 값과 ADMIN KEY 값
   /// @result : 관리자 인증이 되었는지에 대한 bool 값
   Future<bool> _certifyAdminAccess() async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_adminCertified.php';
+    String url = '${ApiUtil.API_HOST}arlimi_adminCertified.php';
     final response = await http.get(Uri.parse(
         url + '?uid=${widget.user!.uid}&key=${_adminKeyController.text}'));
 
     if (response.statusCode == 200) {
       if (response.body.contains('CERTIFIED')) {
         return true;
-      } else {
-        return false;
       }
-    } else {
-      return false;
     }
+    return false;
   }
 
   /// 현재 페이지를 강제종료하는 작업
@@ -66,13 +64,11 @@ class _DetailAnnouncePageState extends State<DetailAnnouncePage> {
   /// parameter의 ID를 가진 공지사항 데이터에 대해 삭제 요청하는 작업
   /// @response : 성공적으로 삭제 시 'DELETE'
   Future<bool> _deleteAnnounceRequest(int announceID) async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_deleteAnnounce.php';
+    String url = '${ApiUtil.API_HOST}arlimi_deleteAnnounce.php';
     final response = await http.get(Uri.parse(url + '?anID=$announceID'));
     if (response.statusCode == 200) {
       if (response.body.contains('DELETED')) {
         return true;
-      } else {
-        return false;
       }
     }
     return false;

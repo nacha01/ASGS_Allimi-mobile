@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:asgshighschool/api/ApiUtil.dart';
 import 'package:asgshighschool/data/user.dart';
 import '../../component/DefaultButtonComp.dart';
 import 'ScanInfoPage.dart';
@@ -23,15 +24,10 @@ class _QrSearchScannerPageState extends State<QrSearchScannerPage> {
   bool _isScanned = false;
 
   Future<User?> _getUserInfo(String? uid) async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getOneUser.php';
+    String url = '${ApiUtil.API_HOST}arlimi_getOneUser.php';
     final response = await http.get(Uri.parse(url + "?uid=$uid"));
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       if (result != 'NOT EXIST ACCOUNT') {
         return User.fromJson(jsonDecode(result));
       } else {
@@ -43,17 +39,12 @@ class _QrSearchScannerPageState extends State<QrSearchScannerPage> {
   }
 
   Future<bool> _queryQrInformation(String? scannedValue) async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_queryOrderInfo.php';
-    final response =
-        await http.post(Uri.parse(url), body: <String, String?>{'oid': scannedValue});
+    String url = '${ApiUtil.API_HOST}arlimi_queryOrderInfo.php';
+    final response = await http
+        .post(Uri.parse(url), body: <String, String?>{'oid': scannedValue});
 
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       if (result.contains('No Exist')) {
         showDialog(
             context: context,
@@ -90,7 +81,6 @@ class _QrSearchScannerPageState extends State<QrSearchScannerPage> {
           order['detail'][i] = jsonDecode(order['detail'][i]);
           order['detail'][i]['pInfo'] = jsonDecode(order['detail'][i]['pInfo']);
         }
-        print(order);
         User? user = await _getUserInfo(order['uID']);
         if (user == null) {
           showDialog(
@@ -122,7 +112,6 @@ class _QrSearchScannerPageState extends State<QrSearchScannerPage> {
                     ],
                   ));
         }
-        // print(order['detail'][0]['pInfo']['pName']);
         var res = await Navigator.push(
             context,
             MaterialPageRoute(

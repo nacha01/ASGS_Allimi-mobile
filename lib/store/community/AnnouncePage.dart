@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:asgshighschool/data/announce.dart';
+import '../../api/ApiUtil.dart';
 import '../../component/CorporationComp.dart';
 import '../../component/DefaultButtonComp.dart';
 import '../../component/ThemeAppBar.dart';
@@ -29,19 +30,13 @@ class _AnnouncePageState extends State<AnnouncePage> {
   List<Announce> _searchList = [];
   String? _selectedCategory = '제목';
   bool _isSearch = false;
-  bool _isLoading = true; // 로딩 중인지 판단
 
   /// 모든 공지사항 데이터를 요청하는 작업
   Future<bool> _getAnnounceRequest() async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getAnnounce.php';
+    String url = '${ApiUtil.API_HOST}arlimi_getAnnounce.php';
     final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       List anList = json.decode(result);
       _announceList.clear();
       for (int i = 0; i < anList.length; ++i) {
@@ -49,7 +44,6 @@ class _AnnouncePageState extends State<AnnouncePage> {
       }
       setState(() {
         _isFinished = true;
-        _isLoading = false;
       });
       return true;
     } else {
@@ -59,17 +53,11 @@ class _AnnouncePageState extends State<AnnouncePage> {
 
   /// 특정 공지사항 글에 대해서 조회수 증가 요청
   Future<int> _increaseViewCountRequest(int anID) async {
-    String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_increaseViewCount.php';
+    String url = '${ApiUtil.API_HOST}arlimi_increaseViewCount.php';
     final response = await http.get(Uri.parse(url + '?anID=$anID'));
 
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       return int.parse(result);
     } else {
       return -1;

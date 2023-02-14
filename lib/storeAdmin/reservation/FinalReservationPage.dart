@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:asgshighschool/api/ApiUtil.dart';
 import 'package:asgshighschool/component/ThemeAppBar.dart';
 import 'package:asgshighschool/data/category.dart';
 import 'package:asgshighschool/data/user.dart';
@@ -23,16 +24,11 @@ class _FinalReservationPageState extends State<FinalReservationPage> {
   /// 실제로 상품을 예약자에게 수령하고 난 뒤, '수령 완료' 상태로 변경하기 위한 요청
   Future<bool> _convertFinishedState() async {
     String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_updateOrderFinal.php?oid=${widget.data!['oID']}';
+        '${ApiUtil.API_HOST}arlimi_updateOrderFinal.php?oid=${widget.data!['oID']}';
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       if (result != '1') return false;
       return true;
     } else {

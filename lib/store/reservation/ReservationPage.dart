@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+import '../../api/ApiUtil.dart';
 import '../../component/CorporationComp.dart';
 import '../../component/DefaultButtonComp.dart';
 import '../../component/ThemeAppBar.dart';
@@ -37,8 +38,7 @@ class _ReservationPageState extends State<ReservationPage> {
   /// 최종적으로 예약을 등록하는 요청
   /// @return : 등록 성공 여부
   Future<bool> _registerReservation() async {
-    String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_registerReservation.php';
+    String url = '${ApiUtil.API_HOST}arlimi_registerReservation.php';
     _generatedOID = DateTime.now().millisecondsSinceEpoch.toString();
     final response = await http.post(Uri.parse(url), body: <String, String?>{
       'oid': _generatedOID,
@@ -94,7 +94,7 @@ class _ReservationPageState extends State<ReservationPage> {
   }
 
   Future<bool> _setReservationCountLimit() async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_resvLimit.php';
+    String url = '${ApiUtil.API_HOST}arlimi_resvLimit.php';
     int value = int.parse(_countController.text) < 0 &&
             int.parse(_countController.text) != -1
         ? -1
@@ -105,35 +105,22 @@ class _ReservationPageState extends State<ReservationPage> {
     });
 
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
 
       if (result == 'UPDATE1' || result == 'INSERT1') {
         return true;
-      } else {
-        return false;
       }
-    } else {
-      return false;
     }
+    return false;
   }
 
   Future<bool> _getReservationCurrent() async {
     String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_getResvCount.php?pid=${widget.product!.prodID.toString()}';
+        '${ApiUtil.API_HOST}arlimi_getResvCount.php?pid=${widget.product!.prodID.toString()}';
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       _initResvCount = json.decode(result);
       _countController.text = _initResvCount!['max_count'];
       return true;
@@ -143,8 +130,7 @@ class _ReservationPageState extends State<ReservationPage> {
   }
 
   Future<bool> _updateReservationCurrent() async {
-    String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_updateResvCurrent.php';
+    String url = '${ApiUtil.API_HOST}arlimi_updateResvCurrent.php';
     final response = await http.post(Uri.parse(url), body: <String, String>{
       'pid': widget.product!.prodID.toString(),
       'count': _counterController.text,
@@ -152,12 +138,7 @@ class _ReservationPageState extends State<ReservationPage> {
     });
 
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       if (result == '1') return true;
       return false;
     } else {
@@ -167,7 +148,7 @@ class _ReservationPageState extends State<ReservationPage> {
 
   /// orderDetail 테이블에 oid인 값에 대하여 어떤 상품인지 등록하는 http 요청
   Future<bool> _addOrderDetailRequest() async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_addOrderDetail.php';
+    String url = '${ApiUtil.API_HOST}arlimi_addOrderDetail.php';
     final response = await http.post(Uri.parse(url), body: <String, String?>{
       'oid': _generatedOID,
       'pid': widget.product!.prodID.toString(),

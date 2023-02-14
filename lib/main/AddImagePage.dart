@@ -6,6 +6,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 
+import '../api/ApiUtil.dart';
 import '../component/DefaultButtonComp.dart';
 
 class AddImagePage extends StatefulWidget {
@@ -24,8 +25,8 @@ class _AddImagePageState extends State<AddImagePage> {
   }
 
   Future<bool> _storeImage(PickedFile img, String fileName) async {
-    var request = http.MultipartRequest('POST',
-        Uri.parse('http://nacha01.dothome.co.kr/sin/main_storeImage.php'));
+    var request = http.MultipartRequest(
+        'POST', Uri.parse('${ApiUtil.API_HOST}main_storeImage.php'));
     var picture = await http.MultipartFile.fromPath('imgFile', img.path,
         filename: fileName + '.jpg');
     request.files.add(picture);
@@ -46,7 +47,7 @@ class _AddImagePageState extends State<AddImagePage> {
   }
 
   Future<bool> _insertImageInfo(DateTime current, String fileName) async {
-    String url = 'http://nacha01.dothome.co.kr/sin/main_addImageInfo.php';
+    String url = '${ApiUtil.API_HOST}main_addImageInfo.php';
     final response = await http.post(Uri.parse(url), body: <String, String>{
       'purpose': 'banner',
       'date': current.toString(),
@@ -56,12 +57,9 @@ class _AddImagePageState extends State<AddImagePage> {
     if (response.statusCode == 200) {
       if (response.body.contains('INSERTED')) {
         return true;
-      } else {
-        return false;
       }
-    } else {
-      return false;
     }
+    return false;
   }
 
   /// 정수 값의 날짜 혹은 시간을 두자리의 문자열로 formatting 하는 작업

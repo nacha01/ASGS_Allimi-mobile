@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:asgshighschool/api/ApiUtil.dart';
 import 'package:asgshighschool/data/category.dart';
 import 'package:asgshighschool/data/status.dart';
 import 'package:asgshighschool/data/user.dart';
@@ -31,17 +32,11 @@ class _ReservationListPageState extends State<ReservationListPage> {
 
   /// 모든 예약 데이터를 가져오는 요청
   Future<bool> _getAllReservationData() async {
-    String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_getAllReservation.php';
+    String url = '${ApiUtil.API_HOST}arlimi_getAllReservation.php';
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       List map1st = json.decode(result);
       _reservationListForTime.clear();
       _pcList.clear();
@@ -67,16 +62,11 @@ class _ReservationListPageState extends State<ReservationListPage> {
 
   Future<bool> _forceCancellationForReservation(String oid) async {
     String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_cancelReservation.php?${'oid=' + oid + '&pm=A'}';
+        '${ApiUtil.API_HOST}arlimi_cancelReservation.php?${'oid=' + oid + '&pm=A'}';
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       if (result == '1') return true;
       return false;
     } else {
@@ -86,8 +76,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
 
   Future<bool> _updateReservationCurrentCount(
       String? pid, String? quantity) async {
-    String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_updateResvCurrent.php';
+    String url = '${ApiUtil.API_HOST}arlimi_updateResvCurrent.php';
     final response = await http.post(Uri.parse(url), body: <String, String?>{
       'pid': pid,
       'count': quantity,
@@ -95,12 +84,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
     });
 
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       if (result != '1') return false;
       return true;
     } else {
@@ -109,17 +93,11 @@ class _ReservationListPageState extends State<ReservationListPage> {
   }
 
   Future<User?> _getUserInformation(String? uid) async {
-    String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_getOneUser.php?uid=$uid';
+    String url = '${ApiUtil.API_HOST}arlimi_getOneUser.php?uid=$uid';
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       return User.fromJson(json.decode(result));
     } else {
       return null;
@@ -131,7 +109,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
   /// @return : 업데이트 성공 여부
   Future<bool> _updateOrderState(String oid, String state) async {
     String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_updateOrderState.php?${'oid=' + oid + '&state=' + state}';
+        '${ApiUtil.API_HOST}arlimi_updateOrderState.php?${'oid=' + oid + '&state=' + state}';
     final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
       return true;

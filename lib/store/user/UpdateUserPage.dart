@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:asgshighschool/api/ApiUtil.dart';
+
 import '../../component/DefaultButtonComp.dart';
 import '../../component/ThemeAppBar.dart';
 import '../../data/provider/renew_user.dart';
@@ -54,7 +56,7 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
 
   /// 사용자 정보의 변경에 대해 업데이트 요청을 하는 작업
   Future<bool> _updateUserInfoRequest() async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_updateUser.php';
+    String url = '${ApiUtil.API_HOST}arlimi_updateUser.php';
     final response = await http.post(Uri.parse(url), body: <String, String?>{
       'uid': widget.user!.uid,
       'name': _nameController.text,
@@ -65,12 +67,7 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
     });
 
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       if (result != '1') return false;
       return true;
     } else {
@@ -80,47 +77,32 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
 
   /// 본인 인증을 하기 위한 요청
   Future<bool> _certifyMyselfRequest() async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_certifyMyself.php';
+    String url = '${ApiUtil.API_HOST}arlimi_certifyMyself.php';
     final response = await http.get(
         Uri.parse(url + '?uid=${widget.user!.uid}&pw=${_pwController.text}'));
 
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       if (result.contains('CERTIFIED')) {
         return true;
-      } else {
-        return false;
       }
-    } else {
-      return false;
     }
+    return false;
   }
 
   /// 사용자(본인) 정보를 요청하는 작업
   Future<void> _getUserInfoRequest() async {
-    String uri =
-        'http://nacha01.dothome.co.kr/sin/arlimi_getOneUser.php?uid=${widget.user!.uid}';
-    final response = await http.get(Uri.parse(uri));
+    String url = '${ApiUtil.API_HOST}arlimi_getOneUser.php?uid=${widget.user!.uid}';
+    final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
       if (utf8.decode(response.bodyBytes).contains('NOT EXIST ACCOUNT')) {
         _tmpUser = null;
       }
       if (response.body.contains('일일 트래픽을 모두 사용하였습니다.')) {
-        _tmpUser =
-            User('tmp', 'tmp', 'tmp', 5, 'tmp', 'tmp', 'tmp', 0, 0, 'tmp@tmp');
+        _tmpUser = User.empty();
       }
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       _tmpUser = User.fromJson(json.decode(result));
       if (widget.user!.isAdmin) {
         _tmpUser!.isAdmin = true;

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:asgshighschool/api/ApiUtil.dart';
 import 'package:asgshighschool/data/category.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:asgshighschool/store/reservation/DetailReservationStatePage.dart';
@@ -26,15 +27,10 @@ class _ReservationStatePageState extends State<ReservationStatePage> {
   /// 중간 과정으로 예약 완료 처리된 데이터를 구분하고 파싱하는 작업
   Future<bool> _getReservationFromUser() async {
     String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_getOneResv.php?uid=${widget.user!.uid}';
+        '${ApiUtil.API_HOST}arlimi_getOneResv.php?uid=${widget.user!.uid}';
     final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       List map1st = json.decode(result);
 
       _reservationList.clear();
@@ -53,7 +49,6 @@ class _ReservationStatePageState extends State<ReservationStatePage> {
           _notCompleteList.add(_reservationList[i]);
         }
       }
-      print(_reservationList);
       setState(() {});
       return true;
     } else {

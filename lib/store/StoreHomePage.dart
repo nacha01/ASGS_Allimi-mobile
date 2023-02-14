@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:asgshighschool/api/ApiUtil.dart';
 import 'package:asgshighschool/component/CorporationComp.dart';
 import 'package:asgshighschool/data/category.dart';
 import 'package:asgshighschool/data/product.dart';
@@ -562,20 +563,14 @@ class _StoreHomePageState extends State<StoreHomePage>
   /// @param : X
   /// @result : X [중간 과정에 상품을 분류하는 작업을 함]
   Future<void> _getProducts() async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getProduct.php';
+    String url = '${ApiUtil.API_HOST}arlimi_getProduct.php';
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
       if (response.body.contains('일일 트래픽을 모두 사용하였습니다.')) {
-        print('일일 트래픽 모두 사용');
         return;
       }
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       List productList = json.decode(result);
       List<Product> prodObjects = [];
       for (int i = 0; i < productList.length; ++i) {
@@ -617,13 +612,11 @@ class _StoreHomePageState extends State<StoreHomePage>
   /// @param : 상품 ID -> PK of product table
   /// @result : 삭제가 정상적으로 되었는지에 대한 bool 값
   Future<bool> _deleteProductRequest(int productID) async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_deleteProduct.php';
+    String url = '${ApiUtil.API_HOST}arlimi_deleteProduct.php';
     final response = await http.get(Uri.parse(url + '?id=$productID'));
     if (response.statusCode == 200) {
       if (response.body.contains('DELETED')) {
         return true;
-      } else {
-        return false;
       }
     }
     return false;
@@ -633,19 +626,16 @@ class _StoreHomePageState extends State<StoreHomePage>
   /// @param : HTTP GET : UID 값과 ADMIN KEY 값
   /// @result : 관리자 인증이 되었는지에 대한 bool 값
   Future<bool> _certifyAdminAccess() async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_adminCertified.php';
+    String url = '${ApiUtil.API_HOST}arlimi_adminCertified.php';
     final response = await http.get(Uri.parse(
         url + '?uid=${widget.user!.uid}&key=${_adminKeyController.text}'));
 
     if (response.statusCode == 200) {
       if (response.body.contains('CERTIFIED')) {
         return true;
-      } else {
-        return false;
       }
-    } else {
-      return false;
     }
+    return false;
   }
 
   /// 토스트 메세지 출력

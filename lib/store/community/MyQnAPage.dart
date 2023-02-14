@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:asgshighschool/api/ApiUtil.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:asgshighschool/store/community/DetailQnAPage.dart';
 import 'package:flutter/material.dart';
@@ -21,17 +22,12 @@ class _MyQnAPageState extends State<MyQnAPage> {
 
   /// 나(uid)의 모든 문의 내역 데이터들을 요청하는 작업
   Future<bool> _getMyQnAData() async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getUserQnA.php';
+    String url = '${ApiUtil.API_HOST}arlimi_getUserQnA.php';
     final response =
         await http.get(Uri.parse(url + '?uid=${widget.user!.uid}'));
 
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       List map = json.decode(result);
       for (int i = 0; i < map.length; ++i) {
         _qnaList.add(json.decode(map[i]));

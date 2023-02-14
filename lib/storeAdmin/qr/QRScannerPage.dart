@@ -4,6 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:http/http.dart' as http;
 
+import '../../api/ApiUtil.dart';
 import '../../component/DefaultButtonComp.dart';
 
 class QRScannerPage extends StatefulWidget {
@@ -19,17 +20,15 @@ class _QRScannerPageState extends State<QRScannerPage> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   Barcode? result;
   QRViewController? controller;
-  bool _isForValidate = false;
   bool _completed = false;
   bool _isUsed = false;
   bool _isChecked = false;
 
   Future<bool> _orderCompleteRequest() async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_completeOrder.php';
+    String url = '${ApiUtil.API_HOST}arlimi_completeOrder.php';
     final response = await http.get(Uri.parse(url + '?oid=${widget.oID}'));
 
     if (response.statusCode == 200) {
-      print(response.body);
       return true;
     } else {
       return false;
@@ -47,7 +46,6 @@ class _QRScannerPageState extends State<QRScannerPage> {
 
   @override
   void initState() {
-    _isForValidate = widget.oID == null ? false : true;
     super.initState();
   }
 

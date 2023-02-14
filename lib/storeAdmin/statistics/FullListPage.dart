@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:asgshighschool/api/ApiUtil.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -31,17 +32,11 @@ class _FullListPageState extends State<FullListPage> {
   ];
 
   Future<bool> _getReservationList() async {
-    String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_getAllReservation.php';
+    String url = '${ApiUtil.API_HOST}arlimi_getAllReservation.php';
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       List map1st = json.decode(result);
       _reservationList.clear();
       for (int i = 0; i < map1st.length; ++i) {
@@ -63,15 +58,10 @@ class _FullListPageState extends State<FullListPage> {
   }
 
   Future<bool> _getOrderList() async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getAllOrder.php';
+    String url = '${ApiUtil.API_HOST}arlimi_getAllOrder.php';
     final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       List map1st = json.decode(result);
       _orderList.clear();
       for (int i = 0; i < map1st.length; ++i) {

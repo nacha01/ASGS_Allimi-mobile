@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:asgshighschool/api/ApiUtil.dart';
 import 'package:asgshighschool/component/ThemeAppBar.dart';
 import 'package:asgshighschool/main/AddImagePage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -18,16 +19,11 @@ class _SelectImagePageState extends State<SelectImagePage> {
   String _prefixImgUrl = 'http://nacha01.dothome.co.kr/sin/arlimi_image/';
 
   Future<bool> _getAllImageData() async {
-    String url = 'http://nacha01.dothome.co.kr/sin/main_getAllImage.php';
+    String url = '${ApiUtil.API_HOST}main_getAllImage.php';
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       _isSelectedList.clear();
       _originSelectList.clear();
       _imageDataList.clear();
@@ -50,11 +46,10 @@ class _SelectImagePageState extends State<SelectImagePage> {
   }
 
   Future<bool> _updateSelectionState(String? num, int value) async {
-    String url = 'http://nacha01.dothome.co.kr/sin/main_updateSelectState.php';
+    String url = '${ApiUtil.API_HOST}main_updateSelectState.php';
     final response = await http.post(Uri.parse(url),
         body: <String, String?>{'selection': value.toString(), 'num': num});
     if (response.statusCode == 200) {
-      print(response.body);
       return true;
     } else {
       return false;

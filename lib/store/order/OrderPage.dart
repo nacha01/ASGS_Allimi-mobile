@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:asgshighschool/api/ApiUtil.dart';
 import 'package:asgshighschool/data/product.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:asgshighschool/store/payment/PaymentWebViewPage.dart';
@@ -104,17 +105,12 @@ class _OrderPageState extends State<OrderPage> {
 
   /// 최종적으로 결제 하기 전 그 순간에서 재고 상황을 체크하는 작업(단일 상품)
   Future<bool> _checkSynchronousStockCountForProduct() async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getOneProduct.php';
+    String url = '${ApiUtil.API_HOST}arlimi_getOneProduct.php';
     final response =
         await http.get(Uri.parse(url + '?pid=${widget.direct!.prodID}'));
 
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       Map p = json.decode(result);
       if (widget.productCount! <= int.parse(p['stockCount'])) {
         _checkMessage = '성공적으로 처리가 완료되었습니다.';
@@ -130,16 +126,11 @@ class _OrderPageState extends State<OrderPage> {
 
   /// 최종적으로 결제 하기 전 그 순간에서 재고 상황을 체크하는 작업(장바구니)
   Future<bool> _checkSynchronousStockCountForCart() async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getAllCart.php';
+    String url = '${ApiUtil.API_HOST}arlimi_getAllCart.php';
     final response =
         await http.get(Uri.parse(url + '?uid=${widget.user!.uid}'));
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       List cartProduct = json.decode(result);
       List<Map?> checksum = [];
       for (int i = 0; i < cartProduct.length; ++i) {

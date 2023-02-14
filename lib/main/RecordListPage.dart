@@ -6,6 +6,7 @@ import 'package:asgshighschool/data/user.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import '../api/ApiUtil.dart';
 import '../component/DefaultButtonComp.dart';
 
 /// 게임코드
@@ -36,16 +37,11 @@ class _RecordListPageState extends State<RecordListPage> {
 
   /// 기억력 게임에 대한 모든 유저의 기록을 가져오는 요청
   Future<void> _getRankingListOnGameCode() async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getRankOnMemory.php';
+    String url = '${ApiUtil.API_HOST}arlimi_getRankOnMemory.php';
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
 
       List tmp = jsonDecode(result);
       for (int i = 0; i < tmp.length; ++i) {

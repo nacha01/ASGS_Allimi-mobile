@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:asgshighschool/api/ApiUtil.dart';
 import 'package:asgshighschool/component/ThemeAppBar.dart';
 import 'package:asgshighschool/data/status.dart';
 import 'package:asgshighschool/data/user.dart';
@@ -38,15 +39,10 @@ class _PushNotificationPageState extends State<PushNotificationPage> {
   final _targetList = ['전체', '학년 별', '반 별', '개별'];
 
   Future<bool> _getAllUserInformation() async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getAllUsers.php';
+    String url = '${ApiUtil.API_HOST}arlimi_getAllUsers.php';
     final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       List map1st = jsonDecode(result);
       final size = MediaQuery.of(context).size;
       for (int i = 0; i < map1st.length; ++i) {
@@ -69,7 +65,7 @@ class _PushNotificationPageState extends State<PushNotificationPage> {
 
   Future<bool> _sendPushNotification(
       {required bool isEntire, String? token}) async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_pushNotification.php';
+    String url = '${ApiUtil.API_HOST}arlimi_pushNotification.php';
     final response = await http.post(Uri.parse(url), body: <String, String?>{
       'title': _titleController.text,
       'message': _contentController.text,

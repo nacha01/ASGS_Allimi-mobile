@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:asgshighschool/api/ApiUtil.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'StoreMainPage.dart';
 import 'package:flutter/material.dart';
@@ -15,8 +16,6 @@ class StoreSplashPage extends StatefulWidget {
 }
 
 class _StoreSplashPageState extends State<StoreSplashPage> {
-  bool _isExist = false;
-
   @override
   void initState() {
     super.initState();
@@ -27,7 +26,6 @@ class _StoreSplashPageState extends State<StoreSplashPage> {
   loading() async {
     List? result = await _getProducts();
     var res = await _checkExistCart();
-    _isExist = res;
     await Future.delayed(Duration(seconds: 1));
     Navigator.pushReplacement(
         context,
@@ -41,43 +39,29 @@ class _StoreSplashPageState extends State<StoreSplashPage> {
 
   /// 장바구니에 데이터가 존재하는지 체크 요청을 하는 작업
   Future<bool> _checkExistCart() async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_checkCart.php';
-    final response = await http.get(Uri.parse(url + '?uid=${widget.user!.uid}'));
+    String url = '${ApiUtil.API_HOST}arlimi_checkCart.php';
+    final response =
+        await http.get(Uri.parse(url + '?uid=${widget.user!.uid}'));
 
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       if (int.parse(result) >= 1) {
         return true;
-      } else {
-        return false;
       }
-    } else {
-      return false;
     }
+    return false;
   }
 
   /// 모든 상품 데이터를 요청하는 작업
   Future<List<Product>?> _getProducts() async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getProduct.php';
+    String url = '${ApiUtil.API_HOST}arlimi_getProduct.php';
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
-      print(response.body);
       if (response.body.contains('일일 트래픽을 모두 사용하였습니다.')) {
-        // 임시 유저로 이동
         return [];
       }
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       List productList = json.decode(result);
       List<Product> prodObjects = [];
       for (int i = 0; i < productList.length; ++i) {

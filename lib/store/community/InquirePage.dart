@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:asgshighschool/api/ApiUtil.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -26,7 +27,7 @@ class _InquirePageState extends State<InquirePage> {
   /// 새로운 문의 글을 등록하는 요청을 하는 작업
   /// @response : 성공 시, '1'
   Future<bool> _registerNewQnA() async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_addQnA.php';
+    String url = '${ApiUtil.API_HOST}arlimi_addQnA.php';
     final response = await http.post(Uri.parse(url), body: <String, String?>{
       'uid': widget.user!.uid,
       'category': _categoryMap[_selectedCategory].toString(),
@@ -36,12 +37,7 @@ class _InquirePageState extends State<InquirePage> {
     });
 
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       if (result != '1') return false;
       return true;
     } else {

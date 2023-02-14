@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:asgshighschool/api/ApiUtil.dart';
 import 'package:asgshighschool/data/category.dart';
 import 'package:asgshighschool/data/user.dart';
 import '../../component/DefaultButtonComp.dart';
@@ -53,16 +54,11 @@ class _StatisticsPageState extends State<StatisticsPage> {
   final List _sortTitleList = ['등록순(ID순)', '이름순', '구매순', '예약순'];
 
   Future<bool> _getAllProductStockCount() async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_statisticsStock.php';
+    String url = '${ApiUtil.API_HOST}arlimi_statisticsStock.php';
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
 
       List map1st = jsonDecode(result);
 
@@ -80,10 +76,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
 
   /// 시작 날짜 및 종료 날짜, 그리고 쿼리 조건문 문자열을 바탕으로 모든 구매 데이터들을 가져오는 요청
   Future<bool> _getAllOrderDataInProduct() async {
-    String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_statisticsProduct.php';
+    String url = '${ApiUtil.API_HOST}arlimi_statisticsProduct.php';
     _currentOrderQuery = _getOrderQueryFromSetting();
-    print('order $_currentOrderQuery');
     final response = await http.post(Uri.parse(url), body: <String, String>{
       'flag': '0',
       'start': _formatStartDateTime(),
@@ -92,13 +86,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
     });
 
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
-      print(result);
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       List map1st = jsonDecode(result);
       for (int i = 0; i < map1st.length; ++i) {
         map1st[i] = jsonDecode(map1st[i]);
@@ -215,10 +203,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
 
   /// 시작 날짜 및 종료 날짜, 그리고 쿼리 조건문 문자열을 바탕으로 모든 예약 데이터들을 가져오는 요청
   Future<bool> _getAllReservationDataInProduct() async {
-    String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_statisticsProduct.php';
+    String url = '${ApiUtil.API_HOST}arlimi_statisticsProduct.php';
     _currentReservationQuery = _getReservationQueryFromSetting();
-    print('reservation $_currentReservationQuery');
     final response = await http.post(Uri.parse(url), body: <String, String>{
       'flag': '1',
       'start': _formatStartDateTime(),
@@ -227,12 +213,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
     });
 
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       List map1st = jsonDecode(result);
       for (int i = 0; i < map1st.length; ++i) {
         map1st[i] = jsonDecode(map1st[i]);
@@ -311,7 +292,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
   /// flag = 0일 때, 전체 요청이므로 단일 데이터
   /// flag > 0일 때, 날짜 짜르는 요청이므로 복수 데이터
   Future<bool> _getTotalSales(int flag) async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_statisticsSales.php';
+    String url = '${ApiUtil.API_HOST}arlimi_statisticsSales.php';
     final response = await http.post(Uri.parse(url), body: <String, String>{
       'start': _formatStartDateTime(),
       'end': _formatEndDateTime(),
@@ -319,12 +300,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
       'date': flag.toString()
     });
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       if (flag == 0) {
         if (result == '' || result == null) {
           _salesValue = 'NO RESULT';

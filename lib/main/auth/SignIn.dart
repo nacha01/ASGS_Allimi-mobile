@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:asgshighschool/api/ApiUtil.dart';
 import 'package:asgshighschool/data/foreground_noti.dart';
 import 'package:asgshighschool/main/auth/controller/AuthController.dart';
 import 'package:flutter/services.dart';
@@ -32,15 +33,10 @@ class _SignInPageState extends State<SignInPage> {
   int _tapState = 1;
 
   Future<String?> _getLatestVersion() async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getLatestVersion.php';
+    String url = '${ApiUtil.API_HOST}arlimi_getLatestVersion.php';
     final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       Map? json = jsonDecode(result);
 
       if (Platform.isIOS) // ios 디바이스라면

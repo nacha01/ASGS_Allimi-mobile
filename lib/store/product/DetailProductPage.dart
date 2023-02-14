@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:asgshighschool/data/category.dart';
+import '../../api/ApiUtil.dart';
 import '../../component/CorporationComp.dart';
 import '../../component/DefaultButtonComp.dart';
 import '../../data/provider/exist_cart.dart';
@@ -104,7 +105,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
   /// 상품을 장바구니에 추가하는 요청을 하는 작업
   /// @response : 성공 시, '1' or 'Already Exists1'
   Future<bool> _addCartProductRequest() async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_addCart.php';
+    String url = '${ApiUtil.API_HOST}arlimi_addCart.php';
     final response = await http.post(Uri.parse(url), body: <String, String?>{
       'uid': widget.user!.uid,
       'pid': widget.product!.prodID.toString(),
@@ -114,11 +115,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
     });
 
     if (response.statusCode == 200) {
-      var replace = response.body
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      var replace = ApiUtil.getPureBody(response.bodyBytes);
       if (replace != '1' && replace != 'Already Exists1') {
         _errorMessage = replace;
         return false;
@@ -131,15 +128,10 @@ class _DetailProductPageState extends State<DetailProductPage> {
 
   Future<bool> _getOptionsForProduct() async {
     String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_getProductOptions.php?pid=${widget.product!.prodID}';
+        '${ApiUtil.API_HOST}arlimi_getProductOptions.php?pid=${widget.product!.prodID}';
     final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       if (result == 'NO OPTION') {
         _hasOption = false;
       } else {

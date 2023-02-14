@@ -1,9 +1,9 @@
-import 'dart:convert';
 import 'package:asgshighschool/data/user.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
+import '../../api/ApiUtil.dart';
 import '../../component/DefaultButtonComp.dart';
 import '../../component/ThemeAppBar.dart';
 
@@ -27,7 +27,7 @@ class _AnswerQnAPageState extends State<AnswerQnAPage> {
 
   /// 특정 문의 글에 대해 답변을 등록하는 요청을 하는 작업
   Future<bool> _registerAnswerToDB() async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_addAnswer.php';
+    String url = '${ApiUtil.API_HOST}arlimi_addAnswer.php';
 
     final response = await http.post(Uri.parse(url), body: <String, String?>{
       'qid': widget.data!['qID'],
@@ -36,12 +36,6 @@ class _AnswerQnAPageState extends State<AnswerQnAPage> {
       'content': _answerController.text
     });
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
       return true;
     } else {
       return false;

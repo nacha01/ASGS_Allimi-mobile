@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:asgshighschool/api/ApiUtil.dart';
 import 'package:asgshighschool/component/ThemeAppBar.dart';
 import 'package:asgshighschool/data/category.dart';
 import 'package:asgshighschool/data/user.dart';
@@ -33,16 +34,11 @@ class _OrderStatePageState extends State<OrderStatePage> {
   /// 나(uid)의 모든 주문한 내역(현황)들을 요청하는 작업
   Future<bool> _getOrderInfoRequest() async {
     String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_getAllOrderInfo.php?uid=${widget.user!.uid}';
+        '${ApiUtil.API_HOST}arlimi_getAllOrderInfo.php?uid=${widget.user!.uid}';
     final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
       /// json decode 를 3번 해야한다. detail 까지 위해서는
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       List map1st = json.decode(result);
 
       /// json 의 가장 바깥쪽 껍데기 파싱
@@ -199,10 +195,8 @@ class _OrderStatePageState extends State<OrderStatePage> {
   }
 
   Future<bool> _updateOrderState(int state, _oID) async {
-    print(_oID);
     String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_updateOrderState.php?oid=$_oID&state=$state';
-    // 'http://nacha01.dothome.co.kr/sin/arlimi_updateOrderState.php?oid=${widget.responseData['Moid']}&state=$state';
+        '${ApiUtil.API_HOST}arlimi_updateOrderState.php?oid=$_oID&state=$state';
     final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
       return true;
@@ -214,8 +208,7 @@ class _OrderStatePageState extends State<OrderStatePage> {
   /// 각 상품의 수량을 [quantity]만큼 [operator] 연산자로 수정하는 요청
   Future<bool> _updateProductCountRequest(
       int pid, int quantity, String operator) async {
-    String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_updateProductCount.php';
+    String url = '${ApiUtil.API_HOST}arlimi_updateProductCount.php';
     final response = await http.post(Uri.parse(url), body: <String, String>{
       'pid': pid.toString(),
       'quantity': quantity.toString(),
@@ -231,8 +224,7 @@ class _OrderStatePageState extends State<OrderStatePage> {
   /// 각 상품의 누적 판매수를 반영하는 요청
   Future<bool> _updateEachProductSellCountRequest(
       int? pid, int? quantity, String operator) async {
-    String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_updateProductSellCount.php';
+    String url = '${ApiUtil.API_HOST}arlimi_updateProductSellCount.php';
     final response = await http
         .get(Uri.parse(url + '?pid=$pid&quantity=$quantity&oper=$operator'));
     if (response.statusCode == 200) {
@@ -245,7 +237,7 @@ class _OrderStatePageState extends State<OrderStatePage> {
   /// 이 주문을 요청한 사용자의 누적 구매수를 [operator]대로 연산하는 요청
   Future<bool> _updateUserBuyCountRequest(String operator) async {
     String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_updateUserBuyCount.php?uid=${widget.user!.uid}&oper=$operator';
+        '${ApiUtil.API_HOST}arlimi_updateUserBuyCount.php?uid=${widget.user!.uid}&oper=$operator';
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {

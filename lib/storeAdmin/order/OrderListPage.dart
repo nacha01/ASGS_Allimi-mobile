@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:asgshighschool/api/ApiUtil.dart';
 import 'package:asgshighschool/data/status.dart';
 import 'package:asgshighschool/data/user.dart';
 import '../../component/DefaultButtonComp.dart';
@@ -9,7 +10,6 @@ import 'package:asgshighschool/storeAdmin/statistics/FullListPage.dart';
 import '../qr/QrSearchScannerPage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-//import 'package:audioplayers/audio_cache.dart';
 
 /// 우선 리스트만 받는 형식
 /// 실시간 (주기적으로 갱신) 기능은 아직 구현 안함 추후에 추가 요망
@@ -23,13 +23,10 @@ class OrderListPage extends StatefulWidget {
 }
 
 class _OrderListPageState extends State<OrderListPage> {
-  // AudioCache player = new AudioCache();
-
   List _orderList = [];
   List _noneList = [];
   bool _isChecked = true;
   bool _isFinished = false;
-  int jumun = 0;
 
   /// 등록된 날짜와 오늘의 날짜를 비교해서 어느 정도 차이가 있는지에 대한 문자열을 반환하는 작업
   /// n일 전, n시간 전, n분 전
@@ -53,17 +50,11 @@ class _OrderListPageState extends State<OrderListPage> {
   }
 
   Future<User?> _getUserInformation(String? uid) async {
-    String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_getOneUser.php?uid=$uid';
+    String url = '${ApiUtil.API_HOST}arlimi_getOneUser.php?uid=$uid';
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       return User.fromJson(json.decode(result));
     } else {
       return null;
@@ -73,16 +64,11 @@ class _OrderListPageState extends State<OrderListPage> {
   /// 모든 주문 내역을 요청하는 작업
   /// 이미 주문 처리가 된 것과 안된 것을 구분하여 각각의 List 에 저장
   Future<bool> _getAllOrderData() async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getAllOrder.php';
+    String url = '${ApiUtil.API_HOST}arlimi_getAllOrder.php';
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       List map1st = json.decode(result);
       _orderList.clear();
       _noneList.clear();
@@ -98,9 +84,6 @@ class _OrderListPageState extends State<OrderListPage> {
             int.parse(_orderList[i]['orderState']) != 4) {
           _noneList.add(_orderList[i]);
         }
-        if (int.parse(_orderList[i]['orderState']) == 1) {
-          jumun = 1;
-        }
       }
       setState(() {
         _isFinished = true;
@@ -113,17 +96,11 @@ class _OrderListPageState extends State<OrderListPage> {
 
   /// 특정 uid 값을 통해 그 관리자의 사용자 정보를 가져오는 요청
   Future<Map?> _getAdminUserInfoByID(String uid) async {
-    String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_getUserInfo.php?uid=' + uid;
+    String url = '${ApiUtil.API_HOST}arlimi_getUserInfo.php?uid=' + uid;
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       return jsonDecode(result);
     } else {
       return null;
@@ -133,27 +110,6 @@ class _OrderListPageState extends State<OrderListPage> {
   @override
   void initState() {
     _getAllOrderData();
-    // Timer.periodic(Duration(seconds: 5), (timer) {
-    //   if (jumun ==1) {
-    //     print(DateTime.now());
-    //
-    //     //AudioCache player = AudioCache(prefix: 'audio/');
-    //     //player.play('explosion.mp3');
-    //
-    //     /*
-    //
-    //
-    //     Future audioPlayer() async{
-    //       await player.setVolume(75);
-    //       await player.setSpeed(1);
-    //       await player.setAsset('assets/audio/game.mp3');
-    //       player.play();
-    //     }
-    //     */
-    //
-    //
-    //   }
-    // });
     super.initState();
   }
 

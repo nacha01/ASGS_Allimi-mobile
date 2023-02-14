@@ -8,6 +8,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:http/http.dart' as http;
 
+import '../../api/ApiUtil.dart';
 import '../../component/DefaultButtonComp.dart';
 
 class DetailReservationStatePage extends StatefulWidget {
@@ -71,16 +72,11 @@ class _DetailReservationStatePageState
   /// @return : 삭제 성공 여부
   Future<bool> _cancelReservation() async {
     String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_cancelReservation.php?oid=${widget.data!['oID']}&pm=N';
+        '${ApiUtil.API_HOST}arlimi_cancelReservation.php?oid=${widget.data!['oID']}&pm=N';
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       if (result != '1') return false;
       return true;
     } else {
@@ -89,8 +85,7 @@ class _DetailReservationStatePageState
   }
 
   Future<bool> _updateReservationCurrentCount() async {
-    String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_cancelReservation.php';
+    String url = '${ApiUtil.API_HOST}arlimi_cancelReservation.php';
     final response = await http.post(Uri.parse(url), body: <String, String?>{
       'pid': widget.data!['detail'][0]['pInfo']['pid'],
       'count': widget.data!['detail'][0]['quantity'],
@@ -98,12 +93,7 @@ class _DetailReservationStatePageState
     });
 
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       if (result != '1') return false;
       return true;
     } else {

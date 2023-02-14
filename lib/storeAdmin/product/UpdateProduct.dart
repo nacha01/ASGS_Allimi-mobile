@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:asgshighschool/api/ApiUtil.dart';
 import 'package:asgshighschool/data/category.dart';
 import 'package:asgshighschool/data/product.dart';
 import 'package:flutter/material.dart';
@@ -64,7 +65,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
   late String _sub2Name;
   String? _selectedCategory = Category.c1; // 드롭다운 아이템 default
   String serverImageUri =
-      'http://nacha01.dothome.co.kr/sin/arlimi_productImage/'; // 이미지 저장 서버 URI
+      '${ApiUtil.API_HOST}arlimi_productImage/'; // 이미지 저장 서버 URI
 
   /// 갤러리에서 이미지를 가져오는 작업
   /// [index] : {0 -> main, 1 -> sub1, 2 -> sub3}
@@ -112,9 +113,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
   Future<bool> _updateImageBeforeRequest(
       PickedFile img, String fileName, String? originName) async {
     var request = http.MultipartRequest(
-        'POST',
-        Uri.parse(
-            'http://nacha01.dothome.co.kr/sin/arlimi_addImgForUpdate.php'));
+        'POST', Uri.parse('${ApiUtil.API_HOST}arlimi_addImgForUpdate.php'));
     var picture = await http.MultipartFile.fromPath('imgFile', img.path,
         filename: fileName + '.jpg');
     request.files.add(picture);
@@ -155,7 +154,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
 
   /// 상품을 수정하는 요청을 하는 작업
   Future<bool> _updateProductRequest() async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_updateProduct.php';
+    String url = '${ApiUtil.API_HOST}arlimi_updateProduct.php';
     final response = await http.post(Uri.parse(url), body: <String, String>{
       'prodID': widget.product!.prodID.toString(),
       'prodName': _productNameController.text,
@@ -174,9 +173,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
     });
 
     if (response.statusCode == 200) {
-      var replace = response.body.replaceAll(
-          '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-          '');
+      var replace = ApiUtil.getPureBody(response.bodyBytes);
       if (replace.trim() != '1') {
         return false;
       }
@@ -187,7 +184,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
   }
 
   Future<bool> _setReservationCountLimit() async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_resvLimit.php';
+    String url = '${ApiUtil.API_HOST}arlimi_resvLimit.php';
     int value = int.parse(_reservationCountController.text) < 0 &&
             int.parse(_reservationCountController.text) != -1
         ? -1
@@ -198,21 +195,13 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
     });
 
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
 
       if (result == 'UPDATE1' || result == 'INSERT1') {
         return true;
-      } else {
-        return false;
       }
-    } else {
-      return false;
     }
+    return false;
   }
 
   /// 상품 수정을 위한 과정 process 함수
@@ -260,7 +249,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
 
   Future<bool> _deleteAllOptions() async {
     String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_deleteProductOptions.php?pid=${widget.product!.prodID}';
+        '${ApiUtil.API_HOST}arlimi_deleteProductOptions.php?pid=${widget.product!.prodID}';
     final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
       return true;
@@ -271,16 +260,11 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
 
   Future<void> _getCountLimit() async {
     String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_getResvCount.php?pid=${widget.product!.prodID}';
+        '${ApiUtil.API_HOST}arlimi_getResvCount.php?pid=${widget.product!.prodID}';
 
     final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       var data = json.decode(result);
       setState(() {
         _reservationCountController.text = data['max_count'];
@@ -290,16 +274,11 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
 
   Future<void> _getAllOptions() async {
     String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_getProductOptions.php?pid=${widget.product!.prodID}';
+        '${ApiUtil.API_HOST}arlimi_getProductOptions.php?pid=${widget.product!.prodID}';
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       if (result.contains('NO OPTION')) {
         _useOptions = false;
       } else {
@@ -354,8 +333,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
   }
 
   Future<int> _registerOptionCategory(String optionCategory) async {
-    String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_registerOptionCategory.php';
+    String url = '${ApiUtil.API_HOST}arlimi_registerOptionCategory.php';
     final response = await http.post(Uri.parse(url), body: <String, String>{
       'pName': _productNameController.text,
       'pInfo': _productExplainController.text,
@@ -366,12 +344,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
     });
 
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       return int.parse(result);
     } else {
       return -1;
@@ -380,8 +353,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
 
   Future<bool> _registerOptionDetail(
       String optionCategory, String optionName, String optionPrice) async {
-    String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_registerOptionDetail.php';
+    String url = '${ApiUtil.API_HOST}arlimi_registerOptionDetail.php';
     final response = await http.post(Uri.parse(url), body: <String, String>{
       'pid': widget.product!.prodID.toString(),
       'optionCategory': optionCategory,
@@ -389,19 +361,10 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
       'optionPrice': optionPrice
     });
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
-      if (result == '1')
-        return true;
-      else
-        return false;
-    } else {
-      return false;
+      String result = ApiUtil.getPureBody(response.bodyBytes);
+      if (result == '1') return true;
     }
+    return false;
   }
 
   Future<bool> _addOptionCategory() async {

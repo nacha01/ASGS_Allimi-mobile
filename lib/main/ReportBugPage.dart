@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
+import '../api/ApiUtil.dart';
 import '../component/DefaultButtonComp.dart';
 
 class ReportBugPage extends StatefulWidget {
@@ -15,16 +16,14 @@ class _ReportBugPageState extends State<ReportBugPage> {
   TextEditingController _contentController = TextEditingController();
 
   Future<void> _sendErrorReport() async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_addReport.php';
+    String url = '${ApiUtil.API_HOST}arlimi_addReport.php';
     final response = await http.post(Uri.parse(url), body: <String, String>{
       'errorMessage': _titleController.text,
       'date': DateTime.now().toString(),
       'extra': _contentController.text,
       'isRunning': '0'
     });
-    if (response.statusCode == 200) {
-      print('성공');
-    }
+    if (response.statusCode == 200) {}
   }
 
   void _terminateScreen() {

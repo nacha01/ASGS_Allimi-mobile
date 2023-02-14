@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:asgshighschool/api/ApiUtil.dart';
 import 'package:asgshighschool/component/CorporationComp.dart';
 import 'package:asgshighschool/data/category.dart';
 import '../../component/DefaultButtonComp.dart';
@@ -43,16 +44,11 @@ class _CartPageState extends State<CartPage> {
   /// 특정 유저에 대해 그 유저가 갖고 있는 장바구니 상품들을 가져오는 HTTP 요청
   /// @return : 요청 성공 여부
   Future<bool> _getCartForUserRequest() async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getAllCart.php';
+    String url = '${ApiUtil.API_HOST}arlimi_getAllCart.php';
     final response =
         await http.get(Uri.parse(url + '?uid=${widget.user!.uid}'));
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       List cartProduct = json.decode(result);
       _cartProductList.clear();
       for (int i = 0; i < cartProduct.length; ++i) {
@@ -74,36 +70,26 @@ class _CartPageState extends State<CartPage> {
   /// @response message : DELETED : 삭제 완료, NOT : 삭제 실패
   /// @return : 요청 성공 여부
   Future<bool> _deleteCartForUserRequest(int cid) async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_deleteCart.php';
+    String url = '${ApiUtil.API_HOST}arlimi_deleteCart.php';
     final response = await http.get(Uri.parse(url + '?cid=$cid'));
 
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
-      print(result);
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       if (result == 'DELETED') {
         return true;
-      } else {
-        return false;
       }
-    } else {
-      return false;
     }
+    return false;
   }
 
   /// 그 장바구니 상품에 대해 수량 업데이트 HTTP 요청을 보내는 작업
   /// @param : 장바구니 고유 ID[cid], 현재 장바구니 수량[currentQuantity]
   /// @return : 요청 성공 여부
   Future<bool> _updateCartQuantity(int cid, int currentQuantity) async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_updateCartCount.php';
+    String url = '${ApiUtil.API_HOST}arlimi_updateCartCount.php';
     final response =
         await http.get(Uri.parse(url + '?cid=$cid&quantity=$currentQuantity'));
     if (response.statusCode == 200) {
-      print(response.body);
       return true;
     } else {
       return false;

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
+import '../../api/ApiUtil.dart';
 import '../../component/DefaultButtonComp.dart';
 import '../../component/ThemeAppBar.dart';
 
@@ -56,12 +57,11 @@ class _ScanInfoPageState extends State<ScanInfoPage> {
   }
 
   Future<bool> _orderCompleteRequest() async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_completeOrder.php';
+    String url = '${ApiUtil.API_HOST}arlimi_completeOrder.php';
     final response =
         await http.get(Uri.parse(url + '?oid=${widget.orderData!['oID']}'));
 
     if (response.statusCode == 200) {
-      print(response.body);
       await _updateCharger();
       return true;
     } else {
@@ -70,7 +70,7 @@ class _ScanInfoPageState extends State<ScanInfoPage> {
   }
 
   Future<bool> _updateCharger() async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_updateCharger.php';
+    String url = '${ApiUtil.API_HOST}arlimi_updateCharger.php';
     final response = await http.post(Uri.parse(url), body: <String, String?>{
       'charger_id': widget.admin!.uid,
       'oid': widget.orderData!['oID']

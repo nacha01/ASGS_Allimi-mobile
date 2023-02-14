@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:asgshighschool/api/ApiUtil.dart';
 import 'package:asgshighschool/data/user.dart';
 import '../../component/DefaultButtonComp.dart';
 import '../../component/ThemeAppBar.dart';
@@ -27,16 +28,11 @@ class _QrReservationPageState extends State<QrReservationPage> {
   /// QR 코드로 예약 처리를 하기 위한 해당 예약 정보들을 요청하는 작업
   /// orderState == 2 && resvState == 2 인 데이터만 포함
   Future<bool> _getReservationQRState() async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getQrForResv.php';
+    String url = '${ApiUtil.API_HOST}arlimi_getQrForResv.php';
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       _readyStateResvList.clear();
       List map1st = json.decode(result);
       for (int i = 0; i < map1st.length; ++i) {
@@ -48,7 +44,6 @@ class _QrReservationPageState extends State<QrReservationPage> {
               json.decode(_readyStateResvList[i]['detail'][j]['pInfo']);
         }
       }
-      print(_readyStateResvList);
       return true;
     } else {
       return false;

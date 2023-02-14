@@ -1,5 +1,6 @@
 import 'package:asgshighschool/component/ThemeAppBar.dart';
 import 'package:asgshighschool/data/user.dart';
+import '../../api/ApiUtil.dart';
 import '../../component/DefaultButtonComp.dart';
 import '../../data/product_count.dart';
 import 'package:flutter/material.dart';
@@ -47,7 +48,7 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
   /// @return : 업데이트 성공 여부
   Future<bool> _updateNewCount(int count) async {
     String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_updateProductCountForResv.php?pid=${widget.productCount!.pid.toString() + '&count=$count'}';
+        '${ApiUtil.API_HOST}arlimi_updateProductCountForResv.php?pid=${widget.productCount!.pid.toString() + '&count=$count'}';
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
@@ -61,7 +62,7 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
   /// @param : 예약 데이터(유저 정보 포함한)
   /// @return : 보낸 여부
   Future<bool> _sendPushMessage(Map data) async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_sendPushForResv.php';
+    String url = '${ApiUtil.API_HOST}arlimi_sendPushForResv.php';
     print(data['token']);
     final response = await http.post(Uri.parse(url), body: <String, String?>{
       'token': data['token'],
@@ -70,7 +71,6 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
     });
 
     if (response.statusCode == 200) {
-      print(response.body);
       return true;
     } else {
       return false;
@@ -79,10 +79,9 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
 
   /// push notification 을 보냄에 따라 '수령 준비' 상태로 변경하기 위해 주문 DB의 orderState 의 값을 2로 변경을 요청하는 작업
   Future<bool> _convertOrderState(String? oid) async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_convertState.php';
+    String url = '${ApiUtil.API_HOST}arlimi_convertState.php';
     final response = await http.get(Uri.parse(url + '?oid=$oid'));
     if (response.statusCode == 200) {
-      print(response.body);
       return true;
     } else {
       return false;

@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:convert';
+import 'package:asgshighschool/api/ApiUtil.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
@@ -68,41 +68,27 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
   /// 존재하면 true, 아니면 false
   Future<bool> _isThereRecord() async {
     String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_searchRecordMG.php?uid=${widget.user!.uid}';
+        '${ApiUtil.API_HOST}arlimi_searchRecordMG.php?uid=${widget.user!.uid}';
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
-      print(result);
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       if (result.contains('EXIST')) {
         return true;
-      } else {
-        return false;
       }
-    } else {
-      return false;
     }
+    return false;
   }
 
   /// 현재 DB에 기록되어 있는 유저의 게임 기록 값을 가져오는 요청
   /// @return : 해당 유저의 게임 기록 값
   Future<int> _getCurrentRecord() async {
     String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_getCurRecord.php?uid=${widget.user!.uid}';
+        '${ApiUtil.API_HOST}arlimi_getCurRecord.php?uid=${widget.user!.uid}';
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       int tmp = 0;
       try {
         tmp = int.parse(result);
@@ -118,19 +104,14 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
   /// 게임의 기록이 최고기록을 달성했을 경우에 갱신한 값을 DB에 업데이트를 하는 요청
   /// @return : 기록 업데이트 성공 여부
   Future<bool> _updateRecord() async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_updateRecord.php';
+    String url = '${ApiUtil.API_HOST}arlimi_updateRecord.php';
     final response = await http.post(Uri.parse(url), body: <String, String?>{
       'uid': widget.user!.uid,
       'record': _myRecord.toString()
     });
 
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       if (result != '1') {
         return false;
       }

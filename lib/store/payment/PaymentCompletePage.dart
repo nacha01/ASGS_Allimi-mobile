@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:asgshighschool/component/ThemeAppBar.dart';
 import 'package:asgshighschool/data/category.dart';
+import '../../api/ApiUtil.dart';
 import '../../component/CorporationComp.dart';
 import '../../component/DefaultButtonComp.dart';
 import '../../data/provider/exist_cart.dart';
@@ -87,7 +88,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
 
   /// 주문을 등록하는 요청
   Future<bool> _addOrderRequest() async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_addOrder.php';
+    String url = '${ApiUtil.API_HOST}arlimi_addOrder.php';
     final response = await http.post(Uri.parse(url), body: <String, String?>{
       'oid': widget.responseData!['Moid'],
       'uid': widget.user!.uid,
@@ -109,7 +110,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
 
   /// orderDetail 테이블에 oid인 값에 대하여 어떤 상품인지 등록하는 http 요청
   Future<bool> _addOrderDetailRequest(int pid, int? quantity) async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_addOrderDetail.php';
+    String url = '${ApiUtil.API_HOST}arlimi_addOrderDetail.php';
     final response = await http.post(Uri.parse(url), body: <String, String?>{
       'oid': widget.responseData!['Moid'],
       'pid': pid.toString(),
@@ -221,7 +222,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
 
   Future<bool> _updateOrderState(int state) async {
     String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_updateOrderState.php?oid=${widget.responseData!['Moid']}&state=$state';
+        '${ApiUtil.API_HOST}arlimi_updateOrderState.php?oid=${widget.responseData!['Moid']}&state=$state';
     final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
       return true;
@@ -233,7 +234,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
   /// 장바구니에서 결제를 시도한다면 장바구니에 있는 데이터들을 지우는 요청
   Future<bool> _deleteCartRequest(int cid) async {
     String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_deleteCart.php?cid=$cid';
+        '${ApiUtil.API_HOST}arlimi_deleteCart.php?cid=$cid';
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
@@ -247,7 +248,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
   Future<bool> _updateProductCountRequest(
       int pid, int? quantity, String operator) async {
     String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_updateProductCount.php';
+        '${ApiUtil.API_HOST}arlimi_updateProductCount.php';
     final response = await http.post(Uri.parse(url), body: <String, String>{
       'pid': pid.toString(),
       'quantity': quantity.toString(),
@@ -264,7 +265,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
   Future<bool> _updateEachProductSellCountRequest(
       int pid, int? quantity, String operator) async {
     String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_updateProductSellCount.php';
+        '${ApiUtil.API_HOST}arlimi_updateProductSellCount.php';
     final response = await http
         .get(Uri.parse(url + '?pid=$pid&quantity=$quantity&oper=$operator'));
     if (response.statusCode == 200) {
@@ -277,7 +278,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
   /// 이 주문을 요청한 사용자의 누적 구매수를 [operator]대로 연산하는 요청
   Future<bool> _updateUserBuyCountRequest(String operator) async {
     String url =
-        'http://nacha01.dothome.co.kr/sin/arlimi_updateUserBuyCount.php?uid=${widget.user!.uid}&oper=$operator';
+        '${ApiUtil.API_HOST}arlimi_updateUserBuyCount.php?uid=${widget.user!.uid}&oper=$operator';
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
@@ -335,7 +336,6 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
   void _processAfterPaying() async {
     if (_isCreditSuccess) {
       var res = await _registerOrderRequest();
-      // Provider.of<ExistCart>(context).setExistCart(false);
       if (!res) {
         _resultCode = 'O001'; // 커스텀 코드로 결제는 되었으나 DB에 주문 등록이 실패했다는 의미
       }

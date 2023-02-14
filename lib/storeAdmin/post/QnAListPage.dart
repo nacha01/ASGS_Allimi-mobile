@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:asgshighschool/component/ThemeAppBar.dart';
 import 'package:asgshighschool/data/user.dart';
+import '../../api/ApiUtil.dart';
 import '../../component/DefaultButtonComp.dart';
 import 'AnswerQnAPage.dart';
 import 'package:flutter/material.dart';
@@ -57,16 +58,11 @@ class _QnAListPageState extends State<QnAListPage> {
   /// 모든 문의 글 데이터를 요청하는 작업
   /// 답변이 된 글과 되지 않은 글을 각 List에 구분하여 추가
   Future<bool> _getAllQnAData() async {
-    String url = 'http://nacha01.dothome.co.kr/sin/arlimi_getAllQnA.php';
+    String url = '${ApiUtil.API_HOST}arlimi_getAllQnA.php';
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
 
       List map = jsonDecode(result);
       _qnaDateList.clear();
