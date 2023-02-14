@@ -15,6 +15,17 @@ class User {
   User(this._uid, this._token, this._name, this._identity, this._studentId,
       this._nickName, this._rDate, this._buyCount, this._point, this._email);
 
+  User.empty()
+      : _uid = "",
+        _token = "",
+        _name = "",
+        _identity = 1,
+        _studentId = "",
+        _nickName = "",
+        _rDate = "",
+        _buyCount = 0,
+        _point = 0;
+
   User.fromJson(Map<String, dynamic> json)
       : _uid = json['uid'],
         _token = json['token'],
