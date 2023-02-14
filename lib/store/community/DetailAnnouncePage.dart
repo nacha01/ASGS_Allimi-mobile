@@ -1,14 +1,14 @@
 import 'package:asgshighschool/data/announce.dart';
 import 'package:asgshighschool/data/user.dart';
-import '../component/DefaultButtonComp.dart';
-import '../component/ThemeAppBar.dart';
-import '../storeAdmin/post/AddAnnouncePage.dart';
+import '../../component/DefaultButtonComp.dart';
+import '../../component/ThemeAppBar.dart';
+import '../../storeAdmin/post/AddAnnouncePage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
-import '../util/UpperCaseTextFormatter.dart';
+import '../../util/UpperCaseTextFormatter.dart';
 
 class DetailAnnouncePage extends StatefulWidget {
   DetailAnnouncePage({this.announce, this.user, this.isNew, this.newView});

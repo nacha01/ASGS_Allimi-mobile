@@ -2,14 +2,14 @@ import 'dart:convert';
 import 'package:asgshighschool/component/ThemeAppBar.dart';
 import 'package:asgshighschool/data/category.dart';
 import 'package:asgshighschool/data/user.dart';
-import 'package:asgshighschool/store/DetailOrderStatePage.dart';
+import 'package:asgshighschool/store/order/DetailOrderStatePage.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:hex/hex.dart';
 import 'package:http/http.dart' as http;
 import 'package:cp949_dart/cp949_dart.dart' as cp949;
 
-import '../component/DefaultButtonComp.dart';
+import '../../component/DefaultButtonComp.dart';
 
 class OrderStatePage extends StatefulWidget {
   OrderStatePage({this.user});

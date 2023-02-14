@@ -2,11 +2,11 @@ import 'dart:convert';
 
 import 'package:asgshighschool/component/CorporationComp.dart';
 import 'package:asgshighschool/data/category.dart';
-import '../component/DefaultButtonComp.dart';
-import '../component/ThemeAppBar.dart';
-import '../data/provider/exist_cart.dart';
+import '../../component/DefaultButtonComp.dart';
+import '../../component/ThemeAppBar.dart';
+import '../../data/provider/exist_cart.dart';
 import 'package:asgshighschool/data/user.dart';
-import 'package:asgshighschool/store/OrderPage.dart';
+import 'package:asgshighschool/store/order/OrderPage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';

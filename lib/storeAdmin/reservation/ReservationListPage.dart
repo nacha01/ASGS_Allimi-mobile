@@ -6,7 +6,7 @@ import '../../component/DefaultButtonComp.dart';
 import '../../component/ThemeAppBar.dart';
 import '../../data/product_count.dart';
 import 'AdminDetailReservation.dart';
-import 'package:asgshighschool/storeAdmin/FullListPage.dart';
+import 'package:asgshighschool/storeAdmin/statistics/FullListPage.dart';
 import 'QrReservationPage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';

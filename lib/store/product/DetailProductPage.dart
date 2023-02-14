@@ -1,14 +1,14 @@
 import 'dart:convert';
 
 import 'package:asgshighschool/data/category.dart';
-import '../component/CorporationComp.dart';
-import '../component/DefaultButtonComp.dart';
-import '../data/provider/exist_cart.dart';
+import '../../component/CorporationComp.dart';
+import '../../component/DefaultButtonComp.dart';
+import '../../data/provider/exist_cart.dart';
 import 'package:asgshighschool/data/product.dart';
 import 'package:asgshighschool/data/user.dart';
-import 'package:asgshighschool/store/CartPage.dart';
-import 'package:asgshighschool/store/OrderPage.dart';
-import 'package:asgshighschool/store/ReservationPage.dart';
+import 'package:asgshighschool/store/product/CartPage.dart';
+import 'package:asgshighschool/store/order/OrderPage.dart';
+import 'package:asgshighschool/store/reservation/ReservationPage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';

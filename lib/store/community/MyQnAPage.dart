@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:asgshighschool/data/user.dart';
-import 'package:asgshighschool/store/DetailQnAPage.dart';
+import 'package:asgshighschool/store/community/DetailQnAPage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-import '../component/ThemeAppBar.dart';
+import '../../component/ThemeAppBar.dart';
 
 class MyQnAPage extends StatefulWidget {
   MyQnAPage({this.user});

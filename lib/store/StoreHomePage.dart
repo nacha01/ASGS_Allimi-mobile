@@ -3,7 +3,7 @@ import 'package:asgshighschool/component/CorporationComp.dart';
 import 'package:asgshighschool/data/category.dart';
 import 'package:asgshighschool/data/product.dart';
 import 'package:asgshighschool/data/user.dart';
-import 'package:asgshighschool/store/DetailProductPage.dart';
+import 'package:asgshighschool/store/product/DetailProductPage.dart';
 import 'package:asgshighschool/store/EventPage.dart';
 import '../component/DefaultButtonComp.dart';
 import '../storeAdmin/product/AddProduct.dart';

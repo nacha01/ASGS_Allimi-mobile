@@ -4,7 +4,7 @@ import 'package:asgshighschool/data/user.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
-import '../component/ThemeAppBar.dart';
+import '../../component/ThemeAppBar.dart';
 
 class ReservationCompletePage extends StatefulWidget {
   final User? user;

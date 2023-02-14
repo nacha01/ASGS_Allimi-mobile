@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'package:asgshighschool/data/category.dart';
 import 'package:asgshighschool/data/user.dart';
-import 'package:asgshighschool/store/DetailReservationStatePage.dart';
+import 'package:asgshighschool/store/reservation/DetailReservationStatePage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-import '../component/DefaultButtonComp.dart';
-import '../component/ThemeAppBar.dart';
+import '../../component/DefaultButtonComp.dart';
+import '../../component/ThemeAppBar.dart';
 
 class ReservationStatePage extends StatefulWidget {
   final User? user;

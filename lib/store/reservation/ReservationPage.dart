@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
-import '../component/CorporationComp.dart';
-import '../component/DefaultButtonComp.dart';
-import '../component/ThemeAppBar.dart';
+import '../../component/CorporationComp.dart';
+import '../../component/DefaultButtonComp.dart';
+import '../../component/ThemeAppBar.dart';
 import 'ReservationCompletePage.dart';
 
 class ReservationPage extends StatefulWidget {

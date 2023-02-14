@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
-import '../component/DefaultButtonComp.dart';
-import '../component/ThemeAppBar.dart';
+import '../../component/DefaultButtonComp.dart';
+import '../../component/ThemeAppBar.dart';
 
 class InquirePage extends StatefulWidget {
   InquirePage({this.user});

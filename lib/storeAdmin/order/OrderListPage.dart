@@ -5,7 +5,7 @@ import 'package:asgshighschool/data/user.dart';
 import '../../component/DefaultButtonComp.dart';
 import '../../component/ThemeAppBar.dart';
 import 'AdminDetailOrder.dart';
-import 'package:asgshighschool/storeAdmin/FullListPage.dart';
+import 'package:asgshighschool/storeAdmin/statistics/FullListPage.dart';
 import '../qr/QrSearchScannerPage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;

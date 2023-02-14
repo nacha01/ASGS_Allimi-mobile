@@ -1,13 +1,13 @@
 import 'dart:convert';
 
 import 'package:asgshighschool/data/announce.dart';
-import '../component/CorporationComp.dart';
-import '../component/DefaultButtonComp.dart';
-import '../component/ThemeAppBar.dart';
-import '../data/provider/renew_user.dart';
+import '../../component/CorporationComp.dart';
+import '../../component/DefaultButtonComp.dart';
+import '../../component/ThemeAppBar.dart';
+import '../../data/provider/renew_user.dart';
 import 'package:asgshighschool/data/user.dart';
-import 'package:asgshighschool/store/DetailAnnouncePage.dart';
-import '../storeAdmin/post/AddAnnouncePage.dart';
+import 'package:asgshighschool/store/community/DetailAnnouncePage.dart';
+import '../../storeAdmin/post/AddAnnouncePage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';

@@ -1,10 +1,10 @@
 import 'package:asgshighschool/component/ThemeAppBar.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:asgshighschool/main/RecordListPage.dart';
-import 'package:asgshighschool/memoryGame/MemoryGamePage.dart';
 import 'package:flutter/material.dart';
 
 import '../component/DefaultButtonComp.dart';
+import '../games/memory_game/MemoryGamePage.dart';
 
 class GameListPage extends StatefulWidget {
   final User? user;

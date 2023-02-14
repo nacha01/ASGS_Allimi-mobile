@@ -3,11 +3,11 @@ import 'dart:convert';
 import 'package:asgshighschool/data/user.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
-import '../component/DefaultButtonComp.dart';
-import '../component/ThemeAppBar.dart';
-import 'DrawCircle.dart';
-import 'DrawRectangle.dart';
-import 'DrawTriangle.dart';
+import '../../component/DefaultButtonComp.dart';
+import '../../component/ThemeAppBar.dart';
+import 'shapes/DrawCircle.dart';
+import 'shapes/DrawRectangle.dart';
+import 'shapes/DrawTriangle.dart';
 import 'package:http/http.dart' as http;
 
 class MemoryGamePage extends StatefulWidget {

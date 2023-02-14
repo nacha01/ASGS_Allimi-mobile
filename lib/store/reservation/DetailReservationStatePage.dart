@@ -8,7 +8,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:http/http.dart' as http;
 
-import '../component/DefaultButtonComp.dart';
+import '../../component/DefaultButtonComp.dart';
 
 class DetailReservationStatePage extends StatefulWidget {
   final User? user;

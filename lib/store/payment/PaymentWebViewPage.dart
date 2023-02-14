@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:asgshighschool/data/product.dart';
 import 'package:asgshighschool/data/user.dart';
-import 'package:asgshighschool/store/PaymentCompletePage.dart';
+import 'package:asgshighschool/store/payment/PaymentCompletePage.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,8 +12,8 @@ import 'package:hex/hex.dart';
 import 'package:cp949_dart/cp949_dart.dart' as cp949;
 import 'package:url_launcher/url_launcher_string.dart';
 
-import '../component/DefaultButtonComp.dart';
-import '../component/ThemeAppBar.dart';
+import '../../component/DefaultButtonComp.dart';
+import '../../component/ThemeAppBar.dart';
 
 class PaymentWebViewPage extends StatefulWidget {
   final String? oID; // 생성한 order ID

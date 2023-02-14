@@ -3,8 +3,8 @@ import 'package:asgshighschool/data/user.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-import '../component/DefaultButtonComp.dart';
-import '../component/ThemeAppBar.dart';
+import '../../component/DefaultButtonComp.dart';
+import '../../component/ThemeAppBar.dart';
 
 class FullListPage extends StatefulWidget {
   final User? user;

@@ -1,14 +1,14 @@
 import 'dart:convert';
 import 'package:asgshighschool/data/product.dart';
 import 'package:asgshighschool/data/user.dart';
-import 'package:asgshighschool/store/PaymentWebViewPage.dart';
+import 'package:asgshighschool/store/payment/PaymentWebViewPage.dart';
 import 'package:asgshighschool/store/StoreMainPage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-import '../component/CorporationComp.dart';
-import '../component/DefaultButtonComp.dart';
-import '../component/ThemeAppBar.dart';
+import '../../component/CorporationComp.dart';
+import '../../component/DefaultButtonComp.dart';
+import '../../component/ThemeAppBar.dart';
 
 class OrderPage extends StatefulWidget {
   OrderPage(
