@@ -533,16 +533,6 @@ class _SignInPageState extends State<SignInPage> {
     }
   }
 
-  // onNotificationClick(String payload) {
-  //   print(payload);
-  //   Map message = json.decode(payload);
-  //   selectLocation(message['data']['screen']);
-  // }
-  //
-  // onNotificationReceive(ReceiveNotification notification) {
-  //   print('notification Receive : ${notification.id}');
-  // }
-
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;

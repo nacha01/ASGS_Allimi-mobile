@@ -41,24 +41,21 @@ class _SplashPageState extends State<SplashPage> {
         NotificationAction.selectLocation(event.data['screen']);
       }
     });
-    loading();
+    _loading();
   }
 
-  getToken() {
-    _firebaseMessaging.getToken().then((String? token) {
-      setState(() {
-        GlobalVariable.token = token!;
-        print("Token : $token");
-      });
-    });
+  Future<void> _getToken() async {
+    var token = await _firebaseMessaging.getToken();
+    GlobalVariable.token = token ?? "token is null";
+    print("Token: $token");
   }
 
-  loading() async {
+  Future<void> _loading() async {
     await Future.delayed(Duration(milliseconds: 500));
     setState(() {
       _message = '접속 중입니다...';
     });
-    await getToken();
+    await _getToken();
     Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (context) => SignInPage()));
   }
