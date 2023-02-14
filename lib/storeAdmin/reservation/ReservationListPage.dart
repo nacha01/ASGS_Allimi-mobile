@@ -4,6 +4,7 @@ import 'package:asgshighschool/data/status.dart';
 import 'package:asgshighschool/data/user.dart';
 import '../../component/DefaultButtonComp.dart';
 import '../../component/ThemeAppBar.dart';
+import '../../data/product_count.dart';
 import 'AdminDetailReservation.dart';
 import 'package:asgshighschool/storeAdmin/FullListPage.dart';
 import 'QrReservationPage.dart';
@@ -870,16 +871,4 @@ class _ReservationListPageState extends State<ReservationListPage> {
       ),
     );
   }
-}
-
-class ProductCount {
-  int pid;
-  int? count;
-  String name;
-  int category;
-  int price;
-  String imgUrl;
-
-  ProductCount(
-      this.pid, this.count, this.name, this.category, this.price, this.imgUrl);
 }
