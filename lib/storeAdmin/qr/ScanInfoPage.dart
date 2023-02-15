@@ -155,7 +155,7 @@ class _ScanInfoPageState extends State<ScanInfoPage> {
                     Padding(
                       padding: EdgeInsets.all(size.width * 0.01),
                       child: Text(
-                          '결제 금액:  ${NumberFormatter.formatNumber(int.parse(widget.orderData!['totalPrice']))}원',
+                          '결제 금액:  ${NumberFormatter.formatPrice(int.parse(widget.orderData!['totalPrice']))}원',
                           style: TextStyle(fontWeight: FontWeight.bold)),
                     ),
                     Padding(
@@ -343,7 +343,7 @@ class _ScanInfoPageState extends State<ScanInfoPage> {
           Row(
             children: [
               Text(
-                '정가 ${NumberFormatter.formatNumber(price)}원',
+                '정가 ${NumberFormatter.formatPrice(price)}원',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               discount.toString() == '0.0'

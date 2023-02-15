@@ -377,7 +377,7 @@ class _ReservationPageState extends State<ReservationPage> {
                       ),
                       title: Center(
                           child: Text(
-                        '${NumberFormatter.formatNumber(((widget.product!.price * (1 - (widget.product!.discount / 100.0)) + _additionalPrice) * _counter).round())}원',
+                        '${NumberFormatter.formatPrice(((widget.product!.price * (1 - (widget.product!.discount / 100.0)) + _additionalPrice) * _counter).round())}원',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       )),
                     ),

@@ -343,7 +343,7 @@ class _OrderStatePageState extends State<OrderStatePage> {
                 Padding(
                   padding: EdgeInsets.all(size.width * 0.01),
                   child: Text(
-                    '${NumberFormatter.formatNumber(int.parse(orderJson['totalPrice']))}원',
+                    '${NumberFormatter.formatPrice(int.parse(orderJson['totalPrice']))}원',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
                   ),
                 )

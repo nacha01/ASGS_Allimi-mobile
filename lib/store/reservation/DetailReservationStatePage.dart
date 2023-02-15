@@ -302,14 +302,14 @@ class _DetailReservationStatePageState
                             Row(
                               children: [
                                 Text(
-                                  '정가 ${NumberFormatter.formatNumber(int.parse(widget.data!['detail'][0]['pInfo']['price']))}원',
+                                  '정가 ${NumberFormatter.formatPrice(int.parse(widget.data!['detail'][0]['pInfo']['price']))}원',
                                   style: TextStyle(fontWeight: FontWeight.bold),
                                 ),
                                 SizedBox(
                                   width: size.width * 0.05,
                                 ),
                                 Text(
-                                    '(총 금액 ${NumberFormatter.formatNumber(int.parse(widget.data!['totalPrice']))}원)',
+                                    '(총 금액 ${NumberFormatter.formatPrice(int.parse(widget.data!['totalPrice']))}원)',
                                     style:
                                         TextStyle(fontWeight: FontWeight.bold))
                               ],

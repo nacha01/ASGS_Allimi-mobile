@@ -264,7 +264,7 @@ class _CartPageState extends State<CartPage> {
                           width: size.width * 0.05,
                         ),
                         Text(
-                          '${NumberFormatter.formatNumber(_totalPrice() + _allAdditionalPrice)}원  결제하기',
+                          '${NumberFormatter.formatPrice(_totalPrice() + _allAdditionalPrice)}원  결제하기',
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Colors.black,
@@ -332,7 +332,7 @@ class _CartPageState extends State<CartPage> {
                   ]),
                 ),
                 Text(
-                  '· 정가 : ${NumberFormatter.formatNumber(int.parse(cartItem['price']))}원',
+                  '· 정가 : ${NumberFormatter.formatPrice(int.parse(cartItem['price']))}원',
                   style: TextStyle(fontSize: 13),
                 ),
                 double.parse(cartItem['discount']).toString() != '0.0'
@@ -466,7 +466,7 @@ class _CartPageState extends State<CartPage> {
                       padding: EdgeInsets.all(size.width * 0.01),
                       margin: EdgeInsets.only(bottom: size.width * 0.008),
                       child: Text(
-                        '${NumberFormatter.formatNumber(_calculateTotalEachPrice(int.parse(cartItem['price']), double.parse(cartItem['discount']), _countList[index]) + int.parse(cartItem['optionPrice']))}원',
+                        '${NumberFormatter.formatPrice(_calculateTotalEachPrice(int.parse(cartItem['price']), double.parse(cartItem['discount']), _countList[index]) + int.parse(cartItem['optionPrice']))}원',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 15),
                       )),

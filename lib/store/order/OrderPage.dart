@@ -412,7 +412,7 @@ class _OrderPageState extends State<OrderPage> {
                                   ],
                                 ),
                                 Text(
-                                    '${NumberFormatter.formatNumber(_getOriginTotalPrice())} 원')
+                                    '${NumberFormatter.formatPrice(_getOriginTotalPrice())} 원')
                               ],
                             ),
                             Row(
@@ -420,7 +420,7 @@ class _OrderPageState extends State<OrderPage> {
                               children: [
                                 Text('총 할인 금액'),
                                 Text(
-                                    '- ${NumberFormatter.formatNumber(_getTotalDiscount())} 원')
+                                    '- ${NumberFormatter.formatPrice(_getTotalDiscount())} 원')
                               ],
                             ),
                             Divider(
@@ -438,7 +438,7 @@ class _OrderPageState extends State<OrderPage> {
                                       fontWeight: FontWeight.bold),
                                 ),
                                 Text(
-                                    '${NumberFormatter.formatNumber((_getOriginTotalPrice() - _getTotalDiscount()))} 원',
+                                    '${NumberFormatter.formatPrice((_getOriginTotalPrice() - _getTotalDiscount()))} 원',
                                     style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold))
@@ -550,7 +550,7 @@ class _OrderPageState extends State<OrderPage> {
                     color: Color(0xFF9EE1E5)),
                 width: size.width,
                 child: Text(
-                  '${NumberFormatter.formatNumber((_getOriginTotalPrice() - _getTotalDiscount()))} 원 결제 및 구매하기',
+                  '${NumberFormatter.formatPrice((_getOriginTotalPrice() - _getTotalDiscount()))} 원 결제 및 구매하기',
                   style: TextStyle(
                       fontWeight: FontWeight.bold, color: Colors.black),
                 ),

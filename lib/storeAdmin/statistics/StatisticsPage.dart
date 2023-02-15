@@ -984,7 +984,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                             height: size.height * 0.1,
                             alignment: Alignment.center,
                             child: Text(
-                              '${_salesValue == 'NO RESULT' || _salesValue == '' ? '0원' : NumberFormatter.formatNumber(int.parse(_salesValue)) + '원'}',
+                              '${_salesValue == 'NO RESULT' || _salesValue == '' ? '0원' : NumberFormatter.formatPrice(int.parse(_salesValue)) + '원'}',
                               style: TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 18),
                             ),
@@ -1691,7 +1691,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                   _selectedDate == '주간' ? size.width * 0.3 : size.width * 0.45,
               alignment: Alignment.center,
               child: Text(
-                NumberFormatter.formatNumber(momentSale) + '원',
+                NumberFormatter.formatPrice(momentSale) + '원',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
             ),

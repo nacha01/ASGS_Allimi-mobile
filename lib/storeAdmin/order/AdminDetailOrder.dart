@@ -251,7 +251,7 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
                         alignment: Alignment.center,
                         padding: EdgeInsets.all(size.width * 0.02),
                         child: Text(
-                          '총 결제 금액  ${NumberFormatter.formatNumber(int.parse(widget.data!['totalPrice']))}원',
+                          '총 결제 금액  ${NumberFormatter.formatPrice(int.parse(widget.data!['totalPrice']))}원',
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 19),
                         ),
@@ -416,7 +416,7 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
           Row(
             children: [
               Text(
-                '정가 ${NumberFormatter.formatNumber(price)}원',
+                '정가 ${NumberFormatter.formatPrice(price)}원',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               discount.toString() == '0.0'

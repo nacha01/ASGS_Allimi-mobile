@@ -248,7 +248,7 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                   ),
                   Text(
-                    ' ${NumberFormatter.formatNumber(int.parse(_productReservationList[0]['detail'][0]['pInfo']['price']))}원',
+                    ' ${NumberFormatter.formatPrice(int.parse(_productReservationList[0]['detail'][0]['pInfo']['price']))}원',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                   )
                 ],

@@ -429,7 +429,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
                   width: size.width * 0.6,
                   padding: EdgeInsets.all(size.width * 0.02),
                   child: Text(
-                    '결제 금액  ${NumberFormatter.formatNumber(int.parse(widget.responseData!['Amt']))}원',
+                    '결제 금액  ${NumberFormatter.formatPrice(int.parse(widget.responseData!['Amt']))}원',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                   ),
                 ),

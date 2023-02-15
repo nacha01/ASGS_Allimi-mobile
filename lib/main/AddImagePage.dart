@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:asgshighschool/component/ThemeAppBar.dart';
+import 'package:asgshighschool/util/NumberFormatter.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
@@ -60,11 +61,6 @@ class _AddImagePageState extends State<AddImagePage> {
       }
     }
     return false;
-  }
-
-  /// 정수 값의 날짜 혹은 시간을 두자리의 문자열로 formatting 하는 작업
-  String _formatting(int value) {
-    return value > 9 ? value.toString() : '0' + value.toString();
   }
 
   @override
@@ -154,11 +150,11 @@ class _AddImagePageState extends State<AddImagePage> {
             DefaultButtonComp(
               onPressed: () async {
                 var now = DateTime.now();
-                String identified = _formatting(now.month) +
-                    _formatting(now.day) +
-                    _formatting(now.hour) +
-                    _formatting(now.minute) +
-                    _formatting(now.second);
+                String identified = NumberFormatter.formatZero(now.month) +
+                    NumberFormatter.formatZero(now.day) +
+                    NumberFormatter.formatZero(now.hour) +
+                    NumberFormatter.formatZero(now.minute) +
+                    NumberFormatter.formatZero(now.second);
                 var img =
                     await _storeImage(_selectedImage!, 'main' + identified);
                 if (img) {

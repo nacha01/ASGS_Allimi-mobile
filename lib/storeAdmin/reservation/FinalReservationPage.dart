@@ -225,7 +225,7 @@ class _FinalReservationPageState extends State<FinalReservationPage> {
                                   width: size.width * 0.6,
                                   alignment: Alignment.center,
                                   child: Text(
-                                    '최종 금액 ${NumberFormatter.formatNumber(int.parse(widget.data!['totalPrice']))}원',
+                                    '최종 금액 ${NumberFormatter.formatPrice(int.parse(widget.data!['totalPrice']))}원',
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 18),

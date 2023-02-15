@@ -11,6 +11,7 @@ import 'dart:async';
 import '../../api/ApiUtil.dart';
 import '../../component/DefaultButtonComp.dart';
 import '../../component/ThemeAppBar.dart';
+import '../../util/NumberFormatter.dart';
 
 List<List<Widget>> _optionDetailList = []; // 선택지 항목 위젯에 대한 2차원 리스트
 List<Widget> _optionCategoryList = []; // 옵션 항목 위젯에 대한 리스트
@@ -229,11 +230,11 @@ class _AddingProductPageState extends State<AddingProductPage> {
   Future<bool> _doRegisterProduct() async {
     return this._memoizer.runOnce(() async {
       var now = DateTime.now();
-      String identified = _formatting(now.month) +
-          _formatting(now.day) +
-          _formatting(now.hour) +
-          _formatting(now.minute) +
-          _formatting(now.second);
+      String identified = NumberFormatter.formatZero(now.month) +
+          NumberFormatter.formatZero(now.day) +
+          NumberFormatter.formatZero(now.hour) +
+          NumberFormatter.formatZero(now.minute) +
+          NumberFormatter.formatZero(now.second);
       if (_useSub1) {
         _sub1Name = Category.categoryImageNamePrefixMap[_selectedCategory]! +
             identified +
@@ -324,11 +325,6 @@ class _AddingProductPageState extends State<AddingProductPage> {
     } catch (e) {
       return false;
     }
-  }
-
-  /// 정수 값의 날짜 혹은 시간을 두자리의 문자열로 formatting 하는 작업
-  String _formatting(int value) {
-    return value > 9 ? value.toString() : '0' + value.toString();
   }
 
   /// 문제 발생 시 에러 메세지를 띄워주는 dialog

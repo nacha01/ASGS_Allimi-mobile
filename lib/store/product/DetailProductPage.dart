@@ -332,7 +332,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              '${NumberFormatter.formatNumber(widget.product!.price)}원',
+                              '${NumberFormatter.formatPrice(widget.product!.price)}원',
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   decoration: _isDiscountZero
@@ -346,7 +346,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                             _isDiscountZero
                                 ? Text('')
                                 : Text(
-                                    ' → ${NumberFormatter.formatNumber((widget.product!.price * (1 - (widget.product!.discount / 100.0))).round())}원',
+                                    ' → ${NumberFormatter.formatPrice((widget.product!.price * (1 - (widget.product!.discount / 100.0))).round())}원',
                                     style: TextStyle(fontSize: 19),
                                   )
                           ],
@@ -470,7 +470,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                         child: Container(
                       padding: EdgeInsets.all(size.width * 0.03),
                       child: Text(
-                        '※ 개당 총 가격 ${NumberFormatter.formatNumber(((widget.product!.price * (1 - (widget.product!.discount / 100.0))) + _optionSummation()).round())}원',
+                        '※ 개당 총 가격 ${NumberFormatter.formatPrice(((widget.product!.price * (1 - (widget.product!.discount / 100.0))) + _optionSummation()).round())}원',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 15),
                       ),
@@ -621,7 +621,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                                 Icon(Icons.payment_rounded,
                                     color: Colors.grey[300], size: 33),
                                 Text(
-                                  '${NumberFormatter.formatNumber(((widget.product!.price * (1 - (widget.product!.discount / 100.0)) + _optionSummation()) * _count).round())}원 결제하기',
+                                  '${NumberFormatter.formatPrice(((widget.product!.price * (1 - (widget.product!.discount / 100.0)) + _optionSummation()) * _count).round())}원 결제하기',
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       color: Colors.grey[300]),
@@ -794,7 +794,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
             style: TextStyle(fontSize: 13),
           )),
           Text(
-              '${int.parse(data['optionPrice']) < 0 ? '-' : '+'}${NumberFormatter.formatNumber(int.parse(data['optionPrice']))}원')
+              '${int.parse(data['optionPrice']) < 0 ? '-' : '+'}${NumberFormatter.formatPrice(int.parse(data['optionPrice']))}원')
         ],
       ),
     );

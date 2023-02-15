@@ -1607,7 +1607,7 @@ class _StoreHomePageState extends State<StoreHomePage>
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                '${NumberFormatter.formatNumber(price)}원',
+                '${NumberFormatter.formatPrice(price)}원',
                 style: TextStyle(
                     color: product.discount.toString() != '0.0'
                         ? Colors.red
@@ -1621,7 +1621,7 @@ class _StoreHomePageState extends State<StoreHomePage>
               ),
               product.discount.toString() != '0.0'
                   ? Text(
-                      '  ${NumberFormatter.formatNumber((product.price * (1 - (product.discount / 100.0))).round())}원',
+                      '  ${NumberFormatter.formatPrice((product.price * (1 - (product.discount / 100.0))).round())}원',
                       style: TextStyle(
                           fontWeight: FontWeight.bold, fontSize: 12.5),
                     )

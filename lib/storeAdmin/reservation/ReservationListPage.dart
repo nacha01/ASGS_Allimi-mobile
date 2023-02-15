@@ -724,7 +724,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
                         children: [],
                       ),
                       Text(
-                        '  총 금액 ${NumberFormatter.formatNumber(int.parse(data['totalPrice']))}원',
+                        '  총 금액 ${NumberFormatter.formatPrice(int.parse(data['totalPrice']))}원',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 13),
                       ),

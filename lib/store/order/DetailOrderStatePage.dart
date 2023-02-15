@@ -368,7 +368,7 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
                     child: Padding(
                       padding: EdgeInsets.all(size.width * 0.04),
                       child: Text(
-                        '최종 결제 금액 ${NumberFormatter.formatNumber(int.parse(widget.order!['totalPrice']))}원',
+                        '최종 결제 금액 ${NumberFormatter.formatPrice(int.parse(widget.order!['totalPrice']))}원',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 16),
                       ),
@@ -419,7 +419,7 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
           Row(
             children: [
               Text(
-                '정가 ${NumberFormatter.formatNumber(int.parse(productMap['price']))}원',
+                '정가 ${NumberFormatter.formatPrice(int.parse(productMap['price']))}원',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               SizedBox(
