@@ -1,6 +1,7 @@
 import 'package:asgshighschool/component/ThemeAppBar.dart';
 import 'package:asgshighschool/data/category.dart';
 import 'package:asgshighschool/data/user.dart';
+import 'package:asgshighschool/util/DateFormatter.dart';
 import 'package:asgshighschool/util/NumberFormatter.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -54,49 +55,6 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
     }
   }
 
-  /// DB에 저장된 date 필드를 사용자에게 직관적으로 보여주기 위한 날짜 formatting 작업
-  /// @param : 주문 데이터의 date 필드 문자열
-  String _formatDate(String date) {
-    // yyyy-mm-dd hh:mm:ss
-    var split = date.split(' ');
-
-    var leftSp = split[0].split('-');
-    String left = leftSp[0] + '년 ' + leftSp[1] + '월 ' + leftSp[2] + '일 ';
-
-    var rightSp = split[1].split(':');
-    String right = rightSp[0] + '시 ' + leftSp[1] + '분';
-
-    return left + right;
-  }
-
-  /// 이 주문에 포함된 상품들의 원가격에 대한 총 가격을 구하는 작업
-  int _getOriginTotalPrice() {
-    int sum = 0;
-    for (int i = 0; i < widget.order!['detail'].length; ++i) {
-      sum += int.parse(widget.order!['detail'][i]['pInfo']['price']) *
-          int.parse(widget.order!['detail'][i]['quantity']);
-    }
-    return sum;
-  }
-
-  /// 이 주문에 포함된 상품들의 총 할인 가격을 구하는 작업
-  int _getTotalDiscount() {
-    int sum = 0;
-    for (int i = 0; i < widget.order!['detail'].length; ++i) {
-      sum += ((int.parse(widget.order!['detail'][i]['pInfo']['price']) *
-                  (double.parse(widget.order!['detail'][i]['pInfo']['discount'])
-                              .toString() ==
-                          '0.0'
-                      ? 0
-                      : double.parse(
-                              widget.order!['detail'][i]['pInfo']['discount']) /
-                          100)) *
-              int.parse(widget.order!['detail'][i]['quantity']))
-          .round();
-    }
-    return sum;
-  }
-
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -121,7 +79,7 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
               SizedBox(
                 height: size.height * 0.015,
               ),
-              Text('주문일자  ${_formatDate(widget.order!['oDate'])}',
+              Text('주문일자  ${DateFormatter.formatDate(widget.order!['oDate'])}',
                   style: TextStyle(color: Colors.grey, fontSize: 13)),
               SizedBox(
                 height: size.height * 0.015,

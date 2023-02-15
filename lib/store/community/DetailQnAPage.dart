@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:asgshighschool/component/ThemeAppBar.dart';
 import 'package:asgshighschool/data/user.dart';
+import 'package:asgshighschool/util/DateFormatter.dart';
 import 'package:flutter/material.dart';
 
 class DetailQnAPage extends StatefulWidget {
@@ -15,33 +16,6 @@ class DetailQnAPage extends StatefulWidget {
 }
 
 class _DetailQnAPageState extends State<DetailQnAPage> {
-  /// 현재 문의 글 데이터의 date field를 사용자에게 더 직관적으로 보여주는 날짜 formatting 작업
-  /// format : yyyy년 MM월 dd일 (오후 or 오전) hh시 mm분
-  String _formatDate(String originDate) {
-    String date = originDate.split(' ')[0];
-    String time = originDate.split(' ')[1];
-    var dateSuffix = ['년', '월', '일'];
-    String fDate = '';
-    var dateSplit = date.split('-');
-    for (int i = 0; i < dateSplit.length; ++i) {
-      fDate += dateSplit[i] + dateSuffix[i] + ' ';
-    }
-
-    var timeSplit = time.split(':');
-    bool isPM = false;
-    int hour = int.parse(timeSplit[0]);
-    if (hour >= 12) {
-      isPM = true;
-      hour = hour == 12 ? hour : hour - 12;
-    } else if (hour == 0) {
-      isPM = false;
-      hour = 12;
-    }
-    String fTime =
-        (isPM ? '오후 ' : '오전 ') + hour.toString() + '시 ' + timeSplit[1] + '분';
-    return fDate + fTime;
-  }
-
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
@@ -104,7 +78,8 @@ class _DetailQnAPageState extends State<DetailQnAPage> {
                 Expanded(
                   child: Container(
                     alignment: Alignment.center,
-                    child: Text(_formatDate(widget.data!['qDate'])),
+                    child:
+                        Text(DateFormatter.formatDateMidday(widget.data!['qDate'])),
                   ),
                 )
               ],

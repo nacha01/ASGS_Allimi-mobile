@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:asgshighschool/data/announce.dart';
+import 'package:asgshighschool/util/DateFormatter.dart';
 import '../../api/ApiUtil.dart';
 import '../../component/CorporationComp.dart';
 import '../../component/DefaultButtonComp.dart';
@@ -62,14 +63,6 @@ class _AnnouncePageState extends State<AnnouncePage> {
     } else {
       return -1;
     }
-  }
-
-  /// 오늘 날짜와 비교해서 공지글이 최신글인지 판단
-  /// @param : 공지글 작성된 비교할 날짜
-  bool _compareDateIsNew(String cmpDate) {
-    int diff = int.parse(
-        DateTime.now().difference(DateTime.parse(cmpDate)).inDays.toString());
-    return diff < 3 ? true : false;
   }
 
   /// parameter로 들어온 검색 기준에 따라 검색 하고자 하는 단어가 포함되는 공지사항 데이터를
@@ -287,8 +280,11 @@ class _AnnouncePageState extends State<AnnouncePage> {
                                             title: _searchList[index].title!,
                                             writer: _searchList[index].writer!,
                                             date: _searchList[index].writeDate,
-                                            isNew: _compareDateIsNew(
-                                                _searchList[index].writeDate!),
+                                            isNew:
+                                                DateFormatter.compareDateIsNew(
+                                                    _searchList[index]
+                                                        .writeDate!,
+                                                    3),
                                             size: size,
                                             announce: _searchList[index]),
                                     itemCount: _searchList.length,
@@ -301,8 +297,8 @@ class _AnnouncePageState extends State<AnnouncePage> {
                                         title: _announceList[index].title!,
                                         writer: _announceList[index].writer!,
                                         date: _announceList[index].writeDate,
-                                        isNew: _compareDateIsNew(
-                                            _announceList[index].writeDate!),
+                                        isNew: DateFormatter.compareDateIsNew(
+                                            _announceList[index].writeDate!, 3),
                                         size: size,
                                         announce: _announceList[index]),
                                 itemCount: _announceList.length,

@@ -4,6 +4,7 @@ import 'package:asgshighschool/component/ThemeAppBar.dart';
 import 'package:asgshighschool/data/category.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:asgshighschool/store/order/DetailOrderStatePage.dart';
+import 'package:asgshighschool/util/DateFormatter.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:hex/hex.dart';
@@ -26,7 +27,6 @@ class _OrderStatePageState extends State<OrderStatePage> {
   List _orderMap = [];
   Map? _cancelResponse;
 
-  //final bool isCart;
   String _ediDate = '';
   static const _KEY =
       '0DVRz8vSDD5HvkWRwSxpjVhhx7OlXEViTciw5lBQAvSyYya9yf0K0Is+JbwiR9yYC96rEH2XIbfzeHXgqzSAFQ==';
@@ -64,12 +64,6 @@ class _OrderStatePageState extends State<OrderStatePage> {
     } else {
       return false;
     }
-  }
-
-  /// 주문의 date 필드를 사용자에게 직관적으로 보이게 하는 날짜 formatting 작업
-  /// yyyy-mm-dd hh:mm:ss  ->  mm/dd hh:mm
-  String _formatForItemDate(String date) {
-    return date.substring(5, 16).replaceAll('-', '/');
   }
 
   @override
@@ -304,7 +298,7 @@ class _OrderStatePageState extends State<OrderStatePage> {
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                   ),
                   Text(
-                    '${_formatForItemDate(orderJson['oDate'])}',
+                    '${DateFormatter.formatShortDate(orderJson['oDate'])}',
                     style: TextStyle(color: Colors.black45),
                   )
                 ],

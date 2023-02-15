@@ -3,6 +3,7 @@ import 'package:asgshighschool/component/ThemeAppBar.dart';
 import 'package:asgshighschool/data/user.dart';
 import '../../api/ApiUtil.dart';
 import '../../component/DefaultButtonComp.dart';
+import '../../util/DateFormatter.dart';
 import 'AnswerQnAPage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -25,27 +26,6 @@ class _QnAListPageState extends State<QnAListPage> {
   bool _isChecked = true;
   bool _isFinished = false;
   Map _categoryMap = {0: '상품', 1: '교환/환불', 2: '계정', 3: '앱 이용', 4: '기타'};
-
-  /// 등록된 날짜와 오늘의 날짜를 비교해서 어느 정도 차이가 있는지에 대한 문자열을 반환하는 작업
-  /// n일 전, n시간 전, n분 전
-  String _formatDateTimeForToday(String origin) {
-    var today = DateTime.now();
-
-    int dayDiff =
-        int.parse(today.difference(DateTime.parse(origin)).inDays.toString());
-    if (dayDiff < 1) {
-      int hourDiff = int.parse(
-          today.difference(DateTime.parse(origin)).inHours.toString());
-      if (hourDiff < 1) {
-        int minDiff = int.parse(
-            today.difference(DateTime.parse(origin)).inMinutes.toString());
-        return minDiff.toString() + '분 전';
-      }
-      return hourDiff.toString() + '시간 전';
-    } else {
-      return dayDiff.toString() + '일 전';
-    }
-  }
 
   /// 문의 글을 날짜 순으로 정렬하는 작업
   void _sortListOrderByTime() {
@@ -242,7 +222,7 @@ class _QnAListPageState extends State<QnAListPage> {
                   ],
                 ),
                 Text(
-                  _formatDateTimeForToday(date),
+                  DateFormatter.formatDateTimeCmp(date),
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 15,

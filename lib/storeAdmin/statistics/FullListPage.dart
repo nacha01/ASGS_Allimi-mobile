@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 
 import '../../component/DefaultButtonComp.dart';
 import '../../component/ThemeAppBar.dart';
+import '../../util/DateFormatter.dart';
 
 class FullListPage extends StatefulWidget {
   final User? user;
@@ -78,27 +79,6 @@ class _FullListPageState extends State<FullListPage> {
       return true;
     } else {
       return false;
-    }
-  }
-
-  /// 등록된 날짜와 오늘의 날짜를 비교해서 어느 정도 차이가 있는지에 대한 문자열을 반환하는 작업
-  /// n일 전, n시간 전, n분 전
-  String _formatDateTimeForToday(String origin) {
-    var today = DateTime.now();
-
-    int dayDiff =
-        int.parse(today.difference(DateTime.parse(origin)).inDays.toString());
-    if (dayDiff < 1) {
-      int hourDiff = int.parse(
-          today.difference(DateTime.parse(origin)).inHours.toString());
-      if (hourDiff < 1) {
-        int minDiff = int.parse(
-            today.difference(DateTime.parse(origin)).inMinutes.toString());
-        return minDiff.toString() + '분 전';
-      }
-      return hourDiff.toString() + '시간 전';
-    } else {
-      return dayDiff.toString() + '일 전';
     }
   }
 
@@ -294,7 +274,7 @@ class _FullListPageState extends State<FullListPage> {
             Text('| 총 ${data['totalPrice']}원 | ',
                 style: TextStyle(fontWeight: FontWeight.bold)),
             Text(
-              ' ${_formatDateTimeForToday(data['oDate'])}',
+              ' ${DateFormatter.formatDateTimeCmp(data['oDate'])}',
               style: TextStyle(
                   fontWeight: FontWeight.bold, color: Colors.redAccent),
             )

@@ -1,5 +1,6 @@
 import 'package:asgshighschool/data/category.dart';
 import 'package:asgshighschool/data/user.dart';
+import 'package:asgshighschool/util/DateFormatter.dart';
 import '../../api/ApiUtil.dart';
 import '../../component/DefaultButtonComp.dart';
 import '../../component/ThemeAppBar.dart';
@@ -22,41 +23,6 @@ class AdminDetailOrder extends StatefulWidget {
 class _AdminDetailOrderState extends State<AdminDetailOrder> {
   bool _isCharged = false;
   int _state = 1;
-
-  /// 등록된 날짜와 오늘의 날짜를 비교해서 어느 정도 차이가 있는지에 대한 문자열을 반환하는 작업
-  /// n일 전, n시간 전, n분 전
-  String _formatDateTimeForToday(String origin) {
-    var today = DateTime.now();
-
-    int dayDiff =
-        int.parse(today.difference(DateTime.parse(origin)).inDays.toString());
-    if (dayDiff < 1) {
-      int hourDiff = int.parse(
-          today.difference(DateTime.parse(origin)).inHours.toString());
-      if (hourDiff < 1) {
-        int minDiff = int.parse(
-            today.difference(DateTime.parse(origin)).inMinutes.toString());
-        return minDiff.toString() + '분 전';
-      }
-      return hourDiff.toString() + '시간 전';
-    } else {
-      return dayDiff.toString() + '일 전';
-    }
-  }
-
-  /// date 필드를 사용자에게 직관적으로 보여주기 위한 formatting 작업
-  /// yyyy-mm-dd hh:mm:ss → yyyy년 MM월 dd일 hh시 mm분
-  String _formatDate(String date) {
-    var split = date.split(' ');
-
-    var leftSp = split[0].split('-');
-    String left = leftSp[0] + '년 ' + leftSp[1] + '월 ' + leftSp[2] + '일 ';
-
-    var rightSp = split[1].split(':');
-    String right = rightSp[0] + '시 ' + rightSp[1] + '분';
-
-    return left + right;
-  }
 
   /// 현재 관리자 user가 이 주문을 맡겠다는 요청 작업
   /// chargerID 필드 업데이트 및 orderState 필드 업데이트
@@ -152,10 +118,11 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
                 ),
                 Row(
                   children: [
-                    Text('주문 일자: ${_formatDate(widget.data!['oDate'])}',
+                    Text(
+                        '주문 일자: ${DateFormatter.formatDate(widget.data!['oDate'])}',
                         style: TextStyle(color: Colors.grey, fontSize: 13)),
                     Text(
-                      ' (${_formatDateTimeForToday(widget.data!['oDate'])})',
+                      ' (${DateFormatter.formatDateTimeCmp(widget.data!['oDate'])})',
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
@@ -166,10 +133,10 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
                 Row(
                   children: [
                     Text(
-                        '주문 완료 일자: ${widget.data!['eDate'] == null || widget.data!['eDate'] == '0000-00-00 00:00:00' ? '-' : _formatDate(widget.data!['eDate'])}',
+                        '주문 완료 일자: ${widget.data!['eDate'] == null || widget.data!['eDate'] == '0000-00-00 00:00:00' ? '-' : DateFormatter.formatDate(widget.data!['eDate'])}',
                         style: TextStyle(color: Colors.grey, fontSize: 13)),
                     Text(
-                        ' (${widget.data!['eDate'] == null || widget.data!['eDate'] == '0000-00-00 00:00:00' ? '-' : _formatDateTimeForToday(widget.data!['eDate'])})',
+                        ' (${widget.data!['eDate'] == null || widget.data!['eDate'] == '0000-00-00 00:00:00' ? '-' : DateFormatter.formatDateTimeCmp(widget.data!['eDate'])})',
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 12,

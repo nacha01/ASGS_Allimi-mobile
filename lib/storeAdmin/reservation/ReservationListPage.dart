@@ -6,6 +6,7 @@ import 'package:asgshighschool/data/user.dart';
 import '../../component/DefaultButtonComp.dart';
 import '../../component/ThemeAppBar.dart';
 import '../../data/product_count.dart';
+import '../../util/DateFormatter.dart';
 import '../../util/NumberFormatter.dart';
 import 'AdminDetailReservation.dart';
 import 'package:asgshighschool/storeAdmin/statistics/FullListPage.dart';
@@ -116,27 +117,6 @@ class _ReservationListPageState extends State<ReservationListPage> {
       return true;
     } else {
       return false;
-    }
-  }
-
-  /// 등록된 날짜와 오늘의 날짜를 비교해서 어느 정도 차이가 있는지에 대한 문자열을 반환하는 작업
-  /// n일 전, n시간 전, n분 전
-  String _formatDateTimeForToday(String origin) {
-    var today = DateTime.now();
-
-    int dayDiff =
-        int.parse(today.difference(DateTime.parse(origin)).inDays.toString());
-    if (dayDiff < 1) {
-      int hourDiff = int.parse(
-          today.difference(DateTime.parse(origin)).inHours.toString());
-      if (hourDiff < 1) {
-        int minDiff = int.parse(
-            today.difference(DateTime.parse(origin)).inMinutes.toString());
-        return minDiff.toString() + '분 전';
-      }
-      return hourDiff.toString() + '시간 전';
-    } else {
-      return dayDiff.toString() + '일 전';
     }
   }
 
@@ -630,7 +610,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
                                   ));
                         },
                         child: Text(
-                          _formatDateTimeForToday(data['oDate']),
+                          DateFormatter.formatDateTimeCmp(data['oDate']),
                           style: TextStyle(
                               color: Colors.redAccent,
                               fontWeight: FontWeight.bold,

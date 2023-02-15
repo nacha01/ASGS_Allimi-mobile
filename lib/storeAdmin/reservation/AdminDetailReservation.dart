@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
+import '../../util/DateFormatter.dart';
 import '../../util/NumberFormatter.dart';
 
 class AdminDetailReservation extends StatefulWidget {
@@ -87,27 +88,6 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
       return true;
     } else {
       return false;
-    }
-  }
-
-  /// 등록된 날짜와 오늘의 날짜를 비교해서 어느 정도 차이가 있는지에 대한 문자열을 반환하는 작업
-  /// n일 전, n시간 전, n분 전
-  String _formatDateTimeForToday(String origin) {
-    var today = DateTime.now();
-
-    int dayDiff =
-        int.parse(today.difference(DateTime.parse(origin)).inDays.toString());
-    if (dayDiff < 1) {
-      int hourDiff = int.parse(
-          today.difference(DateTime.parse(origin)).inHours.toString());
-      if (hourDiff < 1) {
-        int minDiff = int.parse(
-            today.difference(DateTime.parse(origin)).inMinutes.toString());
-        return minDiff.toString() + '분 전';
-      }
-      return hourDiff.toString() + '시간 전';
-    } else {
-      return dayDiff.toString() + '일 전';
     }
   }
 
@@ -467,7 +447,7 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
                 Text('${data['detail'][0]['quantity']}개',
                     style:
                         TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
-                Text('${_formatDateTimeForToday(data['oDate'])}',
+                Text('${DateFormatter.formatDateTimeCmp(data['oDate'])}',
                     style: TextStyle(
                         fontSize: 11,
                         color: Colors.blueAccent,

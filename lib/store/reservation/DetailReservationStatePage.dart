@@ -1,8 +1,7 @@
-import 'dart:convert';
-
 import 'package:asgshighschool/component/ThemeAppBar.dart';
 import 'package:asgshighschool/data/category.dart';
 import 'package:asgshighschool/data/user.dart';
+import 'package:asgshighschool/util/DateFormatter.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -25,21 +24,6 @@ class DetailReservationStatePage extends StatefulWidget {
 
 class _DetailReservationStatePageState
     extends State<DetailReservationStatePage> {
-  /// DB에 저장된 date 필드를 사용자에게 직관적으로 보여주기 위한 날짜 formatting 작업
-  /// @param : 주문 데이터의 date 필드 문자열
-  String _formatDate(String date) {
-    // yyyy-mm-dd hh:mm:ss
-    var split = date.split(' ');
-
-    var leftSp = split[0].split('-');
-    String left = leftSp[0] + '년 ' + leftSp[1] + '월 ' + leftSp[2] + '일 ';
-
-    var rightSp = split[1].split(':');
-    String right = rightSp[0] + '시 ' + leftSp[1] + '분';
-
-    return left + right;
-  }
-
   /// 아직 미결제된 예약 정보에 대해서 예약 취소를 요청하는 작업
   /// @return : 삭제 성공 여부
   Future<bool> _cancelReservation() async {
@@ -110,7 +94,8 @@ class _DetailReservationStatePageState
                       SizedBox(
                         height: size.height * 0.015,
                       ),
-                      Text('예약 일자  ${_formatDate(widget.data!['oDate'])}',
+                      Text(
+                          '예약 일자  ${DateFormatter.formatDate(widget.data!['oDate'])}',
                           style: TextStyle(color: Colors.grey, fontSize: 13)),
                       SizedBox(
                         height: size.height * 0.015,
