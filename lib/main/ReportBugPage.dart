@@ -1,10 +1,10 @@
 import 'package:asgshighschool/component/ThemeAppBar.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
 import '../api/ApiUtil.dart';
 import '../component/DefaultButtonComp.dart';
+import '../util/ToastMessage.dart';
 
 class ReportBugPage extends StatefulWidget {
   @override
@@ -193,7 +193,7 @@ class _ReportBugPageState extends State<ReportBugPage> {
                     onPressed: () {
                       if (_titleController.text.isEmpty ||
                           _contentController.text.isEmpty) {
-                        Fluttertoast.showToast(msg: '입력하지 않은 란이 존재합니다.');
+                        ToastMessage.show('입력하지 않은 란이 존재합니다!');
                         return;
                       }
                       showDialog(

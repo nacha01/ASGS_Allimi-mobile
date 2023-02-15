@@ -3,13 +3,13 @@ import 'package:asgshighschool/data/product.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import '../../api/ApiUtil.dart';
 import '../../component/CorporationComp.dart';
 import '../../component/DefaultButtonComp.dart';
 import '../../component/ThemeAppBar.dart';
 import '../../util/NumberFormatter.dart';
+import '../../util/ToastMessage.dart';
 import 'ReservationCompletePage.dart';
 
 class ReservationPage extends StatefulWidget {
@@ -259,12 +259,11 @@ class _ReservationPageState extends State<ReservationPage> {
                                                 var res =
                                                     await _setReservationCountLimit();
                                                 if (res) {
-                                                  Fluttertoast.showToast(
-                                                      msg:
-                                                          '수량 제한 설정이 완료되었습니다.');
+                                                  ToastMessage.show(
+                                                      '수량 제한 설정이 완료되었습니다.');
                                                 } else {
-                                                  Fluttertoast.showToast(
-                                                      msg: '수량 제한에 실패하였습니다!');
+                                                  ToastMessage.show(
+                                                      '수량 제한에 실패했습니다.');
                                                   _countController.text =
                                                       _initResvCount![
                                                           'max_count'];

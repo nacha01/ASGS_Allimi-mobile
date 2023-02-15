@@ -1,9 +1,9 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 import '../data/foreground_noti.dart';
 import '../util/GlobalVariable.dart';
+import '../util/ToastMessage.dart';
 import 'NotificationAction.dart';
 
 class NotificationManager {
@@ -73,7 +73,7 @@ class NotificationManager {
       onDidReceiveNotificationResponse: (response) {
         if (!GlobalVariable.isAuthorized) {
           NotificationPayload.isTap = true;
-          Fluttertoast.showToast(msg: '로그인이 필요합니다.');
+          ToastMessage.show('로그인이 필요합니다.');
           if (response.payload != null) {
             NotificationPayload.setPayload(response.payload);
           }

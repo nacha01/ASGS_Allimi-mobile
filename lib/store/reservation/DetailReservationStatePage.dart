@@ -3,13 +3,13 @@ import 'package:asgshighschool/data/category.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:asgshighschool/util/DateFormatter.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:http/http.dart' as http;
 
 import '../../api/ApiUtil.dart';
 import '../../component/DefaultButtonComp.dart';
 import '../../util/NumberFormatter.dart';
+import '../../util/ToastMessage.dart';
 
 class DetailReservationStatePage extends StatefulWidget {
   final User? user;
@@ -460,15 +460,13 @@ class _DetailReservationStatePageState
                                             var r =
                                                 await _updateReservationCurrentCount();
                                             if (r) {
-                                              Fluttertoast.showToast(
-                                                  msg: '성공적으로 예약 취소가 완료되었습니다.');
+                                              ToastMessage.show('예약이 취소되었습니다.');
                                             } else {
-                                              Fluttertoast.showToast(
-                                                  msg: '[Error] 예약 수량 업데이트 실패');
+                                              ToastMessage.show(
+                                                  '예약 수량 업데이트 실패');
                                             }
                                           } else {
-                                            Fluttertoast.showToast(
-                                                msg: '예약 취소에 실패하였습니다!');
+                                            ToastMessage.show('예약 취소에 실패했습니다.');
                                           }
                                           Navigator.pop(context);
                                           _terminateScreen();

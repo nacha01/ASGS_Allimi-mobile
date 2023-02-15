@@ -1,7 +1,7 @@
 import 'package:asgshighschool/main/auth/component/AuthFrameComp.dart';
 import 'package:asgshighschool/main/auth/controller/AuthController.dart';
+import 'package:asgshighschool/util/ToastMessage.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../component/DefaultButtonComp.dart';
 import '../../HomePage.dart';
@@ -229,7 +229,7 @@ class LoginTabState extends State<LoginTab> {
                                             updateEmailController.text);
                                     if (res) {
                                       Navigator.pop(context);
-                                      Fluttertoast.showToast(msg: '이메일 등록 성공');
+                                      ToastMessage.show('이메일 등록 성공');
                                       result.email = updateEmailController.text;
                                     } else {
                                       showDialog(

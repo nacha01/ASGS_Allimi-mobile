@@ -3,8 +3,8 @@ import 'package:asgshighschool/api/ApiUtil.dart';
 import 'package:asgshighschool/component/ThemeAppBar.dart';
 import 'package:asgshighschool/data/status.dart';
 import 'package:asgshighschool/data/user.dart';
+import 'package:asgshighschool/util/ToastMessage.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
 import '../component/DefaultButtonComp.dart';
@@ -300,11 +300,11 @@ class _PushNotificationPageState extends State<PushNotificationPage> {
                   child: DefaultButtonComp(
                       onPressed: () async {
                         if (_titleController.text.isEmpty) {
-                          Fluttertoast.showToast(msg: '제목을 입력하세요!');
+                          ToastMessage.show('제목을 입력하세요!');
                           return;
                         }
                         if (_contentController.text.isEmpty) {
-                          Fluttertoast.showToast(msg: '내용을 입력하세요!');
+                          ToastMessage.show('내용을 입력하세요!');
                           return;
                         }
                         await showDialog(

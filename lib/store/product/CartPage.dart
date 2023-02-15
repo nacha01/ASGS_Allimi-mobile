@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:asgshighschool/api/ApiUtil.dart';
 import 'package:asgshighschool/component/CorporationComp.dart';
 import 'package:asgshighschool/data/category.dart';
+import 'package:asgshighschool/util/ToastMessage.dart';
 import '../../component/DefaultButtonComp.dart';
 import '../../component/ThemeAppBar.dart';
 import '../../data/provider/exist_cart.dart';
@@ -10,7 +11,6 @@ import 'package:asgshighschool/data/user.dart';
 import 'package:asgshighschool/store/order/OrderPage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
@@ -412,10 +412,7 @@ class _CartPageState extends State<CartPage> {
                               _countList[index]++;
                             });
                           } else {
-                            Fluttertoast.showToast(
-                                msg: '현재 상품의 재고를 초과할 수 없습니다!',
-                                gravity: ToastGravity.BOTTOM,
-                                toastLength: Toast.LENGTH_SHORT);
+                            ToastMessage.show('현재 상품의 재고를 초과했습니다!');
                           }
                         },
                         icon: Icon(Icons.add),
@@ -444,15 +441,9 @@ class _CartPageState extends State<CartPage> {
                             if (_cartProductList.length == 0) {
                               existCart.setExistCart(false);
                             }
-                            Fluttertoast.showToast(
-                                msg: '장바구니에서 상품을 삭제하였습니다.',
-                                gravity: ToastGravity.BOTTOM,
-                                toastLength: Toast.LENGTH_SHORT);
+                            ToastMessage.show('장바구니에서 상품을 삭제했습니다.');
                           } else {
-                            Fluttertoast.showToast(
-                                msg: '장바구니에서 상품을 삭제하는데 실패했습니다!!',
-                                gravity: ToastGravity.BOTTOM,
-                                toastLength: Toast.LENGTH_SHORT);
+                            ToastMessage.show('장바구니에서 상품 삭제에 실패했습니다.');
                           }
                         },
                         icon: Icon(

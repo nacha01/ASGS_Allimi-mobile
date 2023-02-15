@@ -1,11 +1,11 @@
 import 'package:asgshighschool/data/user.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
 import '../../api/ApiUtil.dart';
 import '../../component/DefaultButtonComp.dart';
 import '../../component/ThemeAppBar.dart';
+import '../../util/ToastMessage.dart';
 
 /// 문의글에 답변하기
 /// 답변 시
@@ -233,16 +233,10 @@ class _AnswerQnAPageState extends State<AnswerQnAPage> {
                         onPressed: () async {
                           var res = await _registerAnswerToDB();
                           if (res) {
-                            Fluttertoast.showToast(
-                                msg: '성공적으로 답변이 완료되었습니다.',
-                                gravity: ToastGravity.BOTTOM,
-                                toastLength: Toast.LENGTH_SHORT);
+                            ToastMessage.show('답변이 완료되었습니다.');
                             Navigator.pop(context);
                           } else {
-                            Fluttertoast.showToast(
-                                msg: '답변에 실패하였습니다!',
-                                gravity: ToastGravity.BOTTOM,
-                                toastLength: Toast.LENGTH_SHORT);
+                            ToastMessage.show('답변에 실패했습니다.');
                           }
                         },
                         child: Text(

@@ -8,12 +8,12 @@ import '../../component/ThemeAppBar.dart';
 import '../../data/product_count.dart';
 import '../../util/DateFormatter.dart';
 import '../../util/NumberFormatter.dart';
+import '../../util/ToastMessage.dart';
 import 'AdminDetailReservation.dart';
 import 'package:asgshighschool/storeAdmin/statistics/FullListPage.dart';
 import 'QrReservationPage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
 class ReservationListPage extends StatefulWidget {
@@ -355,14 +355,13 @@ class _ReservationListPageState extends State<ReservationListPage> {
                                 data['detail'][0]['pInfo']['pid'],
                                 data['detail'][0]['quantity']);
                             if (r) {
-                              Fluttertoast.showToast(msg: '성공적으로 예약이 삭제되었습니다.');
+                              ToastMessage.show('예약이 삭제되었습니다.');
                             } else {
-                              Fluttertoast.showToast(
-                                  msg: '[Error] 예약 수령 변경에 실패');
+                              ToastMessage.show('예약 수령 변경에 실패했습니다.');
                             }
                             await _getAllReservationData();
                           } else {
-                            Fluttertoast.showToast(msg: '예약 삭제에 실패하였습니다!');
+                            ToastMessage.show('예약 삭제에 실패했습니다.');
                           }
                           Navigator.pop(context);
                         },

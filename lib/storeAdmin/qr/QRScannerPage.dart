@@ -1,11 +1,11 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:http/http.dart' as http;
 
 import '../../api/ApiUtil.dart';
 import '../../component/DefaultButtonComp.dart';
+import '../../util/ToastMessage.dart';
 
 class QRScannerPage extends StatefulWidget {
   QRScannerPage({this.oID});
@@ -255,18 +255,12 @@ class _QRScannerPageState extends State<QRScannerPage> {
                                                                           var res =
                                                                               await _orderCompleteRequest();
                                                                           if (res) {
-                                                                            Fluttertoast.showToast(
-                                                                                msg: '성공적으로 주문 완료 처리 되었습니다.',
-                                                                                gravity: ToastGravity.BOTTOM,
-                                                                                toastLength: Toast.LENGTH_SHORT);
+                                                                            ToastMessage.show('주문 완료 처리되었습니다.');
                                                                             setState(() {
                                                                               _isChecked = !_isChecked;
                                                                             });
                                                                           } else {
-                                                                            Fluttertoast.showToast(
-                                                                                msg: '주문 완료 처리에 실패하였습니다.',
-                                                                                gravity: ToastGravity.BOTTOM,
-                                                                                toastLength: Toast.LENGTH_SHORT);
+                                                                            ToastMessage.show('주문 완료 처리에 실패했습니다.');
                                                                           }
                                                                           Navigator.pop(
                                                                               ctx);

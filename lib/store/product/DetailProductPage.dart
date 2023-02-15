@@ -12,11 +12,11 @@ import 'package:asgshighschool/store/order/OrderPage.dart';
 import 'package:asgshighschool/store/reservation/ReservationPage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 import '../../util/NumberFormatter.dart';
+import '../../util/ToastMessage.dart';
 
 /// 상품의 재고는 실제 재고보다 5개 작게 보여준다. 2021/09/21
 /// 위의 기능 철회. 2022/01/02 (online & offline 통합 재고관리 불가능)
@@ -443,10 +443,8 @@ class _DetailProductPageState extends State<DetailProductPage> {
                                           ++_count;
                                         });
                                       } else {
-                                        Fluttertoast.showToast(
-                                            msg: '더 추가할 수 없습니다!',
-                                            gravity: ToastGravity.BOTTOM,
-                                            toastLength: Toast.LENGTH_SHORT);
+                                        ToastMessage.show('더 추가할 수 없습니다.');
+
                                       }
                                     },
                                     icon: Icon(Icons.add),
@@ -522,22 +520,15 @@ class _DetailProductPageState extends State<DetailProductPage> {
                         GestureDetector(
                           onTap: () async {
                             if (_count < 1 || widget.product!.stockCount < 1) {
-                              Fluttertoast.showToast(
-                                  msg: '상품의 재고가 없어 장바구니에 담을 수 없습니다!',
-                                  gravity: ToastGravity.BOTTOM,
-                                  toastLength: Toast.LENGTH_SHORT);
+                              ToastMessage.show('상품 재고가 없어 장바구니에 담을 수 없습니다.');
                               return;
                             }
                             if (!_isCart) {
                               _preProcessForOptions();
                               var result = await _addCartProductRequest();
-                              print(result);
                               if (result) {
                                 data.setExistCart(true);
-                                Fluttertoast.showToast(
-                                    msg: '장바구니에 추가되었습니다.',
-                                    gravity: ToastGravity.BOTTOM,
-                                    toastLength: Toast.LENGTH_SHORT);
+                                ToastMessage.show('장바구니에 추가되었습니다.');
                               } else {
                                 showDialog(
                                     context: context,
@@ -591,10 +582,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                         GestureDetector(
                           onTap: () async {
                             if (_count < 1 || widget.product!.stockCount < 1) {
-                              Fluttertoast.showToast(
-                                  msg: '상품의 재고가 없어 결제할 수가 없습니다!',
-                                  gravity: ToastGravity.BOTTOM,
-                                  toastLength: Toast.LENGTH_SHORT);
+                              ToastMessage.show('상품의 재고가 없어 결제할 수 없습니다.');
                               return;
                             }
                             Navigator.push(

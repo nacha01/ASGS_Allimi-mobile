@@ -24,7 +24,6 @@ class _MobileStudentCardState extends State<MobileStudentCard> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.user!.uid);
     final size = MediaQuery.of(context).size;
     return Scaffold(
         appBar: ThemeAppBar(barTitle: '모바일 학생증'),

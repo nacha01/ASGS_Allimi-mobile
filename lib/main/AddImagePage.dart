@@ -3,12 +3,12 @@ import 'dart:io';
 import 'package:asgshighschool/component/ThemeAppBar.dart';
 import 'package:asgshighschool/util/NumberFormatter.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 
 import '../api/ApiUtil.dart';
 import '../component/DefaultButtonComp.dart';
+import '../util/ToastMessage.dart';
 
 class AddImagePage extends StatefulWidget {
   @override
@@ -160,13 +160,14 @@ class _AddImagePageState extends State<AddImagePage> {
                 if (img) {
                   var res = await _insertImageInfo(now, identified);
                   if (res) {
-                    Fluttertoast.showToast(msg: '이미지 등록에 성공하였습니다.');
+                    ToastMessage.show('이미지 등록이 완료되었습니다.');
+
                     Navigator.pop(context, true);
                   } else {
-                    Fluttertoast.showToast(msg: '이미지 등록에 실패하였습니다.');
+                    ToastMessage.show('이미지 등록에 실패했습니다.');
                   }
                 } else {
-                  Fluttertoast.showToast(msg: 'image failed');
+                  ToastMessage.show('Image Failed');
                 }
               },
               child: Container(

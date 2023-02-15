@@ -9,9 +9,10 @@ import 'package:asgshighschool/data/user.dart';
 import 'package:asgshighschool/store/user/UpdatePasswordPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+
+import '../../util/ToastMessage.dart';
 
 /// visible information
 /// 1. uid
@@ -92,7 +93,8 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
 
   /// 사용자(본인) 정보를 요청하는 작업
   Future<void> _getUserInfoRequest() async {
-    String url = '${ApiUtil.API_HOST}arlimi_getOneUser.php?uid=${widget.user!.uid}';
+    String url =
+        '${ApiUtil.API_HOST}arlimi_getOneUser.php?uid=${widget.user!.uid}';
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
@@ -480,27 +482,16 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
                                               var res =
                                                   await _updateUserInfoRequest();
                                               if (res) {
-                                                Fluttertoast.showToast(
-                                                    msg: "개인정보 수정이 완료되었습니다.",
-                                                    gravity:
-                                                        ToastGravity.BOTTOM,
-                                                    toastLength:
-                                                        Toast.LENGTH_SHORT);
+                                                ToastMessage.show(
+                                                    '개인정보 수정이 완료되었습니다.');
                                               } else {
-                                                Fluttertoast.showToast(
-                                                    msg: "개인정보 수정에 실패하였습니다!",
-                                                    gravity:
-                                                        ToastGravity.BOTTOM,
-                                                    toastLength:
-                                                        Toast.LENGTH_SHORT);
+                                                ToastMessage.show(
+                                                    '개인정보 수정에 실패했습니다.');
                                               }
                                               Navigator.pop(context);
                                             } else {
-                                              Fluttertoast.showToast(
-                                                  msg: "비밀번호가 올바르지 않습니다!",
-                                                  gravity: ToastGravity.BOTTOM,
-                                                  toastLength:
-                                                      Toast.LENGTH_SHORT);
+                                              ToastMessage.show(
+                                                  '비밀번호가 올바르지 않습니다.');
                                             }
                                           },
                                           child: Text('완료'))

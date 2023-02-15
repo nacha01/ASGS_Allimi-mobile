@@ -3,13 +3,13 @@ import 'package:asgshighschool/data/order_state.dart';
 import 'package:asgshighschool/data/status.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
 import '../../api/ApiUtil.dart';
 import '../../component/DefaultButtonComp.dart';
 import '../../component/ThemeAppBar.dart';
 import '../../util/NumberFormatter.dart';
+import '../../util/ToastMessage.dart';
 
 class ScanInfoPage extends StatefulWidget {
   final Map? orderData;
@@ -241,21 +241,12 @@ class _ScanInfoPageState extends State<ScanInfoPage> {
                                               var res =
                                                   await _orderCompleteRequest();
                                               if (res) {
-                                                Fluttertoast.showToast(
-                                                    msg:
-                                                        '성공적으로 주문 완료 처리 되었습니다.',
-                                                    gravity:
-                                                        ToastGravity.BOTTOM,
-                                                    toastLength:
-                                                        Toast.LENGTH_SHORT);
+                                                ToastMessage.show(
+                                                    '주문 완료 처리되었습니다.');
                                                 _terminateScreen();
                                               } else {
-                                                Fluttertoast.showToast(
-                                                    msg: '주문 완료 처리에 실패하였습니다.',
-                                                    gravity:
-                                                        ToastGravity.BOTTOM,
-                                                    toastLength:
-                                                        Toast.LENGTH_SHORT);
+                                                ToastMessage.show(
+                                                    '주문 완료 처리에 실패했습니다.');
                                               }
                                               Navigator.pop(ctx);
                                             },

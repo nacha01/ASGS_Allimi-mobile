@@ -5,10 +5,10 @@ import 'package:asgshighschool/data/user.dart';
 import '../../component/DefaultButtonComp.dart';
 import '../../component/ThemeAppBar.dart';
 import '../../util/NumberFormatter.dart';
+import '../../util/ToastMessage.dart';
 import 'StatisticsGuidePage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
 class StatisticsPage extends StatefulWidget {
@@ -147,8 +147,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
       _secondSelectionInResv = false;
       _secondSelectionInResv = false;
     });
-    Fluttertoast.showToast(
-        msg: '예약 설정에는 반드시 한개라도 체크가 되어 있어야 합니다. 자동으로 기본 체크 값으로 조회됩니다.');
+    ToastMessage.show('예약 설정에는 반드시 한개라도 체크가 되어 있어야 합니다. 자동으로 기본 체크 값으로 조회됩니다.');
     return 'orderState = 1 AND resv_state = 1';
   }
 
@@ -197,8 +196,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
       _secondSelectionInOrder = false;
       _thirdSelectionInOrder = false;
     });
-    Fluttertoast.showToast(
-        msg: '구매 설정에는 반드시 체크가 되어 있어야 합니다. 자동으로 기본 체크 값으로 조회됩니다.');
+    ToastMessage.show('구매 설정에는 반드시 체크가 되어 있어야 합니다. 자동으로 기본 체크 값으로 조회됩니다.');
     return '(orderState >= 1 AND orderState <= 3) AND resv_state = 0';
   }
 
@@ -730,8 +728,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
                                     if (diff.inDays >= 0) {
                                       _endDate = dateTime;
                                     } else {
-                                      Fluttertoast.showToast(
-                                          msg: '종료 날짜는 시작 날짜보다 같거나 작을 수 없습니다');
+                                      ToastMessage.show(
+                                          '종료 날짜는 시작 날짜보다 같거나 작을 수 없습니다.');
                                     }
                                   }
                                 });

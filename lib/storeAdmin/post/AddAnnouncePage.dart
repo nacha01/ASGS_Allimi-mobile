@@ -7,9 +7,10 @@ import '../../component/ThemeAppBar.dart';
 import '../../data/provider/renew_user.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+
+import '../../util/ToastMessage.dart';
 
 /// 공지사항 추가 및 수정 페이지
 /// [isUpdate] ? modify : add
@@ -112,15 +113,6 @@ class _AddAnnouncePageState extends State<AddAnnouncePage> {
     } else {
       _writer = Writer.NICKNAME;
     }
-  }
-
-  /// 토스트 메세지를 뿌려주는 작업
-  /// @param : 뿌려줄 메세지 문자열
-  void showToastMessage(String msg) {
-    Fluttertoast.showToast(
-        msg: msg,
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM);
   }
 
   @override
@@ -297,19 +289,19 @@ class _AddAnnouncePageState extends State<AddAnnouncePage> {
                               var res =
                                   await _updateAnnounceRequest(providedUser);
                               if (res) {
-                                showToastMessage('공지사항 수정에 성공하였습니다.');
+                                ToastMessage.show('공지사항 수정에 성공하였습니다.');
                                 Navigator.pop(context, _updatedAnnounceObj);
                               } else {
-                                showToastMessage('공지사항 수정에 실패하였습니다.');
+                                ToastMessage.show('공지사항 수정에 실패하였습니다.');
                               }
                             } else {
                               var res =
                                   await _registerAnnounceRequest(providedUser);
                               if (res) {
-                                showToastMessage('공지사항 등록에 성공하였습니다.');
+                                ToastMessage.show('공지사항 등록에 성공하였습니다.');
                                 Navigator.pop(context);
                               } else {
-                                showToastMessage('공지사항 등록에 실패하였습니다.');
+                                ToastMessage.show('공지사항 등록에 실패하였습니다.');
                               }
                             }
                           },

@@ -1,11 +1,11 @@
 import 'package:asgshighschool/api/ApiUtil.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
 import '../../component/DefaultButtonComp.dart';
 import '../../component/ThemeAppBar.dart';
+import '../../util/ToastMessage.dart';
 
 class InquirePage extends StatefulWidget {
   InquirePage({this.user});
@@ -180,10 +180,7 @@ class _InquirePageState extends State<InquirePage> {
                           );
                         });
                   } else {
-                    Fluttertoast.showToast(
-                        msg: '문의 글 등록에 실패하였습니다!',
-                        gravity: ToastGravity.BOTTOM,
-                        toastLength: Toast.LENGTH_SHORT);
+                    ToastMessage.show('문의 글 등록에 실패하였습니다!');
                   }
                 },
                 child: Text(

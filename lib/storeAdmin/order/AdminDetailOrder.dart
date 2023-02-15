@@ -5,9 +5,9 @@ import '../../api/ApiUtil.dart';
 import '../../component/DefaultButtonComp.dart';
 import '../../component/ThemeAppBar.dart';
 import '../../util/NumberFormatter.dart';
+import '../../util/ToastMessage.dart';
 import '../qr/QRScannerPage.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
 class AdminDetailOrder extends StatefulWidget {
@@ -240,19 +240,14 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
                             onPressed: () async {
                               var res = await _chargeOrderRequest();
                               if (res) {
-                                Fluttertoast.showToast(
-                                    msg: '주문 번호 ${widget.data!['oID']} 담당 완료 ',
-                                    gravity: ToastGravity.BOTTOM,
-                                    toastLength: Toast.LENGTH_SHORT);
+                                ToastMessage.show(
+                                    '주문 번호 ${widget.data!['oID']} 담당 완료 ');
                                 setState(() {
                                   _isCharged = true;
                                   _state = 2;
                                 });
                               } else {
-                                Fluttertoast.showToast(
-                                    msg: '문제가 발생하였습니다.',
-                                    gravity: ToastGravity.BOTTOM,
-                                    toastLength: Toast.LENGTH_SHORT);
+                                ToastMessage.show('문제가 발생하였습니다.');
                               }
                             },
                             child: Container(

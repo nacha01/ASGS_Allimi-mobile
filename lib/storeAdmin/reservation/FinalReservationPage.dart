@@ -1,15 +1,14 @@
-import 'dart:convert';
 import 'package:asgshighschool/api/ApiUtil.dart';
 import 'package:asgshighschool/component/ThemeAppBar.dart';
 import 'package:asgshighschool/data/category.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
 import '../../component/DefaultButtonComp.dart';
 import '../../util/NumberFormatter.dart';
+import '../../util/ToastMessage.dart';
 
 class FinalReservationPage extends StatefulWidget {
   final User? user;
@@ -258,13 +257,11 @@ class _FinalReservationPageState extends State<FinalReservationPage> {
                                 onPressed: () async {
                                   var res = await _convertFinishedState();
                                   if (res) {
-                                    Fluttertoast.showToast(
-                                        msg: '예약 완료처리가 성공적으로 완료 되었습니다!');
+                                    ToastMessage.show('예약 완료 처리되었습니다.');
                                     Navigator.pop(context);
                                     _terminateScreen();
                                   } else {
-                                    Fluttertoast.showToast(
-                                        msg: '예약 완료처리에 실패하였습니다!');
+                                    ToastMessage.show('예약 완료 처리에 실패했습니다.');
                                     Navigator.pop(context);
                                   }
                                 },

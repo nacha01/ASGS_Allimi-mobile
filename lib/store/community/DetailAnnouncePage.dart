@@ -1,12 +1,12 @@
 import 'package:asgshighschool/data/announce.dart';
 import 'package:asgshighschool/data/user.dart';
+import 'package:asgshighschool/util/ToastMessage.dart';
 import '../../api/ApiUtil.dart';
 import '../../component/DefaultButtonComp.dart';
 import '../../component/ThemeAppBar.dart';
 import '../../storeAdmin/post/AddAnnouncePage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
 import '../../util/UpperCaseTextFormatter.dart';
@@ -28,17 +28,6 @@ class _DetailAnnouncePageState extends State<DetailAnnouncePage> {
   bool _isUsable = false;
   Announce? _temp;
   TextEditingController _adminKeyController = TextEditingController();
-
-  /// 토스트 메세지를 띄워주는 작업
-  /// @param : message - 띄워줄 메세지 문자열
-  Future<bool?> showToast(String message, bool fail) {
-    return Fluttertoast.showToast(
-        msg: message,
-        toastLength: Toast.LENGTH_SHORT,
-        backgroundColor: Colors.white,
-        gravity: ToastGravity.BOTTOM,
-        textColor: fail ? Colors.deepOrange : Colors.black);
-  }
 
   /// 관리자임을 인증하는 HTTP 요청
   /// @param : HTTP GET : UID 값과 ADMIN KEY 값
@@ -206,9 +195,9 @@ class _DetailAnnouncePageState extends State<DetailAnnouncePage> {
                                                             if (res) {
                                                               Navigator.pop(
                                                                   ctx);
-                                                              showToast(
-                                                                  '삭제가 완료되었습니다.',
-                                                                  false);
+                                                              ToastMessage.show(
+                                                                  '삭제가 완료되었습니다.');
+
                                                               await Future.delayed(
                                                                   Duration(
                                                                       milliseconds:
@@ -219,14 +208,12 @@ class _DetailAnnouncePageState extends State<DetailAnnouncePage> {
                                                             } else {
                                                               Navigator.pop(
                                                                   ctx);
-                                                              showToast(
-                                                                  '삭제가 실패되었습니다.',
-                                                                  true);
+                                                              ToastMessage.show(
+                                                                  '삭제에 실패했습니다.');
                                                             }
                                                           } else {
-                                                            showToast(
-                                                                '인증에 실패하였습니다!',
-                                                                true);
+                                                            ToastMessage.show(
+                                                                '인증에 실패했습니다.');
                                                           }
                                                         },
                                                         child: Text('인증'))

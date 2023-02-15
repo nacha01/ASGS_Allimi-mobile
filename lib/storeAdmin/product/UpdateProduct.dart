@@ -6,12 +6,12 @@ import 'package:asgshighschool/data/category.dart';
 import 'package:asgshighschool/data/product.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 
 import '../../component/DefaultButtonComp.dart';
 import '../../component/ThemeAppBar.dart';
+import '../../util/ToastMessage.dart';
 
 List<List<Widget>> _optionDetailList = []; // 선택지 항목 위젯에 대한 2차원 리스트
 List<Widget> _optionCategoryList = []; // 옵션 항목 위젯에 대한 리스트
@@ -1357,10 +1357,8 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
                         message = '최종 상품 수정에 실패하였습니다!';
                         break;
                     }
-                    Fluttertoast.showToast(
-                        msg: message,
-                        toastLength: Toast.LENGTH_SHORT,
-                        gravity: ToastGravity.BOTTOM);
+                    ToastMessage.show(message);
+
                     Navigator.pop(context, true);
                   },
                 ),
@@ -1513,7 +1511,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
                     _streamControllerList
                         .removeAt(index); // index 에 해당하는 옵션 리스트의 스트림 객체를 지운다.
                   } else {
-                    Fluttertoast.showToast(msg: '마지막으로 추가한 옵션이 아닙니다!');
+                    ToastMessage.show('마지막으로 추가한 옵션이 아닙니다.');
                   }
                 },
                 icon: Icon(

@@ -91,15 +91,10 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   Future<void> _getBannerImage() async {
     String url =
-        'http://nacha01.dothome.co.kr/sin/main_getAllSelectedImage.php';
+        '${ApiUtil.API_HOST}main_getAllSelectedImage.php';
     final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
-      String result = utf8
-          .decode(response.bodyBytes)
-          .replaceAll(
-              '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-              '')
-          .trim();
+      String result = ApiUtil.getPureBody(response.bodyBytes);
       _bannerImgNameList.clear();
       List map1st = jsonDecode(result);
       for (int i = 0; i < map1st.length; ++i) {

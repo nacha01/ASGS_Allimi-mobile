@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:asgshighschool/notification/NotificationAction.dart';
 import 'package:asgshighschool/util/GlobalVariable.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 import '../data/foreground_noti.dart';
+import '../util/ToastMessage.dart';
 import 'auth/SignIn.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +33,7 @@ class _SplashPageState extends State<SplashPage> {
     FirebaseMessaging.onMessageOpenedApp.listen((event) {
       if (!GlobalVariable.isAuthorized) {
         // 로그인이 되어있지 않은 경우 => 로그인 페이지 상태에서 백그라운드 전환 시
-        Fluttertoast.showToast(msg: '로그인이 필요합니다.');
+        ToastMessage.show('로그인이 필요합니다.');
         NotificationPayload.isTap = true;
         NotificationPayload.setPayload(event.data['screen']);
       } else {

@@ -1,11 +1,11 @@
 import 'package:asgshighschool/api/ApiUtil.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
 import '../../component/DefaultButtonComp.dart';
 import '../../component/ThemeAppBar.dart';
+import '../../util/ToastMessage.dart';
 
 class UpdatePasswordPage extends StatefulWidget {
   UpdatePasswordPage({this.user});
@@ -188,10 +188,8 @@ class _UpdatePasswordPageState extends State<UpdatePasswordPage> {
                       msg = '성공적으로 변경이 완료되었습니다.';
                       break;
                   }
-                  Fluttertoast.showToast(
-                      msg: msg,
-                      toastLength: Toast.LENGTH_SHORT,
-                      gravity: ToastGravity.BOTTOM);
+                  ToastMessage.show(msg);
+
                   if (res == 1) {
                     Navigator.pop(context);
                   }

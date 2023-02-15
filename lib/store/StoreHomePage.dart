@@ -12,10 +12,10 @@ import '../storeAdmin/product/UpdateProduct.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
 import '../util/NumberFormatter.dart';
+import '../util/ToastMessage.dart';
 import '../util/UpperCaseTextFormatter.dart';
 
 class StoreHomePage extends StatefulWidget {
@@ -608,17 +608,6 @@ class _StoreHomePageState extends State<StoreHomePage>
       }
     }
     return false;
-  }
-
-  /// 토스트 메세지 출력
-  /// @param : message : 출력할 메세지, fail : 특정 동작에 대해 에러 발생 시 true
-  Future<bool?> showToast(String message, bool fail) {
-    return Fluttertoast.showToast(
-        msg: message,
-        toastLength: Toast.LENGTH_SHORT,
-        backgroundColor: Colors.white,
-        gravity: ToastGravity.BOTTOM,
-        textColor: fail ? Colors.deepOrange : Colors.black);
   }
 
   @override
@@ -1517,18 +1506,17 @@ class _StoreHomePageState extends State<StoreHomePage>
                                                                 .prodID); // DB에서 상품 삭제
                                                     if (res) {
                                                       Navigator.pop(ctx);
-                                                      showToast(
-                                                          '삭제가 완료되었습니다. 목록을 새로고침 바랍니다.',
-                                                          false);
+                                                      ToastMessage.show(
+                                                          '삭제가 완료되었습니다. 목록을 새로고침 바랍니다.');
                                                       await _getProducts();
                                                     } else {
                                                       Navigator.pop(ctx);
-                                                      showToast('삭제에 실패하였습니다!!',
-                                                          true);
+                                                      ToastMessage.show(
+                                                          '삭제에 실패했습니다.');
                                                     }
                                                   } else {
-                                                    showToast(
-                                                        '인증에 실패하였습니다!', true);
+                                                    ToastMessage.show(
+                                                        '인증에 실패했습니다.');
                                                   }
                                                 },
                                                 child: Text('인증'))
