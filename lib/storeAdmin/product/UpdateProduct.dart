@@ -44,9 +44,9 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
   var _cumulativeSellCount = TextEditingController();
   var _reservationCountController = TextEditingController();
   List _initOptionList = [];
-  PickedFile? _mainImage;
-  PickedFile? _subImage1;
-  PickedFile? _subImage2;
+  XFile? _mainImage;
+  XFile? _subImage1;
+  XFile? _subImage2;
 
   bool? _isBest = false;
   bool? _isNew = false;
@@ -71,7 +71,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
   /// [index] : {0 -> main, 1 -> sub1, 2 -> sub3}
   Future<void> _getImageFromGallery(int index) async {
     var image = await ImagePicker()
-        .getImage(source: ImageSource.gallery, imageQuality: 50);
+        .pickImage(source: ImageSource.gallery, imageQuality: 50);
     setState(() {
       _imageInitial = false;
       switch (index) {
@@ -92,7 +92,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
   /// [index] : {0 -> main, 1 -> sub1, 2 -> sub3}
   Future<void> _getImageFromCamera(int index) async {
     var image = await ImagePicker()
-        .getImage(source: ImageSource.camera, imageQuality: 50);
+        .pickImage(source: ImageSource.camera, imageQuality: 50);
     setState(() {
       _imageInitial = false;
       switch (index) {
@@ -111,7 +111,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
 
   /// 최종 요청하기 전 수정하고자 하는 이미지를 서버에 업데이트 요청을 하는 작업
   Future<bool> _updateImageBeforeRequest(
-      PickedFile img, String fileName, String? originName) async {
+      XFile img, String fileName, String? originName) async {
     var request = http.MultipartRequest(
         'POST', Uri.parse('${ApiUtil.API_HOST}arlimi_addImgForUpdate.php'));
     var picture = await http.MultipartFile.fromPath('imgFile', img.path,

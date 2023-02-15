@@ -16,16 +16,16 @@ class AddImagePage extends StatefulWidget {
 }
 
 class _AddImagePageState extends State<AddImagePage> {
-  PickedFile? _selectedImage;
+  XFile? _selectedImage;
 
   Future<void> _getImageFromGallery() async {
-    var image = await ImagePicker().getImage(source: ImageSource.gallery);
+    var image = await ImagePicker().pickImage(source: ImageSource.gallery);
     setState(() {
       _selectedImage = image;
     });
   }
 
-  Future<bool> _storeImage(PickedFile img, String fileName) async {
+  Future<bool> _storeImage(XFile img, String fileName) async {
     var request = http.MultipartRequest(
         'POST', Uri.parse('${ApiUtil.API_HOST}main_storeImage.php'));
     var picture = await http.MultipartFile.fromPath('imgFile', img.path,

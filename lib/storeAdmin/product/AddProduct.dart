@@ -52,9 +52,9 @@ class _AddingProductPageState extends State<AddingProductPage> {
   var _productExplainController = TextEditingController();
   var _reservationCountController = TextEditingController();
 
-  PickedFile? _mainImage;
-  PickedFile? _subImage1;
-  PickedFile? _subImage2;
+  XFile? _mainImage;
+  XFile? _subImage1;
+  XFile? _subImage2;
 
   bool? _isBest = false;
   bool? _isNew = false;
@@ -83,7 +83,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
   /// [index] = {0 : main, 1 : sub1, 2 : sub3}
   Future<void> _getImageFromGallery(int index) async {
     var image = await ImagePicker()
-        .getImage(source: ImageSource.gallery, imageQuality: 50);
+        .pickImage(source: ImageSource.gallery, imageQuality: 50);
     setState(() {
       switch (index) {
         case 0:
@@ -103,7 +103,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
   /// [index] = {0 -> main, 1 -> sub1, 2 -> sub3}
   Future<void> _getImageFromCamera(int index) async {
     var image = await ImagePicker()
-        .getImage(source: ImageSource.camera, imageQuality: 50);
+        .pickImage(source: ImageSource.camera, imageQuality: 50);
     setState(() {
       switch (index) {
         case 0:
@@ -124,7 +124,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
   /// @return : 정상적으로 저장했으면 true, 그렇지 않으면 false
   /// @response : complete0
   /// ※ Multipart 요청
-  Future<bool> _sendImageToServer(PickedFile img, String fileName) async {
+  Future<bool> _sendImageToServer(XFile img, String fileName) async {
     var request = http.MultipartRequest(
         'POST', Uri.parse('${ApiUtil.API_HOST}arlimi_storeImage.php'));
     var picture = await http.MultipartFile.fromPath('imgFile', img.path,
