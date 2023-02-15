@@ -3,6 +3,7 @@ import 'package:asgshighschool/data/user.dart';
 import '../../api/ApiUtil.dart';
 import '../../component/DefaultButtonComp.dart';
 import '../../component/ThemeAppBar.dart';
+import '../../util/NumberFormatter.dart';
 import '../qr/QRScannerPage.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -21,35 +22,6 @@ class AdminDetailOrder extends StatefulWidget {
 class _AdminDetailOrderState extends State<AdminDetailOrder> {
   bool _isCharged = false;
   int _state = 1;
-
-  /// 일반 숫자에 ,를 붙여서 직관적인 가격을 보이게 하는 작업
-  /// @param : 직관적인 가격을 보여줄 실제 int 가격[price]
-  /// @return : 직관적인 가격 문자열
-  String _formatPrice(int price) {
-    String p = price.toString();
-    String newFormat = '';
-    int count = 0;
-    for (int i = p.length - 1; i >= 0; --i) {
-      if ((count + 1) % 4 == 0) {
-        newFormat += ',';
-        ++i;
-      } else
-        newFormat += p[i];
-      ++count;
-    }
-    return _reverseString(newFormat);
-  }
-
-  /// 문자열을 뒤집는 작업
-  /// @param : 뒤집고 싶은 문자열[str]
-  /// @return : 뒤집은 문자열
-  String _reverseString(String str) {
-    String newStr = '';
-    for (int i = str.length - 1; i >= 0; --i) {
-      newStr += str[i];
-    }
-    return newStr;
-  }
 
   /// 등록된 날짜와 오늘의 날짜를 비교해서 어느 정도 차이가 있는지에 대한 문자열을 반환하는 작업
   /// n일 전, n시간 전, n분 전
@@ -279,7 +251,7 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
                         alignment: Alignment.center,
                         padding: EdgeInsets.all(size.width * 0.02),
                         child: Text(
-                          '총 결제 금액  ${_formatPrice(int.parse(widget.data!['totalPrice']))}원',
+                          '총 결제 금액  ${NumberFormatter.formatNumber(int.parse(widget.data!['totalPrice']))}원',
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 19),
                         ),
@@ -444,7 +416,7 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
           Row(
             children: [
               Text(
-                '정가 ${_formatPrice(price)}원',
+                '정가 ${NumberFormatter.formatNumber(price)}원',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               discount.toString() == '0.0'

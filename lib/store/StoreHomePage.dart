@@ -15,6 +15,7 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
+import '../util/NumberFormatter.dart';
 import '../util/UpperCaseTextFormatter.dart';
 
 class StoreHomePage extends StatefulWidget {
@@ -444,35 +445,6 @@ class _StoreHomePageState extends State<StoreHomePage>
       }
     }
     setState(() {});
-  }
-
-  /// 일반 숫자에 ,를 붙여서 직관적인 가격을 보이게 하는 작업
-  /// @param : 직관적인 가격을 보여줄 실제 int 가격[price]
-  /// @return : 직관적인 가격 문자열
-  String _formatPrice(int price) {
-    String p = price.toString();
-    String newFormat = '';
-    int count = 0;
-    for (int i = p.length - 1; i >= 0; --i) {
-      if ((count + 1) % 4 == 0) {
-        newFormat += ',';
-        ++i;
-      } else
-        newFormat += p[i];
-      ++count;
-    }
-    return _reverseString(newFormat);
-  }
-
-  /// 문자열을 뒤집는 작업
-  /// @param : 뒤집고 싶은 문자열[str]
-  /// @return : 뒤집은 문자열
-  String _reverseString(String str) {
-    String newStr = '';
-    for (int i = str.length - 1; i >= 0; --i) {
-      newStr += str[i];
-    }
-    return newStr;
   }
 
   /// 신규 상품 List 를 토대로 신규 상품 Widget List 에 추가
@@ -1635,7 +1607,7 @@ class _StoreHomePageState extends State<StoreHomePage>
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                '${_formatPrice(price)}원',
+                '${NumberFormatter.formatNumber(price)}원',
                 style: TextStyle(
                     color: product.discount.toString() != '0.0'
                         ? Colors.red
@@ -1649,7 +1621,7 @@ class _StoreHomePageState extends State<StoreHomePage>
               ),
               product.discount.toString() != '0.0'
                   ? Text(
-                      '  ${_formatPrice((product.price * (1 - (product.discount / 100.0))).round())}원',
+                      '  ${NumberFormatter.formatNumber((product.price * (1 - (product.discount / 100.0))).round())}원',
                       style: TextStyle(
                           fontWeight: FontWeight.bold, fontSize: 12.5),
                     )

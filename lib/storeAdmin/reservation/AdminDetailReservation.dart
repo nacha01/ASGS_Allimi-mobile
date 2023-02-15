@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
+import '../../util/NumberFormatter.dart';
+
 class AdminDetailReservation extends StatefulWidget {
   final List? reservationList;
   final User? user;
@@ -107,35 +109,6 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
     } else {
       return dayDiff.toString() + '일 전';
     }
-  }
-
-  /// 일반 숫자에 ,를 붙여서 직관적인 가격을 보이게 하는 작업
-  /// @param : 직관적인 가격을 보여줄 실제 int 가격[price]
-  /// @return : 직관적인 가격 문자열
-  String _formatPrice(int price) {
-    String p = price.toString();
-    String newFormat = '';
-    int count = 0;
-    for (int i = p.length - 1; i >= 0; --i) {
-      if ((count + 1) % 4 == 0) {
-        newFormat += ',';
-        ++i;
-      } else
-        newFormat += p[i];
-      ++count;
-    }
-    return _reverseString(newFormat);
-  }
-
-  /// 문자열을 뒤집는 작업
-  /// @param : 뒤집고 싶은 문자열[str]
-  /// @return : 뒤집은 문자열
-  String _reverseString(String str) {
-    String newStr = '';
-    for (int i = str.length - 1; i >= 0; --i) {
-      newStr += str[i];
-    }
-    return newStr;
   }
 
   @override
@@ -275,7 +248,7 @@ class _AdminDetailReservationState extends State<AdminDetailReservation> {
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                   ),
                   Text(
-                    ' ${_formatPrice(int.parse(_productReservationList[0]['detail'][0]['pInfo']['price']))}원',
+                    ' ${NumberFormatter.formatNumber(int.parse(_productReservationList[0]['detail'][0]['pInfo']['price']))}원',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                   )
                 ],

@@ -10,6 +10,7 @@ import 'package:http/http.dart' as http;
 
 import '../../api/ApiUtil.dart';
 import '../../component/DefaultButtonComp.dart';
+import '../../util/NumberFormatter.dart';
 
 class DetailReservationStatePage extends StatefulWidget {
   final User? user;
@@ -37,35 +38,6 @@ class _DetailReservationStatePageState
     String right = rightSp[0] + '시 ' + leftSp[1] + '분';
 
     return left + right;
-  }
-
-  /// 일반 숫자에 ,를 붙여서 직관적인 가격을 보이게 하는 작업
-  /// @param : 직관적인 가격을 보여줄 실제 int 가격[price]
-  /// @return : 직관적인 가격 문자열
-  String _formatPrice(int price) {
-    String p = price.toString();
-    String newFormat = '';
-    int count = 0;
-    for (int i = p.length - 1; i >= 0; --i) {
-      if ((count + 1) % 4 == 0) {
-        newFormat += ',';
-        ++i;
-      } else
-        newFormat += p[i];
-      ++count;
-    }
-    return _reverseString(newFormat);
-  }
-
-  /// 문자열을 뒤집는 작업
-  /// @param : 뒤집고 싶은 문자열[str]
-  /// @return : 뒤집은 문자열
-  String _reverseString(String str) {
-    String newStr = '';
-    for (int i = str.length - 1; i >= 0; --i) {
-      newStr += str[i];
-    }
-    return newStr;
   }
 
   /// 아직 미결제된 예약 정보에 대해서 예약 취소를 요청하는 작업
@@ -330,14 +302,14 @@ class _DetailReservationStatePageState
                             Row(
                               children: [
                                 Text(
-                                  '정가 ${_formatPrice(int.parse(widget.data!['detail'][0]['pInfo']['price']))}원',
+                                  '정가 ${NumberFormatter.formatNumber(int.parse(widget.data!['detail'][0]['pInfo']['price']))}원',
                                   style: TextStyle(fontWeight: FontWeight.bold),
                                 ),
                                 SizedBox(
                                   width: size.width * 0.05,
                                 ),
                                 Text(
-                                    '(총 금액 ${_formatPrice(int.parse(widget.data!['totalPrice']))}원)',
+                                    '(총 금액 ${NumberFormatter.formatNumber(int.parse(widget.data!['totalPrice']))}원)',
                                     style:
                                         TextStyle(fontWeight: FontWeight.bold))
                               ],

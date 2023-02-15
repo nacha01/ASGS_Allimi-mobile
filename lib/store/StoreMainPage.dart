@@ -6,7 +6,6 @@ import 'package:asgshighschool/store/community/AnnouncePage.dart';
 import 'package:asgshighschool/store/product/CartPage.dart';
 import 'package:asgshighschool/store/StoreHomePage.dart';
 import 'package:asgshighschool/store/StoreMyPage.dart';
-import '../storeAdmin/qr/QRScannerPage.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

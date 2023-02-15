@@ -14,6 +14,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
+import '../../util/NumberFormatter.dart';
+
 /// 장바구니 Item Field
 /// 1. cID[hidden]
 /// 2. cUID[hidden]
@@ -94,35 +96,6 @@ class _CartPageState extends State<CartPage> {
     } else {
       return false;
     }
-  }
-
-  /// 일반 숫자에 ,를 붙여서 직관적인 가격을 보이게 하는 작업
-  /// @param : 직관적인 가격을 보여줄 실제 int 가격[price]
-  /// @return : 직관적인 가격 문자열
-  String _formatPrice(int price) {
-    String p = price.toString();
-    String newFormat = '';
-    int count = 0;
-    for (int i = p.length - 1; i >= 0; --i) {
-      if ((count + 1) % 4 == 0) {
-        newFormat += ',';
-        ++i;
-      } else
-        newFormat += p[i];
-      ++count;
-    }
-    return _reverseString(newFormat);
-  }
-
-  /// 문자열을 뒤집는 작업
-  /// @param : 뒤집고 싶은 문자열[str]
-  /// @return : 뒤집은 문자열
-  String _reverseString(String str) {
-    String newStr = '';
-    for (int i = str.length - 1; i >= 0; --i) {
-      newStr += str[i];
-    }
-    return newStr;
   }
 
   /// 특정 상품에 대해 할인율과 개수를 적용해 그 상품의 총 가격을 구하는 작업
@@ -291,7 +264,7 @@ class _CartPageState extends State<CartPage> {
                           width: size.width * 0.05,
                         ),
                         Text(
-                          '${_formatPrice(_totalPrice() + _allAdditionalPrice)}원  결제하기',
+                          '${NumberFormatter.formatNumber(_totalPrice() + _allAdditionalPrice)}원  결제하기',
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Colors.black,
@@ -359,7 +332,7 @@ class _CartPageState extends State<CartPage> {
                   ]),
                 ),
                 Text(
-                  '· 정가 : ${_formatPrice(int.parse(cartItem['price']))}원',
+                  '· 정가 : ${NumberFormatter.formatNumber(int.parse(cartItem['price']))}원',
                   style: TextStyle(fontSize: 13),
                 ),
                 double.parse(cartItem['discount']).toString() != '0.0'
@@ -493,7 +466,7 @@ class _CartPageState extends State<CartPage> {
                       padding: EdgeInsets.all(size.width * 0.01),
                       margin: EdgeInsets.only(bottom: size.width * 0.008),
                       child: Text(
-                        '${_formatPrice(_calculateTotalEachPrice(int.parse(cartItem['price']), double.parse(cartItem['discount']), _countList[index]) + int.parse(cartItem['optionPrice']))}원',
+                        '${NumberFormatter.formatNumber(_calculateTotalEachPrice(int.parse(cartItem['price']), double.parse(cartItem['discount']), _countList[index]) + int.parse(cartItem['optionPrice']))}원',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 15),
                       )),

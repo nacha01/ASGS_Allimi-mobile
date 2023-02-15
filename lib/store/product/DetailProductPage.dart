@@ -16,6 +16,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
+import '../../util/NumberFormatter.dart';
+
 /// 상품의 재고는 실제 재고보다 5개 작게 보여준다. 2021/09/21
 /// 위의 기능 철회. 2022/01/02 (online & offline 통합 재고관리 불가능)
 
@@ -40,37 +42,6 @@ class _DetailProductPageState extends State<DetailProductPage> {
   String _optionString = '';
   int _additionalPrice = 0;
   String _errorMessage = '';
-
-  /// 일반 숫자에 ,를 붙여서 직관적인 가격을 보이게 하는 작업
-  /// @param : 직관적인 가격을 보여줄 실제 int 가격[price]
-  /// @return : 직관적인 가격 문자열
-  String _formatPrice(int price) {
-    if (price < 0) price = -price;
-    String p = price.toString();
-    String newFormat = '';
-    int count = 0;
-    for (int i = p.length - 1; i >= 0; --i) {
-      if ((count + 1) % 4 == 0) {
-        newFormat += ',';
-        ++i;
-      } else
-        newFormat += p[i];
-      ++count;
-    }
-    print(newFormat);
-    return _reverseString(newFormat);
-  }
-
-  /// 문자열을 뒤집는 작업
-  /// @param : 뒤집고 싶은 문자열[str]
-  /// @return : 뒤집은 문자열
-  String _reverseString(String str) {
-    String newStr = '';
-    for (int i = str.length - 1; i >= 0; --i) {
-      newStr += str[i];
-    }
-    return newStr;
-  }
 
   void _preProcessForOptions() {
     if (!_hasOption) {
@@ -361,7 +332,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              '${_formatPrice(widget.product!.price)}원',
+                              '${NumberFormatter.formatNumber(widget.product!.price)}원',
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   decoration: _isDiscountZero
@@ -375,7 +346,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                             _isDiscountZero
                                 ? Text('')
                                 : Text(
-                                    ' → ${_formatPrice((widget.product!.price * (1 - (widget.product!.discount / 100.0))).round())}원',
+                                    ' → ${NumberFormatter.formatNumber((widget.product!.price * (1 - (widget.product!.discount / 100.0))).round())}원',
                                     style: TextStyle(fontSize: 19),
                                   )
                           ],
@@ -499,7 +470,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                         child: Container(
                       padding: EdgeInsets.all(size.width * 0.03),
                       child: Text(
-                        '※ 개당 총 가격 ${_formatPrice(((widget.product!.price * (1 - (widget.product!.discount / 100.0))) + _optionSummation()).round())}원',
+                        '※ 개당 총 가격 ${NumberFormatter.formatNumber(((widget.product!.price * (1 - (widget.product!.discount / 100.0))) + _optionSummation()).round())}원',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 15),
                       ),
@@ -650,7 +621,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                                 Icon(Icons.payment_rounded,
                                     color: Colors.grey[300], size: 33),
                                 Text(
-                                  '${_formatPrice(((widget.product!.price * (1 - (widget.product!.discount / 100.0)) + _optionSummation()) * _count).round())}원 결제하기',
+                                  '${NumberFormatter.formatNumber(((widget.product!.price * (1 - (widget.product!.discount / 100.0)) + _optionSummation()) * _count).round())}원 결제하기',
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       color: Colors.grey[300]),
@@ -823,7 +794,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
             style: TextStyle(fontSize: 13),
           )),
           Text(
-              '${int.parse(data['optionPrice']) < 0 ? '-' : '+'}${_formatPrice(int.parse(data['optionPrice']))}원')
+              '${int.parse(data['optionPrice']) < 0 ? '-' : '+'}${NumberFormatter.formatNumber(int.parse(data['optionPrice']))}원')
         ],
       ),
     );

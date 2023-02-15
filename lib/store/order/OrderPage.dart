@@ -10,6 +10,7 @@ import 'package:http/http.dart' as http;
 import '../../component/CorporationComp.dart';
 import '../../component/DefaultButtonComp.dart';
 import '../../component/ThemeAppBar.dart';
+import '../../util/NumberFormatter.dart';
 
 class OrderPage extends StatefulWidget {
   OrderPage(
@@ -149,35 +150,6 @@ class _OrderPageState extends State<OrderPage> {
     } else {
       return false;
     }
-  }
-
-  /// 일반 숫자에 ,를 붙여서 직관적인 가격을 보이게 하는 작업
-  /// @param : 직관적인 가격을 보여줄 실제 int 가격[price]
-  /// @return : 직관적인 가격 문자열
-  String _formatPrice(int price) {
-    String p = price.toString();
-    String newFormat = '';
-    int count = 0;
-    for (int i = p.length - 1; i >= 0; --i) {
-      if ((count + 1) % 4 == 0) {
-        newFormat += ',';
-        ++i;
-      } else
-        newFormat += p[i];
-      ++count;
-    }
-    return _reverseString(newFormat);
-  }
-
-  /// 문자열을 뒤집는 작업
-  /// @param : 뒤집고 싶은 문자열[str]
-  /// @return : 뒤집은 문자열
-  String _reverseString(String str) {
-    String newStr = '';
-    for (int i = str.length - 1; i >= 0; --i) {
-      newStr += str[i];
-    }
-    return newStr;
   }
 
   /// 총 원가격의 금액을 구하는 작업
@@ -440,14 +412,15 @@ class _OrderPageState extends State<OrderPage> {
                                   ],
                                 ),
                                 Text(
-                                    '${_formatPrice(_getOriginTotalPrice())} 원')
+                                    '${NumberFormatter.formatNumber(_getOriginTotalPrice())} 원')
                               ],
                             ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text('총 할인 금액'),
-                                Text('- ${_formatPrice(_getTotalDiscount())} 원')
+                                Text(
+                                    '- ${NumberFormatter.formatNumber(_getTotalDiscount())} 원')
                               ],
                             ),
                             Divider(
@@ -465,7 +438,7 @@ class _OrderPageState extends State<OrderPage> {
                                       fontWeight: FontWeight.bold),
                                 ),
                                 Text(
-                                    '${_formatPrice((_getOriginTotalPrice() - _getTotalDiscount()))} 원',
+                                    '${NumberFormatter.formatNumber((_getOriginTotalPrice() - _getTotalDiscount()))} 원',
                                     style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold))
@@ -577,7 +550,7 @@ class _OrderPageState extends State<OrderPage> {
                     color: Color(0xFF9EE1E5)),
                 width: size.width,
                 child: Text(
-                  '${_formatPrice((_getOriginTotalPrice() - _getTotalDiscount()))} 원 결제 및 구매하기',
+                  '${NumberFormatter.formatNumber((_getOriginTotalPrice() - _getTotalDiscount()))} 원 결제 및 구매하기',
                   style: TextStyle(
                       fontWeight: FontWeight.bold, color: Colors.black),
                 ),

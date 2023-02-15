@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 import '../../api/ApiUtil.dart';
 import '../../component/DefaultButtonComp.dart';
 import '../../component/ThemeAppBar.dart';
+import '../../util/NumberFormatter.dart';
 
 class ScanInfoPage extends StatefulWidget {
   final Map? orderData;
@@ -22,40 +23,6 @@ class ScanInfoPage extends StatefulWidget {
 }
 
 class _ScanInfoPageState extends State<ScanInfoPage> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  /// 일반 숫자에 ,를 붙여서 직관적인 가격을 보이게 하는 작업
-  /// @param : 직관적인 가격을 보여줄 실제 int 가격[price]
-  /// @return : 직관적인 가격 문자열
-  String _formatPrice(int price) {
-    String p = price.toString();
-    String newFormat = '';
-    int count = 0;
-    for (int i = p.length - 1; i >= 0; --i) {
-      if ((count + 1) % 4 == 0) {
-        newFormat += ',';
-        ++i;
-      } else
-        newFormat += p[i];
-      ++count;
-    }
-    return _reverseString(newFormat);
-  }
-
-  /// 문자열을 뒤집는 작업
-  /// @param : 뒤집고 싶은 문자열[str]
-  /// @return : 뒤집은 문자열
-  String _reverseString(String str) {
-    String newStr = '';
-    for (int i = str.length - 1; i >= 0; --i) {
-      newStr += str[i];
-    }
-    return newStr;
-  }
-
   Future<bool> _orderCompleteRequest() async {
     String url = '${ApiUtil.API_HOST}arlimi_completeOrder.php';
     final response =
@@ -188,7 +155,7 @@ class _ScanInfoPageState extends State<ScanInfoPage> {
                     Padding(
                       padding: EdgeInsets.all(size.width * 0.01),
                       child: Text(
-                          '결제 금액:  ${_formatPrice(int.parse(widget.orderData!['totalPrice']))}원',
+                          '결제 금액:  ${NumberFormatter.formatNumber(int.parse(widget.orderData!['totalPrice']))}원',
                           style: TextStyle(fontWeight: FontWeight.bold)),
                     ),
                     Padding(
@@ -376,7 +343,7 @@ class _ScanInfoPageState extends State<ScanInfoPage> {
           Row(
             children: [
               Text(
-                '정가 ${_formatPrice(price)}원',
+                '정가 ${NumberFormatter.formatNumber(price)}원',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               discount.toString() == '0.0'

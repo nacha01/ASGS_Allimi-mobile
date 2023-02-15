@@ -11,6 +11,7 @@ import 'package:http/http.dart' as http;
 import 'package:cp949_dart/cp949_dart.dart' as cp949;
 
 import '../../component/DefaultButtonComp.dart';
+import '../../util/NumberFormatter.dart';
 
 class OrderStatePage extends StatefulWidget {
   OrderStatePage({this.user});
@@ -69,35 +70,6 @@ class _OrderStatePageState extends State<OrderStatePage> {
   /// yyyy-mm-dd hh:mm:ss  ->  mm/dd hh:mm
   String _formatForItemDate(String date) {
     return date.substring(5, 16).replaceAll('-', '/');
-  }
-
-  /// 일반 숫자에 ,를 붙여서 직관적인 가격을 보이게 하는 작업
-  /// @param : 직관적인 가격을 보여줄 실제 int 가격[price]
-  /// @return : 직관적인 가격 문자열
-  String _formatPrice(int price) {
-    String p = price.toString();
-    String newFormat = '';
-    int count = 0;
-    for (int i = p.length - 1; i >= 0; --i) {
-      if ((count + 1) % 4 == 0) {
-        newFormat += ',';
-        ++i;
-      } else
-        newFormat += p[i];
-      ++count;
-    }
-    return _reverseString(newFormat);
-  }
-
-  /// 문자열을 뒤집는 작업
-  /// @param : 뒤집고 싶은 문자열[str]
-  /// @return : 뒤집은 문자열
-  String _reverseString(String str) {
-    String newStr = '';
-    for (int i = str.length - 1; i >= 0; --i) {
-      newStr += str[i];
-    }
-    return newStr;
   }
 
   @override
@@ -371,7 +343,7 @@ class _OrderStatePageState extends State<OrderStatePage> {
                 Padding(
                   padding: EdgeInsets.all(size.width * 0.01),
                   child: Text(
-                    '${_formatPrice(int.parse(orderJson['totalPrice']))}원',
+                    '${NumberFormatter.formatNumber(int.parse(orderJson['totalPrice']))}원',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
                   ),
                 )

@@ -4,7 +4,6 @@ import 'package:asgshighschool/data/category.dart';
 import '../../api/ApiUtil.dart';
 import '../../component/CorporationComp.dart';
 import '../../component/DefaultButtonComp.dart';
-import '../../data/provider/exist_cart.dart';
 import 'package:asgshighschool/data/product.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:crypto/crypto.dart';
@@ -12,7 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:hex/hex.dart';
 import 'package:http/http.dart' as http;
 import 'package:cp949_dart/cp949_dart.dart' as cp949;
-import 'package:provider/provider.dart';
+
+import '../../util/NumberFormatter.dart';
 
 class PaymentCompletePage extends StatefulWidget {
   PaymentCompletePage(
@@ -56,35 +56,6 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
       '0DVRz8vSDD5HvkWRwSxpjVhhx7OlXEViTciw5lBQAvSyYya9yf0K0Is+JbwiR9yYC96rEH2XIbfzeHXgqzSAFQ==';
   static const _MID = 'asgscoop1m';
   String _ediDate = '';
-
-  /// 일반 숫자에 ,를 붙여서 직관적인 가격을 보이게 하는 작업
-  /// @param : 직관적인 가격을 보여줄 실제 int 가격[price]
-  /// @return : 직관적인 가격 문자열
-  String _formatPrice(int price) {
-    String p = price.toString();
-    String newFormat = '';
-    int count = 0;
-    for (int i = p.length - 1; i >= 0; --i) {
-      if ((count + 1) % 4 == 0) {
-        newFormat += ',';
-        ++i;
-      } else
-        newFormat += p[i];
-      ++count;
-    }
-    return _reverseString(newFormat);
-  }
-
-  /// 문자열을 뒤집는 작업
-  /// @param : 뒤집고 싶은 문자열[str]
-  /// @return : 뒤집은 문자열
-  String _reverseString(String str) {
-    String newStr = '';
-    for (int i = str.length - 1; i >= 0; --i) {
-      newStr += str[i];
-    }
-    return newStr;
-  }
 
   /// 주문을 등록하는 요청
   Future<bool> _addOrderRequest() async {
@@ -233,8 +204,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
 
   /// 장바구니에서 결제를 시도한다면 장바구니에 있는 데이터들을 지우는 요청
   Future<bool> _deleteCartRequest(int cid) async {
-    String url =
-        '${ApiUtil.API_HOST}arlimi_deleteCart.php?cid=$cid';
+    String url = '${ApiUtil.API_HOST}arlimi_deleteCart.php?cid=$cid';
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
@@ -247,8 +217,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
   /// 각 상품의 수량을 [quantity]만큼 [operator] 연산자로 수정하는 요청
   Future<bool> _updateProductCountRequest(
       int pid, int? quantity, String operator) async {
-    String url =
-        '${ApiUtil.API_HOST}arlimi_updateProductCount.php';
+    String url = '${ApiUtil.API_HOST}arlimi_updateProductCount.php';
     final response = await http.post(Uri.parse(url), body: <String, String>{
       'pid': pid.toString(),
       'quantity': quantity.toString(),
@@ -264,8 +233,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
   /// 각 상품의 누적 판매수를 반영하는 요청
   Future<bool> _updateEachProductSellCountRequest(
       int pid, int? quantity, String operator) async {
-    String url =
-        '${ApiUtil.API_HOST}arlimi_updateProductSellCount.php';
+    String url = '${ApiUtil.API_HOST}arlimi_updateProductSellCount.php';
     final response = await http
         .get(Uri.parse(url + '?pid=$pid&quantity=$quantity&oper=$operator'));
     if (response.statusCode == 200) {
@@ -461,7 +429,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
                   width: size.width * 0.6,
                   padding: EdgeInsets.all(size.width * 0.02),
                   child: Text(
-                    '결제 금액  ${_formatPrice(int.parse(widget.responseData!['Amt']))}원',
+                    '결제 금액  ${NumberFormatter.formatNumber(int.parse(widget.responseData!['Amt']))}원',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                   ),
                 ),

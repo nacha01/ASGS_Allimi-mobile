@@ -4,6 +4,7 @@ import 'package:asgshighschool/data/category.dart';
 import 'package:asgshighschool/data/user.dart';
 import '../../component/DefaultButtonComp.dart';
 import '../../component/ThemeAppBar.dart';
+import '../../util/NumberFormatter.dart';
 import 'StatisticsGuidePage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -335,35 +336,6 @@ class _StatisticsPageState extends State<StatisticsPage> {
     return _endDate.toString().split(' ')[0] +
         ' ' +
         (_endTime == '설정 없음' ? '00:00' : _endTime);
-  }
-
-  /// 일반 숫자에 ,를 붙여서 직관적인 가격을 보이게 하는 작업
-  /// @param : 직관적인 가격을 보여줄 실제 int 가격[price]
-  /// @return : 직관적인 가격 문자열
-  String _formatPrice(int price) {
-    String p = price.toString();
-    String newFormat = '';
-    int count = 0;
-    for (int i = p.length - 1; i >= 0; --i) {
-      if ((count + 1) % 4 == 0) {
-        newFormat += ',';
-        ++i;
-      } else
-        newFormat += p[i];
-      ++count;
-    }
-    return _reverseString(newFormat);
-  }
-
-  /// 문자열을 뒤집는 작업
-  /// @param : 뒤집고 싶은 문자열[str]
-  /// @return : 뒤집은 문자열
-  String _reverseString(String str) {
-    String newStr = '';
-    for (int i = str.length - 1; i >= 0; --i) {
-      newStr += str[i];
-    }
-    return newStr;
   }
 
   /// 매출 통계에서 현재 지정한 날짜 단위에 따른 결과를 리스트를 만드는 작업
@@ -1012,7 +984,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                             height: size.height * 0.1,
                             alignment: Alignment.center,
                             child: Text(
-                              '${_salesValue == 'NO RESULT' || _salesValue == '' ? '0원' : _formatPrice(int.parse(_salesValue)) + '원'}',
+                              '${_salesValue == 'NO RESULT' || _salesValue == '' ? '0원' : NumberFormatter.formatNumber(int.parse(_salesValue)) + '원'}',
                               style: TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 18),
                             ),
@@ -1719,7 +1691,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                   _selectedDate == '주간' ? size.width * 0.3 : size.width * 0.45,
               alignment: Alignment.center,
               child: Text(
-                _formatPrice(momentSale) + '원',
+                NumberFormatter.formatNumber(momentSale) + '원',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
             ),

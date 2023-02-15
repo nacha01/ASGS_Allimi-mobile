@@ -1,6 +1,7 @@
 import 'package:asgshighschool/component/ThemeAppBar.dart';
 import 'package:asgshighschool/data/category.dart';
 import 'package:asgshighschool/data/user.dart';
+import 'package:asgshighschool/util/NumberFormatter.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
@@ -66,35 +67,6 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
     String right = rightSp[0] + '시 ' + leftSp[1] + '분';
 
     return left + right;
-  }
-
-  /// 일반 숫자에 ,를 붙여서 직관적인 가격을 보이게 하는 작업
-  /// @param : 직관적인 가격을 보여줄 실제 int 가격[price]
-  /// @return : 직관적인 가격 문자열
-  String _formatPrice(int price) {
-    String p = price.toString();
-    String newFormat = '';
-    int count = 0;
-    for (int i = p.length - 1; i >= 0; --i) {
-      if ((count + 1) % 4 == 0) {
-        newFormat += ',';
-        ++i;
-      } else
-        newFormat += p[i];
-      ++count;
-    }
-    return _reverseString(newFormat);
-  }
-
-  /// 문자열을 뒤집는 작업
-  /// @param : 뒤집고 싶은 문자열[str]
-  /// @return : 뒤집은 문자열
-  String _reverseString(String str) {
-    String newStr = '';
-    for (int i = str.length - 1; i >= 0; --i) {
-      newStr += str[i];
-    }
-    return newStr;
   }
 
   /// 이 주문에 포함된 상품들의 원가격에 대한 총 가격을 구하는 작업
@@ -396,7 +368,7 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
                     child: Padding(
                       padding: EdgeInsets.all(size.width * 0.04),
                       child: Text(
-                        '최종 결제 금액 ${_formatPrice(int.parse(widget.order!['totalPrice']))}원',
+                        '최종 결제 금액 ${NumberFormatter.formatNumber(int.parse(widget.order!['totalPrice']))}원',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 16),
                       ),
@@ -447,7 +419,7 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
           Row(
             children: [
               Text(
-                '정가 ${_formatPrice(int.parse(productMap['price']))}원',
+                '정가 ${NumberFormatter.formatNumber(int.parse(productMap['price']))}원',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               SizedBox(
