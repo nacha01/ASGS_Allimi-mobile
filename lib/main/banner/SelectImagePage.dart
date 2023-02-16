@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:asgshighschool/api/ApiUtil.dart';
 import 'package:asgshighschool/component/ThemeAppBar.dart';
-import 'package:asgshighschool/main/AddImagePage.dart';
+import 'package:asgshighschool/main/banner/AddImagePage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;

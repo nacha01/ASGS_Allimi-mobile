@@ -1,7 +1,7 @@
 import 'package:badges/badges.dart';
 import '../data/provider/exist_cart.dart';
 import 'package:asgshighschool/data/user.dart';
-import 'package:asgshighschool/main/GameListPage.dart';
+import 'package:asgshighschool/games/GameListPage.dart';
 import 'package:asgshighschool/store/community/AnnouncePage.dart';
 import 'package:asgshighschool/store/product/CartPage.dart';
 import 'package:asgshighschool/store/StoreHomePage.dart';
