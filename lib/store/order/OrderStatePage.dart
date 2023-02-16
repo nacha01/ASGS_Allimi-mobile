@@ -5,11 +5,10 @@ import 'package:asgshighschool/data/category.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:asgshighschool/store/order/DetailOrderStatePage.dart';
 import 'package:asgshighschool/util/DateFormatter.dart';
-import 'package:crypto/crypto.dart';
+import 'package:asgshighschool/util/PaymentUtil.dart';
 import 'package:flutter/material.dart';
-import 'package:hex/hex.dart';
-import 'package:http/http.dart' as http;
 import 'package:cp949_dart/cp949_dart.dart' as cp949;
+import 'package:http/http.dart' as http;
 
 import '../../component/DefaultButtonComp.dart';
 import '../../util/NumberFormatter.dart';
@@ -26,11 +25,7 @@ class OrderStatePage extends StatefulWidget {
 class _OrderStatePageState extends State<OrderStatePage> {
   List _orderMap = [];
   Map? _cancelResponse;
-
   String _ediDate = '';
-  static const _KEY =
-      '0DVRz8vSDD5HvkWRwSxpjVhhx7OlXEViTciw5lBQAvSyYya9yf0K0Is+JbwiR9yYC96rEH2XIbfzeHXgqzSAFQ==';
-  static const _MID = 'asgscoop1m';
 
   /// 나(uid)의 모든 주문한 내역(현황)들을 요청하는 작업
   Future<bool> _getOrderInfoRequest() async {
@@ -46,7 +41,6 @@ class _OrderStatePageState extends State<OrderStatePage> {
 
       for (int i = 0; i < map1st.length; ++i) {
         map1st[i] = json.decode(map1st[i]);
-        print('maplst $map1st[i]');
 
         /// 2차 내부 json 내용 파싱
         for (int j = 0; j < map1st[i]['detail'].length; ++j) {
@@ -124,34 +118,23 @@ class _OrderStatePageState extends State<OrderStatePage> {
     }
   }
 
-  String _getSignData(int cancelAmt) {
-    return HEX.encode(sha256
-        .convert(utf8.encode(_MID + cancelAmt.toString() + _ediDate + _KEY))
-        .bytes);
-  }
-
   Future<String?> _cancelPaymentRequest(orderJson) async {
-    String url = 'https://webapi.nicepay.co.kr/webapi/cancel_process.jsp';
-    _ediDate = DateTime.now()
-        .toString()
-        .replaceAll('-', '')
-        .replaceAll(' ', '')
-        .replaceAll(':', '')
-        .split('.')[0];
+    _ediDate = PaymentUtil.getEdiDate();
 
-    final response = await http.post(Uri.parse(url), body: <String, String?>{
+    final response = await http
+        .post(Uri.parse(PaymentUtil.CANCEL_API_URL), body: <String, String?>{
       'TID': orderJson['tid'],
-      'MID': _MID,
+      'MID': PaymentUtil.MID,
       'Moid': orderJson['oID'],
       'CancelAmt': int.parse(orderJson['totalPrice']).toString(),
       'CancelMsg': '결제자의 요청에 의한 취소',
       'PartialCancelCode': '0',
       'EdiDate': _ediDate,
-      'SignData': _getSignData(int.parse(orderJson['totalPrice'])),
+      'SignData': PaymentUtil.encryptCancel(
+          int.parse(orderJson['totalPrice']), _ediDate),
       'CharSet': 'euc-kr',
       'EdiType': 'JSON'
     });
-    print(response.statusCode);
     if (response.statusCode == 200) {
       _cancelResponse = jsonDecode(cp949.decode(response.bodyBytes)); //???
       return _cancelResponse!['ResultCode'];

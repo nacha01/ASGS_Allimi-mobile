@@ -1,14 +1,12 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:asgshighschool/data/product.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:asgshighschool/store/payment/PaymentCompletePage.dart';
-import 'package:crypto/crypto.dart';
+import 'package:asgshighschool/util/PaymentUtil.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'package:hex/hex.dart';
 import 'package:cp949_dart/cp949_dart.dart' as cp949;
 import 'package:url_launcher/url_launcher_string.dart';
 
@@ -51,21 +49,10 @@ class PaymentWebViewPage extends StatefulWidget {
 
 class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
   late InAppWebViewController _inAppWebViewController;
-  static const platform = MethodChannel('asgs');
-  static const _KEY =
-      '0DVRz8vSDD5HvkWRwSxpjVhhx7OlXEViTciw5lBQAvSyYya9yf0K0Is+JbwiR9yYC96rEH2XIbfzeHXgqzSAFQ==';
-  static const _MID = 'asgscoop1m';
-  static const _RETURN_URL = 'http://nacha01.dothome.co.kr/sin/result_test.php';
   String _ediDate = '';
   bool _isCart = true;
   String? _goodsName = '';
   int _totalPrice = 0;
-
-  String _getSignData() {
-    return HEX.encode(sha256
-        .convert(utf8.encode(_ediDate + _MID + _totalPrice.toString() + _KEY))
-        .bytes);
-  }
 
   bool _isAppLink(String url) {
     final appScheme = Uri.parse(url).scheme;
@@ -78,7 +65,7 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
 
   Future<String?> getAppUrlForAndroid(String url) async {
     if (Platform.isAndroid) {
-      return await platform
+      return await PaymentUtil.PLATFORM_CHANNEL
           .invokeMethod('getAppUrlForAndroid', <String, Object>{'url': url});
     } else {
       return url;
@@ -87,7 +74,7 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
 
   Future<String?> getMarketUrlForAndroid(String url) async {
     if (Platform.isAndroid) {
-      return await platform
+      return await PaymentUtil.PLATFORM_CHANNEL
           .invokeMethod('getMarketUrlForAndroid', <String, Object>{'url': url});
     } else {
       return url;
@@ -181,12 +168,7 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
     }
     _setGoodsName();
     _totalPrice = _obtainTotalPrice();
-    _ediDate = DateTime.now()
-        .toString()
-        .replaceAll('-', '')
-        .replaceAll(' ', '')
-        .replaceAll(':', '')
-        .split('.')[0];
+    _ediDate = PaymentUtil.getEdiDate();
     super.initState();
   }
 
@@ -279,7 +261,6 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
           _inAppWebViewController.addJavaScriptHandler(
               handlerName: 'responseHandler',
               callback: (args) {
-                print(args[0][1]);
                 Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
@@ -301,14 +282,14 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
               });
 
           _inAppWebViewController.postUrl(
-              url: Uri.parse('https://web.nicepay.co.kr/v3/v3Payment.jsp'),
+              url: Uri.parse(PaymentUtil.PAY_API_URL),
               postData: Uint8List.fromList(cp949.encode('GoodsName=$_goodsName&'
                   'Amt=$_totalPrice&'
-                  'MID=$_MID&'
-                  'ReturnURL=$_RETURN_URL&'
+                  'MID=${PaymentUtil.MID}&'
+                  'ReturnURL=${PaymentUtil.REDIRECT_URL}&'
                   'EdiDate=$_ediDate&'
                   'Moid=${widget.oID}&'
-                  'SignData=${_getSignData()}&'
+                  'SignData=${PaymentUtil.encryptAuthentication(_totalPrice, _ediDate)}&'
                   'CharSet=euc-kr&'
                   'PayMethod=CARD&'
                   'BuyerName=${widget.user!.name}')));

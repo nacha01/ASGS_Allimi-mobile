@@ -272,53 +272,6 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
               SizedBox(
                 height: size.height * 0.01,
               ),
-              /*
-              Card(
-                child: Container(
-                  height: size.height * 0.2,
-                  padding: EdgeInsets.all(size.width * 0.05),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('원가 총 금액'),
-                          Text('${_formatPrice(_getOriginTotalPrice())} 원')
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('총 할인 금액'),
-                          Text('- ${_formatPrice(_getTotalDiscount())} 원')
-                        ],
-                      ),
-                      Divider(
-                        thickness: 2,
-                        indent: 1,
-                        endIndent: 1,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            '최종 결제 금액',
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                              '${_formatPrice(_getOriginTotalPrice() - _getTotalDiscount())} 원',
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold))
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-               */
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

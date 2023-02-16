@@ -1,14 +1,13 @@
 import 'dart:convert';
 import 'package:asgshighschool/component/ThemeAppBar.dart';
 import 'package:asgshighschool/data/category.dart';
+import 'package:asgshighschool/util/PaymentUtil.dart';
 import '../../api/ApiUtil.dart';
 import '../../component/CorporationComp.dart';
 import '../../component/DefaultButtonComp.dart';
 import 'package:asgshighschool/data/product.dart';
 import 'package:asgshighschool/data/user.dart';
-import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
-import 'package:hex/hex.dart';
 import 'package:http/http.dart' as http;
 import 'package:cp949_dart/cp949_dart.dart' as cp949;
 
@@ -52,9 +51,6 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
   bool _isFinished = false;
   Map? _cancelResponse;
   String? _resultCode = '';
-  static const _KEY =
-      '0DVRz8vSDD5HvkWRwSxpjVhhx7OlXEViTciw5lBQAvSyYya9yf0K0Is+JbwiR9yYC96rEH2XIbfzeHXgqzSAFQ==';
-  static const _MID = 'asgscoop1m';
   String _ediDate = '';
 
   /// 주문을 등록하는 요청
@@ -257,22 +253,18 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
   }
 
   Future<String?> _cancelPaymentRequest() async {
-    String url = 'https://webapi.nicepay.co.kr/webapi/cancel_process.jsp';
-    _ediDate = DateTime.now()
-        .toString()
-        .replaceAll('-', '')
-        .replaceAll(' ', '')
-        .replaceAll(':', '')
-        .split('.')[0];
-    final response = await http.post(Uri.parse(url), body: <String, String?>{
+    _ediDate = PaymentUtil.getEdiDate();
+    final response = await http
+        .post(Uri.parse(PaymentUtil.CANCEL_API_URL), body: <String, String?>{
       'TID': widget.responseData!['TID'],
-      'MID': _MID,
+      'MID': PaymentUtil.MID,
       'Moid': widget.responseData!['Moid'],
       'CancelAmt': int.parse(widget.responseData!['Amt']).toString(),
       'CancelMsg': '결제자의 요청에 의한 취소',
       'PartialCancelCode': '0',
       'EdiDate': _ediDate,
-      'SignData': _getSignData(int.parse(widget.responseData!['Amt'])),
+      'SignData': PaymentUtil.encryptCancel(
+          int.parse(widget.responseData!['Amt']), _ediDate),
       'CharSet': 'euc-kr',
       'EdiType': 'JSON'
     });
@@ -293,12 +285,6 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
     _resultCode = widget.responseData!['ResultCode'];
     super.initState();
     _processAfterPaying();
-  }
-
-  String _getSignData(int cancelAmt) {
-    return HEX.encode(sha256
-        .convert(utf8.encode(_MID + cancelAmt.toString() + _ediDate + _KEY))
-        .bytes);
   }
 
   void _processAfterPaying() async {
