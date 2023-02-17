@@ -8,7 +8,7 @@ class PaymentUtil {
       '0DVRz8vSDD5HvkWRwSxpjVhhx7OlXEViTciw5lBQAvSyYya9yf0K0Is+JbwiR9yYC96rEH2XIbfzeHXgqzSAFQ==';
   static const MID = 'asgscoop1m';
   static const REDIRECT_URL =
-      'http://nacha01.dothome.co.kr/sin/result_test.php';
+      'http://nacha01.dothome.co.kr/sin/payment_redirect.php';
   static const PLATFORM_CHANNEL = MethodChannel('asgs');
   static const CANCEL_API_URL =
       'https://webapi.nicepay.co.kr/webapi/cancel_process.jsp';
