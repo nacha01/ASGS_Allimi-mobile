@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import '../data/foreground_noti.dart';
@@ -15,49 +18,37 @@ class NotificationManager {
       importance: Importance.high);
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
 
-  void showFlutterNotifications(RemoteMessage message) {
-    RemoteNotification? notification = message.notification;
-
-    if (notification != null) {
-      // 로컬 Notification 띄우기
-      _flutterLocalNotificationsPlugin.show(
-          notification.hashCode,
-          notification.title,
-          notification.body,
-          NotificationDetails(
-              android: AndroidNotificationDetails(_channel.id, _channel.name,
-                  channelDescription: _channel.description,
-                  icon: '@mipmap/ic_launcher')));
-    }
-  }
-
   Future<void> setupFlutterNotifications() async {
-    // Android 13 (API level 33) 이상부터 notification permission 설정이 필요
-    await _flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
-        ?.requestPermission();
+    if (Platform.isAndroid) {
+      // Android 13 (API level 33) 이상부터 notification permission 설정이 필요
+      await _flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>()
+          ?.requestPermission();
 
-    // iOS permission 설정
-    NotificationSettings settings = await _messaging.requestPermission(
-        alert: true,
-        announcement: false,
-        badge: true,
-        carPlay: false,
-        criticalAlert: false,
-        provisional: false,
-        sound: true);
+      // Android Notification 채널 생성
+      await _flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>()
+          ?.createNotificationChannel(_channel);
+    }
 
-    // iOS foreground notification 설정
-    await FirebaseMessaging.instance
-        .setForegroundNotificationPresentationOptions(
-            alert: true, badge: true, sound: true);
+    if (Platform.isIOS) {
+      // iOS permission 설정
+      NotificationSettings settings = await _messaging.requestPermission(
+          alert: true,
+          announcement: false,
+          badge: true,
+          carPlay: false,
+          criticalAlert: false,
+          provisional: false,
+          sound: true);
 
-    // Android Notification 채널 생성
-    await _flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
-        ?.createNotificationChannel(_channel);
+      // iOS foreground notification 설정
+      await FirebaseMessaging.instance
+          .setForegroundNotificationPresentationOptions(
+              alert: true, badge: true, sound: true);
+    }
   }
 
   void actForegroundNotification() {
@@ -71,15 +62,14 @@ class NotificationManager {
     _flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
       onDidReceiveNotificationResponse: (response) {
-        if (!GlobalVariable.isAuthorized) {
+        if (!GlobalVariable.isAuthorized &&
+            (response.payload != null && response.payload != '')) {
           NotificationPayload.isTap = true;
+          NotificationPayload.setPayload(response.payload);
           ToastMessage.show('로그인이 필요합니다.');
-          if (response.payload != null) {
-            NotificationPayload.setPayload(response.payload);
-          }
           return;
         }
-        if (response.payload != null) {
+        if (response.payload != null && response.payload != '') {
           NotificationAction.selectLocation(response.payload!);
         }
       },
@@ -88,11 +78,13 @@ class NotificationManager {
 
   void foregroundEventListener() {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      if (message.notification != null) {
+      AndroidNotification? android =
+          message.notification?.android; // iOS의 경우, android 필드는 null
+      if (message.notification != null && android != null && !kIsWeb) {
         _flutterLocalNotificationsPlugin.show(
             message.hashCode, // 아이디
-            message.notification?.title, // 제목
-            message.notification?.body, // 내용
+            message.data['title'], // 제목
+            message.data['body'], // 내용
             NotificationDetails(
               android: AndroidNotificationDetails(_channel.id, _channel.name,
                   channelDescription: _channel.description,
