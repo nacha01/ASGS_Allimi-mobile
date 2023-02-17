@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:asgshighschool/component/ThemeAppBar.dart';
 import 'package:asgshighschool/data/category.dart';
 import '../../api/ApiUtil.dart';
 import '../../component/CorporationComp.dart';
@@ -157,22 +158,9 @@ class _DetailProductPageState extends State<DetailProductPage> {
         return false;
       },
       child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            '상품 세부정보',
-            style: TextStyle(color: Colors.black, fontSize: 16),
-          ),
-          centerTitle: true,
-          backgroundColor: Color(0xFF9EE1E5),
-          leading: IconButton(
-            icon: Icon(
-              Icons.clear,
-              color: Colors.black,
-              size: 30,
-            ),
-            onPressed: () => Navigator.pop(context, true),
-          ),
-        ),
+        appBar: ThemeAppBar(
+            barTitle: '상품 세부정보',
+            leadingClick: () => Navigator.pop(context, true)),
         body: Column(
           children: [
             Expanded(
@@ -444,7 +432,6 @@ class _DetailProductPageState extends State<DetailProductPage> {
                                         });
                                       } else {
                                         ToastMessage.show('더 추가할 수 없습니다.');
-
                                       }
                                     },
                                     icon: Icon(Icons.add),
