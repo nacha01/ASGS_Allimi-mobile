@@ -15,10 +15,6 @@ class AuthController {
       if (utf8.decode(response.bodyBytes).contains('NOT EXIST ACCOUNT')) {
         return null;
       }
-      if (response.body.contains('일일 트래픽을 모두 사용하였습니다.')) {
-        // 임시 유저로 이동
-        return User.empty();
-      }
 
       String result = ApiUtil.getPureBody(response.bodyBytes);
       return User.fromJson(json.decode(result));

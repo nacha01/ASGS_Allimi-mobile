@@ -30,21 +30,16 @@ class AddingProductPage extends StatefulWidget {
   _AddingProductPageState createState() => _AddingProductPageState();
 }
 
-/// 상품 추가 페이지(어드민 전용 페이지)
-
-/*
-1. 제품 이름
-2. 제품 카테고리
-3. 가격
-4. 이미지 1,2,3
-5. 베스트인지
-6. 새로운건지
-7. 재고
-8. 제품 설명
-9. 재고가 0일 때 처리
-10. 상품 옵션
- */
-
+/// 상품 등록 페이지(어드민 전용 페이지)
+///1. 상품 이름
+///2. 상품 설명
+///3. 상품 카테고리
+///3. 가격
+///4. 재고
+///5. Best 메뉴 | New 메뉴 여부
+///6. 재고 0일 때 처리 (예약 || 품절)
+///7. 이미지 1,2,3
+///9. 상품 옵션
 class _AddingProductPageState extends State<AddingProductPage> {
   var _productNameController = TextEditingController();
   var _productPriceController = TextEditingController();
@@ -52,9 +47,8 @@ class _AddingProductPageState extends State<AddingProductPage> {
   var _productExplainController = TextEditingController();
   var _reservationCountController = TextEditingController();
 
-  XFile? _mainImage;
-  XFile? _subImage1;
-  XFile? _subImage2;
+  List<XFile?> _images = [null, null, null];
+  List<String> _imageNames = ['', '', ''];
 
   bool? _isBest = false;
   bool? _isNew = false;
@@ -69,9 +63,6 @@ class _AddingProductPageState extends State<AddingProductPage> {
   int _index = 0;
   int _clickCount = 0;
 
-  late String _mainName;
-  late String _sub1Name;
-  late String _sub2Name;
   String pid = '';
   String _errorText = '';
   String? _selectedCategory = Category.c1; // 드롭다운 아이템 default
@@ -79,51 +70,21 @@ class _AddingProductPageState extends State<AddingProductPage> {
 
   late AsyncMemoizer<bool> _memoizer;
 
-  /// 갤러리에서 이미지를 가져오는 작업
+  /// 이미지를 가져오는 작업
   /// [index] = {0 : main, 1 : sub1, 2 : sub3}
-  Future<void> _getImageFromGallery(int index) async {
-    var image = await ImagePicker()
-        .pickImage(source: ImageSource.gallery, imageQuality: 50);
+  /// [useGallery] = {true: 갤러리, false: 카메라}
+  Future<void> _getImage(int index, {bool useGallery = true}) async {
+    var image = await ImagePicker().pickImage(
+        source: useGallery ? ImageSource.gallery : ImageSource.camera,
+        imageQuality: 50);
     setState(() {
-      switch (index) {
-        case 0:
-          _mainImage = image;
-          break;
-        case 1:
-          _subImage1 = image;
-          break;
-        case 2:
-          _subImage2 = image;
-          break;
-      }
+      _images[index] = image;
     });
   }
 
-  /// 카메로에서 찍은 이미지를 가져오는 작업
-  /// [index] = {0 -> main, 1 -> sub1, 2 -> sub3}
-  Future<void> _getImageFromCamera(int index) async {
-    var image = await ImagePicker()
-        .pickImage(source: ImageSource.camera, imageQuality: 50);
-    setState(() {
-      switch (index) {
-        case 0:
-          _mainImage = image;
-          break;
-        case 1:
-          _subImage1 = image;
-          break;
-        case 2:
-          _subImage2 = image;
-          break;
-      }
-    });
-  }
-
-  /// parameter로 가져온 이미지와 이미지 이름을 토대로 서버에 저장하는 요청
-  /// @param : 선택한 이미지[img], 그 이미지의 이름[fileName]
+  /// 가져온 이미지와 이미지 이름을 서버에 저장하는 요청
+  /// [img] = 선택한 이미지, [fileName] = 이미지의 파일 이름
   /// @return : 정상적으로 저장했으면 true, 그렇지 않으면 false
-  /// @response : complete0
-  /// ※ Multipart 요청
   Future<bool> _sendImageToServer(XFile img, String fileName) async {
     var request = http.MultipartRequest(
         'POST', Uri.parse('${ApiUtil.API_HOST}arlimi_storeImage.php'));
@@ -136,9 +97,6 @@ class _AddingProductPageState extends State<AddingProductPage> {
       var responseData = await response.stream.toBytes();
       var responseString = String.fromCharCodes(responseData);
 
-      if (responseString.contains('일일 트래픽을 모두 사용하였습니다.')) {
-        return false;
-      }
       if (responseString != 'complete0') return false;
 
       return true;
@@ -162,15 +120,12 @@ class _AddingProductPageState extends State<AddingProductPage> {
       'stockCount': _productCountController.text,
       'isBest': _isBest! ? '1' : '0',
       'isNew': _isNew! ? '1' : '0',
-      'imgUrl1': serverImageUri + _mainName + '.jpg',
-      'imgUrl2': _useSub1 ? serverImageUri + _sub1Name + '.jpg' : 'None',
-      'imgUrl3': _useSub2 ? serverImageUri + _sub2Name + '.jpg' : 'None',
+      'imgUrl1': serverImageUri + _imageNames[0] + '.jpg',
+      'imgUrl2': _useSub1 ? serverImageUri + _imageNames[1] + '.jpg' : 'None',
+      'imgUrl3': _useSub2 ? serverImageUri + _imageNames[2] + '.jpg' : 'None',
       'empty': _isReservation ? '1' : '0'
     });
     if (response.statusCode == 200) {
-      if (response.body.contains('일일 트래픽을 모두 사용하였습니다.')) {
-        return false;
-      }
       var replace = ApiUtil.getPureBody(response.bodyBytes);
       if (!replace.contains('INSERT')) return false;
       pid = replace.replaceAll('INSERT', '');
@@ -236,21 +191,23 @@ class _AddingProductPageState extends State<AddingProductPage> {
           NumberFormatter.formatZero(now.minute) +
           NumberFormatter.formatZero(now.second);
       if (_useSub1) {
-        _sub1Name = Category.categoryImageNamePrefixMap[_selectedCategory]! +
-            identified +
-            'A';
-        var sub1Result = await _sendImageToServer(_subImage1!, _sub1Name);
+        _imageNames[1] =
+            Category.categoryImageNamePrefixMap[_selectedCategory]! +
+                identified +
+                'A';
+        var sub1Result = await _sendImageToServer(_images[1]!, _imageNames[1]);
         if (!sub1Result) {
           _errorText = '추가 이미지1 저장 실패';
           return false;
         }
       }
       if (_useSub2) {
-        _sub2Name = Category.categoryImageNamePrefixMap[_selectedCategory]! +
-            identified +
-            'B';
+        _imageNames[2] =
+            Category.categoryImageNamePrefixMap[_selectedCategory]! +
+                identified +
+                'B';
         var sub2Result = await _sendImageToServer(
-            _subImage2!,
+            _images[2]!,
             Category.categoryImageNamePrefixMap[_selectedCategory]! +
                 identified +
                 'B');
@@ -259,9 +216,9 @@ class _AddingProductPageState extends State<AddingProductPage> {
           return false;
         }
       }
-      _mainName =
+      _imageNames[0] =
           Category.categoryImageNamePrefixMap[_selectedCategory]! + identified;
-      var mainResult = await _sendImageToServer(_mainImage!, _mainName);
+      var mainResult = await _sendImageToServer(_images[0]!, _imageNames[0]);
       if (!mainResult) {
         _errorText = '대표 이미지 저장 실패';
         return false;
@@ -380,9 +337,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
             child: _isNotRegister
                 ? Column(
                     children: [
-                      SizedBox(
-                        height: size.height * 0.015,
-                      ),
+                      _spaceBox(size),
                       Text(
                         '* 표시는 필수 입력 사항',
                         style: TextStyle(color: Colors.grey, fontSize: 12),
@@ -391,54 +346,38 @@ class _AddingProductPageState extends State<AddingProductPage> {
                         padding: EdgeInsets.all(size.width * 0.03),
                         child: Column(
                           children: [
-                            SizedBox(
-                              height: size.height * 0.02,
-                            ),
+                            _spaceBox(size),
                             Text('※ Best 메뉴 여부와 New 메뉴 여부는 등록할 상품이 해당되면 체크하세요.',
                                 style: TextStyle(
                                     color: Colors.black,
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold)),
-                            SizedBox(
-                              height: size.height * 0.02,
-                            ),
+                            _spaceBox(size),
                             Text(
                                 '※ 대표 이미지는 카메라로 즉석에서 찍은 사진, 혹은 갤러리에서 가져와서 사용하면 됩니다.',
                                 style: TextStyle(
                                     color: Colors.black,
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold)),
-                            SizedBox(
-                              height: size.height * 0.02,
-                            ),
+                            _spaceBox(size),
                             Text(
                                 '※ 추가 이미지는 필수가 아니며, 필요시 추가할 때는 이미지를 반드시 추가해주세요. ',
                                 style: TextStyle(
                                     color: Colors.red,
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold)),
-                            SizedBox(
-                              height: size.height * 0.02,
-                            ),
+                            _spaceBox(size),
                           ],
                         ),
                       ),
-                      Divider(
-                        thickness: 2,
-                        endIndent: 15,
-                        indent: 15,
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
+                      _normalDivider(size),
+                      _spaceBox(size),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           titleLayoutWidget(
                               title: '상품명', require: true, size: size),
-                          SizedBox(
-                            width: size.width * 0.02,
-                          ),
+                          _spaceBox(size),
                           textFieldLayoutWidget(
                               width: size.width * 0.7,
                               controller: _productNameController,
@@ -446,17 +385,9 @@ class _AddingProductPageState extends State<AddingProductPage> {
                               maxLine: null)
                         ],
                       ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Divider(
-                        thickness: 2,
-                        endIndent: 15,
-                        indent: 15,
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
+                      _spaceBox(size),
+                      _normalDivider(size),
+                      _spaceBox(size),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -472,17 +403,9 @@ class _AddingProductPageState extends State<AddingProductPage> {
                               maxLine: 30)
                         ],
                       ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Divider(
-                        thickness: 2,
-                        endIndent: 15,
-                        indent: 15,
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
+                      _spaceBox(size),
+                      _normalDivider(size),
+                      _spaceBox(size),
                       Row(
                         children: [
                           titleLayoutWidget(
@@ -511,17 +434,9 @@ class _AddingProductPageState extends State<AddingProductPage> {
                           )
                         ],
                       ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Divider(
-                        thickness: 2,
-                        endIndent: 15,
-                        indent: 15,
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
+                      _spaceBox(size),
+                      _normalDivider(size),
+                      _spaceBox(size),
                       Row(
                         children: [
                           titleLayoutWidget(
@@ -531,23 +446,14 @@ class _AddingProductPageState extends State<AddingProductPage> {
                           ),
                           textFieldLayoutWidget(
                               width: size.width * 0.7,
-                              // height: size.height * 0.07,
                               controller: _productPriceController,
                               validation: true,
                               formatType: true)
                         ],
                       ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Divider(
-                        thickness: 2,
-                        endIndent: 15,
-                        indent: 15,
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
+                      _spaceBox(size),
+                      _normalDivider(size),
+                      _spaceBox(size),
                       Row(
                         children: [
                           titleLayoutWidget(
@@ -557,22 +463,13 @@ class _AddingProductPageState extends State<AddingProductPage> {
                           ),
                           textFieldLayoutWidget(
                               width: size.width * 0.7,
-                              // height: size.height * 0.07,
                               controller: _productCountController,
                               formatType: true)
                         ],
                       ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Divider(
-                        thickness: 2,
-                        endIndent: 15,
-                        indent: 15,
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
+                      _spaceBox(size),
+                      _normalDivider(size),
+                      _spaceBox(size),
                       Row(
                         children: [
                           Container(
@@ -601,17 +498,9 @@ class _AddingProductPageState extends State<AddingProductPage> {
                           )
                         ],
                       ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Divider(
-                        thickness: 2,
-                        endIndent: 15,
-                        indent: 15,
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
+                      _spaceBox(size),
+                      _normalDivider(size),
+                      _spaceBox(size),
                       Row(
                         children: [
                           Container(
@@ -640,17 +529,9 @@ class _AddingProductPageState extends State<AddingProductPage> {
                           )
                         ],
                       ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Divider(
-                        thickness: 2,
-                        endIndent: 15,
-                        indent: 15,
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
+                      _spaceBox(size),
+                      _normalDivider(size),
+                      _spaceBox(size),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -733,9 +614,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                       ),
                                     ],
                                   ),
-                                  SizedBox(
-                                    height: size.height * 0.01,
-                                  ),
+                                  _spaceBox(size),
                                   Text(
                                     '* 최대 수량을 -1로 설정할 경우 제한을 정하지 않는다는 뜻입니다.\n (제한 없음 = -1)',
                                     style: TextStyle(
@@ -747,17 +626,9 @@ class _AddingProductPageState extends State<AddingProductPage> {
                               ),
                             )
                           : SizedBox(),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Divider(
-                        thickness: 2,
-                        endIndent: 15,
-                        indent: 15,
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
+                      _spaceBox(size),
+                      _normalDivider(size),
+                      _spaceBox(size),
                       /*----------------------------------------------------*/
                       GestureDetector(
                         onTap: () {
@@ -792,9 +663,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                   Border.all(width: 1, color: Colors.black)),
                         ),
                       ),
-                      SizedBox(
-                        height: size.height * 0.02,
-                      ),
+                      _spaceBox(size),
                       _useOption
                           ? Column(
                               children: [
@@ -807,12 +676,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                         fontWeight: FontWeight.bold),
                                   ),
                                 ),
-                                Divider(
-                                  thickness: 1.5,
-                                  indent: size.width * 0.02,
-                                  endIndent: size.width * 0.02,
-                                  color: Colors.deepOrange,
-                                ),
+                                _optionDivider(size),
                                 Column(
                                   mainAxisSize: MainAxisSize.min,
                                   children: _optionCategoryList,
@@ -864,18 +728,10 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                         )),
                                   ],
                                 ),
-                                Divider(
-                                  thickness: 2,
-                                  endIndent: 15,
-                                  indent: 15,
-                                ),
+                                _normalDivider(size)
                               ],
                             )
-                          : Divider(
-                              thickness: 2,
-                              endIndent: 15,
-                              indent: 15,
-                            ),
+                          : _normalDivider(size),
                       Column(
                         children: [
                           Container(
@@ -891,9 +747,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                 color: Color(0xFF9EE1E5),
                                 borderRadius: BorderRadius.circular(8)),
                           ),
-                          SizedBox(
-                            height: size.height * 0.02,
-                          ),
+                          _spaceBox(size),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -901,7 +755,8 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                 margin: EdgeInsets.all(3),
                                 width: size.width * 0.2,
                                 child: IconButton(
-                                    onPressed: () => _getImageFromCamera(0),
+                                    onPressed: () =>
+                                        _getImage(0, useGallery: false),
                                     icon: Icon(Icons.camera_alt_rounded)),
                                 decoration: BoxDecoration(
                                     border: Border.all(
@@ -913,7 +768,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                 margin: EdgeInsets.all(3),
                                 width: size.width * 0.2,
                                 child: IconButton(
-                                    onPressed: () => _getImageFromGallery(0),
+                                    onPressed: () => _getImage(0),
                                     icon: Icon(Icons.photo_outlined)),
                                 decoration: BoxDecoration(
                                     border: Border.all(
@@ -923,25 +778,14 @@ class _AddingProductPageState extends State<AddingProductPage> {
                               )
                             ],
                           ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          _mainImage == null
+                          _spaceBox(size),
+                          _images[0] == null
                               ? imageLoadLayout(size)
-                              : Image.file(
-                                  File(_mainImage!.path),
-                                  fit: BoxFit.cover,
-                                  width: size.width * 0.9,
-                                  height: size.width * 0.9 * 1.4,
-                                ),
-                          SizedBox(
-                            height: 10,
-                          ),
+                              : _imageFile(size, _images[0]!.path),
+                          _spaceBox(size)
                         ],
                       ),
-                      SizedBox(
-                        height: 10,
-                      ),
+                      _spaceBox(size),
                       /* ---------------------------------------------------- */
                       _useSub1
                           ? Column(
@@ -969,7 +813,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                         setState(() {
                                           _clickCount--;
                                           _useSub1 = false;
-                                          _subImage1 = null;
+                                          _images[1] = null;
                                         });
                                       },
                                       icon: Icon(Icons.cancel),
@@ -977,9 +821,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                     )
                                   ],
                                 ),
-                                SizedBox(
-                                  height: 10,
-                                ),
+                                _spaceBox(size),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
@@ -988,7 +830,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                       width: size.width * 0.2,
                                       child: IconButton(
                                           onPressed: () =>
-                                              _getImageFromCamera(1),
+                                              _getImage(1, useGallery: false),
                                           icon: Icon(Icons.camera_alt_rounded)),
                                       decoration: BoxDecoration(
                                           border: Border.all(
@@ -1001,8 +843,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                       margin: EdgeInsets.all(3),
                                       width: size.width * 0.2,
                                       child: IconButton(
-                                          onPressed: () =>
-                                              _getImageFromGallery(1),
+                                          onPressed: () => _getImage(1),
                                           icon: Icon(Icons.photo_outlined)),
                                       decoration: BoxDecoration(
                                           border: Border.all(
@@ -1013,17 +854,10 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                     )
                                   ],
                                 ),
-                                _subImage1 == null
+                                _images[1] == null
                                     ? imageLoadLayout(size)
-                                    : Image.file(
-                                        File(_subImage1!.path),
-                                        fit: BoxFit.cover,
-                                        width: size.width * 0.9,
-                                        height: size.width * 0.9 * 1.4,
-                                      ),
-                                SizedBox(
-                                  height: 10,
-                                ),
+                                    : _imageFile(size, _images[1]!.path),
+                                _spaceBox(size),
                               ],
                             )
                           : SizedBox(),
@@ -1031,9 +865,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                       _useSub2
                           ? Column(
                               children: [
-                                SizedBox(
-                                  height: 10,
-                                ),
+                                _spaceBox(size),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
@@ -1057,7 +889,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                         setState(() {
                                           _clickCount--;
                                           _useSub2 = false;
-                                          _subImage2 = null;
+                                          _images[2] = null;
                                         });
                                       },
                                       icon: Icon(Icons.cancel),
@@ -1065,9 +897,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                     )
                                   ],
                                 ),
-                                SizedBox(
-                                  height: 10,
-                                ),
+                                _spaceBox(size),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
@@ -1076,7 +906,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                       width: size.width * 0.2,
                                       child: IconButton(
                                           onPressed: () =>
-                                              _getImageFromCamera(2),
+                                              _getImage(2, useGallery: false),
                                           icon: Icon(Icons.camera_alt_rounded)),
                                       decoration: BoxDecoration(
                                           border: Border.all(
@@ -1089,8 +919,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                       margin: EdgeInsets.all(3),
                                       width: size.width * 0.2,
                                       child: IconButton(
-                                          onPressed: () =>
-                                              _getImageFromGallery(2),
+                                          onPressed: () => _getImage(2),
                                           icon: Icon(Icons.photo_outlined)),
                                       decoration: BoxDecoration(
                                           border: Border.all(
@@ -1101,23 +930,14 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                     )
                                   ],
                                 ),
-                                _subImage2 == null
+                                _images[2] == null
                                     ? imageLoadLayout(size)
-                                    : Image.file(
-                                        File(_subImage2!.path),
-                                        fit: BoxFit.cover,
-                                        width: size.width * 0.9,
-                                        height: size.width * 0.9 * 1.4,
-                                      ),
-                                SizedBox(
-                                  height: 10,
-                                ),
+                                    : _imageFile(size, _images[2]!.path),
+                                _spaceBox(size),
                               ],
                             )
                           : SizedBox(),
-                      SizedBox(
-                        height: 10,
-                      ),
+                      _spaceBox(size),
                       DefaultButtonComp(
                         onPressed: _useSub1 && _useSub2
                             ? null
@@ -1191,15 +1011,15 @@ class _AddingProductPageState extends State<AddingProductPage> {
                               _showErrorDialog('가격 미입력');
                               return;
                             }
-                            if (_mainImage == null) {
+                            if (_images[0] == null) {
                               _showErrorDialog('대표 이미지 미설정');
                               return;
                             }
-                            if (_useSub1 && _subImage1 == null) {
+                            if (_useSub1 && _images[1] == null) {
                               _showErrorDialog('추가 이미지1 미설정');
                               return;
                             }
-                            if (_useSub2 && _subImage2 == null) {
+                            if (_useSub2 && _images[2] == null) {
                               _showErrorDialog('추가 이미지2 미설정');
                               return;
                             }
@@ -1217,9 +1037,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                           },
                         ),
                       ),
-                      SizedBox(
-                        height: size.height * 0.015,
-                      )
+                      _spaceBox(size),
                     ],
                   )
                 : FutureBuilder<bool>(
@@ -1328,9 +1146,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                                   Navigator.pop(context),
                                               child: Text('이전')),
                                         ),
-                                        SizedBox(
-                                          width: size.width * 0.15,
-                                        ),
+                                        _spaceBox(size),
                                         Container(
                                           width: size.width * 0.4,
                                           height: size.height * 0.06,
@@ -1408,9 +1224,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
                                                 Navigator.pop(context),
                                             child: Text('이전')),
                                       ),
-                                      SizedBox(
-                                        width: size.width * 0.15,
-                                      ),
+                                      _spaceBox(size),
                                       Container(
                                         width: size.width * 0.4,
                                         height: size.height * 0.06,
@@ -1520,7 +1334,6 @@ class _AddingProductPageState extends State<AddingProductPage> {
   }
 
   Widget _optionCategoryLayout(Size size, int index) {
-    print('rebuild');
     return Column(
       children: [
         Container(
@@ -1633,7 +1446,6 @@ class _AddingProductPageState extends State<AddingProductPage> {
                       TextEditingController()); // index 에 해당하는 옵션에 이름 컨트롤러 하나를 추가한다.
 
                   setState(() {
-                    print('setState 호출 및 선택지 추가함');
                     _classList[index].add(DetailWidget(
                         _detailPriceControllerList[index].length -
                             1)); // 리스트 마지막에 동적 인덱스를 갖는 선택지 객체를 추가한다.
@@ -1645,7 +1457,6 @@ class _AddingProductPageState extends State<AddingProductPage> {
 
                   _streamControllerList[index].add(_optionDetailList[
                       index]); // _optionDetailList[index]의 변화를 Stream 이 듣도록 추가한다.
-                  test(index);
                 },
                 child: Container(
                   padding: EdgeInsets.symmetric(
@@ -1668,21 +1479,38 @@ class _AddingProductPageState extends State<AddingProductPage> {
                 )),
           ],
         ),
-        Divider(
-          thickness: 1.5,
-          indent: size.width * 0.02,
-          endIndent: size.width * 0.02,
-          color: Colors.deepOrange,
-        )
+        _optionDivider(size)
       ],
     );
   }
 
-  void test(int index) async {
-    int i = 0;
-    await for (var value in _streamControllerList[index].stream) {
-      print('${i++}번째 $value');
-    }
+  Widget _optionDivider(Size size) {
+    return Divider(
+        thickness: 1.5,
+        indent: size.width * 0.02,
+        endIndent: size.width * 0.02,
+        color: Colors.deepOrange);
+  }
+
+  Widget _normalDivider(Size size) {
+    return Divider(
+      thickness: 2,
+      endIndent: size.width * 0.03,
+      indent: size.width * 0.03,
+    );
+  }
+
+  Widget _spaceBox(Size size) {
+    return SizedBox(height: size.width * 0.02);
+  }
+
+  Widget _imageFile(Size size, String path) {
+    return Image.file(
+      File(path),
+      fit: BoxFit.cover,
+      width: size.width * 0.9,
+      height: size.width * 0.9 * 1.4,
+    );
   }
 }
 
