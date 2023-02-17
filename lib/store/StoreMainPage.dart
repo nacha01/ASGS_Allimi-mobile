@@ -114,15 +114,11 @@ class StoreMainPageState extends State<StoreMainPage> {
           BottomNavigationBarItem(
               icon: data.isExistCart
                   ? badges.Badge(
-                      // alignment: Alignment.topRight,
-                      // animationType: BadgeAnimationType.scale,
-                      // padding: EdgeInsets.all(6),
-                      position: BadgePosition.topEnd(top: -15, end: -17),
+                      position: BadgePosition.topEnd(top: -15, end: -13),
                       child: Icon(Icons.shopping_cart),
-                      // shape: BadgeShape.circle,
                       badgeContent: Text(
                         '!',
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(color: Colors.white, fontSize: 11),
                       ),
                     )
                   : Icon(Icons.shopping_cart),

@@ -26,7 +26,7 @@ class _StoreSplashPageState extends State<StoreSplashPage> {
   loading() async {
     List? result = await _getProducts();
     var res = await _checkExistCart();
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(Duration(milliseconds: 500));
     Navigator.pushReplacement(
         context,
         MaterialPageRoute(
