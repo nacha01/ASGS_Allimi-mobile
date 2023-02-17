@@ -11,26 +11,19 @@ import 'package:provider/provider.dart';
 import 'main/SplashPage.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
-import 'notification/NotificationAction.dart';
+var notificationManager = NotificationManager();
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-  /**
-   * 서버에서 전송한 json 포맷이 들어옴
-   * 핵심은 "data" 필드와 "notification" 필드
-   */
-  NotificationAction.selectLocation(message.data['screen']);
+  await notificationManager.setupFlutterNotifications();
 }
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-
-  var notificationManager = NotificationManager();
-
   // Background 실행
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  await Firebase.initializeApp();
 
   // Notification Configurations
   if (!kIsWeb) {
