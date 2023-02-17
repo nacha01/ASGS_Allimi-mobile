@@ -23,7 +23,8 @@ class _SplashPageState extends State<SplashPage> {
 
     // Background message 클릭 시 호출
     _firebaseMessaging.getInitialMessage().then((value) => setState(() {
-          if (value != null) {
+          if (value != null &&
+              (value.data['screen'] != null && value.data['screen'] != '')) {
             NotificationPayload.isTap = true;
             NotificationPayload.setPayload(value.data['screen']);
           }
@@ -31,14 +32,16 @@ class _SplashPageState extends State<SplashPage> {
 
     // Background message 처리 (종료된 상태에서의 처리 x)
     FirebaseMessaging.onMessageOpenedApp.listen((event) {
-      if (!GlobalVariable.isAuthorized) {
+      if (!GlobalVariable.isAuthorized &&
+          (event.data['screen'] != null && event.data['screen'] != '')) {
         // 로그인이 되어있지 않은 경우 => 로그인 페이지 상태에서 백그라운드 전환 시
         ToastMessage.show('로그인이 필요합니다.');
         NotificationPayload.isTap = true;
         NotificationPayload.setPayload(event.data['screen']);
       } else {
-        // 이외 다른 페이지에 있는 경우 즉시 페이지 이동
-        NotificationAction.selectLocation(event.data['screen']);
+        if (event.data['screen'] != '')
+          // 이외 다른 페이지에 있는 경우 즉시 페이지 이동
+          NotificationAction.selectLocation(event.data['screen']);
       }
     });
     _loading();
