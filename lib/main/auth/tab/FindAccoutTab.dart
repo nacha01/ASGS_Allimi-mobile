@@ -57,7 +57,7 @@ class _FindAccountTabState extends State<FindAccountTab> {
     return AuthFrameComp(
       children: [
         Padding(
-          padding: EdgeInsets.all(size.width * 0.015),
+          padding: EdgeInsets.all(size.width * 0.01),
           child: Text(
             '아이디 찾기',
             style: TextStyle(
@@ -67,7 +67,7 @@ class _FindAccountTabState extends State<FindAccountTab> {
           ),
         ),
         SizedBox(
-          height: size.height * 0.015,
+          height: size.height * 0.01,
         ),
         Container(
           decoration: BoxDecoration(
@@ -75,6 +75,7 @@ class _FindAccountTabState extends State<FindAccountTab> {
               color: Colors.grey[100]),
           width: size.width * 0.85,
           child: TextField(
+            style: TextStyle(fontSize: 13),
             controller: _findNameControllerID,
             decoration: InputDecoration(hintText: '이름을 입력하세요.'),
           ),
@@ -88,6 +89,7 @@ class _FindAccountTabState extends State<FindAccountTab> {
               color: Colors.grey[100]),
           width: size.width * 0.85,
           child: TextField(
+            style: TextStyle(fontSize: 13),
             keyboardType: TextInputType.emailAddress,
             controller: _findEmailControllerID,
             decoration: InputDecoration(hintText: '이메일을 입력하세요.'),
@@ -106,10 +108,9 @@ class _FindAccountTabState extends State<FindAccountTab> {
               color: Colors.grey[100]),
           width: size.width * 0.85,
           child: TextField(
+            style: TextStyle(fontSize: 13),
             controller: _findGradeControllerID,
-            decoration: InputDecoration(
-                hintText: '학번을 입력하세요.(재학생이 아닌 경우 입력X)',
-                hintStyle: TextStyle(fontSize: 13)),
+            decoration: InputDecoration(hintText: '학번을 입력하세요.(재학생이 아닌 경우 입력X)'),
           ),
         ),
         SizedBox(
@@ -147,16 +148,16 @@ class _FindAccountTabState extends State<FindAccountTab> {
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
         ),
         SizedBox(
-          height: size.height * 0.015,
+          height: size.height * 0.01,
         ),
         Divider(
           thickness: 1,
         ),
         SizedBox(
-          height: size.height * 0.015,
+          height: size.height * 0.01,
         ),
         Padding(
-          padding: EdgeInsets.all(size.width * 0.015),
+          padding: EdgeInsets.all(size.width * 0.01),
           child: Text(
             '비밀번호 찾기',
             style: TextStyle(
@@ -174,6 +175,7 @@ class _FindAccountTabState extends State<FindAccountTab> {
               color: Colors.grey[100]),
           width: size.width * 0.85,
           child: TextField(
+            style: TextStyle(fontSize: 13),
             controller: _findIdControllerPW,
             decoration: InputDecoration(hintText: 'ID를 입력하세요.'),
           ),
@@ -187,6 +189,7 @@ class _FindAccountTabState extends State<FindAccountTab> {
               color: Colors.grey[100]),
           width: size.width * 0.85,
           child: TextField(
+            style: TextStyle(fontSize: 13),
             keyboardType: TextInputType.emailAddress,
             controller: _findEmailControllerPW,
             decoration: InputDecoration(hintText: '이메일을 입력하세요.'),
@@ -205,6 +208,7 @@ class _FindAccountTabState extends State<FindAccountTab> {
               color: Colors.grey[100]),
           width: size.width * 0.85,
           child: TextField(
+            style: TextStyle(fontSize: 13),
             controller: _findNameControllerPW,
             decoration: InputDecoration(hintText: '이름을 입력하세요.'),
           ),
@@ -219,6 +223,7 @@ class _FindAccountTabState extends State<FindAccountTab> {
           width: size.width * 0.85,
           child: TextField(
             controller: _findGradeControllerPW,
+            style: TextStyle(fontSize: 13),
             decoration: InputDecoration(
                 hintText: '학번을 입력하세요.(재학생이 아닌 경우 입력X)',
                 hintStyle: TextStyle(fontSize: 13)),
@@ -259,7 +264,7 @@ class _FindAccountTabState extends State<FindAccountTab> {
                   color: Colors.lightGreenAccent),
             )),
         Padding(
-          padding: EdgeInsets.all(size.width * 0.015),
+          padding: EdgeInsets.all(size.width * 0.01),
           child: Text(
             '$_resultPW',
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
