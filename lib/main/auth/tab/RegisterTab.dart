@@ -42,7 +42,7 @@ class _RegisterTabState extends State<RegisterTab> {
     return AuthFrameComp(
       children: [
         SizedBox(
-          height: size.width * 0.15,
+          height: size.height * 0.05,
         ),
         Text(
           '안산강서고등학교 알리미\n\n회원가입 하기',
@@ -50,12 +50,11 @@ class _RegisterTabState extends State<RegisterTab> {
           textAlign: TextAlign.center,
         ),
         SizedBox(
-          height: size.width * 0.15,
+          height: size.height * 0.05,
         ),
         Container(
           padding: EdgeInsets.all(size.width * 0.03),
           width: size.width * 0.95,
-          height: size.height * 0.5,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(15),
             border: Border.all(width: 3, color: Colors.indigo),
@@ -66,11 +65,14 @@ class _RegisterTabState extends State<RegisterTab> {
               Container(
                 child: DropdownButton(
                   isExpanded: true,
-                  iconSize: 50,
+                  iconSize: 40,
                   value: _selectedValue,
                   items: Status.statusList.map((value) {
                     return DropdownMenuItem(
-                      child: Text(value),
+                      child: Text(
+                        value,
+                        style: TextStyle(fontSize: 13),
+                      ),
                       value: value,
                     );
                   }).toList(),
@@ -92,6 +94,7 @@ class _RegisterTabState extends State<RegisterTab> {
                           FilteringTextInputFormatter.digitsOnly
                         ],
                         keyboardType: TextInputType.number,
+                        style: TextStyle(fontSize: 13),
                         controller: _gradeController,
                         cursorColor: Colors.black,
                         onChanged: (value) {},
@@ -106,6 +109,7 @@ class _RegisterTabState extends State<RegisterTab> {
                 child: TextField(
                   controller: _idRegisterController,
                   cursorColor: Colors.black,
+                  style: TextStyle(fontSize: 13),
                   onChanged: (value) {},
                   decoration: InputDecoration(
                       hintText: '아이디(ID)',
@@ -118,6 +122,7 @@ class _RegisterTabState extends State<RegisterTab> {
                   controller: _passwordRegisterController,
                   cursorColor: Colors.black,
                   onChanged: (value) {},
+                  style: TextStyle(fontSize: 13),
                   obscureText: true,
                   decoration: InputDecoration(
                       hintText: '비밀번호',
@@ -130,6 +135,7 @@ class _RegisterTabState extends State<RegisterTab> {
                   keyboardType: TextInputType.emailAddress,
                   controller: _emailController,
                   cursorColor: Colors.black,
+                  style: TextStyle(fontSize: 13),
                   onChanged: (value) {},
                   decoration: InputDecoration(
                       hintText: '이메일',
@@ -142,6 +148,7 @@ class _RegisterTabState extends State<RegisterTab> {
                   controller: _nameController,
                   cursorColor: Colors.black,
                   onChanged: (value) {},
+                  style: TextStyle(fontSize: 13),
                   decoration: InputDecoration(
                       hintText: '이름', hintStyle: TextStyle(color: Colors.grey)),
                 ),
@@ -152,6 +159,7 @@ class _RegisterTabState extends State<RegisterTab> {
                   controller: _nickNameController,
                   cursorColor: Colors.black,
                   onChanged: (value) {},
+                  style: TextStyle(fontSize: 13),
                   decoration: InputDecoration(
                       hintText: '닉네임',
                       hintStyle: TextStyle(color: Colors.grey)),

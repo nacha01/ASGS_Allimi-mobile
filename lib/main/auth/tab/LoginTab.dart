@@ -29,7 +29,7 @@ class LoginTabState extends State<LoginTab> {
     return AuthFrameComp(
       children: [
         SizedBox(
-          height: size.width * 0.15,
+          height: size.height * 0.05,
         ),
         Text(
           '안산강서고등학교 알리미\n\n로그인 하기',
@@ -37,7 +37,7 @@ class LoginTabState extends State<LoginTab> {
           textAlign: TextAlign.center,
         ),
         SizedBox(
-          height: size.width * 0.15,
+          height: size.height * 0.05,
         ),
         Container(
           padding: EdgeInsets.all(size.width * 0.03),
@@ -49,6 +49,7 @@ class LoginTabState extends State<LoginTab> {
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
                 width: size.width * 0.85,
@@ -80,6 +81,7 @@ class LoginTabState extends State<LoginTab> {
                     });
                   },
                   child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(
                         _isChecked

@@ -249,78 +249,93 @@ class _SignInPageState extends State<SignInPage> {
     final size = MediaQuery.of(context).size;
     return Scaffold(
         body: SafeArea(
-      child: Column(
-        children: [
-          Row(
+      child: NotificationListener<OverscrollIndicatorNotification>(
+        onNotification: (overscroll) {
+          overscroll.disallowIndicator();
+          return true;
+        },
+        child: SingleChildScrollView(
+          child: Column(
             children: [
-              DefaultButtonComp(
-                padding: 0,
-                child: Container(
-                  padding: EdgeInsets.all(size.width * 0.01),
-                  child: Text(
-                    '로그인 하기\nLogin',
-                    textAlign: TextAlign.center,
-                    textScaleFactor: _tapState == 1 ? 1.2 : 1.1,
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold, color: Colors.black),
-                  ),
-                  width: size.width * 0.3,
-                  height: size.height * 0.08,
-                  alignment: Alignment.center,
-                  color: _tapState == 1 ? Color(0xFFF9F7F8) : Color(0xFFDAE2EF),
-                ),
-                onPressed: () {
-                  setState(() {
-                    _tapState = 1;
-                  });
-                },
-              ),
-              DefaultButtonComp(
-                padding: 0,
-                child: Container(
-                  padding: EdgeInsets.all(size.width * 0.01),
-                  child: Text('회원가입 하기\nJoin Membership',
-                      textAlign: TextAlign.center,
-                      textScaleFactor: _tapState == 2 ? 1.2 : 1.1,
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.black)),
-                  width: size.width * 0.4,
-                  height: size.height * 0.08,
-                  alignment: Alignment.center,
-                  color: _tapState == 2 ? Color(0xFFF9F7F8) : Color(0xFFDAE2EF),
-                ),
-                onPressed: () {
-                  setState(() {
-                    _tapState = 2;
-                  });
-                },
-              ),
-              Expanded(
-                child: DefaultButtonComp(
-                  padding: 0,
-                  child: Container(
-                    padding: EdgeInsets.all(size.width * 0.01),
-                    child: Text('ID/PW 찾기\nFind ID/PW',
+              Row(
+                children: [
+                  DefaultButtonComp(
+                    padding: 0,
+                    child: Container(
+                      padding: EdgeInsets.all(size.width * 0.01),
+                      child: Text(
+                        '로그인 하기\nLogin',
                         textAlign: TextAlign.center,
-                        textScaleFactor: _tapState == 3 ? 1.2 : 1.1,
+                        textScaleFactor: _tapState == 1 ? 1.2 : 1.1,
                         style: TextStyle(
-                            fontWeight: FontWeight.bold, color: Colors.black)),
-                    height: size.height * 0.08,
-                    alignment: Alignment.center,
-                    color:
-                        _tapState == 3 ? Color(0xFFF9F7F8) : Color(0xFF4072A7),
+                            fontWeight: FontWeight.bold, color: Colors.black),
+                      ),
+                      width: size.width * 0.3,
+                      height: size.height * 0.08,
+                      alignment: Alignment.center,
+                      color: _tapState == 1
+                          ? Color(0xFFF9F7F8)
+                          : Color(0xFFDAE2EF),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _tapState = 1;
+                      });
+                    },
                   ),
-                  onPressed: () {
-                    setState(() {
-                      _tapState = 3;
-                    });
-                  },
-                ),
+                  DefaultButtonComp(
+                    padding: 0,
+                    child: Container(
+                      padding: EdgeInsets.all(size.width * 0.01),
+                      child: Text('회원가입 하기\nJoin Membership',
+                          textAlign: TextAlign.center,
+                          textScaleFactor: _tapState == 2 ? 1.2 : 1.1,
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black)),
+                      width: size.width * 0.4,
+                      height: size.height * 0.08,
+                      alignment: Alignment.center,
+                      color: _tapState == 2
+                          ? Color(0xFFF9F7F8)
+                          : Color(0xFFDAE2EF),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _tapState = 2;
+                      });
+                    },
+                  ),
+                  Expanded(
+                    child: DefaultButtonComp(
+                      padding: 0,
+                      child: Container(
+                        padding: EdgeInsets.all(size.width * 0.01),
+                        child: Text('ID/PW 찾기\nFind ID/PW',
+                            textAlign: TextAlign.center,
+                            textScaleFactor: _tapState == 3 ? 1.2 : 1.1,
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black)),
+                        height: size.height * 0.08,
+                        alignment: Alignment.center,
+                        color: _tapState == 3
+                            ? Color(0xFFF9F7F8)
+                            : Color(0xFF4072A7),
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _tapState = 3;
+                        });
+                      },
+                    ),
+                  ),
+                ],
               ),
+              _switchTap(size)
             ],
           ),
-          _switchTap(size)
-        ],
+        ),
       ),
     ));
   }
@@ -328,11 +343,11 @@ class _SignInPageState extends State<SignInPage> {
   Widget _switchTap(Size size) {
     switch (_tapState) {
       case 1:
-        return Expanded(child: LoginTab());
+        return LoginTab();
       case 2:
-        return Expanded(child: RegisterTab());
+        return RegisterTab();
       case 3:
-        return Expanded(child: FindAccountTab());
+        return FindAccountTab();
       default:
         return SizedBox();
     }

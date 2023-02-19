@@ -73,7 +73,7 @@ class _FindAccountTabState extends State<FindAccountTab> {
           decoration: BoxDecoration(
               border: Border.all(width: 0.5, color: Colors.black),
               color: Colors.grey[100]),
-          width: size.width * 0.8,
+          width: size.width * 0.85,
           child: TextField(
             controller: _findNameControllerID,
             decoration: InputDecoration(hintText: '이름을 입력하세요.'),
@@ -86,7 +86,7 @@ class _FindAccountTabState extends State<FindAccountTab> {
           decoration: BoxDecoration(
               border: Border.all(width: 0.5, color: Colors.black),
               color: Colors.grey[100]),
-          width: size.width * 0.8,
+          width: size.width * 0.85,
           child: TextField(
             keyboardType: TextInputType.emailAddress,
             controller: _findEmailControllerID,
@@ -104,7 +104,7 @@ class _FindAccountTabState extends State<FindAccountTab> {
           decoration: BoxDecoration(
               border: Border.all(width: 0.5, color: Colors.black),
               color: Colors.grey[100]),
-          width: size.width * 0.8,
+          width: size.width * 0.85,
           child: TextField(
             controller: _findGradeControllerID,
             decoration: InputDecoration(
@@ -172,7 +172,7 @@ class _FindAccountTabState extends State<FindAccountTab> {
           decoration: BoxDecoration(
               border: Border.all(width: 0.5, color: Colors.black),
               color: Colors.grey[100]),
-          width: size.width * 0.8,
+          width: size.width * 0.85,
           child: TextField(
             controller: _findIdControllerPW,
             decoration: InputDecoration(hintText: 'ID를 입력하세요.'),
@@ -185,7 +185,7 @@ class _FindAccountTabState extends State<FindAccountTab> {
           decoration: BoxDecoration(
               border: Border.all(width: 0.5, color: Colors.black),
               color: Colors.grey[100]),
-          width: size.width * 0.8,
+          width: size.width * 0.85,
           child: TextField(
             keyboardType: TextInputType.emailAddress,
             controller: _findEmailControllerPW,
@@ -203,7 +203,7 @@ class _FindAccountTabState extends State<FindAccountTab> {
           decoration: BoxDecoration(
               border: Border.all(width: 0.5, color: Colors.black),
               color: Colors.grey[100]),
-          width: size.width * 0.8,
+          width: size.width * 0.85,
           child: TextField(
             controller: _findNameControllerPW,
             decoration: InputDecoration(hintText: '이름을 입력하세요.'),
@@ -216,7 +216,7 @@ class _FindAccountTabState extends State<FindAccountTab> {
           decoration: BoxDecoration(
               border: Border.all(width: 0.5, color: Colors.black),
               color: Colors.grey[100]),
-          width: size.width * 0.8,
+          width: size.width * 0.85,
           child: TextField(
             controller: _findGradeControllerPW,
             decoration: InputDecoration(
