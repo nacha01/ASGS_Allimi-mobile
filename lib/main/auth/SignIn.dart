@@ -30,7 +30,7 @@ class _SignInPageState extends State<SignInPage> {
   String _key = '';
   AuthController _authController = AuthController();
   bool _isChecked = false;
-  int _tapState = 1;
+  int _tabState = 1;
 
   Future<String?> _getLatestVersion() async {
     String url = '${ApiUtil.API_HOST}arlimi_getLatestVersion.php';
@@ -254,94 +254,89 @@ class _SignInPageState extends State<SignInPage> {
           overscroll.disallowIndicator();
           return true;
         },
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  DefaultButtonComp(
-                    padding: 0,
-                    child: Container(
-                      padding: EdgeInsets.all(size.width * 0.01),
-                      child: Text(
-                        '로그인 하기\nLogin',
+        child: Column(
+          children: [
+            Row(
+              children: [
+                DefaultButtonComp(
+                  padding: 0,
+                  child: Container(
+                    padding: EdgeInsets.all(size.width * 0.01),
+                    child: Text(
+                      '로그인 하기\nLogin',
+                      textAlign: TextAlign.center,
+                      style: _tabButtonStyle(1),
+                    ),
+                    width: size.width * 0.3,
+                    height: size.height * 0.09,
+                    alignment: Alignment.center,
+                    color: _tabState == 1
+                        ? Color(0xFFF9F7F8)
+                        : Color(0xFFDAE2EF),
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _tabState = 1;
+                    });
+                  },
+                ),
+                DefaultButtonComp(
+                  padding: 0,
+                  child: Container(
+                    padding: EdgeInsets.all(size.width * 0.01),
+                    child: Text('회원가입 하기\nJoin Membership',
                         textAlign: TextAlign.center,
-                        textScaleFactor: _tapState == 1 ? 1.2 : 1.1,
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, color: Colors.black),
-                      ),
-                      width: size.width * 0.3,
-                      height: size.height * 0.08,
-                      alignment: Alignment.center,
-                      color: _tapState == 1
-                          ? Color(0xFFF9F7F8)
-                          : Color(0xFFDAE2EF),
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _tapState = 1;
-                      });
-                    },
+                        style: _tabButtonStyle(2)),
+                    width: size.width * 0.4,
+                    height: size.height * 0.09,
+                    alignment: Alignment.center,
+                    color: _tabState == 2
+                        ? Color(0xFFF9F7F8)
+                        : Color(0xFFDAE2EF),
                   ),
-                  DefaultButtonComp(
+                  onPressed: () {
+                    setState(() {
+                      _tabState = 2;
+                    });
+                  },
+                ),
+                Expanded(
+                  child: DefaultButtonComp(
                     padding: 0,
                     child: Container(
                       padding: EdgeInsets.all(size.width * 0.01),
-                      child: Text('회원가입 하기\nJoin Membership',
+                      child: Text('ID/PW 찾기\nFind ID/PW',
                           textAlign: TextAlign.center,
-                          textScaleFactor: _tapState == 2 ? 1.2 : 1.1,
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black)),
-                      width: size.width * 0.4,
-                      height: size.height * 0.08,
+                          style: _tabButtonStyle(3)),
+                      height: size.height * 0.09,
                       alignment: Alignment.center,
-                      color: _tapState == 2
+                      color: _tabState == 3
                           ? Color(0xFFF9F7F8)
-                          : Color(0xFFDAE2EF),
+                          : Color(0xFF4072A7),
                     ),
                     onPressed: () {
                       setState(() {
-                        _tapState = 2;
+                        _tabState = 3;
                       });
                     },
                   ),
-                  Expanded(
-                    child: DefaultButtonComp(
-                      padding: 0,
-                      child: Container(
-                        padding: EdgeInsets.all(size.width * 0.01),
-                        child: Text('ID/PW 찾기\nFind ID/PW',
-                            textAlign: TextAlign.center,
-                            textScaleFactor: _tapState == 3 ? 1.2 : 1.1,
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black)),
-                        height: size.height * 0.08,
-                        alignment: Alignment.center,
-                        color: _tapState == 3
-                            ? Color(0xFFF9F7F8)
-                            : Color(0xFF4072A7),
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _tapState = 3;
-                        });
-                      },
-                    ),
-                  ),
-                ],
-              ),
-              _switchTap(size)
-            ],
-          ),
+                ),
+              ],
+            ),
+            Expanded(child: _switchTap(size))
+          ],
         ),
       ),
     ));
   }
 
+  TextStyle _tabButtonStyle(int state) {
+    return TextStyle(
+        fontWeight: FontWeight.bold, fontSize: _tabState == state ? 12 : 11);
+  }
+
   Widget _switchTap(Size size) {
-    switch (_tapState) {
+    switch (_tabState) {
       case 1:
         return LoginTab();
       case 2:

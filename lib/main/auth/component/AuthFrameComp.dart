@@ -12,21 +12,23 @@ class _AuthFrameCompState extends State<AuthFrameComp> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    return Container(
-        width: size.width,
-        height: size.height * 0.9,
-        decoration: BoxDecoration(
-            gradient: LinearGradient(
-          colors: [
-            Color(0xFFF9F7F8),
-            Color(0xFFF9F7F8),
-            Colors.lightBlue[100]!
-          ],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        )),
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: widget.children));
+    return SingleChildScrollView(
+      child: Container(
+          width: size.width,
+          height: size.height,
+          decoration: BoxDecoration(
+              gradient: LinearGradient(
+            colors: [
+              Color(0xFFF9F7F8),
+              Color(0xFFF9F7F8),
+              Colors.lightBlue[100]!
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          )),
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: widget.children)),
+    );
   }
 }
