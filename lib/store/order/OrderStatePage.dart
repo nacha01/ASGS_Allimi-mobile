@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:asgshighschool/api/ApiUtil.dart';
 import 'package:asgshighschool/component/ThemeAppBar.dart';
-import 'package:asgshighschool/data/category.dart';
+import 'package:asgshighschool/data/order/order.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:asgshighschool/store/order/DetailOrderStatePage.dart';
 import 'package:asgshighschool/util/DateFormatter.dart';
@@ -11,6 +11,7 @@ import 'package:cp949_dart/cp949_dart.dart' as cp949;
 import 'package:http/http.dart' as http;
 
 import '../../component/DefaultButtonComp.dart';
+import '../../data/order/order_detail.dart';
 import '../../util/NumberFormatter.dart';
 
 class OrderStatePage extends StatefulWidget {
@@ -23,7 +24,7 @@ class OrderStatePage extends StatefulWidget {
 }
 
 class _OrderStatePageState extends State<OrderStatePage> {
-  List _orderMap = [];
+  List<Order> _orderList = [];
   Map? _cancelResponse;
   String _ediDate = '';
 
@@ -33,27 +34,23 @@ class _OrderStatePageState extends State<OrderStatePage> {
         '${ApiUtil.API_HOST}arlimi_getAllOrderInfo.php?uid=${widget.user!.uid}';
     final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
-      /// json decode 를 3번 해야한다. detail 까지 위해서는
       String result = ApiUtil.getPureBody(response.bodyBytes);
-      List map1st = json.decode(result);
+      List outerJson = jsonDecode(result);
 
-      /// json 의 가장 바깥쪽 껍데기 파싱
+      for (int i = 0; i < outerJson.length; ++i) {
+        var current = jsonDecode(outerJson[i]);
 
-      for (int i = 0; i < map1st.length; ++i) {
-        map1st[i] = json.decode(map1st[i]);
+        List<OrderDetail> details = [];
 
-        /// 2차 내부 json 내용 파싱
-        for (int j = 0; j < map1st[i]['detail'].length; ++j) {
-          map1st[i]['detail'][j] = json.decode(map1st[i]['detail'][j]);
-          map1st[i]['detail'][j]['pInfo'] =
-              json.decode(map1st[i]['detail'][j]['pInfo']);
-
-          /// 내부 detail 의 json 파싱
+        for (int j = 0; j < current['detail'].length; ++j) {
+          current['detail'][j] = jsonDecode(current['detail'][j]);
+          current['detail'][j]['product'] =
+              jsonDecode(current['detail'][j]['product']);
+          details.add(OrderDetail.fromJson(current['detail'][j]));
         }
+        _orderList.add(Order.fromJson(current, details));
       }
-      setState(() {
-        _orderMap = map1st;
-      });
+      setState(() {});
       return true;
     } else {
       return false;
@@ -107,36 +104,38 @@ class _OrderStatePageState extends State<OrderStatePage> {
   /// 목록에서 어떤 상품을 구매했는지에 대한 간략 소개를 위한 텍스트 작업
   /// @param : 특정 주문 데이터에 대한 상품 목록 List
   /// format : 상품이 한 종류 시, xxx n개 | 두 종류 이상 시, xxx n개 외 y개
-  String? _extractDetailProductText(List detail) {
-    if (detail.length == 1) {
-      return detail[0]['pInfo']['pName'] + ' ' + detail[0]['quantity'] + '개';
-    } else {
-      return detail[0]['pInfo']['pName'] +
+  String? _extractDetailProductText(List<OrderDetail> details) {
+    if (details.length == 1) {
+      return details[0].product.name +
           ' ' +
-          detail[0]['quantity'] +
-          '개 외 ${detail.length - 1}개';
+          details[0].quantity.toString() +
+          '개';
+    } else {
+      return details[0].product.name +
+          ' ' +
+          details[0].quantity.toString() +
+          '개 외 ${details.length - 1}개';
     }
   }
 
-  Future<String?> _cancelPaymentRequest(orderJson) async {
+  Future<String?> _cancelPaymentRequest(Order order) async {
     _ediDate = PaymentUtil.getEdiDate();
 
     final response = await http
         .post(Uri.parse(PaymentUtil.CANCEL_API_URL), body: <String, String?>{
-      'TID': orderJson['tid'],
+      'TID': order.tid,
       'MID': PaymentUtil.MID,
-      'Moid': orderJson['oID'],
-      'CancelAmt': int.parse(orderJson['totalPrice']).toString(),
+      'Moid': order.orderID,
+      'CancelAmt': order.totalPrice.toString(),
       'CancelMsg': '결제자의 요청에 의한 취소',
       'PartialCancelCode': '0',
       'EdiDate': _ediDate,
-      'SignData': PaymentUtil.encryptCancel(
-          int.parse(orderJson['totalPrice']), _ediDate),
+      'SignData': PaymentUtil.encryptCancel(order.totalPrice, _ediDate),
       'CharSet': 'euc-kr',
       'EdiType': 'JSON'
     });
     if (response.statusCode == 200) {
-      _cancelResponse = jsonDecode(cp949.decode(response.bodyBytes)); //???
+      _cancelResponse = jsonDecode(cp949.decode(response.bodyBytes));
       return _cancelResponse!['ResultCode'];
     } else {
       return 'Error';
@@ -196,25 +195,28 @@ class _OrderStatePageState extends State<OrderStatePage> {
     }
   }
 
-  Future<bool> _cancelOrderHandling(orderJson) async {
-    var code = await _cancelPaymentRequest(orderJson);
+  Future<bool> _cancelOrderHandling(Order order) async {
+    var code = await _cancelPaymentRequest(order);
 
-    var _oid = orderJson['oID'];
+    var _oid = order.orderID;
 
     if (code == '2001') {
       var res = await _updateOrderState(4, _oid);
       if (!res) return false;
-      var renewCountRes = await _updateProductCountRequest(
-          int.parse(orderJson['detail'][0]['oPID']),
-          int.parse(orderJson['detail'][0]['quantity']),
-          '+');
-      var sellCountRes = await _updateEachProductSellCountRequest(
-          orderJson['detail'][0]['prodID'],
-          orderJson['detail'][0]['productCount'],
-          '-');
+
+      for (var detail in order.detail) {
+        var result = await _updateProductCountRequest(
+            detail.product.productID, detail.quantity, '+');
+        if (!result) return false;
+      }
+
+      for (var detail in order.detail) {
+        var result = await _updateEachProductSellCountRequest(
+            detail.product.productID, detail.quantity, '-');
+        if (!result) return false;
+      }
+
       var buyerCountRes = await _updateUserBuyCountRequest('-');
-      if (!renewCountRes) return false;
-      if (!sellCountRes) return false;
       if (!buyerCountRes) return false;
 
       return true;
@@ -230,7 +232,7 @@ class _OrderStatePageState extends State<OrderStatePage> {
       appBar: ThemeAppBar(barTitle: '내 주문 현황'),
       body: Column(
         children: [
-          _orderMap.length == 0
+          _orderList.length == 0
               ? Expanded(
                   child: Center(
                   child: Text(
@@ -241,24 +243,23 @@ class _OrderStatePageState extends State<OrderStatePage> {
               : Expanded(
                   child: ListView.builder(
                   itemBuilder: (context, index) {
-                    return orderListItemLayout(_orderMap[index], size);
+                    return orderListItemLayout(_orderList[index], size);
                   },
-                  itemCount: _orderMap.length,
+                  itemCount: _orderList.length,
                 ))
         ],
       ),
     );
   }
 
-  Widget orderListItemLayout(Map orderJson, Size size) {
+  Widget orderListItemLayout(Order order, Size size) {
     return GestureDetector(
       onTap: () {
-        // 상세 주문 현황 페이지로 이동
         Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) => DetailOrderStatePage(
-                      order: orderJson,
+                      order: order,
                       user: widget.user,
                     )));
       },
@@ -277,11 +278,11 @@ class _OrderStatePageState extends State<OrderStatePage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    '주문번호 : ${orderJson['oID']}',
+                    '주문번호 : ${order.orderID}',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                   ),
                   Text(
-                    '${DateFormatter.formatShortDate(orderJson['oDate'])}',
+                    '${DateFormatter.formatShortDate(order.orderDate)}',
                     style: TextStyle(color: Colors.black45),
                   )
                 ],
@@ -295,11 +296,11 @@ class _OrderStatePageState extends State<OrderStatePage> {
               child: Wrap(
                 children: [
                   Text(
-                    '[${Category.categoryIndexToStringMap[int.parse(orderJson['detail'][0]['pInfo']['category'])]}] ',
+                    '[${order.detail[0].product.category}] ',
                     style: TextStyle(color: Colors.grey),
                   ),
                   Text(
-                    ' ${_extractDetailProductText(orderJson['detail'])} ',
+                    ' ${_extractDetailProductText(order.detail)} ',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                   ),
                 ],
@@ -311,22 +312,22 @@ class _OrderStatePageState extends State<OrderStatePage> {
                 Padding(
                   padding: EdgeInsets.all(size.width * 0.01),
                   child: Text(
-                    '${_getTextAccordingToOrderState(int.parse(orderJson['orderState']))}',
+                    '${_getTextAccordingToOrderState(order.orderState)}',
                     style: TextStyle(
-                        color: _getColorAccordingToOrderState(
-                            int.parse(orderJson['orderState']))),
+                        color:
+                            _getColorAccordingToOrderState(order.orderState)),
                   ),
                 ),
                 Padding(
                   padding: EdgeInsets.all(size.width * 0.01),
                   child: Text(
-                    '${NumberFormatter.formatPrice(int.parse(orderJson['totalPrice']))}원',
+                    '${NumberFormatter.formatPrice(order.totalPrice)}원',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
                   ),
                 )
               ],
             ),
-            int.parse(orderJson['orderState']) == 1
+            order.orderState == 1
                 ? DefaultButtonComp(
                     onPressed: () {
                       showDialog(
@@ -343,8 +344,8 @@ class _OrderStatePageState extends State<OrderStatePage> {
                                 actions: [
                                   DefaultButtonComp(
                                       onPressed: () async {
-                                        var res = await _cancelOrderHandling(
-                                            orderJson);
+                                        var res =
+                                            await _cancelOrderHandling(order);
                                         if (res) {
                                           showDialog(
                                               barrierDismissible: false,
@@ -358,7 +359,6 @@ class _OrderStatePageState extends State<OrderStatePage> {
                                                             fontSize: 16)),
                                                     content: Text(
                                                         '${_cancelResponse!['ResultMsg']}',
-                                                        //여기가 취소 성공이라는 메세지인가?
                                                         style: TextStyle(
                                                             fontWeight:
                                                                 FontWeight.bold,
@@ -390,7 +390,7 @@ class _OrderStatePageState extends State<OrderStatePage> {
                                                           fontSize: 16),
                                                     ),
                                                     content: Text(
-                                                        '${_cancelResponse!['ResultMsg']} (code-${_cancelResponse!['ResultCode']}',
+                                                        '${_cancelResponse!['ResultMsg']} (code-${_cancelResponse!['ResultCode']})',
                                                         style: TextStyle(
                                                             fontWeight:
                                                                 FontWeight.bold,

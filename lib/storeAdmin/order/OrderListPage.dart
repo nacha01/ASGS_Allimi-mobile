@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:asgshighschool/api/ApiUtil.dart';
+import 'package:asgshighschool/data/order/order.dart';
 import 'package:asgshighschool/data/status.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:asgshighschool/util/DateFormatter.dart';
 import '../../component/DefaultButtonComp.dart';
 import '../../component/ThemeAppBar.dart';
+import '../../data/order/order_detail.dart';
 import 'AdminDetailOrder.dart';
 import 'package:asgshighschool/storeAdmin/statistics/FullListPage.dart';
 import '../qr/QrSearchScannerPage.dart';
@@ -24,22 +26,10 @@ class OrderListPage extends StatefulWidget {
 }
 
 class _OrderListPageState extends State<OrderListPage> {
-  List _orderList = [];
-  List _noneList = [];
+  List<Order> _orderList = [];
+  List<Order> _noneList = [];
   bool _isChecked = true;
   bool _isFinished = false;
-
-  Future<User?> _getUserInformation(String? uid) async {
-    String url = '${ApiUtil.API_HOST}arlimi_getOneUser.php?uid=$uid';
-    final response = await http.get(Uri.parse(url));
-
-    if (response.statusCode == 200) {
-      String result = ApiUtil.getPureBody(response.bodyBytes);
-      return User.fromJson(json.decode(result));
-    } else {
-      return null;
-    }
-  }
 
   /// 모든 주문 내역을 요청하는 작업
   /// 이미 주문 처리가 된 것과 안된 것을 구분하여 각각의 List 에 저장
@@ -49,19 +39,24 @@ class _OrderListPageState extends State<OrderListPage> {
 
     if (response.statusCode == 200) {
       String result = ApiUtil.getPureBody(response.bodyBytes);
-      List map1st = json.decode(result);
+
+      List outerJson = jsonDecode(result);
       _orderList.clear();
       _noneList.clear();
-      for (int i = 0; i < map1st.length; ++i) {
-        _orderList.add(json.decode(map1st[i]));
+      for (int i = 0; i < outerJson.length; ++i) {
+        var currentOrder = jsonDecode(outerJson[i]);
 
-        for (int j = 0; j < _orderList[i]['detail'].length; ++j) {
-          _orderList[i]['detail'][j] = json.decode(_orderList[i]['detail'][j]);
-          _orderList[i]['detail'][j]['pInfo'] =
-              json.decode(_orderList[i]['detail'][j]['pInfo']);
+        List<OrderDetail> detailList = [];
+        currentOrder['user'] = jsonDecode(currentOrder['user']);
+
+        for (int j = 0; j < currentOrder['detail'].length; ++j) {
+          currentOrder['detail'][j] = jsonDecode(currentOrder['detail'][j]);
+          currentOrder['detail'][j]['product'] =
+              jsonDecode(currentOrder['detail'][j]['product']);
+          detailList.add(OrderDetail.fromJson(currentOrder['detail'][j]));
         }
-        if (int.parse(_orderList[i]['orderState']) != 3 &&
-            int.parse(_orderList[i]['orderState']) != 4) {
+        _orderList.add(Order.fromJson(currentOrder, detailList));
+        if (_orderList[i].orderState != 3 && _orderList[i].orderState != 4) {
           _noneList.add(_orderList[i]);
         }
       }
@@ -167,7 +162,7 @@ class _OrderListPageState extends State<OrderListPage> {
                       ? Expanded(
                           child: Center(
                           child: Text(
-                            '업로드된 주문 내역이 없습니다!',
+                            '업로드 된 주문 내역이 없습니다!',
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 16),
                           ),
@@ -175,15 +170,7 @@ class _OrderListPageState extends State<OrderListPage> {
                       : Expanded(
                           child: ListView.builder(
                           itemBuilder: (context, index) {
-                            return _itemTile(
-                                _noneList[index]['oID'],
-                                _noneList[index]['uID'],
-                                int.parse(_noneList[index]['receiveMethod']),
-                                _noneList[index]['oDate'],
-                                _noneList[index]['eDate'],
-                                int.parse(_noneList[index]['orderState']),
-                                _noneList[index],
-                                size);
+                            return _itemTile(_noneList[index], size);
                           },
                           itemCount: _noneList.length,
                         ))
@@ -199,15 +186,7 @@ class _OrderListPageState extends State<OrderListPage> {
                       : Expanded(
                           child: ListView.builder(
                           itemBuilder: (context, index) {
-                            return _itemTile(
-                                _orderList[index]['oID'],
-                                _orderList[index]['uID'],
-                                int.parse(_orderList[index]['receiveMethod']),
-                                _orderList[index]['oDate'],
-                                _orderList[index]['eDate'],
-                                int.parse(_orderList[index]['orderState']),
-                                _orderList[index],
-                                size);
+                            return _itemTile(_orderList[index], size);
                           },
                           itemCount: _orderList.length,
                         ))
@@ -226,8 +205,7 @@ class _OrderListPageState extends State<OrderListPage> {
     );
   }
 
-  Widget _itemTile(String? oid, String? uid, int recv, String oDate,
-      String? eDate, int orderState, Map? data, Size size) {
+  Widget _itemTile(Order order, Size size) {
     return Container(
       width: size.width,
       margin: EdgeInsets.all(size.width * 0.01),
@@ -242,7 +220,7 @@ class _OrderListPageState extends State<OrderListPage> {
               MaterialPageRoute(
                   builder: (context) => AdminDetailOrder(
                         user: widget.user,
-                        data: data,
+                        order: order,
                       )));
           if (res) {
             await _getAllOrderData();
@@ -258,69 +236,23 @@ class _OrderListPageState extends State<OrderListPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    '주문번호 : $oid',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    '주문번호 : ${order.orderID}',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                   ),
                   Text(
-                    DateFormatter.formatDateTimeCmp(oDate),
+                    DateFormatter.formatDateTimeCmp(order.orderDate),
                     style: TextStyle(
-                        color: Colors.redAccent,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15),
+                        color: Colors.redAccent, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
               SizedBox(
                 height: size.height * 0.005,
               ),
-              GestureDetector(
-                onTap: () async {
-                  var user = await _getUserInformation(uid); //개인 정보 가져오기
-                  showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                            title: Text('구매자 정보'),
-                            content: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  '아이디 : ${user!.uid}',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                Text('이름 : ${user.name}',
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold)),
-                                Text(
-                                    '신분 : ${Status.statusList[user.identity - 1]}',
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold)),
-                                Text(
-                                    '학번 : ${user.studentId == null || user.studentId == '' ? 'X' : user.studentId}',
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold)),
-                                Text('닉네임 : ${user.nickName}',
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold))
-                              ],
-                            ),
-                            actions: [
-                              DefaultButtonComp(
-                                onPressed: () => Navigator.pop(context),
-                                child: Text('확인',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.blueAccent)),
-                              )
-                            ],
-                          ));
-                },
-                child: Text('주문자 ID : $uid',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        decoration: TextDecoration.underline,
-                        color: Colors.teal)),
-              ),
+              Text(
+                  '주문자: [${Status.statusList[order.user!.identity - 1]}] ${order.user!.studentID ?? ''} ${order.user!.name}',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.teal)),
               SizedBox(
                 height: size.height * 0.005,
               ),
@@ -332,19 +264,24 @@ class _OrderListPageState extends State<OrderListPage> {
                         fontWeight: FontWeight.bold,
                       )),
                   Text(
-                    '${eDate == null || eDate == '0000-00-00 00:00:00' ? '-' : eDate}',
+                    '${order.editDate == '0000-00-00 00:00:00' ? '-' : order.editDate}',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   )
                 ],
               ),
+              SizedBox(
+                height: size.height * 0.005,
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('[${recv == 0 ? '직접 수령' : '배달'}]',
+                  Text('[${order.receiveMethod == 0 ? '직접 수령' : '배달'}]',
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: recv == 0 ? Colors.lightBlue : Colors.green)),
-                  orderState == 2
+                          color: order.receiveMethod == 0
+                              ? Colors.lightBlue
+                              : Colors.green)),
+                  order.orderState == 2
                       ? Row(
                           children: [
                             Container(
@@ -356,14 +293,14 @@ class _OrderListPageState extends State<OrderListPage> {
                               child: Text(
                                 '처리 담당 중',
                                 style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 13),
+                                    fontWeight: FontWeight.bold, fontSize: 12),
                               ),
                               alignment: Alignment.center,
                             ),
                             GestureDetector(
                               onTap: () async {
                                 var user = await _getAdminUserInfoByID(
-                                    data['chargerID']);
+                                    order.chargerID!);
                                 showDialog(
                                     context: context,
                                     builder: (context) => AlertDialog(
@@ -407,13 +344,15 @@ class _OrderListPageState extends State<OrderListPage> {
                                 children: [
                                   Text(
                                     '  담당자 [',
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 13),
                                   ),
-                                  Text(data!['chargerID'],
+                                  Text(order.chargerID!,
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold,
-                                          color: Colors.blue)),
+                                          color: Colors.blue,
+                                          fontSize: 13)),
                                   Text(']',
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold))
@@ -422,7 +361,7 @@ class _OrderListPageState extends State<OrderListPage> {
                             )
                           ],
                         )
-                      : orderState == 3
+                      : order.orderState == 3
                           ? Container(
                               width: size.width * 0.22,
                               height: size.height * 0.026,
@@ -438,7 +377,7 @@ class _OrderListPageState extends State<OrderListPage> {
                               ),
                               alignment: Alignment.center,
                             )
-                          : orderState == 4
+                          : order.orderState == 4
                               ? Container(
                                   width: size.width * 0.22,
                                   height: size.height * 0.026,

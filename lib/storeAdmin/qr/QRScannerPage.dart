@@ -8,9 +8,9 @@ import '../../component/DefaultButtonComp.dart';
 import '../../util/ToastMessage.dart';
 
 class QRScannerPage extends StatefulWidget {
-  QRScannerPage({this.oID});
+  QRScannerPage({required this.oID});
 
-  final String? oID;
+  final String oID;
 
   @override
   _QRScannerPageState createState() => _QRScannerPageState();

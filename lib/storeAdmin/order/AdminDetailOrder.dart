@@ -1,9 +1,11 @@
-import 'package:asgshighschool/data/category.dart';
-import 'package:asgshighschool/data/user.dart';
 import 'package:asgshighschool/util/DateFormatter.dart';
 import '../../api/ApiUtil.dart';
 import '../../component/DefaultButtonComp.dart';
 import '../../component/ThemeAppBar.dart';
+import '../../data/order/order.dart';
+import '../../data/order/order_detail.dart';
+import '../../data/status.dart';
+import '../../data/user.dart';
 import '../../util/NumberFormatter.dart';
 import '../../util/ToastMessage.dart';
 import '../qr/QRScannerPage.dart';
@@ -11,9 +13,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class AdminDetailOrder extends StatefulWidget {
-  AdminDetailOrder({this.data, this.user});
+  AdminDetailOrder({required this.order, this.user});
 
-  final Map? data;
+  final Order order;
   final User? user;
 
   @override
@@ -30,7 +32,7 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
     String url = '${ApiUtil.API_HOST}arlimi_chargeOrder.php';
     final response = await http.post(Uri.parse(url), body: <String, String?>{
       'uid': widget.user!.uid,
-      'oid': widget.data!['oID']
+      'oid': widget.order.orderID
     });
 
     if (response.statusCode == 200) {
@@ -42,14 +44,11 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
 
   @override
   void initState() {
-    _isCharged = (int.parse(widget.data!['orderState']) == 3 ||
-            int.parse(widget.data!['orderState']) == 2)
-        ? true
-        : false;
-    if (int.parse(widget.data!['orderState']) == 4) {
+    _isCharged = (widget.order.orderState == 3 || widget.order.orderState == 2);
+    if (widget.order.orderState == 4) {
       _isCharged = true;
     }
-    _state = int.parse(widget.data!['orderState']);
+    _state = widget.order.orderState;
     super.initState();
   }
 
@@ -63,7 +62,7 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
       },
       child: Scaffold(
         appBar: ThemeAppBar(
-            barTitle: '주문 [${widget.data!['oID']}]',
+            barTitle: '상세 주문 페이지 [${widget.order.orderID}]',
             leadingClick: () => Navigator.pop(context, true)),
         floatingActionButton: _isCharged
             ? _state == 3 || _state == 4
@@ -75,7 +74,7 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
                           context,
                           MaterialPageRoute(
                               builder: (context) => QRScannerPage(
-                                    oID: widget.data!['oID'],
+                                    oID: widget.order.orderID,
                                   )));
                       if (res) Navigator.pop(context, true);
                     },
@@ -83,7 +82,7 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
             : null,
         body: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: EdgeInsets.all(size.width * 0.02),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -103,14 +102,14 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
                   thickness: 1,
                 ),
                 Text(
-                  '주문자 ID  ${widget.data!['uID']}',
+                  '주문자: [${Status.statusList[widget.order.user!.identity - 1]}] ${widget.order.user!.studentID ?? ''} ${widget.order.user!.name}',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 SizedBox(
                   height: size.height * 0.015,
                 ),
                 Text(
-                  '주문 번호  ${widget.data!['oID']}',
+                  '주문 번호  ${widget.order.orderID}',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 SizedBox(
@@ -119,10 +118,10 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
                 Row(
                   children: [
                     Text(
-                        '주문 일자: ${DateFormatter.formatDate(widget.data!['oDate'])}',
+                        '주문 일자: ${DateFormatter.formatDate(widget.order.orderDate)}',
                         style: TextStyle(color: Colors.grey, fontSize: 13)),
                     Text(
-                      ' (${DateFormatter.formatDateTimeCmp(widget.data!['oDate'])})',
+                      ' (${DateFormatter.formatDateTimeCmp(widget.order.orderDate)})',
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
@@ -133,10 +132,10 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
                 Row(
                   children: [
                     Text(
-                        '주문 완료 일자: ${widget.data!['eDate'] == null || widget.data!['eDate'] == '0000-00-00 00:00:00' ? '-' : DateFormatter.formatDate(widget.data!['eDate'])}',
+                        '주문 완료 일자: ${widget.order.editDate == '0000-00-00 00:00:00' ? '-' : DateFormatter.formatDate(widget.order.editDate)}',
                         style: TextStyle(color: Colors.grey, fontSize: 13)),
                     Text(
-                        ' (${widget.data!['eDate'] == null || widget.data!['eDate'] == '0000-00-00 00:00:00' ? '-' : DateFormatter.formatDateTimeCmp(widget.data!['eDate'])})',
+                        ' (${widget.order.editDate == '0000-00-00 00:00:00' ? '-' : DateFormatter.formatDateTimeCmp(widget.order.editDate)})',
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 12,
@@ -153,24 +152,12 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     Text(
-                      '[ ${int.parse(widget.data!['receiveMethod']) == 0 ? '직접 수령' : '배달'} ]',
+                      '[ ${widget.order.receiveMethod == 0 ? '직접 수령' : '배달'} ]',
                       style: TextStyle(
                           color: Colors.lightBlue, fontWeight: FontWeight.bold),
                     )
                   ],
                 ),
-                int.parse(widget.data!['receiveMethod']) == 1
-                    ? Padding(
-                        padding: EdgeInsets.all(size.width * 0.04),
-                        child: Text(
-                          '장소 : ${widget.data!['location'] == null ? '' : widget.data!['location']}',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 19,
-                              color: Colors.teal),
-                        ),
-                      )
-                    : SizedBox(),
                 SizedBox(
                   height: size.height * 0.015,
                 ),
@@ -179,7 +166,7 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
                     Text('결제 방식 ',
                         style: TextStyle(fontWeight: FontWeight.bold)),
                     Text(
-                        ' [ ${widget.data!['payMethod'] == '0' ? '신용카드' : '간편결제'} ]')
+                        ' [ ${widget.order.payMethod == 0 ? '신용카드' : '간편결제'} ]')
                   ],
                 ),
                 SizedBox(
@@ -189,7 +176,7 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                      '${widget.data!['options'].toString().trim() == '' ? 'X' : widget.data!['options']}'),
+                      '${widget.order.options.trim() == '' ? 'X' : widget.order.options}'),
                 ),
                 Divider(
                   thickness: 6,
@@ -198,14 +185,14 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
                   height: size.height * 0.01,
                 ),
                 Text(
-                  '주문한 상품 목록들',
+                  '주문 상품 목록',
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                 ),
                 SizedBox(
                   height: size.height * 0.015,
                 ),
                 Column(
-                  children: _item(widget.data!['detail'], size),
+                  children: _item(widget.order.detail, size),
                 ),
                 Divider(
                   thickness: 6,
@@ -218,9 +205,9 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
                         alignment: Alignment.center,
                         padding: EdgeInsets.all(size.width * 0.02),
                         child: Text(
-                          '총 결제 금액  ${NumberFormatter.formatPrice(int.parse(widget.data!['totalPrice']))}원',
+                          '총 결제 금액  ${NumberFormatter.formatPrice(widget.order.totalPrice)}원',
                           style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 19),
+                              fontWeight: FontWeight.bold, fontSize: 18),
                         ),
                       ),
                     ),
@@ -241,7 +228,7 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
                               var res = await _chargeOrderRequest();
                               if (res) {
                                 ToastMessage.show(
-                                    '주문 번호 ${widget.data!['oID']} 담당 완료 ');
+                                    '주문 번호 ${widget.order.orderID} 담당 완료 ');
                                 setState(() {
                                   _isCharged = true;
                                   _state = 2;
@@ -296,8 +283,7 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
                     fontWeight: FontWeight.bold,
                     fontSize: 15,
                     color: Colors.lightBlue)),
-            Text(
-                '${widget.data!['chargerID'] == null ? widget.user!.uid : widget.data!['chargerID']}',
+            Text('${widget.order.chargerID ?? widget.user!.uid}',
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 15,
@@ -321,7 +307,7 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
               height: 5,
             ),
             Text(
-              '담당자 ID  : ${widget.data!['chargerID']}',
+              '담당자 ID  : ${widget.order.chargerID}',
               style: TextStyle(fontWeight: FontWeight.bold),
             )
           ],
@@ -337,8 +323,7 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
     }
   }
 
-  Widget _detailItemTile(String name, int category, int price, double discount,
-      int quantity, Size size) {
+  Widget _detailItemTile(OrderDetail detail, Size size) {
     return Container(
       margin: EdgeInsets.all(size.width * 0.015),
       padding: EdgeInsets.all(size.width * 0.03),
@@ -353,17 +338,17 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
             child: Wrap(
               children: [
                 Text(
-                  '[${Category.categoryIndexToStringMap[category]}] ',
+                  '[${detail.product.category}] ',
                   style: TextStyle(
                     color: Colors.black54,
                   ),
                 ),
                 Text(
-                  name,
+                  detail.product.name,
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                 ),
                 Text(
-                  '  $quantity개',
+                  '  ${detail.quantity}개',
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.deepOrange,
@@ -378,13 +363,13 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
           Row(
             children: [
               Text(
-                '정가 ${NumberFormatter.formatPrice(price)}원',
+                '정가 ${NumberFormatter.formatPrice(detail.product.price)}원',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
-              discount.toString() == '0.0'
+              detail.product.discount == null
                   ? SizedBox()
                   : Text(
-                      ' [$discount% 할인]',
+                      ' [${detail.product.discount}% 할인]',
                       style: TextStyle(color: Colors.black38),
                     )
             ],
@@ -394,16 +379,10 @@ class _AdminDetailOrderState extends State<AdminDetailOrder> {
     );
   }
 
-  List<Widget> _item(List list, Size size) {
+  List<Widget> _item(List<OrderDetail> list, Size size) {
     List<Widget> w = [];
     for (int index = 0; index < list.length; ++index) {
-      w.add(_detailItemTile(
-          list[index]['pInfo']['pName'],
-          int.parse(list[index]['pInfo']['category']),
-          int.parse(list[index]['pInfo']['price']),
-          double.parse(list[index]['pInfo']['discount']),
-          int.parse(list[index]['quantity']),
-          size));
+      w.add(_detailItemTile(list[index], size));
     }
     return w;
   }
