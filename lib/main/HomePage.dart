@@ -90,8 +90,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   Future<void> _getBannerImage() async {
-    String url =
-        '${ApiUtil.API_HOST}main_getAllSelectedImage.php';
+    String url = '${ApiUtil.API_HOST}main_getAllSelectedImage.php';
     final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
       String result = ApiUtil.getPureBody(response.bodyBytes);
@@ -652,7 +651,9 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                             GlobalVariable.isAuthorized = false;
                                             _pref = await SharedPreferences
                                                 .getInstance();
-                                            _pref.setBool('checked', false);
+                                            await _pref.setBool(
+                                                'checked', false);
+                                            Navigator.pop(context);
                                             Navigator.pushReplacement(
                                                 context,
                                                 MaterialPageRoute(

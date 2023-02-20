@@ -31,10 +31,10 @@ class User {
         token = json['token'],
         name = json['name'],
         identity = int.parse(json['identity']),
-        studentId = json['studentid'],
+        studentId = json['student_id'],
         nickName = json['nickname'],
-        rDate = json['regdate'],
-        buyCount = int.parse(json['buycount']),
+        rDate = json['reg_date'],
+        buyCount = int.parse(json['buy_count']),
         point = int.parse(json['point']),
         email = json['email'];
 }
