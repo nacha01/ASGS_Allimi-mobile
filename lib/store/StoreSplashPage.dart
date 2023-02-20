@@ -1,10 +1,8 @@
-import 'dart:convert';
 import 'package:asgshighschool/api/ApiUtil.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'StoreMainPage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import '../data/product.dart';
 
 class StoreSplashPage extends StatefulWidget {
   final User? user;
@@ -24,7 +22,6 @@ class _StoreSplashPageState extends State<StoreSplashPage> {
 
   /// Splash 페이지의 로딩 process
   loading() async {
-    List? result = await _getProducts();
     var res = await _checkExistCart();
     await Future.delayed(Duration(milliseconds: 500));
     Navigator.pushReplacement(
@@ -32,7 +29,6 @@ class _StoreSplashPageState extends State<StoreSplashPage> {
         MaterialPageRoute(
             builder: (context) => StoreMainPage(
                   user: widget.user,
-                  product: result as List<Product>?,
                   existCart: res,
                 )));
   }
@@ -50,30 +46,6 @@ class _StoreSplashPageState extends State<StoreSplashPage> {
       }
     }
     return false;
-  }
-
-  /// 모든 상품 데이터를 요청하는 작업
-  Future<List<Product>?> _getProducts() async {
-    String url = '${ApiUtil.API_HOST}arlimi_getProduct.php';
-    final response = await http.get(Uri.parse(url));
-
-    if (response.statusCode == 200) {
-      if (response.body.contains('일일 트래픽을 모두 사용하였습니다.')) {
-        return [];
-      }
-      String result = ApiUtil.getPureBody(response.bodyBytes);
-      List productList = json.decode(result);
-      List<Product> prodObjects = [];
-      for (int i = 0; i < productList.length; ++i) {
-        prodObjects.add(Product.fromJson(json.decode(productList[i])));
-      }
-      return prodObjects;
-      // 디코딩의 디코딩 작업 필요 (두번의 json 디코딩)
-      // 가장 바깥쪽 array를 json으로 변환하고
-      // 내부 데이터를 json으로 변환
-    } else {
-      return null;
-    }
   }
 
   @override

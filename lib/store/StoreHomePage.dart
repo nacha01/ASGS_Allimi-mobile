@@ -18,10 +18,9 @@ import '../util/ToastMessage.dart';
 import '../util/UpperCaseTextFormatter.dart';
 
 class StoreHomePage extends StatefulWidget {
-  StoreHomePage({this.user, this.product, this.existCart});
+  StoreHomePage({this.user, this.existCart});
 
   final User? user;
-  final List<Product>? product;
   final bool? existCart;
 
   @override

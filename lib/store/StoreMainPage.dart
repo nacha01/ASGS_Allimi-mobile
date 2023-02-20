@@ -9,13 +9,11 @@ import 'package:asgshighschool/store/StoreMyPage.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../data/product.dart';
 
 class StoreMainPage extends StatefulWidget {
-  StoreMainPage({this.user, this.product, this.existCart});
+  StoreMainPage({this.user, this.existCart});
 
   final User? user;
-  final List<Product>? product;
   final bool? existCart;
 
   @override
@@ -135,13 +133,11 @@ class StoreMainPageState extends State<StoreMainPage> {
       case 0: // 메인 홈
         return StoreHomePage(
           user: widget.user,
-          product: widget.product,
           existCart: widget.existCart,
         );
       case 1: // 메인 홈
         return StoreHomePage(
           user: widget.user,
-          product: widget.product,
           existCart: widget.existCart,
         );
       case 2: // 장바구니
