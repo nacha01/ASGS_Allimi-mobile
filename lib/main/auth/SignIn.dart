@@ -248,12 +248,12 @@ class _SignInPageState extends State<SignInPage> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
-        body: NotificationListener<OverscrollIndicatorNotification>(
-      onNotification: (overscroll) {
-        overscroll.disallowIndicator();
-        return true;
-      },
-      child: SafeArea(
+        body: SafeArea(
+      child: NotificationListener<OverscrollIndicatorNotification>(
+        onNotification: (overscroll) {
+          overscroll.disallowIndicator();
+          return true;
+        },
         child: Column(
           children: [
             Row(
