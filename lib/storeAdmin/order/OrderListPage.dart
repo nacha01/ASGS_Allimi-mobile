@@ -82,111 +82,93 @@ class _OrderListPageState extends State<OrderListPage> {
         barTitle: '주문 목록',
         actions: [
           IconButton(
-            onPressed: () async {
-              var res = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => FullListPage(
-                            user: widget.user,
-                            isResv: false,
-                          )));
-              if (res) {
-                await _getAllOrderData();
-              }
-            },
-            icon: Icon(
-              Icons.list_alt_rounded,
-              color: Colors.black,
-            ),
-            iconSize: 30,
-          )
+              onPressed: () async {
+                var res = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => FullListPage(
+                              user: widget.user,
+                              isResv: false,
+                            )));
+                if (res) {
+                  await _getAllOrderData();
+                }
+              },
+              icon: Icon(Icons.list_alt_rounded, color: Colors.black),
+              iconSize: 30)
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.qr_code_scanner),
-        onPressed: () async {
-          var res = await Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => QrSearchScannerPage(
-                        admin: widget.user,
-                      )));
-          if (res) await _getAllOrderData();
-        },
-      ),
-      body: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              DefaultButtonComp(
-                child: Row(
-                  children: [
-                    Icon(
-                      _isChecked
-                          ? Icons.check_box
-                          : Icons.check_box_outline_blank,
-                      color: Colors.blue,
+          child: Icon(Icons.qr_code_scanner),
+          onPressed: () async {
+            var res = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        QrSearchScannerPage(admin: widget.user)));
+            if (res) await _getAllOrderData();
+          }),
+      body: RefreshIndicator(
+        onRefresh: _getAllOrderData,
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                DefaultButtonComp(
+                    child: Row(children: [
+                      Icon(
+                          _isChecked
+                              ? Icons.check_box
+                              : Icons.check_box_outline_blank,
+                          color: Colors.blue),
+                      Text(' 주문 처리 완료 및 결제 취소 안보기',
+                          style: TextStyle(fontSize: 11, color: Colors.black))
+                    ]),
+                    onPressed: () {
+                      setState(() {
+                        _isChecked = !_isChecked;
+                      });
+                    })
+              ],
+            ),
+            _isFinished
+                ? _isChecked
+                    ? _noneList.length == 0
+                        ? Expanded(
+                            child: Center(
+                            child: Text('업로드 된 주문 내역이 없습니다!',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 16)),
+                          ))
+                        : Expanded(
+                            child: ListView.builder(
+                                itemBuilder: (context, index) {
+                                  return _itemTile(_noneList[index], size);
+                                },
+                                itemCount: _noneList.length))
+                    : _orderList.length == 0
+                        ? Expanded(
+                            child: Center(
+                            child: Text('업로드 된 주문 내역이 없습니다!',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 16)),
+                          ))
+                        : Expanded(
+                            child: ListView.builder(
+                                itemBuilder: (context, index) {
+                                  return _itemTile(_orderList[index], size);
+                                },
+                                itemCount: _orderList.length))
+                : Expanded(
+                    child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [Text('불러오는 중..'), CircularProgressIndicator()],
                     ),
-                    Text(
-                      ' 주문 처리 완료 및 결제 취소 안보기',
-                      style: TextStyle(fontSize: 11, color: Colors.black),
-                    )
-                  ],
-                ),
-                onPressed: () {
-                  setState(() {
-                    _isChecked = !_isChecked;
-                  });
-                },
-              )
-            ],
-          ),
-          _isFinished
-              ? _isChecked
-                  ? _noneList.length == 0
-                      ? Expanded(
-                          child: Center(
-                          child: Text(
-                            '업로드 된 주문 내역이 없습니다!',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 16),
-                          ),
-                        ))
-                      : Expanded(
-                          child: ListView.builder(
-                          itemBuilder: (context, index) {
-                            return _itemTile(_noneList[index], size);
-                          },
-                          itemCount: _noneList.length,
-                        ))
-                  : _orderList.length == 0
-                      ? Expanded(
-                          child: Center(
-                          child: Text(
-                            '업로드 된 주문 내역이 없습니다!',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 16),
-                          ),
-                        ))
-                      : Expanded(
-                          child: ListView.builder(
-                          itemBuilder: (context, index) {
-                            return _itemTile(_orderList[index], size);
-                          },
-                          itemCount: _orderList.length,
-                        ))
-              : Expanded(
-                  child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text('불러오는 중..'),
-                      CircularProgressIndicator(),
-                    ],
-                  ),
-                ))
-        ],
+                  ))
+          ],
+        ),
       ),
     );
   }
@@ -219,52 +201,43 @@ class _OrderListPageState extends State<OrderListPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    '주문번호 : ${order.orderID}',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-                  ),
-                  Text(
-                    DateFormatter.formatDateTimeCmp(order.orderDate),
-                    style: TextStyle(
-                        color: Colors.redAccent, fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: size.height * 0.005,
-              ),
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                Text(
+                  '주문번호 : ${order.orderID}',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                ),
+                Text(
+                  DateFormatter.formatDateTimeCmp(order.orderDate),
+                  style:
+                      TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                ),
+              ]),
+              SizedBox(height: size.height * 0.003),
               Text(
                   '주문자: [${Status.statusList[order.user!.identity - 1]}] ${order.user!.studentID ?? ''} ${order.user!.name}',
                   style: TextStyle(
                       fontWeight: FontWeight.bold, color: Colors.teal)),
-              SizedBox(
-                height: size.height * 0.005,
-              ),
+              SizedBox(height: size.height * 0.01),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('주문 완료 일자',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      )),
+                  Text('주문 완료 일자: ',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                  SizedBox(width: size.width * 0.02),
                   Text(
-                    '${order.editDate == '0000-00-00 00:00:00' ? '-' : order.editDate}',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  )
+                      '${order.editDate == '0000-00-00 00:00:00' ? '-' : order.editDate}',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 13))
                 ],
               ),
-              SizedBox(
-                height: size.height * 0.005,
-              ),
+              SizedBox(height: size.height * 0.005),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text('[${order.receiveMethod == 0 ? '직접 수령' : '배달'}]',
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
+                          fontSize: 13,
                           color: order.receiveMethod == 0
                               ? Colors.lightBlue
                               : Colors.green)),
@@ -272,18 +245,18 @@ class _OrderListPageState extends State<OrderListPage> {
                       ? Row(
                           children: [
                             Container(
-                              width: size.width * 0.25,
-                              height: size.height * 0.026,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(6),
-                                  color: Colors.lightBlueAccent),
-                              child: Text(
-                                '처리 담당 중',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 12),
-                              ),
-                              alignment: Alignment.center,
-                            ),
+                                width: size.width * 0.25,
+                                height: size.height * 0.026,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(6),
+                                    color: Colors.lightBlueAccent),
+                                child: Text(
+                                  '처리 담당 중',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12),
+                                ),
+                                alignment: Alignment.center),
                             GestureDetector(
                               onTap: () async {
                                 var user = await _getAdminUserInfoByID(
@@ -292,9 +265,8 @@ class _OrderListPageState extends State<OrderListPage> {
                                     context: context,
                                     builder: (context) => AlertDialog(
                                           shape: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(12),
-                                          ),
+                                              borderRadius:
+                                                  BorderRadius.circular(12)),
                                           title: Text('관리자 정보'),
                                           content: Column(
                                             mainAxisSize: MainAxisSize.min,
@@ -349,38 +321,10 @@ class _OrderListPageState extends State<OrderListPage> {
                           ],
                         )
                       : order.orderState == 3
-                          ? Container(
-                              width: size.width * 0.22,
-                              height: size.height * 0.026,
-                              decoration: BoxDecoration(
-                                  border: Border.all(
-                                      width: 0.5, color: Colors.black),
-                                  borderRadius: BorderRadius.circular(6),
-                                  color: Colors.lightGreenAccent),
-                              child: Text(
-                                '처리 완료',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 13),
-                              ),
-                              alignment: Alignment.center,
-                            )
+                          ? _adminStateBar(
+                              '처리 완료', Colors.lightGreenAccent, size)
                           : order.orderState == 4
-                              ? Container(
-                                  width: size.width * 0.22,
-                                  height: size.height * 0.026,
-                                  decoration: BoxDecoration(
-                                      border: Border.all(
-                                          width: 0.5, color: Colors.black),
-                                      borderRadius: BorderRadius.circular(6),
-                                      color: Colors.grey[300]),
-                                  child: Text(
-                                    '결제 취소',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 13),
-                                  ),
-                                  alignment: Alignment.center,
-                                )
+                              ? _adminStateBar('결제 취소', Colors.grey[300]!, size)
                               : SizedBox(),
                 ],
               )
@@ -389,5 +333,18 @@ class _OrderListPageState extends State<OrderListPage> {
         ),
       ),
     );
+  }
+
+  Widget _adminStateBar(String title, Color color, Size size) {
+    return Container(
+        width: size.width * 0.21,
+        height: size.height * 0.026,
+        decoration: BoxDecoration(
+            border: Border.all(width: 0.5, color: Colors.black),
+            borderRadius: BorderRadius.circular(6),
+            color: color),
+        child: Text(title,
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+        alignment: Alignment.center);
   }
 }
