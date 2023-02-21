@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:asgshighschool/api/ApiUtil.dart';
+import 'package:asgshighschool/data/order/order_detail.dart';
 import 'package:asgshighschool/data/user.dart';
 import '../../component/DefaultButtonComp.dart';
+import '../../data/order/order.dart';
 import 'ScanInfoPage.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
@@ -22,21 +24,6 @@ class _QrSearchScannerPageState extends State<QrSearchScannerPage> {
   late Barcode _result;
   QRViewController? _qrViewController;
   bool _isScanned = false;
-
-  Future<User?> _getUserInfo(String? uid) async {
-    String url = '${ApiUtil.API_HOST}arlimi_getOneUser.php';
-    final response = await http.get(Uri.parse(url + "?uid=$uid"));
-    if (response.statusCode == 200) {
-      String result = ApiUtil.getPureBody(response.bodyBytes);
-      if (result != 'NOT EXIST ACCOUNT') {
-        return User.fromJson(jsonDecode(result));
-      } else {
-        return null;
-      }
-    } else {
-      return null;
-    }
-  }
 
   Future<bool> _queryQrInformation(String? scannedValue) async {
     String url = '${ApiUtil.API_HOST}arlimi_queryOrderInfo.php';
@@ -76,13 +63,17 @@ class _QrSearchScannerPageState extends State<QrSearchScannerPage> {
                 ));
         return false;
       } else {
-        Map order = jsonDecode(result);
-        for (int i = 0; i < order['detail'].length; ++i) {
-          order['detail'][i] = jsonDecode(order['detail'][i]);
-          order['detail'][i]['pInfo'] = jsonDecode(order['detail'][i]['pInfo']);
+        Map<String, dynamic> json = jsonDecode(result);
+        json['user'] = jsonDecode(json['user']);
+        List<OrderDetail> details = [];
+        for (int i = 0; i < json['detail'].length; ++i) {
+          json['detail'][i] = jsonDecode(json['detail'][i]);
+          json['detail'][i]['product'] =
+              jsonDecode(json['detail'][i]['product']);
+          details.add(OrderDetail.fromJson(json['detail'][i]));
         }
-        User? user = await _getUserInfo(order['uID']);
-        if (user == null) {
+        Order order = Order.fromJson(json, details);
+        if (order.user == null) {
           showDialog(
               context: context,
               builder: (context) => AlertDialog(
@@ -112,12 +103,12 @@ class _QrSearchScannerPageState extends State<QrSearchScannerPage> {
                     ],
                   ));
         }
-        var res = await Navigator.push(
+        await Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) => ScanInfoPage(
                       orderData: order,
-                      user: user,
+                      user: order.user,
                       admin: widget.admin,
                     )));
         _isScanned = false;
@@ -274,13 +265,11 @@ class _QrSearchScannerPageState extends State<QrSearchScannerPage> {
   }
 
   Widget _buildQrView(BuildContext context) {
-    // For this example we check how width or tall the device is and change the scanArea and overlay accordingly.
     var scanArea = (MediaQuery.of(context).size.width < 400 ||
             MediaQuery.of(context).size.height < 400)
         ? 150.0
         : 300.0;
-    // To ensure the Scanner view is properly sizes after rotation
-    // we need to listen for Flutter SizeChanged notification and update controller
+
     return QRView(
       key: qrKey,
       onQRViewCreated: _onQRViewCreated,
@@ -301,9 +290,6 @@ class _QrSearchScannerPageState extends State<QrSearchScannerPage> {
         setState(() {
           _isScanned = true;
           _result = scanData;
-          // var test = '1652328498519';
-          // var test2 = '1655959318117';
-          // var test3 = '1656375228115';
           var res = _queryQrInformation(_result.code);
         });
       }

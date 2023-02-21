@@ -1,5 +1,6 @@
-import 'package:asgshighschool/data/category.dart';
+import 'package:asgshighschool/data/order/order_detail.dart';
 import 'package:asgshighschool/data/order/order_state.dart';
+import 'package:asgshighschool/data/order/order_user.dart';
 import 'package:asgshighschool/data/status.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:flutter/material.dart';
@@ -8,15 +9,16 @@ import 'package:http/http.dart' as http;
 import '../../api/ApiUtil.dart';
 import '../../component/DefaultButtonComp.dart';
 import '../../component/ThemeAppBar.dart';
+import '../../data/order/order.dart';
 import '../../util/NumberFormatter.dart';
 import '../../util/ToastMessage.dart';
 
 class ScanInfoPage extends StatefulWidget {
-  final Map? orderData;
-  final User? user;
+  final Order orderData;
+  final OrderUser? user;
   final User? admin;
 
-  ScanInfoPage({this.orderData, this.user, this.admin});
+  ScanInfoPage({required this.orderData, this.user, this.admin});
 
   @override
   _ScanInfoPageState createState() => _ScanInfoPageState();
@@ -26,7 +28,7 @@ class _ScanInfoPageState extends State<ScanInfoPage> {
   Future<bool> _orderCompleteRequest() async {
     String url = '${ApiUtil.API_HOST}arlimi_completeOrder.php';
     final response =
-        await http.get(Uri.parse(url + '?oid=${widget.orderData!['oID']}'));
+        await http.get(Uri.parse(url + '?oid=${widget.orderData.orderID}'));
 
     if (response.statusCode == 200) {
       await _updateCharger();
@@ -40,7 +42,7 @@ class _ScanInfoPageState extends State<ScanInfoPage> {
     String url = '${ApiUtil.API_HOST}arlimi_updateCharger.php';
     final response = await http.post(Uri.parse(url), body: <String, String?>{
       'charger_id': widget.admin!.uid,
-      'oid': widget.orderData!['oID']
+      'oid': widget.orderData.orderID
     });
     if (response.statusCode == 200) {
       return true;
@@ -83,7 +85,7 @@ class _ScanInfoPageState extends State<ScanInfoPage> {
                         Padding(
                           padding: EdgeInsets.all(size.width * 0.01),
                           child: Text(
-                            'ID:  ${widget.user!.uid}',
+                            'ID:  ${widget.user!.userID}',
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ),
@@ -101,17 +103,12 @@ class _ScanInfoPageState extends State<ScanInfoPage> {
                         Padding(
                           padding: EdgeInsets.all(size.width * 0.01),
                           child: Text(
-                              '학번:  ${widget.user!.studentId == null || widget.user!.studentId == '' ? 'X' : widget.user!.studentId}',
+                              '학번:  ${widget.user!.studentID == null || widget.user!.studentID == '' ? 'X' : widget.user!.studentID}',
                               style: TextStyle(fontWeight: FontWeight.bold)),
                         ),
                         Padding(
                           padding: EdgeInsets.all(size.width * 0.01),
-                          child: Text('닉네임:  ${widget.user!.nickName}',
-                              style: TextStyle(fontWeight: FontWeight.bold)),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.all(size.width * 0.01),
-                          child: Text('이메일:  ${widget.user!.email}',
+                          child: Text('닉네임:  ${widget.user!.nickname}',
                               style: TextStyle(fontWeight: FontWeight.bold)),
                         ),
                       ],
@@ -138,24 +135,24 @@ class _ScanInfoPageState extends State<ScanInfoPage> {
                   children: [
                     Padding(
                       padding: EdgeInsets.all(size.width * 0.01),
-                      child: Text('주문번호:  ${widget.orderData!['oID']}',
+                      child: Text('주문번호:  ${widget.orderData.orderID}',
                           style: TextStyle(fontWeight: FontWeight.bold)),
                     ),
                     Padding(
                       padding: EdgeInsets.all(size.width * 0.01),
-                      child: Text('주문 일자:  ${widget.orderData!['oDate']}',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.all(size.width * 0.01),
-                      child: Text(
-                          '주문 완료 일자:  ${widget.orderData!['eDate'] == '0000-00-00 00:00:00' ? '-' : widget.orderData!['eDate']}',
+                      child: Text('주문 일자:  ${widget.orderData.orderDate}',
                           style: TextStyle(fontWeight: FontWeight.bold)),
                     ),
                     Padding(
                       padding: EdgeInsets.all(size.width * 0.01),
                       child: Text(
-                          '결제 금액:  ${NumberFormatter.formatPrice(int.parse(widget.orderData!['totalPrice']))}원',
+                          '주문 완료 일자:  ${widget.orderData.editDate == '0000-00-00 00:00:00' ? '-' : widget.orderData.editDate}',
+                          style: TextStyle(fontWeight: FontWeight.bold)),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(size.width * 0.01),
+                      child: Text(
+                          '결제 금액:  ${NumberFormatter.formatPrice(widget.orderData.totalPrice)}원',
                           style: TextStyle(fontWeight: FontWeight.bold)),
                     ),
                     Padding(
@@ -165,10 +162,10 @@ class _ScanInfoPageState extends State<ScanInfoPage> {
                           Text('주문 상태:  ',
                               style: TextStyle(fontWeight: FontWeight.bold)),
                           Text(
-                            '${OrderState.orderStateList[int.parse(widget.orderData!['orderState'])]}',
+                            '${OrderState.orderStateList[widget.orderData.orderState]}',
                             style: TextStyle(
-                                color: OrderState.colorState[int.parse(
-                                    widget.orderData!['orderState'])]),
+                                color: OrderState
+                                    .colorState[widget.orderData.orderState]),
                           )
                         ],
                       ),
@@ -183,7 +180,7 @@ class _ScanInfoPageState extends State<ScanInfoPage> {
                             Text('요청 사항:  ',
                                 style: TextStyle(fontWeight: FontWeight.bold)),
                             Text(
-                                '${widget.orderData!['options'] == null || widget.orderData!['options'].toString().trim() == '' ? 'X' : widget.orderData!['options']}')
+                                '${widget.orderData.options.trim() == '' ? 'X' : widget.orderData.options}')
                           ],
                         ),
                       ),
@@ -203,22 +200,21 @@ class _ScanInfoPageState extends State<ScanInfoPage> {
               ),
             ),
             Column(
-              children: _item(widget.orderData!['detail'], size),
+              children: _item(widget.orderData.detail, size),
             ),
             Divider(
               thickness: 2,
             ),
-            int.parse(widget.orderData!['orderState']) == 3 ||
-                    int.parse(widget.orderData!['orderState']) == 4
+            widget.orderData.orderState == 3 || widget.orderData.orderState == 4
                 ? Container(
                     color: Colors.red,
                     padding: EdgeInsets.all(size.width * 0.015),
                     alignment: Alignment.center,
                     width: size.width,
                     child: Text(
-                      int.parse(widget.orderData!['orderState']) == 3
+                      widget.orderData.orderState == 3
                           ? '이미 수령 완료된 주문입니다.'
-                          : int.parse(widget.orderData!['orderState']) == 4
+                          : widget.orderData.orderState == 4
                               ? '결제가 취소된 주문입니다.'
                               : '',
                       style: TextStyle(
@@ -293,8 +289,8 @@ class _ScanInfoPageState extends State<ScanInfoPage> {
     );
   }
 
-  Widget _detailItemTile(String name, int category, int price, double discount,
-      int quantity, Size size) {
+  Widget _detailItemTile(String name, String category, int price,
+      double? discount, int quantity, Size size) {
     return Container(
       margin: EdgeInsets.all(size.width * 0.015),
       padding: EdgeInsets.all(size.width * 0.03),
@@ -309,7 +305,7 @@ class _ScanInfoPageState extends State<ScanInfoPage> {
             child: Wrap(
               children: [
                 Text(
-                  '[${Category.categoryIndexToStringMap[category]}] ',
+                  '[$category] ',
                   style: TextStyle(
                     color: Colors.black54,
                   ),
@@ -337,7 +333,7 @@ class _ScanInfoPageState extends State<ScanInfoPage> {
                 '정가 ${NumberFormatter.formatPrice(price)}원',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
-              discount.toString() == '0.0'
+              discount == null
                   ? SizedBox()
                   : Text(
                       ' [$discount% 할인]',
@@ -350,15 +346,15 @@ class _ScanInfoPageState extends State<ScanInfoPage> {
     );
   }
 
-  List<Widget> _item(List list, Size size) {
+  List<Widget> _item(List<OrderDetail> list, Size size) {
     List<Widget> w = [];
-    for (int index = 0; index < list.length; ++index) {
+    for (int i = 0; i < list.length; ++i) {
       w.add(_detailItemTile(
-          list[index]['pInfo']['pName'],
-          int.parse(list[index]['pInfo']['category']),
-          int.parse(list[index]['pInfo']['price']),
-          double.parse(list[index]['pInfo']['discount']),
-          int.parse(list[index]['quantity']),
+          list[i].product.name,
+          list[i].product.category,
+          list[i].product.price,
+          list[i].product.discount,
+          list[i].quantity,
           size));
     }
     return w;
