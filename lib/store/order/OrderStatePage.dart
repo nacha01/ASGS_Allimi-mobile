@@ -2,9 +2,11 @@ import 'dart:convert';
 import 'package:asgshighschool/api/ApiUtil.dart';
 import 'package:asgshighschool/component/ThemeAppBar.dart';
 import 'package:asgshighschool/data/order/order.dart';
+import 'package:asgshighschool/data/order/order_state.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:asgshighschool/store/order/DetailOrderStatePage.dart';
 import 'package:asgshighschool/util/DateFormatter.dart';
+import 'package:asgshighschool/util/OrderUtil.dart';
 import 'package:asgshighschool/util/PaymentUtil.dart';
 import 'package:flutter/material.dart';
 import 'package:cp949_dart/cp949_dart.dart' as cp949;
@@ -27,6 +29,7 @@ class _OrderStatePageState extends State<OrderStatePage> {
   List<Order> _orderList = [];
   Map? _cancelResponse;
   String _ediDate = '';
+  bool _isFinished = false;
 
   /// 나(uid)의 모든 주문한 내역(현황)들을 요청하는 작업
   Future<bool> _getOrderInfoRequest() async {
@@ -35,22 +38,10 @@ class _OrderStatePageState extends State<OrderStatePage> {
     final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
       String result = ApiUtil.getPureBody(response.bodyBytes);
-      List outerJson = jsonDecode(result);
-
-      for (int i = 0; i < outerJson.length; ++i) {
-        var current = jsonDecode(outerJson[i]);
-
-        List<OrderDetail> details = [];
-
-        for (int j = 0; j < current['detail'].length; ++j) {
-          current['detail'][j] = jsonDecode(current['detail'][j]);
-          current['detail'][j]['product'] =
-              jsonDecode(current['detail'][j]['product']);
-          details.add(OrderDetail.fromJson(current['detail'][j]));
-        }
-        _orderList.add(Order.fromJson(current, details));
-      }
-      setState(() {});
+      setState(() {
+        _orderList = OrderUtil.serializeOrderJson(result, false);
+        _isFinished = true;
+      });
       return true;
     } else {
       return false;
@@ -61,44 +52,6 @@ class _OrderStatePageState extends State<OrderStatePage> {
   void initState() {
     super.initState();
     _getOrderInfoRequest();
-  }
-
-  /// 주문 상태 field 값에 따른 사용자에게 보여줄 mapping 색상을 반환
-  /// @param : DB에 저장된 '주문 상태 필드'의 정수 값
-  Color _getColorAccordingToOrderState(int state) {
-    switch (state) {
-      case 0:
-        return Colors.red;
-      case 1:
-        return Colors.orangeAccent;
-      case 2:
-        return Colors.lightBlue;
-      case 3:
-        return Colors.green;
-      case 4:
-        return Colors.grey;
-      default:
-        return Colors.grey;
-    }
-  }
-
-  /// 주문 상태 field 값에 따른 사용자에게 보여줄 mapping 문자열을 반환
-  /// @param : DB에 저장된 '주문 상태 필드'의 정수 값
-  String _getTextAccordingToOrderState(int state) {
-    switch (state) {
-      case 0:
-        return '미결제 및 미수령';
-      case 1:
-        return '결제완료 및 미수령';
-      case 2:
-        return '주문 처리 중';
-      case 3:
-        return '결제완료 및 수령완료';
-      case 4:
-        return '결제취소 및 주문취소';
-      default:
-        return 'Error';
-    }
   }
 
   /// 목록에서 어떤 상품을 구매했는지에 대한 간략 소개를 위한 텍스트 작업
@@ -232,20 +185,32 @@ class _OrderStatePageState extends State<OrderStatePage> {
       appBar: ThemeAppBar(barTitle: '내 주문 현황'),
       body: Column(
         children: [
-          _orderList.length == 0
-              ? Expanded(
-                  child: Center(
-                  child: Text(
-                    '주문 내역이 없습니다!',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                ))
+          _isFinished
+              ? _orderList.length == 0
+                  ? Expanded(
+                      child: Center(
+                      child: Text(
+                        '주문 내역이 없습니다!',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                    ))
+                  : Expanded(
+                      child: ListView.builder(
+                      itemBuilder: (context, index) {
+                        return orderListItemLayout(_orderList[index], size);
+                      },
+                      itemCount: _orderList.length,
+                    ))
               : Expanded(
-                  child: ListView.builder(
-                  itemBuilder: (context, index) {
-                    return orderListItemLayout(_orderList[index], size);
-                  },
-                  itemCount: _orderList.length,
+                  child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('불러오는 중..'),
+                      CircularProgressIndicator(),
+                    ],
+                  ),
                 ))
         ],
       ),
@@ -312,10 +277,9 @@ class _OrderStatePageState extends State<OrderStatePage> {
                 Padding(
                   padding: EdgeInsets.all(size.width * 0.01),
                   child: Text(
-                    '${_getTextAccordingToOrderState(order.orderState)}',
+                    '${OrderState.orderStateList[order.orderState]}',
                     style: TextStyle(
-                        color:
-                            _getColorAccordingToOrderState(order.orderState)),
+                        color: OrderState.colorState[order.orderState]),
                   ),
                 ),
                 Padding(

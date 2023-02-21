@@ -1,6 +1,7 @@
 import 'package:asgshighschool/component/ThemeAppBar.dart';
 import 'package:asgshighschool/data/order/order.dart';
 import 'package:asgshighschool/data/order/order_product.dart';
+import 'package:asgshighschool/data/order/order_state.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:asgshighschool/util/DateFormatter.dart';
 import 'package:asgshighschool/util/NumberFormatter.dart';
@@ -18,44 +19,6 @@ class DetailOrderStatePage extends StatefulWidget {
 }
 
 class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
-  /// 주문 상태 field 값에 따른 사용자에게 보여줄 mapping 문자열을 반환
-  /// @param : DB에 저장된 '주문 상태 필드'의 정수 값
-  String _getTextAccordingToOrderState(int state) {
-    switch (state) {
-      case 0:
-        return '미결제 및 미수령';
-      case 1:
-        return '결제완료 및 미수령';
-      case 2:
-        return '주문 처리 중';
-      case 3:
-        return '결제완료 및 수령완료';
-      case 4:
-        return '결제취소 및 주문취소';
-      default:
-        return 'Error';
-    }
-  }
-
-  /// 주문 상태 field 값에 따른 사용자에게 보여줄 mapping 색상을 반환
-  /// @param : DB에 저장된 '주문 상태 필드'의 정수 값
-  Color _getColorAccordingToOrderState(int state) {
-    switch (state) {
-      case 0:
-        return Colors.red;
-      case 1:
-        return Colors.orangeAccent;
-      case 2:
-        return Colors.lightBlue;
-      case 3:
-        return Colors.green;
-      case 4:
-        return Colors.grey;
-      default:
-        return Colors.grey;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -89,10 +52,9 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    '[ ${_getTextAccordingToOrderState(widget.order.orderState)} ]',
+                    '[ ${OrderState.orderStateList[widget.order.orderState]} ]',
                     style: TextStyle(
-                        color: _getColorAccordingToOrderState(
-                            widget.order.orderState)),
+                        color: OrderState.colorState[widget.order.orderState]),
                   )
                 ],
               ),
@@ -108,7 +70,7 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
-                        '미결제 및 미수령',
+                        OrderState.orderStateList[0],
                         style: TextStyle(color: Colors.red, fontSize: 9),
                       ),
                       Text(': 결제완료된 상태가 아니며 상품을 수령하지 않은 상태입니다.',
@@ -119,7 +81,7 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
-                        '결제완료 및 미수령',
+                        OrderState.orderStateList[1],
                         style:
                             TextStyle(color: Colors.orangeAccent, fontSize: 9),
                       ),
@@ -131,7 +93,7 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
-                        '주문 처리 중',
+                        OrderState.orderStateList[2],
                         style: TextStyle(color: Colors.lightBlue, fontSize: 9),
                       ),
                       Text(': 주문이 확인되고, 상품 수령 준비 및 수령 중인 상태입니다. ',
@@ -142,7 +104,7 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
-                        '결제완료 및 수령완료',
+                        OrderState.orderStateList[3],
                         style: TextStyle(color: Colors.green, fontSize: 9),
                       ),
                       Text(': 결제가 완료된 상태이며 상품을 수령한 상태입니다.',
@@ -153,7 +115,7 @@ class _DetailOrderStatePageState extends State<DetailOrderStatePage> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
-                        '결제취소 및 주문취소',
+                        OrderState.orderStateList[4],
                         style: TextStyle(color: Colors.grey, fontSize: 9),
                       ),
                       Text(': 결제가 취소된 상태이며, 주문도 취소한 상태입니다.',

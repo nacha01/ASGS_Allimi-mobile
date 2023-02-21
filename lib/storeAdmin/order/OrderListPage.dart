@@ -5,9 +5,9 @@ import 'package:asgshighschool/data/order/order.dart';
 import 'package:asgshighschool/data/status.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:asgshighschool/util/DateFormatter.dart';
+import 'package:asgshighschool/util/OrderUtil.dart';
 import '../../component/DefaultButtonComp.dart';
 import '../../component/ThemeAppBar.dart';
-import '../../data/order/order_detail.dart';
 import 'AdminDetailOrder.dart';
 import 'package:asgshighschool/storeAdmin/statistics/FullListPage.dart';
 import '../qr/QrSearchScannerPage.dart';
@@ -40,25 +40,11 @@ class _OrderListPageState extends State<OrderListPage> {
     if (response.statusCode == 200) {
       String result = ApiUtil.getPureBody(response.bodyBytes);
 
-      List outerJson = jsonDecode(result);
-      _orderList.clear();
       _noneList.clear();
-      for (int i = 0; i < outerJson.length; ++i) {
-        var currentOrder = jsonDecode(outerJson[i]);
-
-        List<OrderDetail> detailList = [];
-        currentOrder['user'] = jsonDecode(currentOrder['user']);
-
-        for (int j = 0; j < currentOrder['detail'].length; ++j) {
-          currentOrder['detail'][j] = jsonDecode(currentOrder['detail'][j]);
-          currentOrder['detail'][j]['product'] =
-              jsonDecode(currentOrder['detail'][j]['product']);
-          detailList.add(OrderDetail.fromJson(currentOrder['detail'][j]));
-        }
-        _orderList.add(Order.fromJson(currentOrder, detailList));
-        if (_orderList[i].orderState != 3 && _orderList[i].orderState != 4) {
-          _noneList.add(_orderList[i]);
-        }
+      _orderList = OrderUtil.serializeOrderJson(result, true);
+      for (var order in _orderList) {
+        if (order.orderState != 3 && order.orderState != 4)
+          _noneList.add(order);
       }
       setState(() {
         _isFinished = true;
@@ -214,6 +200,7 @@ class _OrderListPageState extends State<OrderListPage> {
           borderRadius: BorderRadius.circular(6),
           border: Border.all(width: 0.5, color: Colors.black)),
       child: DefaultButtonComp(
+        onLongPress: () {},
         onPressed: () async {
           var res = await Navigator.push(
               context,
