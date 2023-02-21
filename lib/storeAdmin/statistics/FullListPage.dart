@@ -1,12 +1,16 @@
 import 'dart:convert';
 import 'package:asgshighschool/api/ApiUtil.dart';
+import 'package:asgshighschool/data/status.dart';
 import 'package:asgshighschool/data/user.dart';
+import 'package:asgshighschool/util/NumberFormatter.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import '../../component/DefaultButtonComp.dart';
 import '../../component/ThemeAppBar.dart';
+import '../../data/order/order.dart';
 import '../../util/DateFormatter.dart';
+import '../../util/OrderUtil.dart';
 
 class FullListPage extends StatefulWidget {
   final User? user;
@@ -19,17 +23,17 @@ class FullListPage extends StatefulWidget {
 }
 
 class _FullListPageState extends State<FullListPage> {
-  List _orderList = [];
+  List<Order> _orderList = [];
   List _reservationList = [];
   bool _isFinished = false;
-  final _payState = ['미결제', '결제 완료'];
-  final _reservationState = ['예약 중', '수령 준비', '수령 완료'];
+  final _payState = ['미결제', '결제완료'];
+  final _reservationState = ['예약 중', '수령준비', '수령완료'];
   final _orderState = [
     '미결제',
-    '결제 완료 및 미수령',
+    '결제완료 및 미수령',
     '주문 처리 중',
-    '결제완료 및 수령 완료',
-    '결제 취소'
+    '결제완료 및 수령완료',
+    '결제취소'
   ];
 
   Future<bool> _getReservationList() async {
@@ -63,16 +67,8 @@ class _FullListPageState extends State<FullListPage> {
     final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
       String result = ApiUtil.getPureBody(response.bodyBytes);
-      List map1st = json.decode(result);
-      _orderList.clear();
-      for (int i = 0; i < map1st.length; ++i) {
-        _orderList.add(json.decode(map1st[i]));
-        for (int j = 0; j < _orderList[i]['detail'].length; ++j) {
-          _orderList[i]['detail'][j] = json.decode(_orderList[i]['detail'][j]);
-          _orderList[i]['detail'][j]['pInfo'] =
-              json.decode(_orderList[i]['detail'][j]['pInfo']);
-        }
-      }
+      _orderList = OrderUtil.serializeOrderJson(result, true);
+
       setState(() {
         _isFinished = true;
       });
@@ -108,39 +104,30 @@ class _FullListPageState extends State<FullListPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: EdgeInsets.all(size.width * 0.02),
+              padding: EdgeInsets.all(size.width * 0.015),
               child: Text(
                 '※ 각 항목 클릭 시 "요청사항" 및 "배달 장소" 출력',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
               ),
             ),
             Padding(
-              padding: EdgeInsets.all(size.width * 0.02),
+              padding: EdgeInsets.all(size.width * 0.015),
               child: Text('※ 각 항목 길게 클릭 시 "예약 및 주문 결제 상태" 출력',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
             ),
             Divider(
               thickness: 1,
             ),
             Padding(
-              padding: EdgeInsets.all(size.width * 0.02),
+              padding: EdgeInsets.all(size.width * 0.01),
               child: Row(
                 children: [
-                  Text('학번',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-                  Text('이름',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                  Text('학번', style: TextStyle(fontWeight: FontWeight.bold)),
+                  Text('이름', style: TextStyle(fontWeight: FontWeight.bold)),
                   Text('상품들(세로 정렬)',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-                  Text('개수',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-                  Text('결제 금액',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15))
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                  Text('개수', style: TextStyle(fontWeight: FontWeight.bold)),
+                  Text('결제 금액', style: TextStyle(fontWeight: FontWeight.bold))
                 ],
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
               ),
@@ -150,7 +137,6 @@ class _FullListPageState extends State<FullListPage> {
                     child: ListView.builder(
                       itemBuilder: (context, index) => _itemEach(
                           size,
-                          index,
                           widget.isResv!
                               ? _reservationList[index]
                               : _orderList[index]),
@@ -175,8 +161,9 @@ class _FullListPageState extends State<FullListPage> {
     );
   }
 
-  Widget _itemEach(Size size, int index, Map data) {
+  Widget _itemEach(Size size, Order order) {
     return DefaultButtonComp(
+      padding: 0,
       onPressed: () {
         showDialog(
             context: (context),
@@ -187,7 +174,7 @@ class _FullListPageState extends State<FullListPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '* ${widget.isResv! ? '예약 일시: ' : '구매 일시: '} ${data['oDate']}',
+                        '* ${widget.isResv! ? '예약 일시: ' : '구매 일시: '} ${order.orderDate}',
                         style: TextStyle(
                             fontSize: 12, fontWeight: FontWeight.bold),
                       ),
@@ -195,12 +182,10 @@ class _FullListPageState extends State<FullListPage> {
                         thickness: 1,
                       ),
                       Text(
-                          '* 요청 사항 및 상품 옵션:  ${(data['options'] == '' || data['options'] == null) ? 'X' : data['options']}'),
+                          '* 요청 사항 및 상품 옵션:  ${(order.options == '') ? 'X' : order.options}'),
                       Divider(
                         thickness: 1,
                       ),
-                      Text(
-                          '* 수령(배달) 장소:  ${(data['location'] == null || data['location'] == '') ? 'X' : data['location']}')
                     ],
                   ),
                   actions: [
@@ -220,14 +205,12 @@ class _FullListPageState extends State<FullListPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: widget.isResv!
                         ? [
+                            Text('결제 상태 : ${_payState[order.orderState]}'),
                             Text(
-                                '결제 상태 : ${_payState[int.parse(data['orderState'])]}'),
-                            Text(
-                                '예약 상태 : ${_reservationState[int.parse(data['resvState']) - 1]}')
+                                '예약 상태 : ${_reservationState[order.orderState - 1]}')
                           ]
                         : [
-                            Text('주문 상태 : ' +
-                                _orderState[int.parse(data['orderState'])]),
+                            Text('주문 상태 : ' + _orderState[order.orderState]),
                           ],
                   ),
                   actions: [
@@ -239,44 +222,56 @@ class _FullListPageState extends State<FullListPage> {
       },
       child: Container(
         width: size.width,
-        margin: EdgeInsets.all(size.width * 0.015),
+        margin: EdgeInsets.all(size.width * 0.01),
         padding: EdgeInsets.all(size.width * 0.03),
         decoration: BoxDecoration(
             border: Border.all(width: 0.5, color: Colors.black),
             borderRadius: BorderRadius.circular(8)),
-        child: Wrap(
+        child: Column(
           children: [
-            Text(
-              '${data['student_id'] == '' || data['student_id'] == null ? '[재학생 X]' : data['student_id']} |',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            SizedBox(
-              width: size.width * 0.01,
-            ),
-            Text('${data['name']} |',
-                style: TextStyle(
-                    fontWeight: FontWeight.bold, color: Colors.green)),
-            SizedBox(
-              width: size.width * 0.01,
-            ),
-            widget.isResv!
-                ? Text(
-                    '${data['detail'][0]['pInfo']['pName']}  ${data['detail'][0]['quantity']}개 ',
+            Row(
+              children: [
+                Text(
+                  '${order.user!.studentID ?? Status.statusList[order.user!.identity - 1]} |',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                ),
+                SizedBox(
+                  width: size.width * 0.01,
+                ),
+                Text('${order.user!.name} |',
                     style: TextStyle(
-                        fontWeight: FontWeight.bold, color: Colors.blue))
-                : Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: _multipleProductListForOrder(data),
-                  ),
-            SizedBox(
-              width: size.width * 0.01,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green,
+                        fontSize: 13)),
+                SizedBox(
+                  width: size.width * 0.01,
+                ),
+                widget.isResv!
+                    ? Text(
+                        '${order.detail[0].product.name}  ${order.detail[0].quantity}개 ',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, color: Colors.blue))
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: _multipleProductListForOrder(order),
+                      ),
+              ],
             ),
-            Text('| 총 ${data['totalPrice']}원 | ',
-                style: TextStyle(fontWeight: FontWeight.bold)),
-            Text(
-              ' ${DateFormatter.formatDateTimeCmp(data['oDate'])}',
-              style: TextStyle(
-                  fontWeight: FontWeight.bold, color: Colors.redAccent),
+            SizedBox(height: size.height * 0.01),
+            Row(
+              children: [
+                Text(
+                    '총 금액 ${NumberFormatter.formatPrice(order.totalPrice)}원  | ',
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                Text(
+                  ' ${DateFormatter.formatDateTimeCmp(order.orderDate)}',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.redAccent,
+                      fontSize: 13),
+                )
+              ],
             )
           ],
         ),
@@ -284,12 +279,13 @@ class _FullListPageState extends State<FullListPage> {
     );
   }
 
-  List<Widget> _multipleProductListForOrder(Map data) {
+  List<Widget> _multipleProductListForOrder(Order order) {
     List<Widget> list = [];
-    for (int i = 0; i < data['detail'].length; ++i) {
+    for (int i = 0; i < order.detail.length; ++i) {
       list.add(Text(
-          '${data['detail'][i]['pInfo']['pName']}  ${data['detail'][i]['quantity']}개,',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue)));
+          '${order.detail[i].product.name}  ${order.detail[i].quantity}개,',
+          style: TextStyle(
+              fontWeight: FontWeight.bold, color: Colors.blue, fontSize: 13)));
     }
     return list;
   }
