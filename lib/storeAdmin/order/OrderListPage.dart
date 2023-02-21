@@ -2,15 +2,20 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:asgshighschool/api/ApiUtil.dart';
 import 'package:asgshighschool/data/order/order.dart';
+import 'package:asgshighschool/data/payment_cancel.dart';
 import 'package:asgshighschool/data/status.dart';
 import 'package:asgshighschool/data/user.dart';
+import 'package:asgshighschool/storeAdmin/AdminUtil.dart';
 import 'package:asgshighschool/util/DateFormatter.dart';
 import 'package:asgshighschool/util/OrderUtil.dart';
+import 'package:asgshighschool/util/PaymentUtil.dart';
+import 'package:asgshighschool/util/ToastMessage.dart';
+import 'package:asgshighschool/util/UpperCaseTextFormatter.dart';
 import '../../component/DefaultButtonComp.dart';
 import '../../component/ThemeAppBar.dart';
 import 'AdminDetailOrder.dart';
 import 'package:asgshighschool/storeAdmin/statistics/FullListPage.dart';
-import '../qr/QrSearchScannerPage.dart';
+import '../qr/QrSearchScanner.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -30,6 +35,8 @@ class _OrderListPageState extends State<OrderListPage> {
   List<Order> _noneList = [];
   bool _isChecked = true;
   bool _isFinished = false;
+  TextEditingController _adminKeyController = TextEditingController();
+  PaymentCancelResponse? _cancelResponse;
 
   /// 모든 주문 내역을 요청하는 작업
   /// 이미 주문 처리가 된 것과 안된 것을 구분하여 각각의 List 에 저장
@@ -41,7 +48,7 @@ class _OrderListPageState extends State<OrderListPage> {
       String result = ApiUtil.getPureBody(response.bodyBytes);
 
       _noneList.clear();
-      _orderList = OrderUtil.serializeOrderJson(result, true);
+      _orderList = OrderUtil.serializeOrderList(result, true);
       for (var order in _orderList) {
         if (order.orderState != 3 && order.orderState != 4)
           _noneList.add(order);
@@ -182,7 +189,160 @@ class _OrderListPageState extends State<OrderListPage> {
           borderRadius: BorderRadius.circular(6),
           border: Border.all(width: 0.5, color: Colors.black)),
       child: DefaultButtonComp(
-        onLongPress: () {},
+        onLongPress: () {
+          showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                    title:
+                        Text('결제 강제 취소', style: TextStyle(color: Colors.red)),
+                    content: Text('※ 관리자 권한으로 결제를 강제로 취소하시겠습니까?'),
+                    actions: [
+                      DefaultButtonComp(
+                          onPressed: () => Navigator.pop(context),
+                          child: Text('아니오')),
+                      DefaultButtonComp(
+                          onPressed: () {
+                            Navigator.pop(context);
+                            showDialog(
+                                context: context,
+                                builder: (ctx) => AlertDialog(
+                                      title: Text('관리자 Key 인증'),
+                                      content: Container(
+                                        decoration: BoxDecoration(
+                                            border: Border.all(
+                                                width: 1,
+                                                color: Colors.orange[200]!),
+                                            color: Colors.blue[100]),
+                                        child: TextField(
+                                          inputFormatters: [
+                                            UpperCaseTextFormatter()
+                                          ],
+                                          decoration: InputDecoration(
+                                              border: InputBorder.none,
+                                              hintText: 'Admin Key'),
+                                          controller: _adminKeyController,
+                                        ),
+                                      ),
+                                      actions: [
+                                        DefaultButtonComp(
+                                            onPressed: () => Navigator.pop(ctx),
+                                            child: Text('취소')),
+                                        DefaultButtonComp(
+                                            onPressed: () async {
+                                              var result = await AdminUtil
+                                                  .certifyAdminAccess(
+                                                      widget.user!.uid!,
+                                                      _adminKeyController.text);
+
+                                              Navigator.pop(ctx);
+                                              if (result) {
+                                                _cancelResponse =
+                                                    await PaymentUtil
+                                                        .cancelPayment(
+                                                            order.tid,
+                                                            order.orderID,
+                                                            order.totalPrice,
+                                                            true);
+
+                                                var isSuccess =
+                                                    await PaymentUtil
+                                                        .cancelOrderHandling(
+                                                            order.user!.userID,
+                                                            order,
+                                                            _cancelResponse!);
+
+                                                if (isSuccess) {
+                                                  showDialog(
+                                                      barrierDismissible: false,
+                                                      context: this.context,
+                                                      builder: (c) =>
+                                                          AlertDialog(
+                                                            title: Text(
+                                                                '결제취소 성공',
+                                                                style: TextStyle(
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                    color: Colors
+                                                                        .green,
+                                                                    fontSize:
+                                                                        16)),
+                                                            content: Text(
+                                                                '${_cancelResponse!.resultMsg}',
+                                                                style: TextStyle(
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                    fontSize:
+                                                                        14)),
+                                                            actions: [
+                                                              DefaultButtonComp(
+                                                                  onPressed:
+                                                                      () {
+                                                                    Navigator
+                                                                        .pop(c);
+                                                                    setState(
+                                                                        () {
+                                                                      _getAllOrderData();
+                                                                    });
+                                                                  },
+                                                                  child: Text(
+                                                                      '확인'))
+                                                            ],
+                                                          ));
+                                                } else {
+                                                  await showDialog(
+                                                      barrierDismissible: false,
+                                                      context: context,
+                                                      builder: (c) =>
+                                                          AlertDialog(
+                                                            title: Text(
+                                                              '결제취소 실패',
+                                                              style: TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                  color: Colors
+                                                                      .red,
+                                                                  fontSize: 16),
+                                                            ),
+                                                            content: Text(
+                                                                '${_cancelResponse!.resultMsg} (code-${_cancelResponse!.resultCode})',
+                                                                style: TextStyle(
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                    fontSize:
+                                                                        14)),
+                                                            actions: [
+                                                              DefaultButtonComp(
+                                                                  onPressed:
+                                                                      () {
+                                                                    Navigator
+                                                                        .pop(c);
+                                                                  },
+                                                                  child: Text(
+                                                                      '확인'))
+                                                            ],
+                                                          ));
+                                                }
+                                              } else {
+                                                ToastMessage.show(
+                                                    '인증에 실패했습니다.');
+                                              }
+                                            },
+                                            child: Text('인증'))
+                                      ],
+                                    ));
+                          },
+                          child: Text(
+                            '예',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, color: Colors.red),
+                          ))
+                    ],
+                  ));
+        },
         onPressed: () async {
           var res = await Navigator.push(
               context,
