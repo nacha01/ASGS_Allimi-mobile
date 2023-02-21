@@ -8,7 +8,7 @@ import '../../data/status.dart';
 import '../../data/user.dart';
 import '../../util/NumberFormatter.dart';
 import '../../util/ToastMessage.dart';
-import '../qr/QRScannerPage.dart';
+import '../qr/QrSpecificScanner.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 

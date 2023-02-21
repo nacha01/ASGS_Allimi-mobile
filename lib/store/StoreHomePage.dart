@@ -6,6 +6,7 @@ import 'package:asgshighschool/data/product.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:asgshighschool/store/product/DetailProductPage.dart';
 import 'package:asgshighschool/store/EventPage.dart';
+import 'package:asgshighschool/storeAdmin/AdminUtil.dart';
 import '../component/DefaultButtonComp.dart';
 import '../storeAdmin/product/AddProduct.dart';
 import '../storeAdmin/product/UpdateProduct.dart';
@@ -586,22 +587,6 @@ class _StoreHomePageState extends State<StoreHomePage>
     final response = await http.get(Uri.parse(url + '?id=$productID'));
     if (response.statusCode == 200) {
       if (response.body.contains('DELETED')) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  /// 관리자임을 인증하는 HTTP 요청
-  /// @param : HTTP GET : UID 값과 ADMIN KEY 값
-  /// @result : 관리자 인증이 되었는지에 대한 bool 값
-  Future<bool> _certifyAdminAccess() async {
-    String url = '${ApiUtil.API_HOST}arlimi_adminCertified.php';
-    final response = await http.get(Uri.parse(
-        url + '?uid=${widget.user!.uid}&key=${_adminKeyController.text}'));
-
-    if (response.statusCode == 200) {
-      if (response.body.contains('CERTIFIED')) {
         return true;
       }
     }
@@ -1495,8 +1480,11 @@ class _StoreHomePageState extends State<StoreHomePage>
                                                 child: Text('취소')),
                                             DefaultButtonComp(
                                                 onPressed: () async {
-                                                  var result =
-                                                      await _certifyAdminAccess(); // 어드민 키 인증
+                                                  var result = await AdminUtil
+                                                      .certifyAdminAccess(
+                                                          widget.user!.uid!,
+                                                          _adminKeyController
+                                                              .text); // 어드민 키 인증
                                                   if (result) {
                                                     var res =
                                                         await _deleteProductRequest(
