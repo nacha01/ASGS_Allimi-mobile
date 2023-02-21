@@ -1,6 +1,7 @@
-import 'dart:convert';
 import 'package:asgshighschool/component/ThemeAppBar.dart';
 import 'package:asgshighschool/data/category.dart';
+import 'package:asgshighschool/data/payment_cancel.dart';
+import 'package:asgshighschool/util/OrderUtil.dart';
 import 'package:asgshighschool/util/PaymentUtil.dart';
 import '../../api/ApiUtil.dart';
 import '../../component/CorporationComp.dart';
@@ -9,7 +10,6 @@ import 'package:asgshighschool/data/product.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:cp949_dart/cp949_dart.dart' as cp949;
 
 import '../../util/NumberFormatter.dart';
 
@@ -49,9 +49,8 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
   bool _isCreditSuccess = true;
   String? _resultMessage = '';
   bool _isFinished = false;
-  Map? _cancelResponse;
   String? _resultCode = '';
-  String _ediDate = '';
+  PaymentCancelResponse? _cancelResponse;
 
   /// 주문을 등록하는 요청
   Future<bool> _addOrderRequest() async {
@@ -92,6 +91,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
 
   /// 최종적으로 주문을 등록하는 과정
   Future<bool> _registerOrderRequest() async {
+    var orderManager = OrderUtil();
     var orderRes = await _addOrderRequest();
 
     if (!orderRes) return false;
@@ -105,17 +105,18 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
         var deleteRes =
             await _deleteCartRequest(int.parse(widget.cart![i]!['cID']));
 
-        var renewCountRes = await _updateProductCountRequest(
+        var renewCountRes = await orderManager.updateProductCountRequest(
             int.parse(widget.cart![i]!['cPID']),
             int.parse(widget.cart![i]!['quantity']),
             '-');
 
-        var sellCountRes = await _updateEachProductSellCountRequest(
+        var sellCountRes = await orderManager.updateEachProductSellCountRequest(
             int.parse(widget.cart![i]!['cPID']),
             int.parse(widget.cart![i]!['quantity']),
             '+');
 
-        var buyerCountRes = await _updateUserBuyCountRequest('+');
+        var buyerCountRes = await orderManager.updateUserBuyCountRequest(
+            widget.user!.uid!, '+');
 
         if (!cartRes) return false;
         if (!deleteRes) return false;
@@ -126,13 +127,14 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
     } else {
       var detRes = await _addOrderDetailRequest(
           widget.direct!.prodID, widget.productCount);
-      var renewCountRes = await _updateProductCountRequest(
-          widget.direct!.prodID, widget.productCount, '-');
+      var renewCountRes = await orderManager.updateProductCountRequest(
+          widget.direct!.prodID, widget.productCount!, '-');
 
-      var sellCountRes = await _updateEachProductSellCountRequest(
+      var sellCountRes = await orderManager.updateEachProductSellCountRequest(
           widget.direct!.prodID, widget.productCount, '+');
 
-      var buyerCountRes = await _updateUserBuyCountRequest('+');
+      var buyerCountRes =
+          await orderManager.updateUserBuyCountRequest(widget.user!.uid!, '+');
 
       if (!detRes) return false;
       if (!renewCountRes) return false;
@@ -143,25 +145,33 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
   }
 
   Future<bool> _cancelOrderHandling() async {
-    var code = await _cancelPaymentRequest();
-    if (code == '2001') {
-      var res = await _updateOrderState(4);
+    var orderManager = OrderUtil();
+    _cancelResponse = await PaymentUtil.cancelPayment(
+        widget.responseData!['TID'],
+        widget.responseData!['Moid'],
+        int.parse(widget.responseData!['Amt']),
+        false);
+    if (_cancelResponse!.resultCode == '2001') {
+      var res =
+          await orderManager.updateOrderState(widget.responseData!['Moid'], 4);
       if (!res) return false;
       if (widget.isCart!) {
         for (int i = 0; i < widget.cart!.length; ++i) {
-          var renewCountRes = await _updateProductCountRequest(
+          var renewCountRes = await orderManager.updateProductCountRequest(
               int.parse(widget.cart![i]!['cPID']),
               int.parse(widget.cart![i]!['quantity']),
               '+');
           // 재고 수정
 
-          var sellCountRes = await _updateEachProductSellCountRequest(
-              int.parse(widget.cart![i]!['cPID']),
-              int.parse(widget.cart![i]!['quantity']),
-              '-');
+          var sellCountRes =
+              await orderManager.updateEachProductSellCountRequest(
+                  int.parse(widget.cart![i]!['cPID']),
+                  int.parse(widget.cart![i]!['quantity']),
+                  '-');
           // 누적 판매수 수정
 
-          var buyerCountRes = await _updateUserBuyCountRequest('-');
+          var buyerCountRes = await orderManager.updateUserBuyCountRequest(
+              widget.user!.uid!, '-');
           // 누적 구매수 수정
 
           if (!renewCountRes) return false;
@@ -169,29 +179,19 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
           if (!buyerCountRes) return false;
         }
       } else {
-        var renewCountRes = await _updateProductCountRequest(
-            widget.direct!.prodID, widget.productCount, '+');
+        var renewCountRes = await orderManager.updateProductCountRequest(
+            widget.direct!.prodID, widget.productCount!, '+');
 
-        var sellCountRes = await _updateEachProductSellCountRequest(
+        var sellCountRes = await orderManager.updateEachProductSellCountRequest(
             widget.direct!.prodID, widget.productCount, '-');
 
-        var buyerCountRes = await _updateUserBuyCountRequest('-');
+        var buyerCountRes = await orderManager.updateUserBuyCountRequest(
+            widget.user!.uid!, '-');
 
         if (!renewCountRes) return false;
         if (!sellCountRes) return false;
         if (!buyerCountRes) return false;
       }
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  Future<bool> _updateOrderState(int state) async {
-    String url =
-        '${ApiUtil.API_HOST}arlimi_updateOrderState.php?oid=${widget.responseData!['Moid']}&state=$state';
-    final response = await http.get(Uri.parse(url));
-    if (response.statusCode == 200) {
       return true;
     } else {
       return false;
@@ -207,73 +207,6 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
       return true;
     } else {
       return false;
-    }
-  }
-
-  /// 각 상품의 수량을 [quantity]만큼 [operator] 연산자로 수정하는 요청
-  Future<bool> _updateProductCountRequest(
-      int pid, int? quantity, String operator) async {
-    String url = '${ApiUtil.API_HOST}arlimi_updateProductCount.php';
-    final response = await http.post(Uri.parse(url), body: <String, String>{
-      'pid': pid.toString(),
-      'quantity': quantity.toString(),
-      'oper': operator
-    });
-    if (response.statusCode == 200) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  /// 각 상품의 누적 판매수를 반영하는 요청
-  Future<bool> _updateEachProductSellCountRequest(
-      int pid, int? quantity, String operator) async {
-    String url = '${ApiUtil.API_HOST}arlimi_updateProductSellCount.php';
-    final response = await http
-        .get(Uri.parse(url + '?pid=$pid&quantity=$quantity&oper=$operator'));
-    if (response.statusCode == 200) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  /// 이 주문을 요청한 사용자의 누적 구매수를 [operator]대로 연산하는 요청
-  Future<bool> _updateUserBuyCountRequest(String operator) async {
-    String url =
-        '${ApiUtil.API_HOST}arlimi_updateUserBuyCount.php?uid=${widget.user!.uid}&oper=$operator';
-    final response = await http.get(Uri.parse(url));
-
-    if (response.statusCode == 200) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  Future<String?> _cancelPaymentRequest() async {
-    _ediDate = PaymentUtil.getEdiDate();
-    final response = await http
-        .post(Uri.parse(PaymentUtil.CANCEL_API_URL), body: <String, String?>{
-      'TID': widget.responseData!['TID'],
-      'MID': PaymentUtil.MID,
-      'Moid': widget.responseData!['Moid'],
-      'CancelAmt': int.parse(widget.responseData!['Amt']).toString(),
-      'CancelMsg': '결제자의 요청에 의한 취소',
-      'PartialCancelCode': '0',
-      'EdiDate': _ediDate,
-      'SignData': PaymentUtil.encryptCancel(
-          int.parse(widget.responseData!['Amt']), _ediDate),
-      'CharSet': 'euc-kr',
-      'EdiType': 'JSON'
-    });
-
-    if (response.statusCode == 200) {
-      _cancelResponse = jsonDecode(cp949.decode(response.bodyBytes)); //???
-      return _cancelResponse!['ResultCode'];
-    } else {
-      return 'Error';
     }
   }
 
@@ -514,7 +447,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
                                                           color: Colors.green,
                                                           fontSize: 16)),
                                                   content: Text(
-                                                      '${_cancelResponse!['ResultMsg']}',
+                                                      '${_cancelResponse!.resultMsg}',
                                                       //여기가 취소 성공이라는 메세지인가?
                                                       style: TextStyle(
                                                           fontWeight:
@@ -547,7 +480,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
                                                         fontSize: 16),
                                                   ),
                                                   content: Text(
-                                                      '${_cancelResponse!['ResultMsg']} (code-${_cancelResponse!['ResultCode']}',
+                                                      '${_cancelResponse!.resultMsg} (code-${_cancelResponse!.resultCode}',
                                                       style: TextStyle(
                                                           fontWeight:
                                                               FontWeight.bold,
@@ -587,10 +520,6 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
                     width: size.width * 0.6,
                     height: size.height * 0.04,
                   )),
-              Text(
-                '※ 결제 취소는 이 페이지에서만 가능합니다. 신중하게 판단해주세요.',
-                style: TextStyle(fontSize: 10, color: Colors.red),
-              )
             ],
           ),
         );
@@ -669,8 +598,12 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
               ),
               DefaultButtonComp(
                   onPressed: () async {
-                    var res = await _cancelPaymentRequest();
-                    if (res == '2001') {
+                    var cancelResponse = await PaymentUtil.cancelPayment(
+                        widget.responseData!['TID'],
+                        widget.responseData!['Moid'],
+                        int.parse(widget.responseData!['Amt']),
+                        false);
+                    if (cancelResponse!.resultCode == '2001') {
                       showDialog(
                           barrierDismissible: false,
                           context: context,
@@ -680,8 +613,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
                                         fontWeight: FontWeight.bold,
                                         color: Colors.green,
                                         fontSize: 16)),
-                                content: Text(
-                                    '${_cancelResponse!['ResultMsg']}',
+                                content: Text('${_cancelResponse!.resultMsg}',
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 14)),
@@ -707,7 +639,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
                                       fontSize: 16),
                                 ),
                                 content: Text(
-                                    '${_cancelResponse!['ResultMsg']} (code-${_cancelResponse!['ResultCode']}',
+                                    '${_cancelResponse!.resultMsg} (code-${_cancelResponse!.resultCode}',
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 14)),

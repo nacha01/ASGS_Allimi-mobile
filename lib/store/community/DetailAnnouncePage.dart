@@ -1,5 +1,6 @@
 import 'package:asgshighschool/data/announce.dart';
 import 'package:asgshighschool/data/user.dart';
+import 'package:asgshighschool/storeAdmin/AdminUtil.dart';
 import 'package:asgshighschool/util/ToastMessage.dart';
 import '../../api/ApiUtil.dart';
 import '../../component/DefaultButtonComp.dart';
@@ -27,22 +28,6 @@ class _DetailAnnouncePageState extends State<DetailAnnouncePage> {
   bool _isUsable = false;
   Announce? _temp;
   TextEditingController _adminKeyController = TextEditingController();
-
-  /// 관리자임을 인증하는 HTTP 요청
-  /// @param : HTTP GET : UID 값과 ADMIN KEY 값
-  /// @result : 관리자 인증이 되었는지에 대한 bool 값
-  Future<bool> _certifyAdminAccess() async {
-    String url = '${ApiUtil.API_HOST}arlimi_adminCertified.php';
-    final response = await http.get(Uri.parse(
-        url + '?uid=${widget.user!.uid}&key=${_adminKeyController.text}'));
-
-    if (response.statusCode == 200) {
-      if (response.body.contains('CERTIFIED')) {
-        return true;
-      }
-    }
-    return false;
-  }
 
   /// 현재 페이지를 강제종료하는 작업
   void _terminateScreen({bool isDelete = false}) {
@@ -182,8 +167,12 @@ class _DetailAnnouncePageState extends State<DetailAnnouncePage> {
                                                         child: Text('취소')),
                                                     DefaultButtonComp(
                                                         onPressed: () async {
-                                                          var result =
-                                                              await _certifyAdminAccess(); // 어드민 키 인증
+                                                          var result = await AdminUtil
+                                                              .certifyAdminAccess(
+                                                                  widget.user!
+                                                                      .uid!,
+                                                                  _adminKeyController
+                                                                      .text); // 어드민 키 인증
                                                           if (result) {
                                                             var res = await _deleteAnnounceRequest(_isUsable
                                                                 ? (_rcvResult

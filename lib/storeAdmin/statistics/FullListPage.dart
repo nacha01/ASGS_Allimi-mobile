@@ -67,7 +67,7 @@ class _FullListPageState extends State<FullListPage> {
     final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
       String result = ApiUtil.getPureBody(response.bodyBytes);
-      _orderList = OrderUtil.serializeOrderJson(result, true);
+      _orderList = OrderUtil.serializeOrderList(result, true);
 
       setState(() {
         _isFinished = true;

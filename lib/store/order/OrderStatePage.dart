@@ -1,15 +1,14 @@
-import 'dart:convert';
 import 'package:asgshighschool/api/ApiUtil.dart';
 import 'package:asgshighschool/component/ThemeAppBar.dart';
 import 'package:asgshighschool/data/order/order.dart';
 import 'package:asgshighschool/data/order/order_state.dart';
+import 'package:asgshighschool/data/payment_cancel.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:asgshighschool/store/order/DetailOrderStatePage.dart';
 import 'package:asgshighschool/util/DateFormatter.dart';
 import 'package:asgshighschool/util/OrderUtil.dart';
 import 'package:asgshighschool/util/PaymentUtil.dart';
 import 'package:flutter/material.dart';
-import 'package:cp949_dart/cp949_dart.dart' as cp949;
 import 'package:http/http.dart' as http;
 
 import '../../component/DefaultButtonComp.dart';
@@ -27,9 +26,8 @@ class OrderStatePage extends StatefulWidget {
 
 class _OrderStatePageState extends State<OrderStatePage> {
   List<Order> _orderList = [];
-  Map? _cancelResponse;
-  String _ediDate = '';
   bool _isFinished = false;
+  PaymentCancelResponse? _cancelResponse;
 
   /// 나(uid)의 모든 주문한 내역(현황)들을 요청하는 작업
   Future<bool> _getOrderInfoRequest() async {
@@ -39,7 +37,7 @@ class _OrderStatePageState extends State<OrderStatePage> {
     if (response.statusCode == 200) {
       String result = ApiUtil.getPureBody(response.bodyBytes);
       setState(() {
-        _orderList = OrderUtil.serializeOrderJson(result, false);
+        _orderList = OrderUtil.serializeOrderList(result, false);
         _isFinished = true;
       });
       return true;
@@ -68,113 +66,6 @@ class _OrderStatePageState extends State<OrderStatePage> {
           ' ' +
           details[0].quantity.toString() +
           '개 외 ${details.length - 1}개';
-    }
-  }
-
-  Future<String?> _cancelPaymentRequest(Order order) async {
-    _ediDate = PaymentUtil.getEdiDate();
-
-    final response = await http
-        .post(Uri.parse(PaymentUtil.CANCEL_API_URL), body: <String, String?>{
-      'TID': order.tid,
-      'MID': PaymentUtil.MID,
-      'Moid': order.orderID,
-      'CancelAmt': order.totalPrice.toString(),
-      'CancelMsg': '결제자의 요청에 의한 취소',
-      'PartialCancelCode': '0',
-      'EdiDate': _ediDate,
-      'SignData': PaymentUtil.encryptCancel(order.totalPrice, _ediDate),
-      'CharSet': 'euc-kr',
-      'EdiType': 'JSON'
-    });
-    if (response.statusCode == 200) {
-      _cancelResponse = jsonDecode(cp949.decode(response.bodyBytes));
-      return _cancelResponse!['ResultCode'];
-    } else {
-      return 'Error';
-    }
-  }
-
-  Future<bool> _updateOrderState(int state, _oID) async {
-    String url =
-        '${ApiUtil.API_HOST}arlimi_updateOrderState.php?oid=$_oID&state=$state';
-    final response = await http.get(Uri.parse(url));
-    if (response.statusCode == 200) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  /// 각 상품의 수량을 [quantity]만큼 [operator] 연산자로 수정하는 요청
-  Future<bool> _updateProductCountRequest(
-      int pid, int quantity, String operator) async {
-    String url = '${ApiUtil.API_HOST}arlimi_updateProductCount.php';
-    final response = await http.post(Uri.parse(url), body: <String, String>{
-      'pid': pid.toString(),
-      'quantity': quantity.toString(),
-      'oper': operator
-    });
-    if (response.statusCode == 200) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  /// 각 상품의 누적 판매수를 반영하는 요청
-  Future<bool> _updateEachProductSellCountRequest(
-      int? pid, int? quantity, String operator) async {
-    String url = '${ApiUtil.API_HOST}arlimi_updateProductSellCount.php';
-    final response = await http
-        .get(Uri.parse(url + '?pid=$pid&quantity=$quantity&oper=$operator'));
-    if (response.statusCode == 200) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  /// 이 주문을 요청한 사용자의 누적 구매수를 [operator]대로 연산하는 요청
-  Future<bool> _updateUserBuyCountRequest(String operator) async {
-    String url =
-        '${ApiUtil.API_HOST}arlimi_updateUserBuyCount.php?uid=${widget.user!.uid}&oper=$operator';
-    final response = await http.get(Uri.parse(url));
-
-    if (response.statusCode == 200) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  Future<bool> _cancelOrderHandling(Order order) async {
-    var code = await _cancelPaymentRequest(order);
-
-    var _oid = order.orderID;
-
-    if (code == '2001') {
-      var res = await _updateOrderState(4, _oid);
-      if (!res) return false;
-
-      for (var detail in order.detail) {
-        var result = await _updateProductCountRequest(
-            detail.product.productID, detail.quantity, '+');
-        if (!result) return false;
-      }
-
-      for (var detail in order.detail) {
-        var result = await _updateEachProductSellCountRequest(
-            detail.product.productID, detail.quantity, '-');
-        if (!result) return false;
-      }
-
-      var buyerCountRes = await _updateUserBuyCountRequest('-');
-      if (!buyerCountRes) return false;
-
-      return true;
-    } else {
-      return false;
     }
   }
 
@@ -308,8 +199,17 @@ class _OrderStatePageState extends State<OrderStatePage> {
                                 actions: [
                                   DefaultButtonComp(
                                       onPressed: () async {
-                                        var res =
-                                            await _cancelOrderHandling(order);
+                                        _cancelResponse =
+                                            await PaymentUtil.cancelPayment(
+                                                order.tid,
+                                                order.orderID,
+                                                order.totalPrice,
+                                                false);
+                                        var res = await PaymentUtil
+                                            .cancelOrderHandling(
+                                                widget.user!.uid!,
+                                                order,
+                                                _cancelResponse!);
                                         if (res) {
                                           showDialog(
                                               barrierDismissible: false,
@@ -322,7 +222,7 @@ class _OrderStatePageState extends State<OrderStatePage> {
                                                             color: Colors.green,
                                                             fontSize: 16)),
                                                     content: Text(
-                                                        '${_cancelResponse!['ResultMsg']}',
+                                                        '${_cancelResponse!.resultMsg}',
                                                         style: TextStyle(
                                                             fontWeight:
                                                                 FontWeight.bold,
@@ -354,7 +254,7 @@ class _OrderStatePageState extends State<OrderStatePage> {
                                                           fontSize: 16),
                                                     ),
                                                     content: Text(
-                                                        '${_cancelResponse!['ResultMsg']} (code-${_cancelResponse!['ResultCode']})',
+                                                        '${_cancelResponse!.resultMsg} (code-${_cancelResponse!.resultCode})',
                                                         style: TextStyle(
                                                             fontWeight:
                                                                 FontWeight.bold,
