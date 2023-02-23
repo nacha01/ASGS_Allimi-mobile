@@ -172,128 +172,151 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
     super.initState();
   }
 
+  Future<void> _goBackWebView() async {
+    try {
+      if (await _inAppWebViewController.canGoBack()) {
+        await _inAppWebViewController.goBack();
+      } else {
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      return;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: ThemeAppBar(barTitle: '결제하기'),
-      body: InAppWebView(
-        onLoadResourceCustomScheme: (controller, url) async {
-          await controller.stopLoading();
-          return null;
-        },
-        shouldOverrideUrlLoading: (controller, navigationAction) async {
-          if (Platform.isAndroid) {
-            // Android
-            var url = navigationAction.request.url; // 위임 받은 URL (intent)
-            if (url != null && url.scheme.startsWith('intent')) {
-              if (!navigationAction.isForMainFrame) {
-                await controller.stopLoading(); // Intent URL 실행 방지
+    return WillPopScope(
+      onWillPop: () async {
+        await _goBackWebView();
+        return false;
+      },
+      child: Scaffold(
+        appBar: ThemeAppBar(
+          barTitle: '결제하기',
+          leadingClick: () async {
+            await _goBackWebView();
+          },
+        ),
+        body: InAppWebView(
+          onLoadResourceCustomScheme: (controller, url) async {
+            await controller.stopLoading();
+            return null;
+          },
+          shouldOverrideUrlLoading: (controller, navigationAction) async {
+            if (Platform.isAndroid) {
+              // Android
+              var url = navigationAction.request.url; // 위임 받은 URL (intent)
+              if (url != null && url.scheme.startsWith('intent')) {
+                if (!navigationAction.isForMainFrame) {
+                  await controller.stopLoading(); // Intent URL 실행 방지
+                }
+                try {
+                  await launchUrlString(
+                      (await getAppUrlForAndroid(url.toString()))!);
+                } catch (e) {
+                  await launchUrlString(
+                      (await getMarketUrlForAndroid(url.toString()))!);
+                }
+                return NavigationActionPolicy.CANCEL; // 페이지 이동 취소
               }
-              try {
-                await launchUrlString(
-                    (await getAppUrlForAndroid(url.toString()))!);
-              } catch (e) {
-                await launchUrlString(
-                    (await getMarketUrlForAndroid(url.toString()))!);
+              return NavigationActionPolicy.ALLOW;
+            } else if (Platform.isIOS) {
+              // iOS
+              var url = navigationAction.request.url.toString();
+
+              if (_isAppLink(url)) {
+                if (await launchUrlString(url))
+                  return NavigationActionPolicy.CANCEL;
+                else {
+                  var marketURL = _getMarketUrlForIOS(url);
+                  await launchUrlString(marketURL);
+
+                  return NavigationActionPolicy.CANCEL;
+                }
               }
-              return NavigationActionPolicy.CANCEL; // 페이지 이동 취소
             }
             return NavigationActionPolicy.ALLOW;
-          } else if (Platform.isIOS) {
-            // iOS
-            var url = (await controller.getUrl()).toString();
+          },
+          onWebViewCreated: (controller) {
+            _inAppWebViewController = controller;
 
-            if (_isAppLink(url)) {
-              if (await launchUrlString(url))
-                return NavigationActionPolicy.CANCEL;
-              else {
-                var marketURL = _getMarketUrlForIOS(url);
-                await launchUrlString(marketURL);
+            _inAppWebViewController.setOptions(
+                options: InAppWebViewGroupOptions(
+                    crossPlatform: InAppWebViewOptions(
+                        resourceCustomSchemes: ['intent'],
+                        useShouldOverrideUrlLoading: true,
+                        mediaPlaybackRequiresUserGesture: false),
+                    android: AndroidInAppWebViewOptions(
+                      useHybridComposition: true,
+                      disableDefaultErrorPage: true,
+                      mixedContentMode:
+                          AndroidMixedContentMode.MIXED_CONTENT_ALWAYS_ALLOW,
+                    )));
 
-                return NavigationActionPolicy.CANCEL;
-              }
-            }
-          }
-          return NavigationActionPolicy.ALLOW;
-        },
-        onWebViewCreated: (controller) {
-          _inAppWebViewController = controller;
-
-          _inAppWebViewController.setOptions(
-              options: InAppWebViewGroupOptions(
-                  crossPlatform: InAppWebViewOptions(
-                      resourceCustomSchemes: ['intent'],
-                      useShouldOverrideUrlLoading: true,
-                      mediaPlaybackRequiresUserGesture: false),
-                  android: AndroidInAppWebViewOptions(
-                    useHybridComposition: true,
-                    disableDefaultErrorPage: true,
-                    mixedContentMode:
-                        AndroidMixedContentMode.MIXED_CONTENT_ALWAYS_ALLOW,
-                  )));
-
-          _inAppWebViewController.addJavaScriptHandler(
-              handlerName: 'cancelPaymentHandler',
-              callback: (args) {
-                showDialog(
-                    barrierDismissible: false,
-                    context: context,
-                    builder: (context) => AlertDialog(
-                          title: Text(
-                            '결제 취소',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 16),
-                          ),
-                          content: Text('${args[0][1]} (code-${args[0][0]})',
+            _inAppWebViewController.addJavaScriptHandler(
+                handlerName: 'cancelPaymentHandler',
+                callback: (args) {
+                  showDialog(
+                      barrierDismissible: false,
+                      context: context,
+                      builder: (context) => AlertDialog(
+                            title: Text(
+                              '결제 취소',
                               style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 14)),
-                          actions: [
-                            DefaultButtonComp(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                  Navigator.pop(this.context);
-                                },
-                                child: Text('확인'))
-                          ],
-                        ));
-              });
+                                  fontWeight: FontWeight.bold, fontSize: 16),
+                            ),
+                            content: Text('${args[0][1]} (code-${args[0][0]})',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 14)),
+                            actions: [
+                              DefaultButtonComp(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                    Navigator.pop(this.context);
+                                  },
+                                  child: Text('확인'))
+                            ],
+                          ));
+                });
 
-          _inAppWebViewController.addJavaScriptHandler(
-              handlerName: 'responseHandler',
-              callback: (args) {
-                Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => PaymentCompletePage(
-                              totalPrice: _totalPrice,
-                              responseData: args[0],
-                              // json { TID: ..., AuthToken: ...., MID: ... ....}
-                              location: widget.location,
-                              receiveMethod: widget.receiveMethod,
-                              user: widget.user,
-                              direct: widget.direct,
-                              productCount: widget.productCount,
-                              selectList: widget.selectList,
-                              optionList: widget.optionList,
-                              option: widget.option,
-                              cart: widget.cart,
-                              isCart: widget.isCart,
-                            )));
-              });
+            _inAppWebViewController.addJavaScriptHandler(
+                handlerName: 'responseHandler',
+                callback: (args) {
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => PaymentCompletePage(
+                                totalPrice: _totalPrice,
+                                responseData: args[0],
+                                location: widget.location,
+                                receiveMethod: widget.receiveMethod,
+                                user: widget.user,
+                                direct: widget.direct,
+                                productCount: widget.productCount,
+                                selectList: widget.selectList,
+                                optionList: widget.optionList,
+                                option: widget.option,
+                                cart: widget.cart,
+                                isCart: widget.isCart,
+                              )));
+                });
 
-          _inAppWebViewController.postUrl(
-              url: Uri.parse(PaymentUtil.PAY_API_URL),
-              postData: Uint8List.fromList(cp949.encode('GoodsName=$_goodsName&'
-                  'Amt=$_totalPrice&'
-                  'MID=${PaymentUtil.MID}&'
-                  'ReturnURL=${PaymentUtil.REDIRECT_URL}&'
-                  'EdiDate=$_ediDate&'
-                  'Moid=${widget.oID}&'
-                  'SignData=${PaymentUtil.encryptAuthentication(_totalPrice, _ediDate)}&'
-                  'CharSet=euc-kr&'
-                  'PayMethod=CARD&'
-                  'BuyerName=${widget.user!.name}')));
-        },
+            _inAppWebViewController.postUrl(
+                url: Uri.parse(PaymentUtil.PAY_API_URL),
+                postData: Uint8List.fromList(cp949.encode(
+                    'GoodsName=$_goodsName&'
+                    'Amt=$_totalPrice&'
+                    'MID=${PaymentUtil.MID}&'
+                    'ReturnURL=${PaymentUtil.REDIRECT_URL}&'
+                    'EdiDate=$_ediDate&'
+                    'Moid=${widget.oID}&'
+                    'SignData=${PaymentUtil.encryptAuthentication(_totalPrice, _ediDate)}&'
+                    'CharSet=euc-kr&'
+                    'PayMethod=CARD&'
+                    'BuyerName=${widget.user!.name}')));
+          },
+        ),
       ),
     );
   }
