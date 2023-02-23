@@ -81,9 +81,7 @@ class _SelectImagePageState extends State<SelectImagePage> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: ThemeAppBar(
-        barTitle: '알리미 배너 사진 관리페이지',
-        actions: [
+        appBar: ThemeAppBar(barTitle: '알리미 배너 사진 관리페이지', actions: [
           IconButton(
               onPressed: () async {
                 var res = await Navigator.push(context,
@@ -92,85 +90,62 @@ class _SelectImagePageState extends State<SelectImagePage> {
                   await _getAllImageData();
                 }
               },
-              icon: Icon(
-                Icons.add_photo_alternate_outlined,
-                color: Colors.black,
-                size: 30,
-              ))
-        ],
-      ),
-      body: Padding(
-        padding: EdgeInsets.all(size.width * 0.02),
-        child: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.all(size.width * 0.015),
-              child: Text(
-                '* 체크박스의 의미는 "이미지를 사용할 것인가"의 의미입니다.',
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.red,
-                    fontSize: 12),
-              ),
-            ),
-            Divider(
-              thickness: 2,
-            ),
-            Expanded(
-                child: _imageDataList.length == 0
-                    ? Center(
-                        child: Text(
-                        '등록된 사진이 없습니다!',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16),
-                      ))
-                    : GridView.builder(
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            mainAxisSpacing: size.height * 0.025,
-                            crossAxisSpacing: size.width * 0.015),
-                        itemBuilder: (context, index) {
-                          return _eachItemLayout(
-                              _imageDataList[index], size, index);
-                        },
-                        itemCount: _imageDataList.length,
-                      ))
-          ],
-        ),
-      ),
-    );
+              icon: Icon(Icons.add_photo_alternate_outlined,
+                  color: Colors.black, size: 30))
+        ]),
+        body: Padding(
+            padding: EdgeInsets.all(size.width * 0.02),
+            child: Column(children: [
+              Padding(
+                  padding: EdgeInsets.all(size.width * 0.015),
+                  child: Text('* 체크박스의 의미는 "이미지를 사용할 것인가"의 의미입니다.',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red,
+                          fontSize: 12))),
+              Divider(thickness: 2),
+              Expanded(
+                  child: _imageDataList.length == 0
+                      ? Center(
+                          child: Text('등록된 사진이 없습니다!',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 16)))
+                      : GridView.builder(
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  mainAxisSpacing: size.height * 0.025,
+                                  crossAxisSpacing: size.width * 0.015),
+                          itemBuilder: (context, index) {
+                            return _eachItemLayout(
+                                _imageDataList[index], size, index);
+                          },
+                          itemCount: _imageDataList.length))
+            ])));
   }
 
   Widget _eachItemLayout(Map data, Size size, int index) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Expanded(
-          child: Stack(
-            children: [
-              CachedNetworkImage(
-                imageUrl: _prefixImgUrl + data['imgName'],
-                fit: BoxFit.cover,
-                errorWidget: (context, url, error) {
-                  return Text('error');
-                },
-              ),
-            ],
-          ),
-        ),
-        IconButton(
-            onPressed: () {
-              setState(() {
-                _isSelectedList[index] = !_isSelectedList[index];
-              });
-            },
-            icon: Icon(
+    return Column(mainAxisSize: MainAxisSize.min, children: [
+      Expanded(
+          child: Stack(children: [
+        CachedNetworkImage(
+            imageUrl: _prefixImgUrl + data['imgName'],
+            fit: BoxFit.cover,
+            errorWidget: (context, url, error) {
+              return Text('error');
+            })
+      ])),
+      IconButton(
+          onPressed: () {
+            setState(() {
+              _isSelectedList[index] = !_isSelectedList[index];
+            });
+          },
+          icon: Icon(
               _isSelectedList[index]
                   ? Icons.check_box
                   : Icons.check_box_outline_blank,
-              color: Colors.blue,
-            ))
-      ],
-    );
+              color: Colors.blue))
+    ]);
   }
 }

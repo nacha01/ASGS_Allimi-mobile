@@ -96,13 +96,11 @@ class _AddImagePageState extends State<AddImagePage> {
                               onPressed: () async {
                                 await _getImageFromGallery();
                               },
-                              child: Text(
-                                '이미지 불러오기',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
-                                    fontSize: 12),
-                              )),
+                              child: Text('이미지 불러오기',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                      fontSize: 12))),
                         ),
                       ),
                     ],
@@ -111,39 +109,27 @@ class _AddImagePageState extends State<AddImagePage> {
                       ? Container(
                           width: size.width,
                           height: 210,
-                          child: Text(
-                            '이미지를 불러와주세요.',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 13),
-                          ),
+                          child: Text('이미지를 불러와주세요.',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 13)),
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                               border: Border.all(width: 3, color: Colors.grey)),
                         )
-                      : Image.file(
-                          File(_selectedImage!.path),
-                          fit: BoxFit.cover,
-                          width: size.width,
-                          height: 210,
-                        ),
+                      : Image.file(File(_selectedImage!.path),
+                          fit: BoxFit.cover, width: size.width, height: 210),
                   Padding(
                     padding: EdgeInsets.all(size.width * 0.03),
                     child: Text(
-                      '* 위의 사진이 들어갈 크기는 배너사진에 들어갈 사진 크기 그대로입니다. 크기에 맞게 짤림등 사진을 조정해주시길 바랍니다.',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: Colors.red,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
+                        '* 위의 사진이 들어갈 크기는 배너사진에 들어갈 사진 크기 그대로입니다. 크기에 맞게 짤림등 사진을 조정해주시길 바랍니다.',
+                        style: TextStyle(fontSize: 11, color: Colors.red),
+                        textAlign: TextAlign.center),
                   ),
-                  Text(
-                    '※ 이전에 배너에 들어갔던 사진의 크기 : 850x403 ',
-                    style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey,
-                        fontWeight: FontWeight.bold),
-                  )
+                  Text('※ 이전에 배너에 들어갔던 사진의 크기 : 850x403 ',
+                      style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey,
+                          fontWeight: FontWeight.bold))
                 ],
               ),
             ),
@@ -176,13 +162,9 @@ class _AddImagePageState extends State<AddImagePage> {
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                     color: Colors.red, borderRadius: BorderRadius.circular(6)),
-                child: Text(
-                  '저장하기',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
+                child: Text('저장하기',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.white)),
               ),
             )
           ],

@@ -605,329 +605,482 @@ class _StoreHomePageState extends State<StoreHomePage>
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
     return RefreshIndicator(
-      onRefresh: _getProducts,
-      child: NestedScrollView(
-        controller: _scrollViewController,
-        headerSliverBuilder: (context, innerBoxIsScrolled) {
-          return [
-            SliverAppBar(
-              backgroundColor: Colors.white,
-              forceElevated: innerBoxIsScrolled,
-              leadingWidth: size.width * 0.23,
-              centerTitle: true,
-              title: aboveTap(size),
-              leading: Container(
-                  margin: EdgeInsets.only(left: size.width * 0.02),
-                  alignment: Alignment.center,
-                  child: DefaultButtonComp(
-                    onPressed: () {
-                      _tabController!.index = 0;
-                    },
-                    child: Image.asset(
-                      'assets/images/duruduru_logo.png',
-                    ),
-                  )),
-              bottom: TabBar(
-                tabs: [
-                  Tab(
-                    text: 'MENU',
-                  ),
-                  Tab(
-                    text: 'BEST',
-                  ),
-                  Tab(
-                    text: 'NEW',
-                  ),
-                  Tab(
-                    text: 'EVENT',
-                  )
-                ],
-                labelColor: Colors.black,
-                labelStyle:
-                    TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-                indicatorColor: Color(0xFF9EE1E5),
-                indicatorWeight: 6.0,
-                controller: _tabController,
-                unselectedLabelColor: Colors.grey,
-              ),
-            ),
-          ];
-        },
-        body: TabBarView(controller: _tabController, children: [
-          _isSearch
-              ? _searchProductLayoutList.length == 0
-                  ? Column(
-                      children: [
-                        SizedBox(
-                          height: size.height * 0.01,
-                        ),
-                        Text(
-                          '상품 검색 결과',
-                          style: TextStyle(
-                              fontSize: 23, fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(
-                          height: size.height * 0.01,
-                        ),
-                        _removeSearchResultWidget(size),
-                        SizedBox(
-                          height: size.height * 0.01,
-                        ),
-                        Expanded(
-                            child: Center(
-                                child: Text(
-                          '검색 결과가 없습니다!',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 21),
-                        )))
-                      ],
-                    )
-                  : Column(
-                      children: [
-                        SizedBox(
-                          height: size.height * 0.01,
-                        ),
-                        Text('상품 검색 결과',
-                            style: TextStyle(
-                                fontSize: 23, fontWeight: FontWeight.bold)),
-                        SizedBox(
-                          height: size.height * 0.01,
-                        ),
-                        _removeSearchResultWidget(size),
-                        SizedBox(
-                          height: size.height * 0.01,
-                        ),
-                        Expanded(
-                          child: Container(
-                            child: GridView.builder(
-                                itemCount: _searchProductLayoutList.length,
-                                gridDelegate:
-                                    SliverGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisCount: 2,
-                                        mainAxisSpacing: size.height * 0.025,
-                                        crossAxisSpacing: size.width * 0.01),
-                                itemBuilder: (context, index) {
-                                  return _searchProductLayoutList[index];
-                                }),
-                          ),
-                        ),
-                      ],
-                    )
-              : _productLayoutList.length == 0
-                  ? _isLoading
-                      ? Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text('불러오는 중...'),
-                              CircularProgressIndicator(),
-                            ],
-                          ),
+        onRefresh: _getProducts,
+        child: NestedScrollView(
+            controller: _scrollViewController,
+            headerSliverBuilder: (context, innerBoxIsScrolled) {
+              return [
+                SliverAppBar(
+                    backgroundColor: Colors.white,
+                    forceElevated: innerBoxIsScrolled,
+                    leadingWidth: size.width * 0.23,
+                    centerTitle: true,
+                    title: aboveTap(size),
+                    leading: Container(
+                        margin: EdgeInsets.only(left: size.width * 0.02),
+                        alignment: Alignment.center,
+                        child: DefaultButtonComp(
+                            onPressed: () {
+                              _tabController!.index = 0;
+                            },
+                            child: Image.asset(
+                                'assets/images/duruduru_logo.png'))),
+                    bottom: TabBar(
+                        tabs: [
+                          Tab(text: 'MENU'),
+                          Tab(text: 'BEST'),
+                          Tab(text: 'NEW'),
+                          Tab(text: 'EVENT')
+                        ],
+                        labelColor: Colors.black,
+                        labelStyle: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 12),
+                        indicatorColor: Color(0xFF9EE1E5),
+                        indicatorWeight: 6.0,
+                        controller: _tabController,
+                        unselectedLabelColor: Colors.grey))
+              ];
+            },
+            body: TabBarView(controller: _tabController, children: [
+              _isSearch
+                  ? _searchProductLayoutList.length == 0
+                      ? Column(
+                          children: [
+                            SizedBox(height: size.height * 0.01),
+                            Text('상품 검색 결과',
+                                style: TextStyle(
+                                    fontSize: 23, fontWeight: FontWeight.bold)),
+                            SizedBox(height: size.height * 0.01),
+                            _removeSearchResultWidget(size),
+                            SizedBox(height: size.height * 0.01),
+                            Expanded(
+                                child: Center(
+                                    child: Text('검색 결과가 없습니다!',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 21))))
+                          ],
                         )
+                      : Column(children: [
+                          SizedBox(height: size.height * 0.01),
+                          Text('상품 검색 결과',
+                              style: TextStyle(
+                                  fontSize: 23, fontWeight: FontWeight.bold)),
+                          SizedBox(height: size.height * 0.01),
+                          _removeSearchResultWidget(size),
+                          SizedBox(height: size.height * 0.01),
+                          Expanded(
+                              child: Container(
+                                  child: GridView.builder(
+                                      itemCount:
+                                          _searchProductLayoutList.length,
+                                      gridDelegate:
+                                          SliverGridDelegateWithFixedCrossAxisCount(
+                                              crossAxisCount: 2,
+                                              mainAxisSpacing:
+                                                  size.height * 0.025,
+                                              crossAxisSpacing:
+                                                  size.width * 0.01),
+                                      itemBuilder: (context, index) {
+                                        return _searchProductLayoutList[index];
+                                      })))
+                        ])
+                  : _productLayoutList.length == 0
+                      ? _isLoading
+                          ? Center(
+                              child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                  Text('불러오는 중...'),
+                                  CircularProgressIndicator()
+                                ]))
+                          : RefreshIndicator(
+                              onRefresh: _getProducts,
+                              child: Column(children: [
+                                addProductForAdmin(size),
+                                Expanded(
+                                  child: Center(
+                                      child: Text('상품이 없습니다.',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 22))),
+                                )
+                              ]))
                       : RefreshIndicator(
                           onRefresh: _getProducts,
                           child: Column(
                             children: [
                               addProductForAdmin(size),
-                              Expanded(
-                                child: Center(
-                                    child: Text(
-                                  '상품이 없습니다.',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 22),
-                                )),
-                              ),
-                            ],
-                          ),
-                        )
-                  : RefreshIndicator(
-                      onRefresh: _getProducts,
-                      child: Column(
-                        children: [
-                          addProductForAdmin(size),
-                          Card(
-                            elevation: 2,
-                            child: Container(
-                              margin: EdgeInsets.all(5),
-                              height: size.height * 0.085,
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
+                              Card(
+                                  elevation: 2,
+                                  child: Container(
+                                      margin: EdgeInsets.all(5),
+                                      height: size.height * 0.085,
+                                      child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            GestureDetector(
+                                                onTap: () {
+                                                  setState(() {
+                                                    if (_selectedCategory != 1)
+                                                      _selectedCategory = 1;
+                                                    else
+                                                      _selectedCategory = 0;
+                                                  });
+                                                },
+                                                child: Container(
+                                                    width: size.width * 0.19,
+                                                    child: Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                        children: [
+                                                          Container(
+                                                              child: Image.asset(
+                                                                  _selectedCategory ==
+                                                                          1
+                                                                      ? "assets/images/new_drink_on_icon.jpg"
+                                                                      : "assets/images/new_drink_icon.jpg"),
+                                                              height:
+                                                                  size.height *
+                                                                      0.06),
+                                                          Text('${Category.c1}',
+                                                              style: TextStyle(
+                                                                  fontSize: 12,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                  color: _selectedCategory ==
+                                                                          1
+                                                                      ? Color(
+                                                                          0xFF9EE1E5)
+                                                                      : Colors
+                                                                          .black))
+                                                        ]))),
+                                            GestureDetector(
+                                                onTap: () {
+                                                  setState(() {
+                                                    if (_selectedCategory != 2)
+                                                      _selectedCategory = 2;
+                                                    else
+                                                      _selectedCategory = 0;
+                                                  });
+                                                },
+                                                child: Container(
+                                                    width: size.width * 0.19,
+                                                    child: Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                        children: [
+                                                          Container(
+                                                              child: Image.asset(
+                                                                  _selectedCategory ==
+                                                                          2
+                                                                      ? "assets/images/snack_on_icon.jpg"
+                                                                      : "assets/images/snack_icon.jpg"),
+                                                              height:
+                                                                  size.height *
+                                                                      0.06),
+                                                          Text('${Category.c2}',
+                                                              style: TextStyle(
+                                                                  fontSize: 12,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                  color: _selectedCategory ==
+                                                                          2
+                                                                      ? Color(
+                                                                          0xFF9EE1E5)
+                                                                      : Colors
+                                                                          .black))
+                                                        ]))),
+                                            GestureDetector(
+                                                onTap: () {
+                                                  setState(() {
+                                                    if (_selectedCategory != 3)
+                                                      _selectedCategory = 3;
+                                                    else
+                                                      _selectedCategory = 0;
+                                                  });
+                                                },
+                                                child: Container(
+                                                    width: size.width * 0.19,
+                                                    child: Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                        children: [
+                                                          Container(
+                                                              child: Image.asset(
+                                                                  _selectedCategory ==
+                                                                          3
+                                                                      ? "assets/images/icecream_on_icon.jpg"
+                                                                      : "assets/images/icecream_icon.jpg"),
+                                                              height:
+                                                                  size.height *
+                                                                      0.06),
+                                                          Text('${Category.c3}',
+                                                              style: TextStyle(
+                                                                  fontSize: 12,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                  color: _selectedCategory ==
+                                                                          3
+                                                                      ? Color(
+                                                                          0xFF9EE1E5)
+                                                                      : Colors
+                                                                          .black))
+                                                        ]))),
+                                            GestureDetector(
+                                                onTap: () {
+                                                  setState(() {
+                                                    if (_selectedCategory != 4)
+                                                      _selectedCategory = 4;
+                                                    else
+                                                      _selectedCategory = 0;
+                                                  });
+                                                },
+                                                child: Container(
+                                                    width: size.width * 0.19,
+                                                    child: Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                        children: [
+                                                          Container(
+                                                              child: Image.asset(
+                                                                  _selectedCategory ==
+                                                                          4
+                                                                      ? "assets/images/drink_on_icon.jpg"
+                                                                      : "assets/images/drink_icon.jpg"),
+                                                              height:
+                                                                  size.height *
+                                                                      0.06),
+                                                          Text('${Category.c4}',
+                                                              style: TextStyle(
+                                                                  fontSize: 12,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                  color: _selectedCategory ==
+                                                                          4
+                                                                      ? Color(
+                                                                          0xFF9EE1E5)
+                                                                      : Colors
+                                                                          .black))
+                                                        ]))),
+                                            GestureDetector(
+                                                onTap: () {
+                                                  setState(() {
+                                                    if (_selectedCategory != 5)
+                                                      _selectedCategory = 5;
+                                                    else
+                                                      _selectedCategory = 0;
+                                                  });
+                                                },
+                                                child: Container(
+                                                    width: size.width * 0.19,
+                                                    child: Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                        children: [
+                                                          Container(
+                                                              child: Image.asset(
+                                                                  _selectedCategory ==
+                                                                          5
+                                                                      ? "assets/images/handmade_on_icon.jpg"
+                                                                      : "assets/images/handmadeicon.jpg"),
+                                                              height:
+                                                                  size.height *
+                                                                      0.06),
+                                                          Text('${Category.c5}',
+                                                              style: TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                  fontSize: 12,
+                                                                  color: _selectedCategory ==
+                                                                          5
+                                                                      ? Color(
+                                                                          0xFF9EE1E5)
+                                                                      : Colors
+                                                                          .black))
+                                                        ])))
+                                          ]))),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
-                                  GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        if (_selectedCategory != 1)
-                                          _selectedCategory = 1;
-                                        else
-                                          _selectedCategory = 0;
-                                      });
-                                    },
-                                    child: Container(
-                                      width: size.width * 0.19,
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Container(
-                                            child: Image.asset(_selectedCategory ==
-                                                    1
-                                                ? "assets/images/new_drink_on_icon.jpg"
-                                                : "assets/images/new_drink_icon.jpg"),
-                                            height: size.height * 0.06,
-                                          ),
-                                          Text('${Category.c1}',
-                                              style: TextStyle(
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: _selectedCategory == 1
-                                                      ? Color(0xFF9EE1E5)
-                                                      : Colors.black))
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        if (_selectedCategory != 2)
-                                          _selectedCategory = 2;
-                                        else
-                                          _selectedCategory = 0;
-                                      });
-                                    },
-                                    child: Container(
-                                      width: size.width * 0.19,
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Container(
-                                            child: Image.asset(_selectedCategory ==
-                                                    2
-                                                ? "assets/images/snack_on_icon.jpg"
-                                                : "assets/images/snack_icon.jpg"),
-                                            height: size.height * 0.06,
-                                          ),
-                                          Text('${Category.c2}',
-                                              style: TextStyle(
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: _selectedCategory == 2
-                                                      ? Color(0xFF9EE1E5)
-                                                      : Colors.black))
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        if (_selectedCategory != 3)
-                                          _selectedCategory = 3;
-                                        else
-                                          _selectedCategory = 0;
-                                      });
-                                    },
-                                    child: Container(
-                                      width: size.width * 0.19,
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Container(
-                                            child: Image.asset(_selectedCategory ==
-                                                    3
-                                                ? "assets/images/icecream_on_icon.jpg"
-                                                : "assets/images/icecream_icon.jpg"),
-                                            height: size.height * 0.06,
-                                          ),
-                                          Text('${Category.c3}',
-                                              style: TextStyle(
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: _selectedCategory == 3
-                                                      ? Color(0xFF9EE1E5)
-                                                      : Colors.black))
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        if (_selectedCategory != 4)
-                                          _selectedCategory = 4;
-                                        else
-                                          _selectedCategory = 0;
-                                      });
-                                    },
-                                    child: Container(
-                                      width: size.width * 0.19,
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Container(
-                                            child: Image.asset(_selectedCategory ==
-                                                    4
-                                                ? "assets/images/drink_on_icon.jpg"
-                                                : "assets/images/drink_icon.jpg"),
-                                            height: size.height * 0.06,
-                                          ),
-                                          Text('${Category.c4}',
-                                              style: TextStyle(
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: _selectedCategory == 4
-                                                      ? Color(0xFF9EE1E5)
-                                                      : Colors.black))
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        if (_selectedCategory != 5)
-                                          _selectedCategory = 5;
-                                        else
-                                          _selectedCategory = 0;
-                                      });
-                                    },
-                                    child: Container(
-                                      width: size.width * 0.19,
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Container(
-                                            child: Image.asset(_selectedCategory ==
-                                                    5
-                                                ? "assets/images/handmade_on_icon.jpg"
-                                                : "assets/images/handmadeicon.jpg"),
-                                            height: size.height * 0.06,
-                                          ),
-                                          Text('${Category.c5}',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 12,
-                                                  color: _selectedCategory == 5
-                                                      ? Color(0xFF9EE1E5)
-                                                      : Colors.black))
-                                        ],
-                                      ),
-                                    ),
-                                  ),
+                                  IconButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          _isAsc = !_isAsc;
+                                          _productList =
+                                              List.from(_productList.reversed);
+                                          _productLayoutList = List.from(
+                                              _productLayoutList.reversed);
+                                          _foodProductList = List.from(
+                                              _foodProductList.reversed);
+                                          _foodProductLayoutList = List.from(
+                                              _foodProductLayoutList.reversed);
+
+                                          _snackProductList = List.from(
+                                              _snackProductList.reversed);
+                                          _snackProductLayoutList = List.from(
+                                              _snackProductLayoutList.reversed);
+
+                                          _beverageProductList = List.from(
+                                              _beverageProductList.reversed);
+                                          _beverageProductLayoutList =
+                                              List.from(
+                                                  _beverageProductLayoutList
+                                                      .reversed);
+
+                                          _stationeryProductList = List.from(
+                                              _stationeryProductList.reversed);
+                                          _stationeryProductLayoutList =
+                                              List.from(
+                                                  _stationeryProductLayoutList
+                                                      .reversed);
+
+                                          _handmadeProductList = List.from(
+                                              _handmadeProductList.reversed);
+                                          _handmadeProductLayoutList =
+                                              List.from(
+                                                  _handmadeProductLayoutList
+                                                      .reversed);
+
+                                          _bestProductList = List.from(
+                                              _bestProductList.reversed);
+                                          _bestProductLayoutList = List.from(
+                                              _bestProductLayoutList.reversed);
+
+                                          _newProductList = List.from(
+                                              _newProductList.reversed);
+                                          _newProductLayoutList = List.from(
+                                              _newProductLayoutList.reversed);
+                                        });
+                                      },
+                                      icon: Icon(_isAsc
+                                          ? Icons.arrow_circle_up
+                                          : Icons.arrow_circle_down),
+                                      iconSize: 27),
+                                  IconButton(
+                                      onPressed: () {
+                                        showDialog(
+                                            context: context,
+                                            builder: (context) => AlertDialog(
+                                                  shape: OutlineInputBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              15),
+                                                      borderSide: BorderSide(
+                                                          color: Colors.black,
+                                                          width: 2)),
+                                                  title: Center(
+                                                      child: Text('상품정렬 기준 선택',
+                                                          style: TextStyle(
+                                                              fontSize: 15,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold))),
+                                                  content: StatefulBuilder(
+                                                    builder:
+                                                        (context, setState) {
+                                                      return Column(
+                                                        mainAxisSize:
+                                                            MainAxisSize.min,
+                                                        children: List.generate(
+                                                            3, (index) {
+                                                          return RadioListTile<
+                                                              int>(
+                                                            title: Center(
+                                                                child: Text(
+                                                                    _sortTitleList[
+                                                                        index])),
+                                                            value: index,
+                                                            groupValue:
+                                                                _selectRadio,
+                                                            onChanged: (value) {
+                                                              setState(() {
+                                                                _selectRadio =
+                                                                    value;
+                                                              });
+                                                              _sortProductByIndex(
+                                                                  _selectRadio,
+                                                                  size);
+                                                            },
+                                                          );
+                                                        }),
+                                                      );
+                                                    },
+                                                  ),
+                                                ));
+                                      },
+                                      icon: Icon(Icons.sort),
+                                      padding: EdgeInsets.all(0),
+                                      iconSize: 27),
+                                  SizedBox(width: size.width * 0.02)
                                 ],
                               ),
-                            ),
+                              _getLengthOfCurrentCategory(_selectedCategory) ==
+                                      0
+                                  ? Expanded(
+                                      child: Center(
+                                          child: Text('상품이 없습니다!',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 21))),
+                                    )
+                                  : Expanded(
+                                      child: Container(
+                                        height: size.height,
+                                        child: GridView.builder(
+                                            itemCount:
+                                                _getLengthOfCurrentCategory(
+                                                    _selectedCategory),
+                                            gridDelegate:
+                                                SliverGridDelegateWithFixedCrossAxisCount(
+                                                    crossAxisCount: 2,
+                                                    mainAxisSpacing:
+                                                        size.height * 0.025,
+                                                    crossAxisSpacing:
+                                                        size.width * 0.01),
+                                            itemBuilder: (context, index) {
+                                              return _getItemTileOfCurrentCategory(
+                                                  index, _selectedCategory);
+                                            }),
+                                      ),
+                                    ),
+                              CorporationInfo(isOpenable: true)
+                            ],
                           ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              IconButton(
+                        ),
+              /*------------------------ MENU TAB -------------------------*/
+              _bestProductLayoutList.length == 0
+                  ? RefreshIndicator(
+                      onRefresh: _getProducts,
+                      child: Column(children: [
+                        addProductForAdmin(size),
+                        Expanded(
+                            child: Center(
+                                child: Text('베스트 상품이 없습니다!',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 21)))),
+                        CorporationInfo(isOpenable: true)
+                      ]))
+                  : RefreshIndicator(
+                      onRefresh: _getProducts,
+                      child: Column(children: [
+                        addProductForAdmin(size),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            IconButton(
                                 onPressed: () {
                                   setState(() {
                                     _isAsc = !_isAsc;
@@ -974,9 +1127,8 @@ class _StoreHomePageState extends State<StoreHomePage>
                                 icon: Icon(_isAsc
                                     ? Icons.arrow_circle_up
                                     : Icons.arrow_circle_down),
-                                iconSize: 27,
-                              ),
-                              IconButton(
+                                iconSize: 27),
+                            IconButton(
                                 onPressed: () {
                                   showDialog(
                                       context: context,
@@ -988,14 +1140,11 @@ class _StoreHomePageState extends State<StoreHomePage>
                                                     color: Colors.black,
                                                     width: 2)),
                                             title: Center(
-                                              child: Text(
-                                                '상품정렬 기준 선택',
-                                                style: TextStyle(
-                                                    fontSize: 15,
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                            ),
+                                                child: Text('상품정렬 기준 선택',
+                                                    style: TextStyle(
+                                                        fontSize: 15,
+                                                        fontWeight:
+                                                            FontWeight.bold))),
                                             content: StatefulBuilder(
                                               builder: (context, setState) {
                                                 return Column(
@@ -1026,177 +1175,12 @@ class _StoreHomePageState extends State<StoreHomePage>
                                 },
                                 icon: Icon(Icons.sort),
                                 padding: EdgeInsets.all(0),
-                                iconSize: 27,
-                              ),
-                              SizedBox(
-                                width: size.width * 0.02,
-                              )
-                            ],
-                          ),
-                          _getLengthOfCurrentCategory(_selectedCategory) == 0
-                              ? Expanded(
-                                  child: Center(
-                                      child: Text(
-                                    '상품이 없습니다!',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 21),
-                                  )),
-                                )
-                              : Expanded(
-                                  child: Container(
-                                    height: size.height,
-                                    child: GridView.builder(
-                                        itemCount: _getLengthOfCurrentCategory(
-                                            _selectedCategory),
-                                        gridDelegate:
-                                            SliverGridDelegateWithFixedCrossAxisCount(
-                                                crossAxisCount: 2,
-                                                mainAxisSpacing:
-                                                    size.height * 0.025,
-                                                crossAxisSpacing:
-                                                    size.width * 0.01),
-                                        itemBuilder: (context, index) {
-                                          return _getItemTileOfCurrentCategory(
-                                              index, _selectedCategory);
-                                        }),
-                                  ),
-                                ),
-                          CorporationInfo(isOpenable: true)
-                        ],
-                      ),
-                    ),
-          /*------------------------ MENU TAB -------------------------*/
-          _bestProductLayoutList.length == 0
-              ? RefreshIndicator(
-                  onRefresh: _getProducts,
-                  child: Column(
-                    children: [
-                      addProductForAdmin(size),
-                      Expanded(
-                        child: Center(
-                            child: Text(
-                          '베스트 상품이 없습니다!',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 21),
-                        )),
-                      ),
-                      CorporationInfo(isOpenable: true)
-                    ],
-                  ),
-                )
-              : RefreshIndicator(
-                  onRefresh: _getProducts,
-                  child: Column(
-                    children: [
-                      addProductForAdmin(size),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          IconButton(
-                            onPressed: () {
-                              setState(() {
-                                _isAsc = !_isAsc;
-                                _productList = List.from(_productList.reversed);
-                                _productLayoutList =
-                                    List.from(_productLayoutList.reversed);
-                                _foodProductList =
-                                    List.from(_foodProductList.reversed);
-                                _foodProductLayoutList =
-                                    List.from(_foodProductLayoutList.reversed);
-
-                                _snackProductList =
-                                    List.from(_snackProductList.reversed);
-                                _snackProductLayoutList =
-                                    List.from(_snackProductLayoutList.reversed);
-
-                                _beverageProductList =
-                                    List.from(_beverageProductList.reversed);
-                                _beverageProductLayoutList = List.from(
-                                    _beverageProductLayoutList.reversed);
-
-                                _stationeryProductList =
-                                    List.from(_stationeryProductList.reversed);
-                                _stationeryProductLayoutList = List.from(
-                                    _stationeryProductLayoutList.reversed);
-
-                                _handmadeProductList =
-                                    List.from(_handmadeProductList.reversed);
-                                _handmadeProductLayoutList = List.from(
-                                    _handmadeProductLayoutList.reversed);
-
-                                _bestProductList =
-                                    List.from(_bestProductList.reversed);
-                                _bestProductLayoutList =
-                                    List.from(_bestProductLayoutList.reversed);
-
-                                _newProductList =
-                                    List.from(_newProductList.reversed);
-                                _newProductLayoutList =
-                                    List.from(_newProductLayoutList.reversed);
-                              });
-                            },
-                            icon: Icon(_isAsc
-                                ? Icons.arrow_circle_up
-                                : Icons.arrow_circle_down),
-                            iconSize: 27,
-                          ),
-                          IconButton(
-                            onPressed: () {
-                              showDialog(
-                                  context: context,
-                                  builder: (context) => AlertDialog(
-                                        shape: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(15),
-                                            borderSide: BorderSide(
-                                                color: Colors.black, width: 2)),
-                                        title: Center(
-                                          child: Text(
-                                            '상품정렬 기준 선택',
-                                            style: TextStyle(
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ),
-                                        content: StatefulBuilder(
-                                          builder: (context, setState) {
-                                            return Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children:
-                                                  List.generate(3, (index) {
-                                                return RadioListTile<int>(
-                                                  title: Center(
-                                                      child: Text(
-                                                          _sortTitleList[
-                                                              index])),
-                                                  value: index,
-                                                  groupValue: _selectRadio,
-                                                  onChanged: (value) {
-                                                    setState(() {
-                                                      _selectRadio = value;
-                                                    });
-                                                    _sortProductByIndex(
-                                                        _selectRadio, size);
-                                                  },
-                                                );
-                                              }),
-                                            );
-                                          },
-                                        ),
-                                      ));
-                            },
-                            icon: Icon(Icons.sort),
-                            padding: EdgeInsets.all(0),
-                            iconSize: 27,
-                          ),
-                          SizedBox(
-                            width: size.width * 0.02,
-                          )
-                        ],
-                      ),
-                      Expanded(
-                        child: Container(
+                                iconSize: 27),
+                            SizedBox(width: size.width * 0.02)
+                          ],
+                        ),
+                        Expanded(
+                            child: Container(
                           child: GridView.builder(
                               itemCount: _bestProductLayoutList.length,
                               gridDelegate:
@@ -1207,381 +1191,344 @@ class _StoreHomePageState extends State<StoreHomePage>
                               itemBuilder: (context, index) {
                                 return _bestProductLayoutList[index];
                               }),
-                        ),
-                      ),
-                      CorporationInfo(isOpenable: true)
-                    ],
-                  ),
-                ),
-          /*------------ BEST TAB ---------------*/
-          _newProductLayoutList.length == 0
-              ? RefreshIndicator(
-                  onRefresh: _getProducts,
-                  child: Column(
-                    children: [
-                      addProductForAdmin(size),
-                      Expanded(
-                        child: Center(
-                            child: Text(
-                          '신규 상품이 없습니다!',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 21),
                         )),
-                      ),
-                      CorporationInfo(isOpenable: true)
-                    ],
-                  ),
-                )
-              : RefreshIndicator(
-                  onRefresh: _getProducts,
-                  child: Column(
-                    children: [
-                      addProductForAdmin(size),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
+                        CorporationInfo(isOpenable: true)
+                      ]),
+                    ),
+              /*------------ BEST TAB ---------------*/
+              _newProductLayoutList.length == 0
+                  ? RefreshIndicator(
+                      onRefresh: _getProducts,
+                      child: Column(children: [
+                        addProductForAdmin(size),
+                        Expanded(
+                          child: Center(
+                              child: Text('신규 상품이 없습니다!',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 21))),
+                        ),
+                        CorporationInfo(isOpenable: true)
+                      ]),
+                    )
+                  : RefreshIndicator(
+                      onRefresh: _getProducts,
+                      child: Column(
                         children: [
-                          IconButton(
-                            onPressed: () {
-                              setState(() {
-                                _isAsc = !_isAsc;
-                                _productList = List.from(_productList.reversed);
-                                _productLayoutList =
-                                    List.from(_productLayoutList.reversed);
-                                _foodProductList =
-                                    List.from(_foodProductList.reversed);
-                                _foodProductLayoutList =
-                                    List.from(_foodProductLayoutList.reversed);
+                          addProductForAdmin(size),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      _isAsc = !_isAsc;
+                                      _productList =
+                                          List.from(_productList.reversed);
+                                      _productLayoutList = List.from(
+                                          _productLayoutList.reversed);
+                                      _foodProductList =
+                                          List.from(_foodProductList.reversed);
+                                      _foodProductLayoutList = List.from(
+                                          _foodProductLayoutList.reversed);
 
-                                _snackProductList =
-                                    List.from(_snackProductList.reversed);
-                                _snackProductLayoutList =
-                                    List.from(_snackProductLayoutList.reversed);
+                                      _snackProductList =
+                                          List.from(_snackProductList.reversed);
+                                      _snackProductLayoutList = List.from(
+                                          _snackProductLayoutList.reversed);
 
-                                _beverageProductList =
-                                    List.from(_beverageProductList.reversed);
-                                _beverageProductLayoutList = List.from(
-                                    _beverageProductLayoutList.reversed);
+                                      _beverageProductList = List.from(
+                                          _beverageProductList.reversed);
+                                      _beverageProductLayoutList = List.from(
+                                          _beverageProductLayoutList.reversed);
 
-                                _stationeryProductList =
-                                    List.from(_stationeryProductList.reversed);
-                                _stationeryProductLayoutList = List.from(
-                                    _stationeryProductLayoutList.reversed);
+                                      _stationeryProductList = List.from(
+                                          _stationeryProductList.reversed);
+                                      _stationeryProductLayoutList = List.from(
+                                          _stationeryProductLayoutList
+                                              .reversed);
 
-                                _handmadeProductList =
-                                    List.from(_handmadeProductList.reversed);
-                                _handmadeProductLayoutList = List.from(
-                                    _handmadeProductLayoutList.reversed);
+                                      _handmadeProductList = List.from(
+                                          _handmadeProductList.reversed);
+                                      _handmadeProductLayoutList = List.from(
+                                          _handmadeProductLayoutList.reversed);
 
-                                _bestProductList =
-                                    List.from(_bestProductList.reversed);
-                                _bestProductLayoutList =
-                                    List.from(_bestProductLayoutList.reversed);
+                                      _bestProductList =
+                                          List.from(_bestProductList.reversed);
+                                      _bestProductLayoutList = List.from(
+                                          _bestProductLayoutList.reversed);
 
-                                _newProductList =
-                                    List.from(_newProductList.reversed);
-                                _newProductLayoutList =
-                                    List.from(_newProductLayoutList.reversed);
-                              });
-                            },
-                            icon: Icon(_isAsc
-                                ? Icons.arrow_circle_up
-                                : Icons.arrow_circle_down),
-                            iconSize: 27,
-                            padding: EdgeInsets.all(0.0),
+                                      _newProductList =
+                                          List.from(_newProductList.reversed);
+                                      _newProductLayoutList = List.from(
+                                          _newProductLayoutList.reversed);
+                                    });
+                                  },
+                                  icon: Icon(_isAsc
+                                      ? Icons.arrow_circle_up
+                                      : Icons.arrow_circle_down),
+                                  iconSize: 27,
+                                  padding: EdgeInsets.all(0.0)),
+                              IconButton(
+                                  onPressed: () {
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) => AlertDialog(
+                                              shape: OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(15),
+                                                  borderSide: BorderSide(
+                                                      color: Colors.black,
+                                                      width: 2)),
+                                              title: Center(
+                                                  child: Text('상품정렬 기준 선택',
+                                                      style: TextStyle(
+                                                          fontSize: 15,
+                                                          fontWeight: FontWeight
+                                                              .bold))),
+                                              content: StatefulBuilder(
+                                                builder: (context, setState) {
+                                                  return Column(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    children: List.generate(3,
+                                                        (index) {
+                                                      return RadioListTile<int>(
+                                                        title: Center(
+                                                            child: Text(
+                                                                _sortTitleList[
+                                                                    index])),
+                                                        value: index,
+                                                        groupValue:
+                                                            _selectRadio,
+                                                        onChanged: (value) {
+                                                          setState(() {
+                                                            _selectRadio =
+                                                                value;
+                                                          });
+                                                          _sortProductByIndex(
+                                                              _selectRadio,
+                                                              size);
+                                                        },
+                                                      );
+                                                    }),
+                                                  );
+                                                },
+                                              ),
+                                            ));
+                                  },
+                                  icon: Icon(Icons.sort),
+                                  padding: EdgeInsets.all(0),
+                                  iconSize: 27),
+                              SizedBox(width: size.width * 0.02)
+                            ],
                           ),
-                          IconButton(
-                            onPressed: () {
-                              showDialog(
-                                  context: context,
-                                  builder: (context) => AlertDialog(
-                                        shape: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(15),
-                                            borderSide: BorderSide(
-                                                color: Colors.black, width: 2)),
-                                        title: Center(
-                                          child: Text(
-                                            '상품정렬 기준 선택',
-                                            style: TextStyle(
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ),
-                                        content: StatefulBuilder(
-                                          builder: (context, setState) {
-                                            return Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children:
-                                                  List.generate(3, (index) {
-                                                return RadioListTile<int>(
-                                                  title: Center(
-                                                      child: Text(
-                                                          _sortTitleList[
-                                                              index])),
-                                                  value: index,
-                                                  groupValue: _selectRadio,
-                                                  onChanged: (value) {
-                                                    setState(() {
-                                                      _selectRadio = value;
-                                                    });
-                                                    _sortProductByIndex(
-                                                        _selectRadio, size);
-                                                  },
-                                                );
-                                              }),
-                                            );
-                                          },
-                                        ),
-                                      ));
-                            },
-                            icon: Icon(Icons.sort),
-                            padding: EdgeInsets.all(0),
-                            iconSize: 27,
+                          Expanded(
+                            child: Container(
+                              child: GridView.builder(
+                                  itemCount: _newProductLayoutList.length,
+                                  gridDelegate:
+                                      SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: 2,
+                                          mainAxisSpacing: size.height * 0.025,
+                                          crossAxisSpacing: size.width * 0.01),
+                                  itemBuilder: (context, index) {
+                                    return _newProductLayoutList[index];
+                                  }),
+                            ),
                           ),
-                          SizedBox(
-                            width: size.width * 0.02,
-                          )
+                          CorporationInfo(isOpenable: true)
                         ],
                       ),
-                      Expanded(
-                        child: Container(
-                          child: GridView.builder(
-                              itemCount: _newProductLayoutList.length,
-                              gridDelegate:
-                                  SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 2,
-                                      mainAxisSpacing: size.height * 0.025,
-                                      crossAxisSpacing: size.width * 0.01),
-                              itemBuilder: (context, index) {
-                                return _newProductLayoutList[index];
-                              }),
-                        ),
-                      ),
-                      CorporationInfo(isOpenable: true)
-                    ],
-                  ),
-                ),
-          /*------------ NEW TAB ---------------*/
-          EventPage(),
-          /*------------ EVENT TAB ---------------*/
-        ]),
-      ),
-    );
+                    ),
+              /*------------ NEW TAB ---------------*/
+              EventPage()
+              /*------------ EVENT TAB ---------------*/
+            ])));
   }
 
   Widget itemTile(String imgUrl, int price, String prodName, bool isWish,
       Product product, Size size) {
     return GestureDetector(
-      onTap: () async {
-        var res = await Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => DetailProductPage(
-                      user: widget.user,
-                      product: product,
-                    )));
-        if (res) {
-          await _getProducts();
-        }
-      },
-      onLongPress: () async {
-        // 상품 수정 및 삭제 기능 -> 어드민 권한으로 동작
-        if (widget.user!.isAdmin) {
-          // 메뉴에서 선택한 값(value)를 리턴함
-          var selected = await showMenu(
-            color: Colors.cyan[100],
-            shape: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: Colors.black26, width: 2)),
-            context: context,
-            position: RelativeRect.fromLTRB(120, 75, 165, 75),
-            items: [
-              PopupMenuItem(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Icon(Icons.delete),
-                    Text('삭제하기'),
-                  ],
-                ),
-                value: 'delete',
-              ),
-              PopupMenuItem(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Icon(Icons.update),
-                    Text('수정하기'),
-                  ],
-                ),
-                value: 'modify',
-              ),
-            ],
-          );
-          switch (selected) {
-            case 'delete':
-              showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                        shape: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide:
-                                BorderSide(color: Colors.black, width: 2)),
-                        title: Icon(
-                          Icons.warning_amber_outlined,
-                          color: Colors.red,
-                          size: 60,
-                        ),
-                        content: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              '※이 상품을 삭제하시겠습니까?',
-                              textAlign: TextAlign.center,
-                            ),
-                            Text(
-                              '[${product.prodName}]',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 17),
-                            )
-                          ],
-                        ),
-                        actions: [
-                          DefaultButtonComp(
-                              onPressed: () => Navigator.pop(context),
-                              child: Text('아니요')),
-                          DefaultButtonComp(
-                              onPressed: () {
-                                Navigator.pop(context);
-                                showDialog(
-                                    context: context,
-                                    builder: (ctx) => AlertDialog(
-                                          title: Text('관리자 키 Key 입력'),
-                                          content: Container(
-                                            decoration: BoxDecoration(
-                                                border: Border.all(
-                                                    width: 1,
-                                                    color: Colors.orange[200]!),
-                                                color: Colors.blue[100]),
-                                            child: TextField(
-                                              inputFormatters: [
-                                                UpperCaseTextFormatter()
-                                              ],
-                                              decoration: InputDecoration(
-                                                  border: InputBorder.none,
-                                                  hintText: 'Admin Key'),
-                                              controller: _adminKeyController,
-                                            ),
-                                          ),
-                                          actions: [
-                                            DefaultButtonComp(
-                                                onPressed: () =>
-                                                    Navigator.pop(ctx),
-                                                child: Text('취소')),
-                                            DefaultButtonComp(
-                                                onPressed: () async {
-                                                  var result = await AdminUtil
-                                                      .certifyAdminAccess(
-                                                          widget.user!.uid!,
-                                                          _adminKeyController
-                                                              .text); // 어드민 키 인증
-                                                  if (result) {
-                                                    var res =
-                                                        await _deleteProductRequest(
-                                                            product
-                                                                .prodID); // DB에서 상품 삭제
-                                                    if (res) {
-                                                      Navigator.pop(ctx);
-                                                      ToastMessage.show(
-                                                          '삭제가 완료되었습니다. 목록을 새로고침 바랍니다.');
-                                                      await _getProducts();
-                                                    } else {
-                                                      Navigator.pop(ctx);
-                                                      ToastMessage.show(
-                                                          '삭제에 실패했습니다.');
-                                                    }
-                                                  } else {
-                                                    ToastMessage.show(
-                                                        '인증에 실패했습니다.');
-                                                  }
-                                                },
-                                                child: Text('인증'))
-                                          ],
-                                        ));
-                              },
-                              child: Text('예'))
-                        ],
-                      ));
-              break;
-            case 'modify':
-              var res = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => UpdatingProductPage(
-                            product: product,
-                          )));
-              if (res) {
-                await _getProducts();
-              }
-              break;
+        onTap: () async {
+          var res = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => DetailProductPage(
+                        user: widget.user,
+                        product: product,
+                      )));
+          if (res) {
+            await _getProducts();
           }
-        }
-      },
-      child: Column(
-        children: [
-          Expanded(
-            //핵심 : Stack() 의 높이는 정해져있지 않기 때문에 Expanded() 로
-            child: Stack(
-              children: [
-                ClipRRect(
-                  child: CachedNetworkImage(
-                    // 가로 : 세로 비율 어떻게?
-                    // 현재 1:1
-                    width: size.width * 0.4,
-                    height: size.width * 0.4 * 1.4,
-                    imageUrl: imgUrl,
-                    fit: BoxFit.cover,
-                    progressIndicatorBuilder: (context, url, progress) =>
-                        Center(
-                      child: CircularProgressIndicator(
-                        value: progress.progress,
-                      ),
-                    ),
-                    errorWidget: (context, url, error) {
-                      return Container(
-                          alignment: Alignment.center,
-                          color: Colors.grey[300],
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.camera_alt,
-                                size: 40,
-                                color: Colors.grey,
-                              ),
-                              Text(
-                                '이미지 준비 중입니다.',
-                                style: TextStyle(
-                                    fontSize: 12, fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ));
-                      //placeholder 추가하기 -> 로고로
-                    },
-                  ),
-                  borderRadius: BorderRadius.circular(15),
+        },
+        onLongPress: () async {
+          // 상품 수정 및 삭제 기능 -> 어드민 권한으로 동작
+          if (widget.user!.isAdmin) {
+            // 메뉴에서 선택한 값(value)를 리턴함
+            var selected = await showMenu(
+              color: Colors.cyan[100],
+              shape: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(color: Colors.black26, width: 2)),
+              context: context,
+              position: RelativeRect.fromLTRB(120, 75, 165, 75),
+              items: [
+                PopupMenuItem(
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [Icon(Icons.delete), Text('삭제하기')]),
+                  value: 'delete',
+                ),
+                PopupMenuItem(
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [Icon(Icons.update), Text('수정하기')]),
+                  value: 'modify',
                 ),
               ],
-            ),
-          ),
-          SizedBox(
-            height: size.height * 0.005,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                '${NumberFormatter.formatPrice(price)}원',
+            );
+            switch (selected) {
+              case 'delete':
+                showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                          shape: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide:
+                                  BorderSide(color: Colors.black, width: 2)),
+                          title: Icon(Icons.warning_amber_outlined,
+                              color: Colors.red, size: 60),
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text('※이 상품을 삭제하시겠습니까?',
+                                  textAlign: TextAlign.center),
+                              Text(
+                                '[${product.prodName}]',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 17),
+                              )
+                            ],
+                          ),
+                          actions: [
+                            DefaultButtonComp(
+                                onPressed: () => Navigator.pop(context),
+                                child: Text('아니요')),
+                            DefaultButtonComp(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  showDialog(
+                                      context: context,
+                                      builder: (ctx) => AlertDialog(
+                                            title: Text('관리자 키 Key 입력'),
+                                            content: Container(
+                                                decoration: BoxDecoration(
+                                                    border: Border.all(
+                                                        width: 1,
+                                                        color: Colors
+                                                            .orange[200]!),
+                                                    color: Colors.blue[100]),
+                                                child: TextField(
+                                                    inputFormatters: [
+                                                      UpperCaseTextFormatter()
+                                                    ],
+                                                    decoration: InputDecoration(
+                                                        border:
+                                                            InputBorder.none,
+                                                        hintText: 'Admin Key'),
+                                                    controller:
+                                                        _adminKeyController)),
+                                            actions: [
+                                              DefaultButtonComp(
+                                                  onPressed: () =>
+                                                      Navigator.pop(ctx),
+                                                  child: Text('취소')),
+                                              DefaultButtonComp(
+                                                  onPressed: () async {
+                                                    var result = await AdminUtil
+                                                        .certifyAdminAccess(
+                                                            widget.user!.uid!,
+                                                            _adminKeyController
+                                                                .text); // 어드민 키 인증
+                                                    if (result) {
+                                                      var res =
+                                                          await _deleteProductRequest(
+                                                              product
+                                                                  .prodID); // DB에서 상품 삭제
+                                                      if (res) {
+                                                        Navigator.pop(ctx);
+                                                        ToastMessage.show(
+                                                            '삭제가 완료되었습니다. 목록을 새로고침 바랍니다.');
+                                                        await _getProducts();
+                                                      } else {
+                                                        Navigator.pop(ctx);
+                                                        ToastMessage.show(
+                                                            '삭제에 실패했습니다.');
+                                                      }
+                                                    } else {
+                                                      ToastMessage.show(
+                                                          '인증에 실패했습니다.');
+                                                    }
+                                                  },
+                                                  child: Text('인증'))
+                                            ],
+                                          ));
+                                },
+                                child: Text('예'))
+                          ],
+                        ));
+                break;
+              case 'modify':
+                var res = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => UpdatingProductPage(
+                              product: product,
+                            )));
+                if (res) {
+                  await _getProducts();
+                }
+                break;
+            }
+          }
+        },
+        child: Column(children: [
+          Expanded(
+              //핵심 : Stack() 의 높이는 정해져있지 않기 때문에 Expanded() 로
+              child: Stack(children: [
+            ClipRRect(
+                child: CachedNetworkImage(
+                  // 가로 : 세로 비율 어떻게?
+                  // 현재 1:1
+                  width: size.width * 0.4,
+                  height: size.width * 0.4 * 1.4,
+                  imageUrl: imgUrl,
+                  fit: BoxFit.cover,
+                  progressIndicatorBuilder: (context, url, progress) => Center(
+                      child:
+                          CircularProgressIndicator(value: progress.progress)),
+                  errorWidget: (context, url, error) {
+                    return Container(
+                        alignment: Alignment.center,
+                        color: Colors.grey[300],
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.camera_alt,
+                                size: 40, color: Colors.grey),
+                            Text('이미지 준비 중입니다.',
+                                style: TextStyle(
+                                    fontSize: 12, fontWeight: FontWeight.bold)),
+                          ],
+                        ));
+                  },
+                ),
+                borderRadius: BorderRadius.circular(15))
+          ])),
+          SizedBox(height: size.height * 0.005),
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Text('${NumberFormatter.formatPrice(price)}원',
                 style: TextStyle(
                     color: product.discount.toString() != '0.0'
                         ? Colors.red
@@ -1591,53 +1538,41 @@ class _StoreHomePageState extends State<StoreHomePage>
                         ? TextDecoration.none
                         : TextDecoration.lineThrough,
                     fontSize: 12.5),
-                textAlign: TextAlign.start,
-              ),
-              product.discount.toString() != '0.0'
-                  ? Text(
-                      '  ${NumberFormatter.formatPrice((product.price * (1 - (product.discount / 100.0))).round())}원',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 12.5),
-                    )
-                  : Text('')
-            ],
-          ),
-          SizedBox(
-            height: size.height * 0.004,
-          ),
+                textAlign: TextAlign.start),
+            product.discount.toString() != '0.0'
+                ? Text(
+                    '  ${NumberFormatter.formatPrice((product.price * (1 - (product.discount / 100.0))).round())}원',
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 12.5))
+                : Text('')
+          ]),
+          SizedBox(height: size.height * 0.004),
           Text(prodName,
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12.5),
               textAlign: TextAlign.center)
-        ],
-      ),
-    );
+        ]));
   }
 
   Widget managerAddingProductLayout(Size size) {
     return GestureDetector(
-      onTap: () async {
-        var res = await Navigator.push(context,
-            MaterialPageRoute(builder: (context) => AddingProductPage()));
-        if (res) {
-          await _getProducts();
-        }
-      },
-      child: Container(
-        alignment: Alignment.center,
-        padding: EdgeInsets.all(size.width * 0.018),
-        width: size.width * 0.98,
-        margin: EdgeInsets.all(size.width * 0.015),
-        decoration: BoxDecoration(
-          border: Border.all(width: 1, color: Colors.black26),
-          borderRadius: BorderRadius.circular(10),
-          color: Colors.grey[100],
-        ),
-        child: Text(
-          '상품 추가하기 [관리자 모드]',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-        ),
-      ),
-    );
+        onTap: () async {
+          var res = await Navigator.push(context,
+              MaterialPageRoute(builder: (context) => AddingProductPage()));
+          if (res) {
+            await _getProducts();
+          }
+        },
+        child: Container(
+            alignment: Alignment.center,
+            padding: EdgeInsets.all(size.width * 0.018),
+            width: size.width * 0.98,
+            margin: EdgeInsets.all(size.width * 0.015),
+            decoration: BoxDecoration(
+                border: Border.all(width: 1, color: Colors.black26),
+                borderRadius: BorderRadius.circular(10),
+                color: Colors.grey[100]),
+            child: Text('상품 추가하기 [관리자 모드]',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13))));
   }
 
   Widget addProductForAdmin(Size size) {
@@ -1667,59 +1602,47 @@ class _StoreHomePageState extends State<StoreHomePage>
 
   Widget aboveTap(Size size) {
     return Container(
-      margin: EdgeInsets.all(size.width * 0.01),
-      width: size.width * 0.7,
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10), color: Color(0xFF9EE1E5)),
-      child: TextField(
-        style: TextStyle(fontSize: 13),
-        onSubmitted: (text) {
-          if (text.isNotEmpty) {
-            _searchProducts(text, size);
-          }
-        },
-        decoration: InputDecoration(
-          hintText: '상품 검색',
-          hintStyle: TextStyle(fontSize: 13),
-          border: InputBorder.none,
-          prefixIcon: Icon(
-            Icons.search,
-            color: Colors.black,
-            size: 20,
-          ),
-        ),
-        controller: _searchController,
-      ),
-    );
+        margin: EdgeInsets.all(size.width * 0.01),
+        width: size.width * 0.7,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10), color: Color(0xFF9EE1E5)),
+        child: TextField(
+            style: TextStyle(fontSize: 13),
+            onSubmitted: (text) {
+              if (text.isNotEmpty) {
+                _searchProducts(text, size);
+              }
+            },
+            decoration: InputDecoration(
+              hintText: '상품 검색',
+              hintStyle: TextStyle(fontSize: 13),
+              border: InputBorder.none,
+              prefixIcon: Icon(Icons.search, color: Colors.black, size: 20),
+            ),
+            controller: _searchController));
   }
 
   Widget _removeSearchResultWidget(Size size) {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 8),
-      width: size.width * 0.5,
-      height: size.height * 0.05,
-      decoration: BoxDecoration(
-          color: Color(0xFF9EE1E5).withOpacity(0.7),
-          borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: Color(0xFF9EE1E5), width: 2)),
-      child: DefaultButtonComp(
-        onPressed: () {
-          setState(() {
-            _isSearch = false;
-            _searchController.text = '';
-          });
-        },
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Icon(
-              Icons.remove_circle,
-              color: Colors.red,
-            ),
-            Text('검색 결과창 지우기')
-          ],
-        ),
-      ),
-    );
+        margin: EdgeInsets.symmetric(vertical: 8),
+        width: size.width * 0.5,
+        height: size.height * 0.05,
+        decoration: BoxDecoration(
+            color: Color(0xFF9EE1E5).withOpacity(0.7),
+            borderRadius: BorderRadius.circular(15),
+            border: Border.all(color: Color(0xFF9EE1E5), width: 2)),
+        child: DefaultButtonComp(
+            onPressed: () {
+              setState(() {
+                _isSearch = false;
+                _searchController.text = '';
+              });
+            },
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Icon(Icons.remove_circle, color: Colors.red),
+                  Text('검색 결과창 지우기')
+                ])));
   }
 }

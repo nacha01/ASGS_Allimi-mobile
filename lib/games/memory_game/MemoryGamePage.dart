@@ -250,22 +250,19 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
         builder: (ctx) => AlertDialog(
               contentPadding: EdgeInsets.all(8),
               actionsPadding: EdgeInsets.all(5),
-              title: Text(
-                'Game Over!',
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.red,
-                    fontSize: 22),
-                textAlign: TextAlign.center,
-              ),
+              title: Text('Game Over!',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.red,
+                      fontSize: 22),
+                  textAlign: TextAlign.center),
               content: Text(
-                '${_isRenew ? '최고 기록 달성! ' : ''}최종 점수 : $_currentPoint점',
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                    color: Colors.purpleAccent),
-                textAlign: TextAlign.center,
-              ),
+                  '${_isRenew ? '최고 기록 달성! ' : ''}최종 점수 : $_currentPoint점',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      color: Colors.purpleAccent),
+                  textAlign: TextAlign.center),
               actions: [
                 DefaultButtonComp(
                     onPressed: () {
@@ -275,11 +272,10 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
                       });
                       Navigator.pop(ctx);
                     },
-                    child: Text(
-                      '다시하기',
-                      style: TextStyle(
-                          color: Colors.lightBlue, fontWeight: FontWeight.bold),
-                    )),
+                    child: Text('다시하기',
+                        style: TextStyle(
+                            color: Colors.lightBlue,
+                            fontWeight: FontWeight.bold))),
                 DefaultButtonComp(
                     onPressed: () {
                       Navigator.pop(ctx);
@@ -288,7 +284,7 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
                     child: Text('나가기',
                         style: TextStyle(
                             color: Colors.lightBlue,
-                            fontWeight: FontWeight.bold))),
+                            fontWeight: FontWeight.bold)))
               ],
             ));
   }
@@ -298,36 +294,32 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
   Widget _getTriangleObject(
       {required double size, required Color color, Key? posKey}) {
     return Align(
-      key: posKey,
-      alignment: _getRandomLocation(),
-      child: GestureDetector(
-        onTap: () {
-          if (_shapeList.length == 1) {
-            _startTimer();
-          }
-          if (posKey == _shapeList[_shapeList.length - 1].key) {
-            setState(() {
-              _addShape();
-              _currentPoint++;
-            });
-          } else {
-            setState(() {
-              _lifeOpacityList[_currentOpacityIndex--] = 0.0;
-            });
-            if (_currentOpacityIndex == -1) {
-              setState(() {
-                _timer!.cancel();
-              });
-              _showGameOverDialog();
-            }
-          }
-        },
-        child: CustomPaint(
-          size: Size(size, size),
-          painter: TriangleShape(color),
-        ),
-      ),
-    );
+        key: posKey,
+        alignment: _getRandomLocation(),
+        child: GestureDetector(
+            onTap: () {
+              if (_shapeList.length == 1) {
+                _startTimer();
+              }
+              if (posKey == _shapeList[_shapeList.length - 1].key) {
+                setState(() {
+                  _addShape();
+                  _currentPoint++;
+                });
+              } else {
+                setState(() {
+                  _lifeOpacityList[_currentOpacityIndex--] = 0.0;
+                });
+                if (_currentOpacityIndex == -1) {
+                  setState(() {
+                    _timer!.cancel();
+                  });
+                  _showGameOverDialog();
+                }
+              }
+            },
+            child: CustomPaint(
+                size: Size(size, size), painter: TriangleShape(color))));
   }
 
   /// 화면에 배치될 랜덤한 색과 랜덤한 위치와 랜덤한 크기를 갖는 원 오브젝트를 반환하는 함수
@@ -335,36 +327,33 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
   Widget _getCircleObject(
       {required double size, required Color color, Key? posKey}) {
     return Align(
-      key: posKey,
-      alignment: _getRandomLocation(),
-      child: GestureDetector(
-        onTap: () {
-          if (_shapeList.length == 1) {
-            _startTimer();
-          }
-          if (posKey == _shapeList[_shapeList.length - 1].key) {
-            setState(() {
-              _addShape();
-              _currentPoint++;
-            });
-          } else {
-            setState(() {
-              _lifeOpacityList[_currentOpacityIndex--] = 0.0;
-            });
-            if (_currentOpacityIndex == -1) {
-              setState(() {
-                _timer!.cancel();
-              });
-              _showGameOverDialog();
-            }
-          }
-        },
-        child: CustomPaint(
-          size: Size(size * 2, size * 2),
-          painter: CircleShape(color, size),
-        ),
-      ),
-    );
+        key: posKey,
+        alignment: _getRandomLocation(),
+        child: GestureDetector(
+            onTap: () {
+              if (_shapeList.length == 1) {
+                _startTimer();
+              }
+              if (posKey == _shapeList[_shapeList.length - 1].key) {
+                setState(() {
+                  _addShape();
+                  _currentPoint++;
+                });
+              } else {
+                setState(() {
+                  _lifeOpacityList[_currentOpacityIndex--] = 0.0;
+                });
+                if (_currentOpacityIndex == -1) {
+                  setState(() {
+                    _timer!.cancel();
+                  });
+                  _showGameOverDialog();
+                }
+              }
+            },
+            child: CustomPaint(
+                size: Size(size * 2, size * 2),
+                painter: CircleShape(color, size))));
   }
 
   /// 화면에 배치될 랜덤한 색과 랜덤한 위치와 랜덤한 크기를 갖는 사각형 오브젝트를 반환하는 함수
@@ -372,45 +361,40 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
   Widget _getRectangleObject(
       {required double size, required Color color, Key? posKey}) {
     return Align(
-      key: posKey,
-      alignment: _getRandomLocation(),
-      child: GestureDetector(
-        onTap: () {
-          if (_shapeList.length == 1) {
-            _startTimer();
-          }
-          if (posKey == _shapeList[_shapeList.length - 1].key) {
-            setState(() {
-              _addShape();
-              _currentPoint++;
-            });
-          } else {
-            setState(() {
-              _lifeOpacityList[_currentOpacityIndex--] = 0.0;
-            });
-            if (_currentOpacityIndex == -1) {
-              setState(() {
-                _timer!.cancel();
-              });
-              _showGameOverDialog();
-            }
-          }
-        },
-        child: CustomPaint(
-          painter: RectangleShape(color, size),
-          size: Size(size, size),
-        ),
-      ),
-    );
+        key: posKey,
+        alignment: _getRandomLocation(),
+        child: GestureDetector(
+            onTap: () {
+              if (_shapeList.length == 1) {
+                _startTimer();
+              }
+              if (posKey == _shapeList[_shapeList.length - 1].key) {
+                setState(() {
+                  _addShape();
+                  _currentPoint++;
+                });
+              } else {
+                setState(() {
+                  _lifeOpacityList[_currentOpacityIndex--] = 0.0;
+                });
+                if (_currentOpacityIndex == -1) {
+                  setState(() {
+                    _timer!.cancel();
+                  });
+                  _showGameOverDialog();
+                }
+              }
+            },
+            child: CustomPaint(
+                painter: RectangleShape(color, size), size: Size(size, size))));
   }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: ThemeAppBar(barTitle: 'Memory Game'),
-      body: Column(
-        children: [
+        appBar: ThemeAppBar(barTitle: 'Memory Game'),
+        body: Column(children: [
           Container(
             width: size.width,
             height: size.height * 0.08,
@@ -418,74 +402,47 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  width: size.width * 0.4,
-                  height: size.height * 0.1 * 0.7,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(3),
-                    border: Border.all(width: 1, color: Colors.black),
-                  ),
-                  child: Row(
-                    children: [
+                    width: size.width * 0.4,
+                    height: size.height * 0.1 * 0.7,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(3),
+                        border: Border.all(width: 1, color: Colors.black)),
+                    child: Row(children: [
+                      Container(child: Icon(Icons.face_rounded)),
                       Container(
-                        child: Icon(Icons.face_rounded),
-                      ),
-                      Container(
-                        height: size.height * 0.1 * 0.7,
-                        width: size.width * 0.4 * 0.01,
-                        color: Colors.black,
-                      ),
-                      SizedBox(
-                        width: size.width * 0.03,
-                      ),
+                          height: size.height * 0.1 * 0.7,
+                          width: size.width * 0.4 * 0.01,
+                          color: Colors.black),
+                      SizedBox(width: size.width * 0.03),
                       Opacity(
                         opacity: _lifeOpacityList[0],
-                        child: Icon(
-                          Icons.favorite,
-                          color: Colors.pinkAccent,
-                          size: size.width * 0.08,
-                        ),
+                        child: Icon(Icons.favorite,
+                            color: Colors.pinkAccent, size: size.width * 0.08),
                       ),
                       Opacity(
                         opacity: _lifeOpacityList[1],
-                        child: Icon(
-                          Icons.favorite,
-                          color: Colors.pinkAccent,
-                          size: size.width * 0.08,
-                        ),
+                        child: Icon(Icons.favorite,
+                            color: Colors.pinkAccent, size: size.width * 0.08),
                       ),
                       Opacity(
-                        opacity: _lifeOpacityList[2],
-                        child: Icon(
-                          Icons.favorite,
-                          color: Colors.pinkAccent,
-                          size: size.width * 0.08,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  width: size.width * 0.05,
-                ),
+                          opacity: _lifeOpacityList[2],
+                          child: Icon(Icons.favorite,
+                              color: Colors.pinkAccent,
+                              size: size.width * 0.08))
+                    ])),
+                SizedBox(width: size.width * 0.05),
                 Container(
-                  width: size.width * 0.24,
-                  height: size.height * 0.1 * 0.7,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(3),
-                      border: Border.all(width: 1, color: Colors.black)),
-                  child: Row(
-                    children: [
+                    width: size.width * 0.24,
+                    height: size.height * 0.1 * 0.7,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(3),
+                        border: Border.all(width: 1, color: Colors.black)),
+                    child: Row(children: [
+                      Container(child: Icon(Icons.star, color: Colors.yellow)),
                       Container(
-                        child: Icon(
-                          Icons.star,
-                          color: Colors.yellow,
-                        ),
-                      ),
-                      Container(
-                        height: size.height * 0.1 * 0.7,
-                        width: size.width * 0.24 * 0.01,
-                        color: Colors.black,
-                      ),
+                          height: size.height * 0.1 * 0.7,
+                          width: size.width * 0.24 * 0.01,
+                          color: Colors.black),
                       Expanded(
                           child: Center(
                               child: Text(
@@ -493,12 +450,8 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
                         style: TextStyle(
                             fontSize: 19, fontWeight: FontWeight.bold),
                       )))
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  width: size.width * 0.05,
-                ),
+                    ])),
+                SizedBox(width: size.width * 0.05),
                 Container(
                   width: size.width * 0.22,
                   height: size.height * 0.1 * 0.7,
@@ -507,17 +460,11 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
                       border: Border.all(width: 1, color: Colors.black)),
                   child: Row(
                     children: [
+                      Container(child: Icon(Icons.timer, color: Colors.red)),
                       Container(
-                        child: Icon(
-                          Icons.timer,
-                          color: Colors.red,
-                        ),
-                      ),
-                      Container(
-                        height: size.height * 0.1 * 0.7,
-                        width: size.width * 0.22 * 0.01,
-                        color: Colors.black,
-                      ),
+                          height: size.height * 0.1 * 0.7,
+                          width: size.width * 0.22 * 0.01,
+                          color: Colors.black),
                       Expanded(
                           child: Center(
                         child: Text('$_start',
@@ -530,19 +477,13 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
               ],
             ),
           ),
-          Divider(
-            thickness: 2,
-          ),
+          Divider(thickness: 2),
           Expanded(
-            child: Container(
-              color: Colors.black,
-              width: size.width,
-              padding: EdgeInsets.all(size.width * 0.02),
-              child: Stack(children: _shapeList),
-            ),
-          ),
-        ],
-      ),
-    );
+              child: Container(
+                  color: Colors.black,
+                  width: size.width,
+                  padding: EdgeInsets.all(size.width * 0.02),
+                  child: Stack(children: _shapeList)))
+        ]));
   }
 }

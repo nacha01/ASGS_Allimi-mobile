@@ -82,96 +82,90 @@ class _RecordListPageState extends State<RecordListPage> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: ThemeAppBar(
-        barTitle: '$_appBarTitle',
-      ),
+      appBar: ThemeAppBar(barTitle: '$_appBarTitle'),
       body: Padding(
         padding: EdgeInsets.all(size.width * 0.15),
         child: ListView.builder(
             itemCount: _rankList.length,
             itemBuilder: (context, index) => Card(
                   child: ListTile(
-                    leading: Text(
-                      '${index + 1}',
-                      style: TextStyle(
-                          color: _getTop3TextColor(index),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18),
-                    ),
-                    title: Center(
-                        child: GestureDetector(
-                      onTap: widget.user!.isAdmin
-                          ? () {
-                              showDialog(
-                                  context: context,
-                                  builder: (context) => AlertDialog(
-                                        title: Text('예약자 정보'),
-                                        content: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              '아이디 : ${_rankList[index]['uid']}',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                            Text(
-                                                '이름 : ${_rankList[index]['name']}',
+                      leading: Text('${index + 1}',
+                          style: TextStyle(
+                              color: _getTop3TextColor(index),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18)),
+                      title: Center(
+                          child: GestureDetector(
+                        onTap: widget.user!.isAdmin
+                            ? () {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                          title: Text('예약자 정보'),
+                                          content: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                '아이디 : ${_rankList[index]['uid']}',
                                                 style: TextStyle(
                                                     fontWeight:
-                                                        FontWeight.bold)),
-                                            Text(
-                                                '신분 : ${Status.statusList[int.parse(_rankList[index]['identity']) - 1]}',
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold)),
-                                            Text(
-                                                '학번 : ${_rankList[index]['student_id'] == null || _rankList[index]['student_id'] == '' ? 'X' : _rankList[index]['student_id']}',
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold)),
-                                            Text(
-                                                '닉네임 : ${_rankList[index]['nickname']}',
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold))
+                                                        FontWeight.bold),
+                                              ),
+                                              Text(
+                                                  '이름 : ${_rankList[index]['name']}',
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold)),
+                                              Text(
+                                                  '신분 : ${Status.statusList[int.parse(_rankList[index]['identity']) - 1]}',
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold)),
+                                              Text(
+                                                  '학번 : ${_rankList[index]['student_id'] == null || _rankList[index]['student_id'] == '' ? 'X' : _rankList[index]['student_id']}',
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold)),
+                                              Text(
+                                                  '닉네임 : ${_rankList[index]['nickname']}',
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold))
+                                            ],
+                                          ),
+                                          actions: [
+                                            DefaultButtonComp(
+                                              onPressed: () =>
+                                                  Navigator.pop(context),
+                                              child: Text('확인',
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color:
+                                                          Colors.blueAccent)),
+                                            )
                                           ],
-                                        ),
-                                        actions: [
-                                          DefaultButtonComp(
-                                            onPressed: () =>
-                                                Navigator.pop(context),
-                                            child: Text('확인',
-                                                style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Colors.blueAccent)),
-                                          )
-                                        ],
-                                      ));
-                            }
-                          : null,
-                      child: Text(
-                        '${_rankList[index]['nickname']}',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontStyle: FontStyle.italic,
-                            decoration: widget.user!.isAdmin
-                                ? TextDecoration.underline
-                                : TextDecoration.none),
-                      ),
-                    )),
-                    trailing: Text(
-                      '${_rankList[index]['record']}점',
-                      style: TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.red),
-                    ),
-                    tileColor: (index == _findMyIndexInRankList())
-                        ? Colors.orange[200]
-                        : null,
-                  ),
+                                        ));
+                              }
+                            : null,
+                        child: Text('${_rankList[index]['nickname']}',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontStyle: FontStyle.italic,
+                                decoration: widget.user!.isAdmin
+                                    ? TextDecoration.underline
+                                    : TextDecoration.none)),
+                      )),
+                      trailing: Text('${_rankList[index]['record']}점',
+                          style: TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.red)),
+                      tileColor: (index == _findMyIndexInRankList())
+                          ? Colors.orange[200]
+                          : null),
                 )),
       ),
     );

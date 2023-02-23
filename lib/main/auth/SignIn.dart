@@ -63,14 +63,12 @@ class _SignInPageState extends State<SignInPage> {
           builder: (context) => WillPopScope(
                 onWillPop: () async => false,
                 child: AlertDialog(
-                  content: Text(
-                    '최신버전의 앱으로 업데이트 바랍니다.',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                  ),
+                  content: Text('최신버전의 앱으로 업데이트 바랍니다.',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
                   actions: [
                     DefaultButtonComp(
                         onPressed: () {
-                          //exit(0);
                           Navigator.pop(context);
                         },
                         child: Text('확인'))
@@ -107,17 +105,14 @@ class _SignInPageState extends State<SignInPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    '로그인 중입니다.',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 15,
-                      decoration: TextDecoration.none,
-                      fontWeight: FontWeight.normal,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  CircularProgressIndicator(),
+                  Text('로그인 중입니다.',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                          decoration: TextDecoration.none,
+                          fontWeight: FontWeight.normal),
+                      textAlign: TextAlign.center),
+                  CircularProgressIndicator()
                 ],
               ),
             );
@@ -130,17 +125,12 @@ class _SignInPageState extends State<SignInPage> {
         showDialog(
             context: context,
             builder: (context) => AlertDialog(
-                  title: Text(
-                    '로그인 실패',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                  content: Text(
-                    '입력한 정보가 맞지 않습니다!',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                  ),
+                  title: Text('로그인 실패',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  content: Text('입력한 정보가 맞지 않습니다!',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
                   actions: [
                     DefaultButtonComp(
                       onPressed: () => Navigator.pop(context),
@@ -156,35 +146,28 @@ class _SignInPageState extends State<SignInPage> {
               barrierDismissible: false,
               context: context,
               builder: (context) => AlertDialog(
-                    title: Text(
-                      '이메일 필수 입력 안내',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                    ),
+                    title: Text('이메일 필수 입력 안내',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16)),
                     content: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          '※ 버전 업데이트로 인해 본인인증 수단으로 기존에 가입했던 사용자분들의 이메일 정보를 저장하기 위해 이메일을 필수로 입력바랍니다.',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 13),
-                        ),
-                        SizedBox(
-                          height: 25,
-                        ),
+                            '※ 버전 업데이트로 인해 본인인증 수단으로 기존에 가입했던 사용자분들의 이메일 정보를 저장하기 위해 이메일을 필수로 입력바랍니다.',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 13)),
+                        SizedBox(height: 25),
                         Container(
                           decoration: BoxDecoration(
                               border:
                                   Border.all(width: 0.5, color: Colors.black),
                               color: Colors.grey[200]),
                           child: TextField(
-                            controller: _updateEmailController,
-                            decoration: InputDecoration(
-                              hintText: '이메일을 입력해주세요.',
-                              hintStyle: TextStyle(color: Colors.grey),
-                            ),
-                            keyboardType: TextInputType.emailAddress,
-                          ),
+                              controller: _updateEmailController,
+                              decoration: InputDecoration(
+                                  hintText: '이메일을 입력해주세요.',
+                                  hintStyle: TextStyle(color: Colors.grey)),
+                              keyboardType: TextInputType.emailAddress),
                         )
                       ],
                     ),
@@ -249,87 +232,77 @@ class _SignInPageState extends State<SignInPage> {
     final size = MediaQuery.of(context).size;
     return Scaffold(
         body: SafeArea(
-      child: NotificationListener<OverscrollIndicatorNotification>(
-        onNotification: (overscroll) {
-          overscroll.disallowIndicator();
-          return true;
-        },
-        child: Column(
-          children: [
-            Row(
-              children: [
-                DefaultButtonComp(
-                  padding: 0,
-                  child: Container(
-                    padding: EdgeInsets.all(size.width * 0.01),
-                    child: Text(
-                      '로그인 하기\nLogin',
-                      textAlign: TextAlign.center,
-                      style: _tabButtonStyle(1),
+            child: NotificationListener<OverscrollIndicatorNotification>(
+                onNotification: (overscroll) {
+                  overscroll.disallowIndicator();
+                  return true;
+                },
+                child: Column(children: [
+                  Row(children: [
+                    DefaultButtonComp(
+                      padding: 0,
+                      child: Container(
+                          padding: EdgeInsets.all(size.width * 0.01),
+                          child: Text('로그인 하기\nLogin',
+                              textAlign: TextAlign.center,
+                              style: _tabButtonStyle(1)),
+                          width: size.width * 0.3,
+                          height: size.height * 0.09,
+                          alignment: Alignment.center,
+                          color: _tabState == 1
+                              ? Color(0xFFF9F7F8)
+                              : Color(0xFFDAE2EF)),
+                      onPressed: () {
+                        setState(() {
+                          _tabState = 1;
+                        });
+                      },
                     ),
-                    width: size.width * 0.3,
-                    height: size.height * 0.09,
-                    alignment: Alignment.center,
-                    color:
-                        _tabState == 1 ? Color(0xFFF9F7F8) : Color(0xFFDAE2EF),
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _tabState = 1;
-                    });
-                  },
-                ),
-                DefaultButtonComp(
-                  padding: 0,
-                  child: Container(
-                    padding: EdgeInsets.all(size.width * 0.01),
-                    child: Text('회원가입 하기\nJoin Membership',
-                        textAlign: TextAlign.center, style: _tabButtonStyle(2)),
-                    width: size.width * 0.4,
-                    height: size.height * 0.09,
-                    alignment: Alignment.center,
-                    color:
-                        _tabState == 2 ? Color(0xFFF9F7F8) : Color(0xFFDAE2EF),
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _tabState = 2;
-                    });
-                  },
-                ),
-                Expanded(
-                  child: DefaultButtonComp(
-                    padding: 0,
-                    child: Container(
-                      padding: EdgeInsets.all(size.width * 0.01),
-                      child: Text('ID/PW 찾기\nFind ID/PW',
-                          textAlign: TextAlign.center,
-                          style: _tabButtonStyle(3)),
-                      height: size.height * 0.09,
-                      alignment: Alignment.center,
-                      color: _tabState == 3
-                          ? Color(0xFFF9F7F8)
-                          : Color(0xFF4072A7),
+                    DefaultButtonComp(
+                      padding: 0,
+                      child: Container(
+                          padding: EdgeInsets.all(size.width * 0.01),
+                          child: Text('회원가입 하기\nJoin Membership',
+                              textAlign: TextAlign.center,
+                              style: _tabButtonStyle(2)),
+                          width: size.width * 0.4,
+                          height: size.height * 0.09,
+                          alignment: Alignment.center,
+                          color: _tabState == 2
+                              ? Color(0xFFF9F7F8)
+                              : Color(0xFFDAE2EF)),
+                      onPressed: () {
+                        setState(() {
+                          _tabState = 2;
+                        });
+                      },
                     ),
-                    onPressed: () {
-                      setState(() {
-                        _tabState = 3;
-                      });
-                    },
-                  ),
-                ),
-              ],
-            ),
-            Expanded(child: _switchTap(size))
-          ],
-        ),
-      ),
-    ));
+                    Expanded(
+                        child: DefaultButtonComp(
+                            padding: 0,
+                            child: Container(
+                                padding: EdgeInsets.all(size.width * 0.01),
+                                child: Text('ID/PW 찾기\nFind ID/PW',
+                                    textAlign: TextAlign.center,
+                                    style: _tabButtonStyle(3)),
+                                height: size.height * 0.09,
+                                alignment: Alignment.center,
+                                color: _tabState == 3
+                                    ? Color(0xFFF9F7F8)
+                                    : Color(0xFF4072A7)),
+                            onPressed: () {
+                              setState(() {
+                                _tabState = 3;
+                              });
+                            }))
+                  ]),
+                  Expanded(child: _switchTap(size))
+                ]))));
   }
 
   TextStyle _tabButtonStyle(int state) {
     return TextStyle(
-        fontWeight: FontWeight.bold, fontSize: _tabState == state ? 12 : 11);
+        fontWeight: FontWeight.bold, fontSize: _tabState == state ? 13 : 12);
   }
 
   Widget _switchTap(Size size) {

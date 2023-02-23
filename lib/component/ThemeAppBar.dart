@@ -23,23 +23,18 @@ class _ThemeAppBarState extends State<ThemeAppBar> {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: GlobalVariable.appThemeColor,
-      title: Text(
-        widget.barTitle,
-        style: TextStyle(
-            color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
-      ),
-      centerTitle: true,
-      leading: widget.allowLeading
-          ? IconButton(
-              onPressed: widget.leadingClick ?? () => Navigator.pop(context),
-              icon: Icon(
-                Icons.arrow_back,
+        backgroundColor: GlobalVariable.appThemeColor,
+        title: Text(widget.barTitle,
+            style: TextStyle(
                 color: Colors.black,
-              ),
-            )
-          : SizedBox(),
-      actions: widget.actions,
-    );
+                fontWeight: FontWeight.bold,
+                fontSize: 15)),
+        centerTitle: true,
+        leading: widget.allowLeading
+            ? IconButton(
+                onPressed: widget.leadingClick ?? () => Navigator.pop(context),
+                icon: Icon(Icons.arrow_back, color: Colors.black))
+            : SizedBox(),
+        actions: widget.actions);
   }
 }

@@ -183,7 +183,6 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
             child: _controllerWaiting
                 ? SizedBox()
                 : Swiper(
-                    //이미지 오토 슬라이드
                     controller: _swiperController,
                     autoplay: true,
                     pagination:
@@ -194,57 +193,45 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         imageUrl: _prefixImgUrl + _bannerImgNameList[index]!,
                         fit: BoxFit.cover,
                         errorWidget: (context, url, error) {
-                          return Text(
-                            '이미지를 불러오는데 실패하였습니다.',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 12),
-                          );
+                          return Text('이미지를 불러오는데 실패하였습니다.',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 12));
                         },
                       );
                     },
                   ),
           ),
           Padding(
-            padding: EdgeInsets.only(left: 6, right: 6, top: 10, bottom: 6),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                ink(context, '공지사항', Icons.search,
-                    'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030100&searchMasterSid=3'),
-                ink(context, '학교 행사', Icons.text_fields,
-                    'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030200&searchMasterSid=4'),
-                ink(context, '학습 자료실', Icons.question_answer,
-                    'http://www.asgs.hs.kr/home/formError.do?code=NONE_LEVEL&menugrp=040300&gm=http%3A%2F%2Fgm7.goeia.go.kr&siteKey=QzlWVUd0ZVZHdFR1R3I3QXlpeHgzNDI1YVRkQk5sT09LbWhZSWlnbjA5bz0%3D'),
-                ink(context, '학교 앨범', Icons.book,
-                    'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030600&searchMasterSid=6'),
-              ],
-            ),
-          ),
+              padding: EdgeInsets.only(left: 6, right: 6, top: 10, bottom: 6),
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    ink(context, '공지사항', Icons.search,
+                        'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030100&searchMasterSid=3'),
+                    ink(context, '학교 행사', Icons.text_fields,
+                        'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030200&searchMasterSid=4'),
+                    ink(context, '학습 자료실', Icons.question_answer,
+                        'http://www.asgs.hs.kr/home/formError.do?code=NONE_LEVEL&menugrp=040300&gm=http%3A%2F%2Fgm7.goeia.go.kr&siteKey=QzlWVUd0ZVZHdFR1R3I3QXlpeHgzNDI1YVRkQk5sT09LbWhZSWlnbjA5bz0%3D'),
+                    ink(context, '학교 앨범', Icons.book,
+                        'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030600&searchMasterSid=6'),
+                  ])),
           Container(
               padding: EdgeInsets.only(top: 12),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.only(right: 10, left: 10),
-                    child: Text(
-                      '자주 보는 목록',
-                      style: TextStyle(
-                          fontSize: 15,
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 2),
-                    child: Container(
-                      color: Color(0xFF105AA1),
-                      height: 2.5,
-                    ),
-                  )
-                ],
-              )),
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Padding(
+                        padding: EdgeInsets.only(right: 10, left: 10),
+                        child: Text('자주 보는 목록',
+                            style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold))),
+                    Padding(
+                        padding: EdgeInsets.only(top: 2),
+                        child: Container(color: Color(0xFF105AA1), height: 2.5))
+                  ])),
           Container(
             child: Padding(
               padding:
@@ -314,15 +301,12 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
               return <Widget>[
                 SliverAppBar(
                   backgroundColor: Colors.white,
-                  // app bar color
                   flexibleSpace: FlexibleSpaceBar(
                     collapseMode: CollapseMode.pin,
                     centerTitle: true,
-                    background: Column(
-                      children: <Widget>[
-                        appBarAbove(),
-                      ],
-                    ),
+                    background: Column(children: <Widget>[
+                      appBarAbove(),
+                    ]),
                   ),
                   leading: Container(),
                   expandedHeight: 100,
@@ -344,7 +328,6 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     },
                     labelColor: Colors.black,
                     indicatorColor: Colors.blueAccent,
-                    // 현재 보고 있는 탭을 가리키는 지시자
                     indicatorWeight: 6.0,
                     tabs: <Tab>[
                       Tab(text: "Home"),
@@ -422,15 +405,11 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     padding: EdgeInsets.all(12),
                     child: Row(
                       children: <Widget>[
-                        Text(
-                          '안산강서 알리미',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 15),
-                        ),
+                        Text('안산강서 알리미',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 15)),
                         Spacer(),
-                        SizedBox(
-                          width: 15,
-                        ),
+                        SizedBox(width: 15),
                       ],
                     ),
                   ),
@@ -445,18 +424,14 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           image: DecorationImage(
-                            fit: BoxFit.fill,
-                            image:
-                                AssetImage('assets/images/asgs_mark_sqare.png'),
-                          )),
+                              fit: BoxFit.fill,
+                              image: AssetImage(
+                                  'assets/images/asgs_mark_sqare.png'))),
                     ),
                     title: Text(widget.user!.nickName!),
                     subtitle: Text(widget.user!.uid!),
                     trailing: IconButton(
-                      icon: Icon(
-                        Icons.power_settings_new,
-                        size: 30,
-                      ),
+                      icon: Icon(Icons.power_settings_new, size: 30),
                       onPressed: () async {
                         showDialog(
                             context: context,
@@ -495,13 +470,11 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             borderRadius: BorderRadius.circular(8),
                             border:
                                 Border.all(width: 1, color: Colors.black54)),
-                        child: Text(
-                          '내 정보 가기',
-                          style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold),
-                        ),
+                        child: Text('내 정보 가기',
+                            style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold)),
                       ),
                     ),
                   ],
@@ -523,13 +496,11 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             borderRadius: BorderRadius.circular(8),
                             border:
                                 Border.all(width: 1, color: Colors.black54)),
-                        child: Text(
-                          '모바일 학생증 바로 가기',
-                          style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold),
-                        ),
+                        child: Text('모바일 학생증 바로 가기',
+                            style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold)),
                       ),
                     ),
                   ],
@@ -543,19 +514,15 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           width: MediaQuery.of(context).size.width,
                           height: 45,
                           child: Padding(
-                            padding: EdgeInsets.only(left: 60),
-                            child: Text(
-                              '안산강서고',
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold),
-                            ),
-                          )),
+                              padding: EdgeInsets.only(left: 60),
+                              child: Text('안산강서고',
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold)))),
                       ListTile(
                         title: Text(
                           '학교행사',
-                          style: TextStyle(
-                            fontSize: 18,
-                          ),
+                          style: TextStyle(fontSize: 18),
                         ),
                         trailing: Icon(Icons.arrow_forward_ios),
                         onTap: () {
@@ -571,10 +538,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         },
                       ),
                       ListTile(
-                        title: Text('학습자료실',
-                            style: TextStyle(
-                              fontSize: 18,
-                            )),
+                        title: Text('학습자료실', style: TextStyle(fontSize: 18)),
                         trailing: Icon(Icons.arrow_forward_ios),
                         onTap: () {
                           Navigator.push(
@@ -589,10 +553,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         },
                       ),
                       ListTile(
-                        title: Text('급식 메뉴',
-                            style: TextStyle(
-                              fontSize: 18,
-                            )),
+                        title: Text('급식 메뉴', style: TextStyle(fontSize: 18)),
                         trailing: Icon(Icons.arrow_forward_ios),
                         onTap: () {
                           Navigator.push(
@@ -613,10 +574,8 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.red)),
-                              trailing: Icon(
-                                Icons.arrow_forward_ios,
-                                color: Colors.red,
-                              ),
+                              trailing: Icon(Icons.arrow_forward_ios,
+                                  color: Colors.red),
                               onTap: () async {
                                 await Navigator.push(
                                     context,
@@ -630,131 +589,124 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   ),
                 ),
                 Padding(
-                  padding:
-                      EdgeInsets.all(MediaQuery.of(context).size.width * 0.01),
-                  child: Row(
-                    children: [
+                    padding: EdgeInsets.all(
+                        MediaQuery.of(context).size.width * 0.01),
+                    child: Row(children: [
                       DefaultButtonComp(
-                        onPressed: () {
-                          showDialog(
-                              context: context,
-                              builder: (context) => AlertDialog(
-                                    title: Text('로그아웃'),
-                                    content: Text('정말로 로그아웃 하시겠습니까?'),
-                                    actions: [
-                                      DefaultButtonComp(
-                                          onPressed: () =>
-                                              Navigator.pop(context),
-                                          child: Text('취소')),
-                                      DefaultButtonComp(
-                                          onPressed: () async {
-                                            GlobalVariable.isAuthorized = false;
-                                            _pref = await SharedPreferences
-                                                .getInstance();
-                                            await _pref.setBool(
-                                                'checked', false);
-                                            Navigator.pop(context);
-                                            Navigator.pushReplacement(
-                                                context,
-                                                MaterialPageRoute(
+                          onPressed: () {
+                            showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                      title: Text('로그아웃'),
+                                      content: Text('정말로 로그아웃 하시겠습니까?'),
+                                      actions: [
+                                        DefaultButtonComp(
+                                            onPressed: () =>
+                                                Navigator.pop(context),
+                                            child: Text('취소')),
+                                        DefaultButtonComp(
+                                            onPressed: () async {
+                                              GlobalVariable.isAuthorized =
+                                                  false;
+                                              _pref = await SharedPreferences
+                                                  .getInstance();
+                                              await _pref.setBool(
+                                                  'checked', false);
+                                              Navigator.pop(context);
+                                              Navigator.pushReplacement(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          SignInPage()));
+                                            },
+                                            child: Text('로그아웃'))
+                                      ],
+                                    ));
+                          },
+                          child: Text('로그아웃',
+                              style:
+                                  TextStyle(color: Colors.grey, fontSize: 13))),
+                      DefaultButtonComp(
+                          onPressed: () {
+                            showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                        title: Text('회원 탈퇴'),
+                                        content: Text('정말로 계정을 탈퇴하시겠습니까?'),
+                                        actions: [
+                                          DefaultButtonComp(
+                                              onPressed: () =>
+                                                  Navigator.pop(context),
+                                              child: Text('취소')),
+                                          DefaultButtonComp(
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                                showDialog(
+                                                    context: context,
                                                     builder: (context) =>
-                                                        SignInPage()));
-                                          },
-                                          child: Text('로그아웃'))
-                                    ],
-                                  ));
-                        },
-                        child: Text(
-                          '로그아웃',
-                          style: TextStyle(color: Colors.grey, fontSize: 13),
-                        ),
-                      ),
-                      DefaultButtonComp(
-                        onPressed: () {
-                          showDialog(
-                              context: context,
-                              builder: (context) => AlertDialog(
-                                    title: Text('회원 탈퇴'),
-                                    content: Text('정말로 계정을 탈퇴하시겠습니까?'),
-                                    actions: [
-                                      DefaultButtonComp(
-                                          onPressed: () =>
-                                              Navigator.pop(context),
-                                          child: Text('취소')),
-                                      DefaultButtonComp(
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                            showDialog(
-                                                context: context,
-                                                builder: (context) =>
-                                                    AlertDialog(
-                                                      title: Text('비밀번호 확인'),
-                                                      content: Container(
-                                                        decoration: BoxDecoration(
-                                                            color:
-                                                                Colors.black54,
-                                                            border: Border.all(
-                                                                width: 1,
+                                                        AlertDialog(
+                                                          title:
+                                                              Text('비밀번호 확인'),
+                                                          content: Container(
+                                                            decoration: BoxDecoration(
                                                                 color: Colors
-                                                                    .black87)),
-                                                        child: TextField(
-                                                          obscureText: true,
-                                                          controller:
-                                                              _withdrawPasswordController,
-                                                          decoration: InputDecoration(
-                                                              hintText:
-                                                                  '비밀번호를 입력하세요.',
-                                                              border:
-                                                                  InputBorder
-                                                                      .none),
-                                                        ),
-                                                      ),
-                                                      actions: [
-                                                        DefaultButtonComp(
-                                                            onPressed: () =>
-                                                                Navigator.pop(
-                                                                    context),
-                                                            child: Text('취소')),
-                                                        DefaultButtonComp(
-                                                            onPressed:
-                                                                () async {
-                                                              var result =
-                                                                  await _withdrawAccount(
+                                                                    .black54,
+                                                                border: Border.all(
+                                                                    width: 1,
+                                                                    color: Colors
+                                                                        .black87)),
+                                                            child: TextField(
+                                                              obscureText: true,
+                                                              controller:
+                                                                  _withdrawPasswordController,
+                                                              decoration: InputDecoration(
+                                                                  hintText:
+                                                                      '비밀번호를 입력하세요.',
+                                                                  border:
+                                                                      InputBorder
+                                                                          .none),
+                                                            ),
+                                                          ),
+                                                          actions: [
+                                                            DefaultButtonComp(
+                                                                onPressed: () =>
+                                                                    Navigator.pop(
+                                                                        context),
+                                                                child:
+                                                                    Text('취소')),
+                                                            DefaultButtonComp(
+                                                                onPressed:
+                                                                    () async {
+                                                                  var result = await _withdrawAccount(
                                                                       _withdrawPasswordController
                                                                           .text
                                                                           .toString());
-                                                              if (result)
-                                                                Navigator.pushReplacement(
-                                                                    context,
-                                                                    MaterialPageRoute(
-                                                                        builder:
-                                                                            (context) =>
+                                                                  if (result)
+                                                                    Navigator.pushReplacement(
+                                                                        context,
+                                                                        MaterialPageRoute(
+                                                                            builder: (context) =>
                                                                                 SignInPage()));
-                                                              else
-                                                                Fluttertoast
-                                                                    .showToast(
-                                                                        msg:
-                                                                            '비밀번호가 옳지 않거나 예상치 못한 문제가 발생하였습니다.');
-                                                            },
-                                                            child: Text('완료'))
-                                                      ],
-                                                    ));
-                                          },
-                                          child: Text(
-                                            '탈퇴',
-                                            style: TextStyle(color: Colors.red),
-                                          ))
-                                    ],
-                                  ));
-                        },
-                        child: Text(
-                          '회원 탈퇴',
-                          style: TextStyle(color: Colors.grey, fontSize: 13),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                                                                  else
+                                                                    Fluttertoast
+                                                                        .showToast(
+                                                                            msg:
+                                                                                '비밀번호가 옳지 않거나 예상치 못한 문제가 발생하였습니다.');
+                                                                },
+                                                                child:
+                                                                    Text('완료'))
+                                                          ],
+                                                        ));
+                                              },
+                                              child: Text('탈퇴',
+                                                  style: TextStyle(
+                                                      color: Colors.red)))
+                                        ]));
+                          },
+                          child: Text('회원 탈퇴',
+                              style:
+                                  TextStyle(color: Colors.grey, fontSize: 13)))
+                    ])),
                 Container(
                     child: Align(
                         alignment: FractionalOffset.bottomCenter,
@@ -782,54 +734,36 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   Widget appBarAbove() {
     return Padding(
-      padding: EdgeInsets.only(
-          top: MediaQuery.of(context).padding.top, right: 4.5, left: 4.5),
-      child: Container(
-        height: 60,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            IconButton(
-              icon: Icon(
-                Icons.menu,
-                size: 40,
-                color: Colors.blueAccent,
-              ),
-              onPressed: () {
-                _scaffoldKey.currentState!.openDrawer();
-              },
-            ),
-            Container(
-              margin: EdgeInsets.only(right: 15),
-              padding: EdgeInsets.all(6),
-              width: 100,
-              child: Image(
-                image: AssetImage('assets/images/asgs_mark.png'),
-                fit: BoxFit.fitHeight,
-              ),
-            ),
-            Container()
-          ],
-        ),
-      ),
-    );
+        padding: EdgeInsets.only(
+            top: MediaQuery.of(context).padding.top, right: 4.5, left: 4.5),
+        child: Container(
+            height: 60,
+            child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  IconButton(
+                      icon:
+                          Icon(Icons.menu, size: 40, color: Colors.blueAccent),
+                      onPressed: () {
+                        _scaffoldKey.currentState!.openDrawer();
+                      }),
+                  Container(
+                      margin: EdgeInsets.only(right: 15),
+                      padding: EdgeInsets.all(6),
+                      width: 100,
+                      child: Image(
+                          image: AssetImage('assets/images/asgs_mark.png'),
+                          fit: BoxFit.fitHeight))
+                ])));
   }
 
   Widget ink(BuildContext context, String title, IconData icon, String url) {
     return InkWell(
-        child: Column(
-          children: <Widget>[
-            Icon(
-              icon,
-              size: 50,
-            ),
-            Text(
-              title,
-              style: TextStyle(fontSize: 12),
-            )
-          ],
-        ),
+        child: Column(children: <Widget>[
+          Icon(icon, size: 50),
+          Text(title, style: TextStyle(fontSize: 12))
+        ]),
         onTap: () {
           Navigator.push(
               context,
@@ -852,73 +786,55 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
       required String upTitle}) {
     double percentBar = 166;
     return Container(
-      height: 150,
-      width: 170,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                  context!,
-                  MaterialPageRoute(
-                      builder: (context) => WebViewPage(
-                            title: title,
-                            baseUrl: _isAndroid
-                                ? siteUrl
-                                : 'http://nacha01.dothome.co.kr/school/redirect_22.php?${siteUrl!.split('?')[1]}',
-                          )));
-            },
-            child: Stack(
-              alignment: Alignment.topLeft,
-              children: <Widget>[
-                Image(
-                  height: 80,
-                  width: 300,
-                  image: AssetImage(
-                    imageUrl,
-                  ),
-                ),
-                Container(
-                  padding: EdgeInsets.all(3),
-                  color: Color(0xFF646464),
-                  child: Text(
-                    upTitle,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.all(7),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                RichText(
-                  overflow: TextOverflow.ellipsis,
-                  strutStyle: StrutStyle(fontSize: 12.0),
-                  text: TextSpan(
-                      style: TextStyle(color: Colors.black), text: title),
-                ),
-                Text(organizer, style: TextStyle(color: Color(0xFF8D8D8D))),
-              ],
-            ),
-          ),
-          Row(
+        height: 150,
+        width: 170,
+        child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Container(
-                height: 10,
-                width: percentBar,
-                color: Colors.blue,
+              GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                        context!,
+                        MaterialPageRoute(
+                            builder: (context) => WebViewPage(
+                                  title: title,
+                                  baseUrl: _isAndroid
+                                      ? siteUrl
+                                      : 'http://nacha01.dothome.co.kr/school/redirect_22.php?${siteUrl!.split('?')[1]}',
+                                )));
+                  },
+                  child: Stack(alignment: Alignment.topLeft, children: <Widget>[
+                    Image(
+                      height: 80,
+                      width: 300,
+                      image: AssetImage(imageUrl),
+                    ),
+                    Container(
+                        padding: EdgeInsets.all(3),
+                        color: Color(0xFF646464),
+                        child: Text(upTitle,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold)))
+                  ])),
+              Padding(
+                padding: EdgeInsets.all(7),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    RichText(
+                        overflow: TextOverflow.ellipsis,
+                        strutStyle: StrutStyle(fontSize: 12.0),
+                        text: TextSpan(
+                            style: TextStyle(color: Colors.black),
+                            text: title)),
+                    Text(organizer, style: TextStyle(color: Color(0xFF8D8D8D))),
+                  ],
+                ),
               ),
-            ],
-          ),
-        ],
-      ),
-    );
+              Row(children: <Widget>[
+                Container(height: 10, width: percentBar, color: Colors.blue)
+              ])
+            ]));
   }
 }

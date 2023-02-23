@@ -21,13 +21,13 @@ class _DefaultButtonCompState extends State<DefaultButtonComp> {
   @override
   Widget build(BuildContext context) {
     return TextButton(
-      onPressed: widget.onPressed,
-      onLongPress: widget.onLongPress,
-      child: widget.child,
-      style: TextButton.styleFrom(
-          foregroundColor: Colors.black,
-          padding:
-              widget.padding == null ? null : EdgeInsets.all(widget.padding!)),
-    );
+        onPressed: widget.onPressed,
+        onLongPress: widget.onLongPress,
+        child: widget.child,
+        style: TextButton.styleFrom(
+            foregroundColor: Colors.black,
+            padding: widget.padding == null
+                ? null
+                : EdgeInsets.all(widget.padding!)));
   }
 }
