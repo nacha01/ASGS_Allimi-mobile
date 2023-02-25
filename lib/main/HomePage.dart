@@ -754,7 +754,8 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       width: 100,
                       child: Image(
                           image: AssetImage('assets/images/asgs_mark.png'),
-                          fit: BoxFit.fitHeight))
+                          fit: BoxFit.fitHeight)),
+                  Container()
                 ])));
   }
 
