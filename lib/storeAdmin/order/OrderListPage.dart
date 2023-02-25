@@ -18,9 +18,8 @@ import 'package:asgshighschool/storeAdmin/statistics/FullListPage.dart';
 import '../qr/QrSearchScanner.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_tts/flutter_tts.dart';
 
-/// 우선 리스트만 받는 형식
-/// 실시간 (주기적으로 갱신) 기능은 아직 구현 안함 추후에 추가 요망
 class OrderListPage extends StatefulWidget {
   OrderListPage({this.user});
 
@@ -31,28 +30,82 @@ class OrderListPage extends StatefulWidget {
 }
 
 class _OrderListPageState extends State<OrderListPage> {
+  List<Order> _allOrderList = [];
   List<Order> _orderList = [];
-  List<Order> _noneList = [];
+
+  // Map<bool, List<Order>> orderMap = Map(); // true: 필터링 리스트, false: 전체 주문 리스트
   bool _isChecked = true;
   bool _isFinished = false;
-  TextEditingController _adminKeyController = TextEditingController();
+  final TextEditingController _adminKeyController = TextEditingController();
   PaymentCancelResponse? _cancelResponse;
+  final FlutterTts _tts = FlutterTts();
+  final ScrollController _orderScrollController = ScrollController();
+  final ScrollController _allScrollController = ScrollController();
+  late final Timer _timer;
+  static const int LIMIT_SIZE = 8;
+
+  String _topOrderID = '';
+  int _listLength = 0;
+  bool _isOverflow = false;
 
   /// 모든 주문 내역을 요청하는 작업
   /// 이미 주문 처리가 된 것과 안된 것을 구분하여 각각의 List 에 저장
-  Future<bool> _getAllOrderData() async {
-    String url = '${ApiUtil.API_HOST}arlimi_getAllOrder.php';
+  Future<bool> _getAllOrderData(
+      int cursor, bool realtimeMode, bool useOption) async {
+    String url =
+        '${ApiUtil.API_HOST}arlimi_getAllOrder_paging.php?cursor=$cursor&size=$LIMIT_SIZE';
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
       String result = ApiUtil.getPureBody(response.bodyBytes);
+      var list = OrderUtil.serializeOrderList(result, true);
 
-      _noneList.clear();
-      _orderList = OrderUtil.serializeOrderList(result, true);
-      for (var order in _orderList) {
-        if (order.orderState != 3 && order.orderState != 4)
-          _noneList.add(order);
+      if (_isFinished && list.length == 0) {
+        _isOverflow = true;
+      } else {
+        _isOverflow = false;
       }
+
+      if (useOption) {
+        if (realtimeMode) {
+          if (_topOrderID != '') {
+            // _orderList.clear();
+            for (int i = 0; i < list.length; ++i) {
+              _orderList[i] = list[i];
+            }
+            // setState(() {
+            //   _orderList = _orderList.toSet().toList();
+            List<Order> tmp = [];
+            _orderList.forEach((element) {
+              int count = 0;
+              for(int i=0; i< _orderList.length; ++i){
+                if(element.orderID == _orderList[i].orderID){
+                  count++;
+                  // return;
+                }
+              }
+              if(count == 1)
+              tmp.add(element);
+
+            });
+            _orderList = tmp;
+            // });
+            if (list[0].orderID.compareTo(_topOrderID) > 0) {
+              await _orderScrollController.animateTo(0,
+                  curve: Curves.linear, duration: Duration(milliseconds: 500));
+              // _orderList = list;
+            }
+          }
+        } else
+          _orderList.addAll(list);
+      } else {
+        if (realtimeMode)
+          _allOrderList = list;
+        else
+          _allOrderList.addAll(list);
+      }
+
+      if (!_isFinished && useOption) _topOrderID = _orderList[0].orderID;
       setState(() {
         _isFinished = true;
       });
@@ -75,10 +128,53 @@ class _OrderListPageState extends State<OrderListPage> {
     }
   }
 
+  Future<void> _setTTS() async {
+    await _tts.setLanguage('kr');
+    await _tts.setSpeechRate(0.4);
+  }
+
   @override
   void initState() {
-    _getAllOrderData();
+    _setTTS();
+    _getAllOrderData(0, false, true);
+    _getAllOrderData(0, false, false);
+
+    _orderScrollController.addListener(() async {
+      if (_orderScrollController.position.maxScrollExtent ==
+          _orderScrollController.position.pixels) {
+        await _getAllOrderData(_orderList.length, false, true);
+      }
+    });
+    _allScrollController.addListener(() async {
+      if (_allScrollController.position.maxScrollExtent ==
+          _allScrollController.position.pixels) {
+        await _getAllOrderData(_allOrderList.length, false, false);
+      }
+    });
+    _timer = Timer.periodic(Duration(seconds: 5), (timer) async {
+      if (_isFinished) {
+        _topOrderID = _orderList[0].orderID; // 예전 리스트
+        await _getAllOrderData(0, true, true);
+
+        var currentTop = _orderList[0].orderID; // 새로운 리스트
+        print(_topOrderID);
+        print(currentTop);
+        if (currentTop.compareTo(_topOrderID) > 0) {
+          int index = _orderList
+              .indexWhere((element) => element.orderID == _topOrderID);
+
+          for (int i = 0; i < 2; ++i) await _tts.speak('주문이 들어왔습니다.');
+        }
+      }
+    });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _tts.stop();
+    _timer.cancel();
+    super.dispose();
   }
 
   @override
@@ -98,7 +194,7 @@ class _OrderListPageState extends State<OrderListPage> {
                               isResv: false,
                             )));
                 if (res) {
-                  await _getAllOrderData();
+                  // await _getAllOrderData();
                 }
               },
               icon: Icon(Icons.list_alt_rounded, color: Colors.black),
@@ -113,10 +209,12 @@ class _OrderListPageState extends State<OrderListPage> {
                 MaterialPageRoute(
                     builder: (context) =>
                         QrSearchScannerPage(admin: widget.user)));
-            if (res) await _getAllOrderData();
+            // if (res) await _getAllOrderData();
           }),
       body: RefreshIndicator(
-        onRefresh: _getAllOrderData,
+        onRefresh: () async {
+          await _getAllOrderData(0, true, _isChecked);
+        },
         child: Column(
           children: [
             Row(
@@ -141,7 +239,7 @@ class _OrderListPageState extends State<OrderListPage> {
             ),
             _isFinished
                 ? _isChecked
-                    ? _noneList.length == 0
+                    ? _orderList.length == 0
                         ? Expanded(
                             child: Center(
                             child: Text('업로드 된 주문 내역이 없습니다!',
@@ -150,23 +248,49 @@ class _OrderListPageState extends State<OrderListPage> {
                           ))
                         : Expanded(
                             child: ListView.builder(
-                                itemBuilder: (context, index) {
-                                  return _itemTile(_noneList[index], size);
-                                },
-                                itemCount: _noneList.length))
-                    : _orderList.length == 0
-                        ? Expanded(
-                            child: Center(
-                            child: Text('업로드 된 주문 내역이 없습니다!',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 16)),
-                          ))
-                        : Expanded(
-                            child: ListView.builder(
+                                controller: _orderScrollController,
                                 itemBuilder: (context, index) {
                                   return _itemTile(_orderList[index], size);
                                 },
                                 itemCount: _orderList.length))
+                    : _allOrderList.length == 0
+                        ? Expanded(
+                            child: Center(
+                            child: Text('업로드 된 주문 내역이 없습니다!',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 16)),
+                          ))
+                        : Expanded(
+                            child: ListView.builder(
+                                controller: _allScrollController,
+                                itemBuilder: (context, index) {
+                                  if (_isOverflow &&
+                                      index == _allOrderList.length) {
+                                    return Padding(
+                                      padding:
+                                          EdgeInsets.all(size.width * 0.02),
+                                      child: Center(
+                                          child: Text(
+                                        '더 이상 불러올 주문이 없습니다.',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 13,
+                                            color: Colors.red),
+                                      )),
+                                    );
+                                  }
+                                  if (index == _allOrderList.length) {
+                                    return Padding(
+                                      padding:
+                                          EdgeInsets.all(size.width * 0.02),
+                                      child: Center(
+                                          child: CircularProgressIndicator()),
+                                    );
+                                  }
+                                  return _itemTile(_allOrderList[index], size);
+                                },
+                                itemCount: _allOrderList.length + 1),
+                          )
                 : Expanded(
                     child: Center(
                     child: Column(
@@ -286,7 +410,7 @@ class _OrderListPageState extends State<OrderListPage> {
                                                                               c);
                                                                           setState(
                                                                               () {
-                                                                            _getAllOrderData();
+                                                                            // _getAllOrderData();
                                                                           });
                                                                         },
                                                                         child: Text(
@@ -357,7 +481,7 @@ class _OrderListPageState extends State<OrderListPage> {
                         order: order,
                       )));
           if (res) {
-            await _getAllOrderData();
+            // await _getAllOrderData();
           }
         },
         child: Container(
@@ -367,15 +491,12 @@ class _OrderListPageState extends State<OrderListPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                Text(
-                  '주문번호 : ${order.orderID}',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-                ),
-                Text(
-                  DateFormatter.formatDateTimeCmp(order.orderDate),
-                  style:
-                      TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
-                ),
+                Text('주문번호 : ${order.orderID}',
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                Text(DateFormatter.formatDateTimeCmp(order.orderDate),
+                    style: TextStyle(
+                        color: Colors.red, fontWeight: FontWeight.bold)),
               ]),
               SizedBox(height: size.height * 0.003),
               Text(
@@ -409,19 +530,8 @@ class _OrderListPageState extends State<OrderListPage> {
                   order.orderState == 2
                       ? Row(
                           children: [
-                            Container(
-                                width: size.width * 0.25,
-                                height: size.height * 0.026,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(6),
-                                    color: Colors.lightBlueAccent),
-                                child: Text(
-                                  '처리 담당 중',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 12),
-                                ),
-                                alignment: Alignment.center),
+                            _adminStateBar(
+                                '처리 담당 중', Colors.lightBlueAccent, size),
                             GestureDetector(
                               onTap: () async {
                                 var user = await _getAdminUserInfoByID(
@@ -466,20 +576,19 @@ class _OrderListPageState extends State<OrderListPage> {
                               },
                               child: Row(
                                 children: [
-                                  Text(
-                                    '  담당자 [',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 13),
-                                  ),
+                                  Text('  담당자 [',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 12)),
                                   Text(order.chargerID!,
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           color: Colors.blue,
-                                          fontSize: 13)),
+                                          fontSize: 12)),
                                   Text(']',
                                       style: TextStyle(
-                                          fontWeight: FontWeight.bold))
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 12))
                                 ],
                               ),
                             )
@@ -490,7 +599,7 @@ class _OrderListPageState extends State<OrderListPage> {
                               '처리 완료', Colors.lightGreenAccent, size)
                           : order.orderState == 4
                               ? _adminStateBar('결제 취소', Colors.grey[300]!, size)
-                              : SizedBox(),
+                              : _adminStateBar('', Colors.transparent, size),
                 ],
               )
             ],
@@ -502,12 +611,10 @@ class _OrderListPageState extends State<OrderListPage> {
 
   Widget _adminStateBar(String title, Color color, Size size) {
     return Container(
-        width: size.width * 0.21,
-        height: size.height * 0.026,
-        decoration: BoxDecoration(
-            border: Border.all(width: 0.5, color: Colors.black),
-            borderRadius: BorderRadius.circular(6),
-            color: color),
+        width: size.width * 0.22,
+        height: size.height * 0.025,
+        decoration:
+            BoxDecoration(borderRadius: BorderRadius.circular(6), color: color),
         child: Text(title,
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
         alignment: Alignment.center);
