@@ -42,7 +42,6 @@ dependencies:
   badges: ^3.0.2
   qr_flutter: ^4.0.0
   qr_code_scanner: ^1.0.1
-  audioplayers: ^3.0.1
   flutter_tts: ^3.6.3
 
   # for payment
