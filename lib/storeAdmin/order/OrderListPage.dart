@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:asgshighschool/api/ApiUtil.dart';
 import 'package:asgshighschool/data/order/order.dart';
 import 'package:asgshighschool/data/payment_cancel.dart';
@@ -33,7 +34,6 @@ class _OrderListPageState extends State<OrderListPage> {
   List<Order> _allOrderList = [];
   List<Order> _orderList = [];
 
-  // Map<bool, List<Order>> orderMap = Map(); // true: 필터링 리스트, false: 전체 주문 리스트
   bool _isChecked = true;
   bool _isFinished = false;
   final TextEditingController _adminKeyController = TextEditingController();
@@ -45,15 +45,19 @@ class _OrderListPageState extends State<OrderListPage> {
   static const int LIMIT_SIZE = 8;
 
   String _topOrderID = '';
-  int _listLength = 0;
+  int _requestCount = 1;
   bool _isOverflow = false;
+  bool _isAllOverflow = false;
 
-  /// 모든 주문 내역을 요청하는 작업
-  /// 이미 주문 처리가 된 것과 안된 것을 구분하여 각각의 List 에 저장
+  /// 모든 주문 내역을 요청 (이미 주문 처리가 된 것과 안된 것을 구분하여 각각의 List 에 저장)
+  /// [cursor] = 마지막으로 가져온 리스트의 인덱스
+  /// [size] = 새로 가져올 데이터 개수 (현재 기본 개수: 8개)
+  /// [realTimeMode] = 실시간 모드 여부 (실시간 모드가 아닌 요청은 스크롤 페이징에 사용)
+  /// [useOption] = 주문 상태 옵션 필터링 여부(주문 완료 및 결제 취소)
   Future<bool> _getAllOrderData(
-      int cursor, bool realtimeMode, bool useOption) async {
+      int cursor, int size, bool realtimeMode, bool useOption) async {
     String url =
-        '${ApiUtil.API_HOST}arlimi_getAllOrder_paging.php?cursor=$cursor&size=$LIMIT_SIZE';
+        '${ApiUtil.API_HOST}arlimi_getAllOrder_paging.php?cursor=$cursor&size=$size&option=$useOption';
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
@@ -61,43 +65,29 @@ class _OrderListPageState extends State<OrderListPage> {
       var list = OrderUtil.serializeOrderList(result, true);
 
       if (_isFinished && list.length == 0) {
-        _isOverflow = true;
-      } else {
-        _isOverflow = false;
+        if (useOption)
+          _isOverflow = true;
+        else
+          _isAllOverflow = true;
       }
 
       if (useOption) {
+        // 주문 상태 필터링 옵션을 사용한다면
         if (realtimeMode) {
+          // 실시간 모드라면
           if (_topOrderID != '') {
-            // _orderList.clear();
-            for (int i = 0; i < list.length; ++i) {
-              _orderList[i] = list[i];
-            }
-            // setState(() {
-            //   _orderList = _orderList.toSet().toList();
-            List<Order> tmp = [];
-            _orderList.forEach((element) {
-              int count = 0;
-              for(int i=0; i< _orderList.length; ++i){
-                if(element.orderID == _orderList[i].orderID){
-                  count++;
-                  // return;
-                }
-              }
-              if(count == 1)
-              tmp.add(element);
-
-            });
-            _orderList = tmp;
-            // });
+            _orderList = list; // 새로운 리스트로 갈아엎기
+            // 새로 가져온 리스트의 첫번째 아이템이 현재 리스트의 첫번째 아이템보다 값이 크다면
             if (list[0].orderID.compareTo(_topOrderID) > 0) {
+              // 리스트의 최상단으로 자동 애니메이션 스크롤
               await _orderScrollController.animateTo(0,
                   curve: Curves.linear, duration: Duration(milliseconds: 500));
-              // _orderList = list;
             }
           }
-        } else
-          _orderList.addAll(list);
+        } else {
+          // 실시간 모드가 아니라면
+          _orderList.addAll(list); // 리스트에 누적 추가
+        }
       } else {
         if (realtimeMode)
           _allOrderList = list;
@@ -117,7 +107,7 @@ class _OrderListPageState extends State<OrderListPage> {
 
   /// 특정 uid 값을 통해 그 관리자의 사용자 정보를 가져오는 요청
   Future<Map?> _getAdminUserInfoByID(String uid) async {
-    String url = '${ApiUtil.API_HOST}arlimi_getUserInfo.php?uid=' + uid;
+    String url = '${ApiUtil.API_HOST}arlimi_getUserInfo.php?uid=$uid';
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
@@ -128,42 +118,52 @@ class _OrderListPageState extends State<OrderListPage> {
     }
   }
 
-  Future<void> _setTTS() async {
+  Future<void> _configureTTS() async {
+    if (Platform.isIOS) {
+      await _tts.setSharedInstance(true);
+    }
     await _tts.setLanguage('kr');
-    await _tts.setSpeechRate(0.4);
+    await _tts.setSpeechRate(0.5);
+    await _tts.setQueueMode(1);
   }
 
   @override
   void initState() {
-    _setTTS();
-    _getAllOrderData(0, false, true);
-    _getAllOrderData(0, false, false);
+    _configureTTS();
+
+    _getAllOrderData(0, LIMIT_SIZE, false, true);
+    _getAllOrderData(0, LIMIT_SIZE, false, false);
 
     _orderScrollController.addListener(() async {
       if (_orderScrollController.position.maxScrollExtent ==
           _orderScrollController.position.pixels) {
-        await _getAllOrderData(_orderList.length, false, true);
+        if (!_isOverflow) _requestCount++;
+        await _getAllOrderData(_orderList.length, LIMIT_SIZE, false, true);
       }
     });
+
     _allScrollController.addListener(() async {
       if (_allScrollController.position.maxScrollExtent ==
           _allScrollController.position.pixels) {
-        await _getAllOrderData(_allOrderList.length, false, false);
+        await _getAllOrderData(_allOrderList.length, LIMIT_SIZE, false, false);
       }
     });
+
     _timer = Timer.periodic(Duration(seconds: 5), (timer) async {
       if (_isFinished) {
-        _topOrderID = _orderList[0].orderID; // 예전 리스트
-        await _getAllOrderData(0, true, true);
+        _topOrderID = _orderList[0].orderID; // 예전 리스트의 첫번째 아이템
+        await _getAllOrderData(0, LIMIT_SIZE * _requestCount, true,
+            true); // (현재 요청한 횟수 x 사이즈)만큼 페이징 요청
 
-        var currentTop = _orderList[0].orderID; // 새로운 리스트
-        print(_topOrderID);
-        print(currentTop);
+        var currentTop = _orderList[0].orderID; // 새로운 리스트의 첫번째 아이템
+
         if (currentTop.compareTo(_topOrderID) > 0) {
-          int index = _orderList
-              .indexWhere((element) => element.orderID == _topOrderID);
-
-          for (int i = 0; i < 2; ++i) await _tts.speak('주문이 들어왔습니다.');
+          _isOverflow = false;
+          _requestCount = 1;
+          int size = _orderList.indexWhere(
+              (element) => element.orderID == _topOrderID); // 이전과의 차이를 구하기
+          for (int i = 0; i < size; ++i)
+            await _tts.speak('주문이 들어왔습니다.'); // 차이만큼 TTS 호출
         }
       }
     });
@@ -177,6 +177,11 @@ class _OrderListPageState extends State<OrderListPage> {
     super.dispose();
   }
 
+  Future<bool> _navigatePage(Widget page) async {
+    return await Navigator.push(
+        context, MaterialPageRoute(builder: (context) => page));
+  }
+
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
@@ -186,15 +191,12 @@ class _OrderListPageState extends State<OrderListPage> {
         actions: [
           IconButton(
               onPressed: () async {
-                var res = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => FullListPage(
-                              user: widget.user,
-                              isResv: false,
-                            )));
+                var res = await _navigatePage(FullListPage(
+                  user: widget.user,
+                  isResv: false,
+                ));
                 if (res) {
-                  // await _getAllOrderData();
+                  await _getAllOrderData(0, LIMIT_SIZE, true, _isChecked);
                 }
               },
               icon: Icon(Icons.list_alt_rounded, color: Colors.black),
@@ -204,16 +206,23 @@ class _OrderListPageState extends State<OrderListPage> {
       floatingActionButton: FloatingActionButton(
           child: Icon(Icons.qr_code_scanner),
           onPressed: () async {
-            var res = await Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>
-                        QrSearchScannerPage(admin: widget.user)));
-            // if (res) await _getAllOrderData();
+            var res =
+                await _navigatePage(QrSearchScannerPage(admin: widget.user));
+            if (res) {
+              if (_isChecked)
+                _isOverflow = false;
+              else
+                _isAllOverflow = false;
+              await _getAllOrderData(0, LIMIT_SIZE, true, _isChecked);
+            }
           }),
       body: RefreshIndicator(
         onRefresh: () async {
-          await _getAllOrderData(0, true, _isChecked);
+          if (_isChecked)
+            _isOverflow = false;
+          else
+            _isAllOverflow = false;
+          await _getAllOrderData(0, LIMIT_SIZE, true, _isChecked);
         },
         child: Column(
           children: [
@@ -240,68 +249,68 @@ class _OrderListPageState extends State<OrderListPage> {
             _isFinished
                 ? _isChecked
                     ? _orderList.length == 0
-                        ? Expanded(
-                            child: Center(
-                            child: Text('업로드 된 주문 내역이 없습니다!',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 16)),
-                          ))
+                        ? _emptyOrderListWidget()
                         : Expanded(
                             child: ListView.builder(
                                 controller: _orderScrollController,
                                 itemBuilder: (context, index) {
-                                  return _itemTile(_orderList[index], size);
+                                  return _listviewPagingWidget(
+                                      _isOverflow, _orderList, index, size);
                                 },
-                                itemCount: _orderList.length))
+                                itemCount: _orderList.length + 1))
                     : _allOrderList.length == 0
-                        ? Expanded(
-                            child: Center(
-                            child: Text('업로드 된 주문 내역이 없습니다!',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 16)),
-                          ))
+                        ? _emptyOrderListWidget()
                         : Expanded(
                             child: ListView.builder(
                                 controller: _allScrollController,
                                 itemBuilder: (context, index) {
-                                  if (_isOverflow &&
-                                      index == _allOrderList.length) {
-                                    return Padding(
-                                      padding:
-                                          EdgeInsets.all(size.width * 0.02),
-                                      child: Center(
-                                          child: Text(
-                                        '더 이상 불러올 주문이 없습니다.',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 13,
-                                            color: Colors.red),
-                                      )),
-                                    );
-                                  }
-                                  if (index == _allOrderList.length) {
-                                    return Padding(
-                                      padding:
-                                          EdgeInsets.all(size.width * 0.02),
-                                      child: Center(
-                                          child: CircularProgressIndicator()),
-                                    );
-                                  }
-                                  return _itemTile(_allOrderList[index], size);
+                                  return _listviewPagingWidget(_isAllOverflow,
+                                      _allOrderList, index, size);
                                 },
                                 itemCount: _allOrderList.length + 1),
                           )
                 : Expanded(
                     child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [Text('불러오는 중..'), CircularProgressIndicator()],
-                    ),
-                  ))
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                        Text('불러오는 중..'),
+                        CircularProgressIndicator()
+                      ])))
           ],
         ),
       ),
     );
+  }
+
+  Widget _listviewPagingWidget(
+      bool isOverflow, List<Order> list, int index, Size size) {
+    if (isOverflow && index == list.length) {
+      return Padding(
+        padding: EdgeInsets.all(size.width * 0.02),
+        child: Center(
+            child: Text(
+          '더 이상 불러올 주문이 없습니다.',
+          style: TextStyle(
+              fontWeight: FontWeight.bold, fontSize: 13, color: Colors.red),
+        )),
+      );
+    }
+    if (index == list.length) {
+      return Padding(
+        padding: EdgeInsets.all(size.width * 0.02),
+        child: Center(child: CircularProgressIndicator()),
+      );
+    }
+    return _itemTile(list[index], size);
+  }
+
+  Expanded _emptyOrderListWidget() {
+    return Expanded(
+        child: Center(
+      child: Text('업로드 된 주문 내역이 없습니다!',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+    ));
   }
 
   Widget _itemTile(Order order, Size size) {
@@ -473,15 +482,16 @@ class _OrderListPageState extends State<OrderListPage> {
                     ));
         },
         onPressed: () async {
-          var res = await Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => AdminDetailOrder(
-                        user: widget.user,
-                        order: order,
-                      )));
+          var res = await _navigatePage(AdminDetailOrder(
+            user: widget.user,
+            order: order,
+          ));
           if (res) {
-            // await _getAllOrderData();
+            if (_isChecked)
+              _isOverflow = false;
+            else
+              _isAllOverflow = false;
+            await _getAllOrderData(0, LIMIT_SIZE, true, _isChecked);
           }
         },
         child: Container(
@@ -496,7 +506,9 @@ class _OrderListPageState extends State<OrderListPage> {
                         TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
                 Text(DateFormatter.formatDateTimeCmp(order.orderDate),
                     style: TextStyle(
-                        color: Colors.red, fontWeight: FontWeight.bold)),
+                        color: _setComparisonDateColor(
+                            DateFormatter.formatDateTimeCmp(order.orderDate)),
+                        fontWeight: FontWeight.bold)),
               ]),
               SizedBox(height: size.height * 0.003),
               Text(
@@ -599,7 +611,7 @@ class _OrderListPageState extends State<OrderListPage> {
                               '처리 완료', Colors.lightGreenAccent, size)
                           : order.orderState == 4
                               ? _adminStateBar('결제 취소', Colors.grey[300]!, size)
-                              : _adminStateBar('', Colors.transparent, size),
+                              : _adminStateBar('', Colors.transparent, size)
                 ],
               )
             ],
@@ -618,5 +630,21 @@ class _OrderListPageState extends State<OrderListPage> {
         child: Text(title,
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
         alignment: Alignment.center);
+  }
+
+  Color _setComparisonDateColor(String formatDate) {
+    if (formatDate.contains('초')) {
+      return Colors.red;
+    }
+    if (formatDate.contains('시간')) {
+      return Colors.purple;
+    }
+    if (formatDate.contains('분') &&
+        formatDate.split(' ')[0].length <= 3 &&
+        int.parse(formatDate.replaceAll('분 전', '')) <= 30) {
+      return Colors.red; // '30분 전' 인 경우 (30분보다 작은 경우 색상 강조)
+    } else {
+      return Colors.blueGrey;
+    }
   }
 }
