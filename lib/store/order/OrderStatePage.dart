@@ -182,7 +182,7 @@ class _OrderStatePageState extends State<OrderStatePage> {
                 )
               ],
             ),
-            order.orderState == 1
+            order.orderState == 1 && order.tid !='point'
                 ? DefaultButtonComp(
                     onPressed: () {
                       showDialog(

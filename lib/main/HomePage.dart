@@ -60,6 +60,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
     super.initState();
     _getBannerImage();
     _checkUserToken(widget.user!.uid);
+
     _numberOfTabs = 3;
     tabController = TabController(vsync: this, length: _numberOfTabs);
 
@@ -279,6 +280,27 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           siteUrl:
                               'https://reading.gglec.go.kr/r/newReading/search/schoolCodeSetting.jsp?schoolCode=895&returnUrl=',
                           upTitle: '도서 검색')
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: <Widget>[
+                      belowBox(
+                          context: context,
+                          title: '푸러푸러 퀴즈',
+                          organizer: '푸러푸러 퀴즈',
+                          imageUrl: 'assets/images/quiz.jpg',
+                          siteUrl:
+                          'http://puhaha.pe.kr/quiz/puhaha_quiz.php?s_id=${widget.user!.uid}',
+                          upTitle: '푸러푸러 퀴즈'),
+                      belowBox(
+                          context: context,
+                          title: '설문 조사',
+                          organizer: '설문 조사',
+                          imageUrl: 'assets/images/sulmun.jpg',
+                          siteUrl:
+                          'http://puhaha.pe.kr/quiz/sulmun.php',
+                          upTitle: '설문 조사'),
                     ],
                   ),
                 ],
@@ -818,21 +840,21 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold)))
                   ])),
-              Padding(
-                padding: EdgeInsets.all(7),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    RichText(
-                        overflow: TextOverflow.ellipsis,
-                        strutStyle: StrutStyle(fontSize: 12.0),
-                        text: TextSpan(
-                            style: TextStyle(color: Colors.black),
-                            text: title)),
-                    Text(organizer, style: TextStyle(color: Color(0xFF8D8D8D))),
-                  ],
-                ),
-              ),
+              // Padding(
+              //   padding: EdgeInsets.all(7),
+              //   child: Column(
+              //     crossAxisAlignment: CrossAxisAlignment.start,
+              //     children: <Widget>[
+              //       RichText(
+              //           overflow: TextOverflow.ellipsis,
+              //           strutStyle: StrutStyle(fontSize: 12.0),
+              //           text: TextSpan(
+              //               style: TextStyle(color: Colors.black),
+              //               text: title)),
+              //       Text(organizer, style: TextStyle(color: Color(0xFF8D8D8D))),
+              //     ],
+              //   ),
+              // ),
               Row(children: <Widget>[
                 Container(height: 10, width: percentBar, color: Colors.blue)
               ])

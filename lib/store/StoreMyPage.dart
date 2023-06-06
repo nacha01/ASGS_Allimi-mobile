@@ -145,7 +145,7 @@ class _StoreMyPageState extends State<StoreMyPage> {
                       SizedBox(
                         width: size.width * 0.03,
                       ),
-                      Text('내 주문 현황', style: TextStyle(fontSize: 17))
+                      Text('주문 현황', style: TextStyle(fontSize: 17))
                     ],
                   ),
                 ),

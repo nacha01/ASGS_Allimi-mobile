@@ -11,16 +11,18 @@ import '../../component/CorporationComp.dart';
 import '../../component/DefaultButtonComp.dart';
 import '../../component/ThemeAppBar.dart';
 import '../../util/NumberFormatter.dart';
+import '../payment/PayPointCompletePage.dart';
+import '../payment/PaymentCompletePage.dart';
 
 class OrderPage extends StatefulWidget {
   OrderPage(
       {this.direct,
-      this.cart,
-      this.productCount,
-      this.user,
-      this.optionList,
-      this.selectList,
-      this.additionalPrice});
+        this.cart,
+        this.productCount,
+        this.user,
+        this.optionList,
+        this.selectList,
+        this.additionalPrice});
 
   final Product? direct; // 바로 결제 시 그 단일 상품 하나
   final List<Map?>? cart; // 장바구니에서 결제시 장바구니 리스트 Map 데이터
@@ -46,6 +48,10 @@ class _OrderPageState extends State<OrderPage> {
   String _optionString = '';
   int _additionalPrice = 0;
   String _entireOptionForCart = '';
+  int point = 0;
+  int point_deduct = 0;
+  bool _pointIsChecked = true;
+
 
   @override
   void initState() {
@@ -57,6 +63,8 @@ class _OrderPageState extends State<OrderPage> {
       _isCart = false;
     }
     _preProcessForOptions();
+    _fetchMyPoint();
+
     super.initState();
   }
 
@@ -78,11 +86,11 @@ class _OrderPageState extends State<OrderPage> {
       for (int i = 0; i < widget.optionList!.length; ++i) {
         if (widget.selectList![i] != -1) {
           _additionalPrice += int.parse(widget.optionList![i]['detail']
-              [widget.selectList![i]]['optionPrice']);
+          [widget.selectList![i]]['optionPrice']);
           _optionString += widget.optionList![i]['optionCategory'] +
               '-' +
               widget.optionList![i]['detail'][widget.selectList![i]]
-                  ['optionName'] +
+              ['optionName'] +
               ', ';
         }
       }
@@ -108,7 +116,7 @@ class _OrderPageState extends State<OrderPage> {
   Future<bool> _checkSynchronousStockCountForProduct() async {
     String url = '${ApiUtil.API_HOST}arlimi_getOneProduct.php';
     final response =
-        await http.get(Uri.parse(url + '?pid=${widget.direct!.prodID}'));
+    await http.get(Uri.parse(url + '?pid=${widget.direct!.prodID}'));
 
     if (response.statusCode == 200) {
       String result = ApiUtil.getPureBody(response.bodyBytes);
@@ -129,7 +137,7 @@ class _OrderPageState extends State<OrderPage> {
   Future<bool> _checkSynchronousStockCountForCart() async {
     String url = '${ApiUtil.API_HOST}arlimi_getAllCart.php';
     final response =
-        await http.get(Uri.parse(url + '?uid=${widget.user!.uid}'));
+    await http.get(Uri.parse(url + '?uid=${widget.user!.uid}'));
     if (response.statusCode == 200) {
       String result = ApiUtil.getPureBody(response.bodyBytes);
       List cartProduct = json.decode(result);
@@ -141,7 +149,7 @@ class _OrderPageState extends State<OrderPage> {
         if (int.parse(widget.cart![i]!['quantity']) >=
             (int.parse(checksum[i]!['stockCount']))) {
           _checkMessage =
-              '"${widget.cart![i]!['prodName']}"상품의 선택 수량이 현재 재고보다 많습니다.';
+          '"${widget.cart![i]!['prodName']}"상품의 선택 수량이 현재 재고보다 많습니다.';
           return false;
         }
       }
@@ -149,6 +157,37 @@ class _OrderPageState extends State<OrderPage> {
       return true;
     } else {
       return false;
+    }
+  }
+
+  /// 나의 포인트 차감하기
+  Future<void> _fetchMyPoint() async {
+    print('aaa');
+    print(widget.user!.uid);
+    print(widget.user!.uid!);
+    String url = '${ApiUtil.API_HOST}arlimi_getOneProduct.php';
+    final response = await http.post(Uri.parse(url), body: <String, String?>{
+      'uid': widget.user!.uid,
+      'pid': '${widget.direct!.prodID}'
+    });
+    print('상품 ID' + '${widget.direct!.prodID}');
+    print("응답 코드: ");
+    print(response.statusCode);
+    if (response.statusCode == 200) {
+      print("point 차감을 위한 곳1");
+      String result = ApiUtil.getPureBody(response.bodyBytes);
+      print(result);
+      print("point 차감을 위한 곳2");
+      Map p = json.decode(result);
+      print("point 차감을 위한 곳3");
+      point = int.tryParse(p['point']) ?? 0;
+      print("내 포인트:");
+      print(point);
+      int pointGijun = point > 1000 ? point : 0;
+      setState(() {
+        point_deduct = pointGijun;
+        print(point_deduct);
+      });
     }
   }
 
@@ -174,25 +213,43 @@ class _OrderPageState extends State<OrderPage> {
     if (_isCart) {
       for (int i = 0; i < widget.cart!.length; ++i) {
         sum += ((int.parse(widget.cart![i]!['price']) *
-                    (widget.cart![i]!['discount'].toString() == '0.0'
-                        ? 0
-                        : double.parse(widget.cart![i]!['discount']) / 100)) *
-                int.parse(widget.cart![i]!['quantity']))
+            (widget.cart![i]!['discount'].toString() == '0.0'
+                ? 0
+                : double.parse(widget.cart![i]!['discount']) / 100)) *
+            int.parse(widget.cart![i]!['quantity']))
             .round();
       }
     } else {
       sum += ((widget.direct!.price * widget.productCount!) *
-              (widget.direct!.discount.toString() == '0.0'
-                  ? 0
-                  : widget.direct!.discount / 100.0))
+          (widget.direct!.discount.toString() == '0.0'
+              ? 0
+              : widget.direct!.discount / 100.0))
           .round();
     }
     return sum;
   }
 
+  int _total_sum() {
+    int middle_Value1 = _getOriginTotalPrice() - _getTotalDiscount();
+    if (_pointIsChecked) {
+      if (point_deduct > 0) {
+        if (middle_Value1 > point) {
+          return 0;
+        } else {
+          return middle_Value1;
+        }
+      } else {
+        return 0;
+      }
+    } else {
+      return 0;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    String productTotal;
     return WillPopScope(
       onWillPop: () async {
         if (_isCart)
@@ -248,25 +305,25 @@ class _OrderPageState extends State<OrderPage> {
                      */
                     _receiveMethod == ReceiveMethod.DELIVERY
                         ? Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                alignment: Alignment.center,
-                                width: size.width * 0.95,
-                                decoration: BoxDecoration(
-                                    border: Border.all(
-                                        width: 1, color: Colors.black),
-                                    borderRadius: BorderRadius.circular(6)),
-                                child: TextField(
-                                  controller: _locationController,
-                                  decoration: InputDecoration(
-                                      border: InputBorder.none,
-                                      hintText: ' 배달 장소를 입력해주세요.',
-                                      hintStyle: TextStyle(color: Colors.grey)),
-                                ),
-                              ),
-                            ],
-                          )
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          alignment: Alignment.center,
+                          width: size.width * 0.95,
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                                  width: 1, color: Colors.black),
+                              borderRadius: BorderRadius.circular(6)),
+                          child: TextField(
+                            controller: _locationController,
+                            decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: ' 배달 장소를 입력해주세요.',
+                                hintStyle: TextStyle(color: Colors.grey)),
+                          ),
+                        ),
+                      ],
+                    )
                         : SizedBox(),
                     Divider(
                       thickness: 0.5,
@@ -303,29 +360,29 @@ class _OrderPageState extends State<OrderPage> {
                       ],
                     ),
                     SizedBox(
-                      height: size.height * 0.02,
+                      height: size.height * 0.01,
                     ),
-                    Row(
-                      children: [
-                        SizedBox(
-                          width: size.width * 0.05,
-                        ),
-                        Icon(
-                          Icons.radio_button_off,
-                          color: Colors.grey,
-                        ),
-                        Text(
-                          '   기타 (준비중입니다.)',
-                          style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold),
-                        )
-                      ],
-                    ),
-                    SizedBox(
-                      height: size.height * 0.02,
-                    ),
+                    // Row(
+                    //   children: [
+                    //     SizedBox(
+                    //       width: size.width * 0.05,
+                    //     ),
+                    // Icon(
+                    //   Icons.radio_button_off,
+                    //   color: Colors.grey,
+                    // ),
+                    // Text(
+                    //   '   기타 (준비중입니다.)',
+                    //   style: TextStyle(
+                    //       color: Colors.grey,
+                    //       fontSize: 13,
+                    //       fontWeight: FontWeight.bold),
+                    // )
+                    //   ],
+                    // ),
+                    // SizedBox(
+                    //   height: size.height * 0.02,
+                    // ),
                     Divider(
                       thickness: 0.5,
                       indent: 5,
@@ -340,7 +397,7 @@ class _OrderPageState extends State<OrderPage> {
                             fontSize: 12,
                             color: Colors.black54)),
                     SizedBox(
-                      height: size.height * 0.03,
+                      height: size.height * 0.02,
                     ),
                     Center(
                       child: Container(
@@ -393,7 +450,7 @@ class _OrderPageState extends State<OrderPage> {
                     ),
                     Card(
                       child: Container(
-                        height: size.height * 0.2,
+                        height: size.height * 0.3,
                         padding: EdgeInsets.all(size.width * 0.05),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -423,6 +480,42 @@ class _OrderPageState extends State<OrderPage> {
                                     '- ${NumberFormatter.formatPrice(_getTotalDiscount())} 원')
                               ],
                             ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                DefaultButtonComp(
+                                    child: Row(children: [
+                                      Icon(
+                                          _pointIsChecked
+                                              ? Icons.check_box
+                                              : Icons.check_box_outline_blank,
+                                          color: Colors.blue),
+                                      Text(' 포인트 사용 여부',
+                                          style: TextStyle(
+                                              fontSize: 11,
+                                              color: Colors.black))
+                                    ]),
+                                    onPressed: () {
+                                      setState(() {
+                                        _pointIsChecked = !_pointIsChecked;
+                                      });
+                                    })
+                              ],
+                            ),
+
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(' point 중 사용액'),
+                                Text(
+                                  _isCart
+                                      ? '장바구니 사용하면 point 사용 불가.'
+                                      : _pointIsChecked
+                                      ? '${NumberFormatter.formatPrice(point)} 원 중 ${NumberFormatter.formatPrice(_total_sum())} 원 사용'
+                                      : '포인트 사용 안함',
+                                ),
+                              ],
+                            ),
                             Divider(
                               thickness: 2,
                               indent: 1,
@@ -438,7 +531,7 @@ class _OrderPageState extends State<OrderPage> {
                                       fontWeight: FontWeight.bold),
                                 ),
                                 Text(
-                                    '${NumberFormatter.formatPrice((_getOriginTotalPrice() - _getTotalDiscount()))} 원',
+                                    '${NumberFormatter.formatPrice(_getOriginTotalPrice() - _getTotalDiscount() - _total_sum())} 원',
                                     style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold))
@@ -462,7 +555,7 @@ class _OrderPageState extends State<OrderPage> {
                     context: context,
                     builder: (ctx) {
                       Future.delayed(Duration(milliseconds: 500),
-                          () => Navigator.pop(ctx));
+                              () => Navigator.pop(ctx));
                       return AlertDialog(
                         title: Padding(
                           padding: EdgeInsets.all(size.width * 0.015),
@@ -476,7 +569,7 @@ class _OrderPageState extends State<OrderPage> {
                         shape: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide:
-                                BorderSide(color: Colors.black, width: 1)),
+                            BorderSide(color: Colors.black, width: 1)),
                       );
                     });
                 bool syncChk = false;
@@ -490,57 +583,96 @@ class _OrderPageState extends State<OrderPage> {
                   showDialog(
                       context: context,
                       builder: (context) => AlertDialog(
-                            title: Text('구매 불가',
-                                style: TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.red)),
-                            content: Text(
-                                '실시간 재고 점검 결과 수량이 부족하여 해당 상품을 구매하실 수 없습니다!\n$_checkMessage',
-                                style: TextStyle(
-                                    fontSize: 13, fontWeight: FontWeight.bold)),
-                            actions: [
-                              DefaultButtonComp(
-                                  onPressed: () => Navigator.pop(context),
-                                  child: Text('확인'))
-                            ],
-                          ));
+                        title: Text('구매 불가',
+                            style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.red)),
+                        content: Text(
+                            '실시간 재고 점검 결과 수량이 부족하여 해당 상품을 구매하실 수 없습니다!\n$_checkMessage',
+                            style: TextStyle(
+                                fontSize: 13, fontWeight: FontWeight.bold)),
+                        actions: [
+                          DefaultButtonComp(
+                              onPressed: () => Navigator.pop(context),
+                              child: Text('확인'))
+                        ],
+                      ));
                   return;
                 }
 
                 StoreMainPageState.currentNav = 0;
                 _generatedOID =
                     DateTime.now().millisecondsSinceEpoch.toString();
-                Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => PaymentWebViewPage(
-                              isCart: _isCart,
-                              oID: _generatedOID,
-                              additionalPrice: _isCart
-                                  ? widget.additionalPrice
-                                  : _additionalPrice,
-                              user: widget.user,
-                              productCount: widget.productCount,
-                              selectList: widget.selectList,
-                              optionList: widget.optionList,
-                              cart: widget.cart,
-                              direct: widget.direct,
-                              receiveMethod:
-                                  _receiveMethod == ReceiveMethod.DIRECT
-                                      ? '0'
-                                      : '1',
-                              option: _isCart
-                                  ? _entireOptionForCart
-                                  : _optionString +
-                                      (_requestOptionController.text.isEmpty
-                                          ? ''
-                                          : '\n' +
-                                              _requestOptionController.text),
-                              location: _receiveMethod == ReceiveMethod.DELIVERY
-                                  ? _locationController.text
-                                  : 'NULL',
-                            )));
+
+                int? productTotal = 0;
+                String formattedPrice = NumberFormatter.formatPrice(_getOriginTotalPrice() - _getTotalDiscount());
+                productTotal = int.tryParse(formattedPrice);
+                print('물건값:');
+                print(productTotal);
+
+                (_pointIsChecked && (point_deduct>0))
+                    ? Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PayPointCompletePage(
+                      totalPrice:  productTotal,
+                      responseData: {'ResultCode': '3001'},
+
+                      direct: widget.direct,
+                      cart: widget.cart,
+                      productCount: widget.productCount,
+                      user: widget.user,
+                      optionList: widget.optionList,
+                      selectList: widget.selectList,
+                      isCart: _isCart,
+                      location: _receiveMethod == ReceiveMethod.DELIVERY
+                          ? _locationController.text
+                          : 'NULL',
+                      option: _isCart
+                          ? _entireOptionForCart
+                          : _optionString +
+                          (_requestOptionController.text.isEmpty
+                              ? ''
+                              : '\n' + _requestOptionController.text),
+                      // receiveMethod:
+                      // _receiveMethod == ReceiveMethod.DIRECT
+                      //     ? '0'
+                      //     : '1',
+                    ),
+                  ),
+                )
+                    : Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PaymentWebViewPage(
+                      isCart: _isCart,
+                      oID: _generatedOID,
+                      additionalPrice: _isCart
+                          ? widget.additionalPrice
+                          : _additionalPrice,
+                      user: widget.user,
+                      productCount: widget.productCount,
+                      selectList: widget.selectList,
+                      optionList: widget.optionList,
+                      cart: widget.cart,
+                      direct: widget.direct,
+                      receiveMethod:
+                      _receiveMethod == ReceiveMethod.DIRECT
+                          ? '0'
+                          : '1',
+                      option: _isCart
+                          ? _entireOptionForCart
+                          : _optionString +
+                          (_requestOptionController.text.isEmpty
+                              ? ''
+                              : '\n' + _requestOptionController.text),
+                      location: _receiveMethod == ReceiveMethod.DELIVERY
+                          ? _locationController.text
+                          : 'NULL',
+                    ),
+                  ),
+                );
               },
               child: Container(
                 alignment: Alignment.center,
@@ -550,7 +682,7 @@ class _OrderPageState extends State<OrderPage> {
                     color: Color(0xFF9EE1E5)),
                 width: size.width,
                 child: Text(
-                  '${NumberFormatter.formatPrice((_getOriginTotalPrice() - _getTotalDiscount()))} 원 결제 및 구매하기',
+                  '${NumberFormatter.formatPrice(_getOriginTotalPrice() - _getTotalDiscount() - _total_sum())} 원 결제 및 구매하기',
                   style: TextStyle(
                       fontWeight: FontWeight.bold, color: Colors.black),
                 ),

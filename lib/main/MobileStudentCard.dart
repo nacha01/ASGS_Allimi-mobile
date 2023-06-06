@@ -16,7 +16,7 @@ class _MobileStudentCardState extends State<MobileStudentCard> {
   String? _prefixId = 'A';
 
   void onChanged(value) {
-    print(value);
+   // print(value);
     setState(() {
       _prefixId = value;
     });

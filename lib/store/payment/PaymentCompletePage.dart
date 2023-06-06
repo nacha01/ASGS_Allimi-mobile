@@ -54,6 +54,7 @@ class _PaymentCompletePageState extends State<PaymentCompletePage> {
 
   /// 주문을 등록하는 요청
   Future<bool> _addOrderRequest() async {
+    print("여기는 paymentcompletepage입니다.");
     String url = '${ApiUtil.API_HOST}arlimi_addOrder.php';
     final response = await http.post(Uri.parse(url), body: <String, String?>{
       'oid': widget.responseData!['Moid'],
