@@ -4,7 +4,7 @@ class Category {
   static final c2 = '과자';
   static final c3 = '아이스크림';
   static final c4 = '커피';
-  static final c5 = '생필품';
+  static final c5 = '기타';
   static final categoryIndexToStringMap = {
     0: '$c1',
     1: '$c2',
