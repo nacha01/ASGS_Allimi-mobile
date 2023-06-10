@@ -146,7 +146,7 @@ class _OrderPageState extends State<OrderPage> {
         checksum.add(json.decode(cartProduct[i]));
       }
       for (int i = 0; i < checksum.length; ++i) {
-        if (int.parse(widget.cart![i]!['quantity']) >=
+        if (int.parse(widget.cart![i]!['quantity']) >
             (int.parse(checksum[i]!['stockCount']))) {
           _checkMessage =
           '"${widget.cart![i]!['prodName']}"상품의 선택 수량이 현재 재고보다 많습니다.';
