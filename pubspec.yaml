@@ -34,6 +34,7 @@ dependencies:
   intl: ^0.18.0
   flutter_swiper_view: ^1.1.8
   yaml: ^3.1.1
+  selectable_autolink_text: ^2.5.0
 
   # for shopping mall
   image_picker: ^0.8.6+1

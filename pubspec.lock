@@ -552,6 +552,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.27.7"
+  selectable_autolink_text:
+    dependency: "direct main"
+    description:
+      name: selectable_autolink_text
+      sha256: ee26c030588f84626c742de18ecb1143edb92c74416d79efd4b34cfd1a7ab903
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.5.0"
   shared_preferences:
     dependency: "direct main"
     description:
