@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:asgshighschool/component/ThemeAppBar.dart';
 import 'package:asgshighschool/data/category.dart';
+import 'package:selectable_autolink_text/selectable_autolink_text.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../api/ApiUtil.dart';
 import '../../component/CorporationComp.dart';
 import '../../component/DefaultButtonComp.dart';
@@ -277,10 +279,18 @@ class _DetailProductPageState extends State<DetailProductPage> {
                                   blurRadius: 7,
                                   offset: Offset(0, 6))
                             ]),
-                        child: Text(
+                        child: SelectableAutoLinkText(
                           '${widget.product!.prodInfo}',
                           textScaleFactor: 2,
                           style: TextStyle(height: 1.3),
+                          linkStyle: TextStyle(color: Colors.blue),
+                          onTransformDisplayLink: AutoLinkUtils.shrinkUrl,
+                          onTap: (url) async {
+                            final uri = Uri.parse(url);
+                            if(await canLaunchUrl(uri)){
+                              launchUrl(uri);
+                            }
+                          },
                         )),
                     SizedBox(
                       height: size.height * 0.03,
@@ -769,7 +779,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
             style: TextStyle(fontSize: 13),
           )),
           Text(
-              '${int.parse(data['optionPrice']) < 0 ? '-' : '+'}${NumberFormatter.formatPrice(int.parse(data['optionPrice']))}원')
+              '${int.parse(data['optionPrice']) < 0 ? '' : '+'}${NumberFormatter.formatPrice(int.parse(data['optionPrice']))}원')
         ],
       ),
     );
