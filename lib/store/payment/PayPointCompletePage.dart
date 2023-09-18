@@ -52,18 +52,12 @@ class _PayPointCompletePageState extends State<PayPointCompletePage> {
 
   @override
   void initState() {
-    print("가격");
-    print(widget.totalPrice);
-
     _isCreditSuccess =
     widget.responseData!['ResultCode'] == '3001' ? true : false;
     _resultMessage = widget.responseData!['ResultMsg'];
     _resultCode = widget.responseData!['ResultCode'];
     super.initState();
-    print('물건값init: ');
     _generatedOID = DateTime.now().millisecondsSinceEpoch.toString();
-    print(_generatedOID);
-    print(widget.totalPrice);
     _processAfterPaying();
   }
 
@@ -122,16 +116,8 @@ class _PayPointCompletePageState extends State<PayPointCompletePage> {
   }
   /// 주문을 등록하는 요청
   Future<bool> _addOrderRequest() async {
-    print("여기는 paymentcompletepage입니다.");
-    print('물건값: ');
-    print(widget.totalPrice);
     String url = '${ApiUtil.API_HOST}arlimi_addOrder.php';
-    print("여기까지 왔나2nd"+url);
-print("here1");
-print(widget.user!.uid);
-print("here2");
-    print(widget.user);
-    print("here3");
+
     final response = await http.post(Uri.parse(url), body: <String, String>{
       'oid': _generatedOID,
       'uid': widget.user!.uid!,
