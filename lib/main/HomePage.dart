@@ -235,8 +235,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   ])),
           Container(
             child: Padding(
-              padding:
-                  EdgeInsets.only(left: 5, bottom: 5, top: 5, right: 5),
+              padding: EdgeInsets.only(left: 5, bottom: 5, top: 5, right: 5),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -291,7 +290,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           organizer: '푸러푸러 퀴즈',
                           imageUrl: 'assets/images/quiz.jpg',
                           siteUrl:
-                          'http://puhaha.pe.kr/quiz/puhaha_quiz.php?s_id=${widget.user!.uid}',
+                              'http://puhaha.pe.kr/quiz/puhaha_quiz.php?s_id=${widget.user!.uid}',
                           upTitle: '푸러푸러 퀴즈'),
                       belowBox(
                           context: context,
@@ -299,7 +298,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           organizer: '설문 조사',
                           imageUrl: 'assets/images/sulmun.jpg',
                           siteUrl:
-                          'http://puhaha.pe.kr/quiz/sulmun.php',
+                              'http://puhaha.pe.kr/quiz/sulmun.php?sulmun=${widget.user!.uid}',
                           upTitle: '설문 조사'),
                     ],
                   ),
@@ -795,7 +794,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         title: title,
                         baseUrl: _isAndroid
                             ? url
-                            : 'http://nacha01.dothome.co.kr/school/redirect_22.php?${url.split('?')[1]}',
+                            : 'http://nacha01.dothome.co.kr/school/redirect_22.php?${url.split('?')[1].isEmpty ? "" : url.split('?')[1]}',
                       )));
         });
   }
@@ -823,7 +822,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                   title: title,
                                   baseUrl: _isAndroid
                                       ? siteUrl
-                                      : 'http://nacha01.dothome.co.kr/school/redirect_22.php?${siteUrl!.split('?')[1]}',
+                                      : 'http://nacha01.dothome.co.kr/school/redirect_22.php?${siteUrl!.split('?')[1].isEmpty ? "" : siteUrl.split('?')[1]}',
                                 )));
                   },
                   child: Stack(alignment: Alignment.topLeft, children: <Widget>[
