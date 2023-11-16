@@ -1,6 +1,7 @@
 import 'package:asgshighschool/component/ThemeAppBar.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:asgshighschool/games/RecordListPage.dart';
+import 'package:asgshighschool/games/tic_tac_toe/TicTacToeGamePage.dart';
 import 'package:flutter/material.dart';
 
 import '../component/DefaultButtonComp.dart';
@@ -28,7 +29,7 @@ class _GameListPageState extends State<GameListPage> {
               _boardLayout(
                   title: '기억력 게임',
                   info:
-                      '순발력과 기억력을 요구합니다. \n 가장 최근에 출현한 도형을 클릭하여 제한시간 안에 최대한 많은 도형을 클릭하세요! ',
+                      '순발력과 기억력을 요구합니다. \n가장 최근에 출현한 도형을 클릭하여 제한시간 안에 최대한 많은 도형을 클릭하세요! ',
                   size: size,
                   press: () {
                     Navigator.push(
@@ -46,7 +47,18 @@ class _GameListPageState extends State<GameListPage> {
                                   user: widget.user,
                                   gameCode: 1,
                                 )));
-                  })
+                  }),
+              _boardLayout(
+                  title: '틱택토',
+                  info:
+                      '1대1로 3x3 보드에서 X와 O로 차례대로 표시하여, 먼저 가로, 세로, 대각선으로 같은 기호를 놓으세요!',
+                  press: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => TicTacToeGamePage()));
+                  },
+                  size: size)
             ],
             crossAxisCount: 2,
             mainAxisSpacing: size.height * 0.025,

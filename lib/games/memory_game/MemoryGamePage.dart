@@ -201,7 +201,7 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
     setState(() {
       _shapeList = _emptyList;
     });
-    await Future.delayed(Duration(milliseconds: 400), () {
+    await Future.delayed(Duration(milliseconds: 200), () {
       setState(() {
         _shapeList = tmp;
         _shapeList.add(obj);
@@ -480,7 +480,7 @@ class _MemoryGamePageState extends State<MemoryGamePage> {
           Divider(thickness: 2),
           Expanded(
               child: Container(
-                  color: Colors.black,
+                  color: Color(0xFF00061a),
                   width: size.width,
                   padding: EdgeInsets.all(size.width * 0.02),
                   child: Stack(children: _shapeList)))
