@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:developer';
+import 'package:asgshighschool/main/MealsAPI.dart';
 import 'package:asgshighschool/notification/NotificationManager.dart';
 import 'package:asgshighschool/util/GlobalVariable.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'data/provider/exist_cart.dart';
 import 'data/provider/renew_user.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +23,9 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await dotenv.load(fileName: ".env");
+  MealsAPI.API_KEY = dotenv.env['api_key'] ?? "";
   // Background 실행
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   await Firebase.initializeApp();

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:asgshighschool/data/foreground_noti.dart';
+import 'package:asgshighschool/main/MealsAPI.dart';
 import 'package:asgshighschool/notification/NotificationAction.dart';
 import 'package:asgshighschool/util/GlobalVariable.dart';
 import 'package:flutter_swiper_view/flutter_swiper_view.dart';
@@ -52,11 +53,12 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
   var _swiperController = SwiperController();
   TextEditingController _withdrawPasswordController = TextEditingController();
   late SharedPreferences _pref;
+  String _todayMeals = "";
 
   @override
   void initState() {
     GlobalVariable.isAuthorized = true;
-
+    _initMeals();
     super.initState();
     _getBannerImage();
     _checkUserToken(widget.user!.uid);
@@ -74,6 +76,13 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
         _isMoved = true;
         _goDuruDuru();
       }
+    });
+  }
+
+  Future<void> _initMeals() async {
+    var result = await MealsAPI().fetchTodayMealInfo();
+    setState(() {
+      _todayMeals = result;
     });
   }
 
@@ -176,6 +185,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     Widget homeTab = SingleChildScrollView(
       child: Column(
         children: <Widget>[
@@ -238,26 +248,64 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
               padding: EdgeInsets.only(left: 5, bottom: 5, top: 5, right: 5),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: size.width * 0.03),
+                    child: Text(
+                      '오늘의 급식',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    ),
+                  ),
+                  DefaultButtonComp(
+                    onPressed: () {
+                      var siteUrl =
+                          "http://www.asgs.hs.kr/meal/formList.do?menugrp=040801";
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => WebViewPage(
+                                    title: '오늘의 급식 메뉴',
+                                    baseUrl: _isAndroid
+                                        ? siteUrl
+                                        : 'http://nacha01.dothome.co.kr/school/redirect_22.php?${siteUrl!.split('?')[1].isEmpty ? "" : siteUrl.split('?')[1]}',
+                                  )));
+                    },
+                    child: Container(
+                      child: Text(_todayMeals),
+                      padding: EdgeInsets.all(size.width * 0.02),
+                      alignment: Alignment.centerLeft,
+                      decoration: BoxDecoration(
+                          boxShadow: [BoxShadow(blurRadius: 1)],
+                          color: Colors.grey[200],
+                          border: Border.all(width: 2),
+                          borderRadius: BorderRadius.circular(8)),
+                    ),
+                  ),
+                  SizedBox(
+                    height: size.height * 0.01,
+                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: <Widget>[
                       belowBox(
                           context: context,
-                          title: '오늘의 급식 메뉴',
-                          organizer: '오늘의 급식 메뉴',
-                          imageUrl: 'assets/images/geubsig.jpg',
+                          title: '푸러푸러 퀴즈',
+                          organizer: '푸러푸러 퀴즈',
+                          imageUrl: 'assets/images/quiz.jpg',
                           siteUrl:
-                              'http://www.asgs.hs.kr/meal/formList.do?menugrp=040801',
-                          upTitle: '오늘의 식단'),
+                              'http://puhaha.pe.kr/quiz/puhaha_quiz.php?s_id=${widget.user!.uid}',
+                          upTitle: '푸러푸러 퀴즈'),
                       belowBox(
                           context: context,
-                          title: '이 달의 일정',
-                          organizer: '이 달의 일정',
-                          imageUrl: 'assets/images/haengsa.jpg',
+                          title: '설문 조사',
+                          organizer: '설문 조사',
+                          imageUrl: 'assets/images/sulmun.jpg',
                           siteUrl:
-                              'http://www.asgs.hs.kr/diary/formList.do?menugrp=030500&searchMasterSid=1',
-                          upTitle: '이달의 일정'),
+                              'http://puhaha.pe.kr/quiz/sulmun.php?sulmun=${widget.user!.uid}',
+                          upTitle: '설문 조사'),
                     ],
                   ),
                   Row(
@@ -286,20 +334,12 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     children: <Widget>[
                       belowBox(
                           context: context,
-                          title: '푸러푸러 퀴즈',
-                          organizer: '푸러푸러 퀴즈',
-                          imageUrl: 'assets/images/quiz.jpg',
+                          title: '이 달의 일정',
+                          organizer: '이 달의 일정',
+                          imageUrl: 'assets/images/haengsa.jpg',
                           siteUrl:
-                              'http://puhaha.pe.kr/quiz/puhaha_quiz.php?s_id=${widget.user!.uid}',
-                          upTitle: '푸러푸러 퀴즈'),
-                      belowBox(
-                          context: context,
-                          title: '설문 조사',
-                          organizer: '설문 조사',
-                          imageUrl: 'assets/images/sulmun.jpg',
-                          siteUrl:
-                              'http://puhaha.pe.kr/quiz/sulmun.php?sulmun=${widget.user!.uid}',
-                          upTitle: '설문 조사'),
+                              'http://www.asgs.hs.kr/diary/formList.do?menugrp=030500&searchMasterSid=1',
+                          upTitle: '이달의 일정'),
                     ],
                   ),
                 ],
