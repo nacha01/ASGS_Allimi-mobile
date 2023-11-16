@@ -35,6 +35,8 @@ dependencies:
   flutter_swiper_view: ^1.1.8
   yaml: ^3.1.1
   selectable_autolink_text: ^2.5.0
+  flutter_dotenv: ^5.1.0
+  xml: ^6.1.0
 
   # for shopping mall
   image_picker: ^0.8.6+1
@@ -77,6 +79,7 @@ flutter:
     - assets/images/
     - assets/audio/
     - pubspec.yaml
+    - .env
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 
