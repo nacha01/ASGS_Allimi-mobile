@@ -19,10 +19,11 @@ import '../util/ToastMessage.dart';
 import '../util/UpperCaseTextFormatter.dart';
 
 class StoreHomePage extends StatefulWidget {
-  StoreHomePage({this.user, this.existCart});
+  StoreHomePage({this.user, this.existCart, required this.categories});
 
   final User? user;
   final bool? existCart;
+  final List<Category> categories;
 
   @override
   _StoreHomePageState createState() => _StoreHomePageState();
@@ -32,538 +33,44 @@ class _StoreHomePageState extends State<StoreHomePage>
     with TickerProviderStateMixin {
   TextEditingController _searchController = TextEditingController();
   TextEditingController _adminKeyController = TextEditingController();
-  TabController? _tabController;
+  late TabController _tabController;
   ScrollController? _scrollViewController;
   int _selectedCategory = 0; // MENU 탭에서 어느 카테고리인지에 대한 값
-  int? _selectRadio = 0; // 정렬 기준 선택 라디오 버튼 값
+  int _selectRadio = 0; // 정렬 기준 선택 라디오 버튼 값
   List _sortTitleList = ['등록순', '이름순', '가격순']; // 정렬 기준 라디오 버튼 title 리스트
   bool _isAsc = true; // true : 오름차순 , false : 내림차순
   bool _isSearch = false; // 검색 기능 사용했는지 판단
   bool _isLoading = true; // 상품 데이터 가져오는 동안의 로딩 상태
-
-  List<Product> _searchProductList = [];
-  List<Widget> _searchProductLayoutList = [];
+  int _isBest = 0;
+  int _isNew = 0;
 
   List<Product> _productList = [];
   List<Widget> _productLayoutList = [];
 
-  List<Product> _newProductList = [];
-  List<Widget> _newProductLayoutList = [];
-
-  List<Product> _bestProductList = [];
-  List<Widget> _bestProductLayoutList = [];
-
-  List<Product> _foodProductList = [];
-  List<Widget> _foodProductLayoutList = [];
-
-  List<Product> _snackProductList = [];
-  List<Widget> _snackProductLayoutList = [];
-
-  List<Product> _beverageProductList = [];
-  List<Widget> _beverageProductLayoutList = [];
-
-  List<Product> _stationeryProductList = [];
-  List<Widget> _stationeryProductLayoutList = [];
-
-  List<Product> _handmadeProductList = [];
-  List<Widget> _handmadeProductLayoutList = [];
-
-  /// 전체 상품을 카테고리 별 상품, 베스트 상품, 신규 상품 별로 각 List 에 분류
-  void _groupingProduct(Size size) {
-    for (int i = 0; i < _productList.length; ++i) {
-      if (_productList[i].isBest == 1 && _productList[i].isNew == 1) {
-        _bestProductList.add(_productList[i]);
-        _newProductList.add(_productList[i]);
-      } else if (_productList[i].isBest == 1) {
-        _bestProductList.add(_productList[i]);
-      } else if (_productList[i].isNew == 1) {
-        _newProductList.add(_productList[i]);
-      }
-      switch (_productList[i].category) {
-        case 0: // 음식류
-          _foodProductList.add(_productList[i]);
-          break;
-        case 1: // 간식류
-          _snackProductList.add(_productList[i]);
-          break;
-        case 2: // 음료류
-          _beverageProductList.add(_productList[i]);
-          break;
-        case 3: // 문구류
-          _stationeryProductList.add(_productList[i]);
-          break;
-        case 4: // 핸드메이드
-          _handmadeProductList.add(_productList[i]);
-          break;
-      }
-    }
-    getBestProdLayout(size);
-    getNewProdLayout(size);
-    getFoodProdLayout(size);
-    getSnackProdLayout(size);
-    getBeverageProdLayout(size);
-    getStationeryProdLayout(size);
-    getHandmadeProdLayout(size);
-  }
-
-  /// 모든 각 상품 리스트를 method 에 따라 정렬시키는 작업
-  /// @param : 정렬 기준 정수 값
-  /// 0 : 등록순 - prodID 필드 기준으로 정렬
-  /// 1 : 이름순 - prodName 필드 기준으로 정렬
-  /// 2 : 가격순 - price 필드 기준으로 정렬
-  void _sortProductByIndex(int? sortMethod, Size size) {
-    switch (sortMethod) {
-      case 0:
-        _productList.sort((a, b) => a.prodID.compareTo(b.prodID));
-        _productLayoutList.clear();
-        if (!_isAsc) _productList = List.from(_productList.reversed);
-        for (int i = 0; i < _productList.length; ++i) {
-          _productLayoutList.add(itemTile(
-              _productList[i].imgUrl1!,
-              _productList[i].price,
-              _productList[i].prodName!,
-              false,
-              _productList[i],
-              size));
-        }
-        _foodProductList.sort((a, b) => a.prodID.compareTo(b.prodID));
-        _foodProductLayoutList.clear();
-        if (!_isAsc) _foodProductList = List.from(_foodProductList.reversed);
-        for (int i = 0; i < _foodProductList.length; ++i) {
-          _foodProductLayoutList.add(itemTile(
-              _foodProductList[i].imgUrl1!,
-              _foodProductList[i].price,
-              _foodProductList[i].prodName!,
-              false,
-              _foodProductList[i],
-              size));
-        }
-        _snackProductList.sort((a, b) => a.prodID.compareTo(b.prodID));
-        _snackProductLayoutList.clear();
-        if (!_isAsc) _snackProductList = List.from(_snackProductList.reversed);
-        for (int i = 0; i < _snackProductList.length; ++i) {
-          _snackProductLayoutList.add(itemTile(
-              _snackProductList[i].imgUrl1!,
-              _snackProductList[i].price,
-              _snackProductList[i].prodName!,
-              false,
-              _snackProductList[i],
-              size));
-        }
-        _beverageProductList.sort((a, b) => a.prodID.compareTo(b.prodID));
-        _beverageProductLayoutList.clear();
-        if (!_isAsc)
-          _beverageProductList = List.from(_beverageProductList.reversed);
-        for (int i = 0; i < _beverageProductList.length; ++i) {
-          _beverageProductLayoutList.add(itemTile(
-              _beverageProductList[i].imgUrl1!,
-              _beverageProductList[i].price,
-              _beverageProductList[i].prodName!,
-              false,
-              _beverageProductList[i],
-              size));
-        }
-        _stationeryProductList.sort((a, b) => a.prodID.compareTo(b.prodID));
-        _stationeryProductLayoutList.clear();
-        if (!_isAsc)
-          _stationeryProductList = List.from(_stationeryProductList.reversed);
-        for (int i = 0; i < _stationeryProductList.length; ++i) {
-          _stationeryProductLayoutList.add(itemTile(
-              _stationeryProductList[i].imgUrl1!,
-              _stationeryProductList[i].price,
-              _stationeryProductList[i].prodName!,
-              false,
-              _stationeryProductList[i],
-              size));
-        }
-        _handmadeProductList.sort((a, b) => a.prodID.compareTo(b.prodID));
-        _handmadeProductLayoutList.clear();
-        if (!_isAsc)
-          _handmadeProductList = List.from(_handmadeProductList.reversed);
-        for (int i = 0; i < _handmadeProductList.length; ++i) {
-          _handmadeProductLayoutList.add(itemTile(
-              _handmadeProductList[i].imgUrl1!,
-              _handmadeProductList[i].price,
-              _handmadeProductList[i].prodName!,
-              false,
-              _handmadeProductList[i],
-              size));
-        }
-        _bestProductList.sort((a, b) => a.prodID.compareTo(b.prodID));
-        _bestProductLayoutList.clear();
-        if (!_isAsc) _bestProductList = List.from(_bestProductList.reversed);
-        for (int i = 0; i < _bestProductList.length; ++i) {
-          _bestProductLayoutList.add(itemTile(
-              _bestProductList[i].imgUrl1!,
-              _bestProductList[i].price,
-              _bestProductList[i].prodName!,
-              false,
-              _bestProductList[i],
-              size));
-        }
-
-        _newProductList.sort((a, b) => a.prodID.compareTo(b.prodID));
-        _newProductLayoutList.clear();
-        if (!_isAsc) _newProductList = List.from(_newProductList.reversed);
-        for (int i = 0; i < _newProductList.length; ++i) {
-          _newProductLayoutList.add(itemTile(
-              _newProductList[i].imgUrl1!,
-              _newProductList[i].price,
-              _newProductList[i].prodName!,
-              false,
-              _newProductList[i],
-              size));
-        }
-        break;
-      case 1:
-        _productList.sort((a, b) => a.prodName!.compareTo(b.prodName!));
-        _productLayoutList.clear();
-        if (!_isAsc) _productList = List.from(_productList.reversed);
-        for (int i = 0; i < _productList.length; ++i) {
-          _productLayoutList.add(itemTile(
-              _productList[i].imgUrl1!,
-              _productList[i].price,
-              _productList[i].prodName!,
-              false,
-              _productList[i],
-              size));
-        }
-        _foodProductList.sort((a, b) => a.prodName!.compareTo(b.prodName!));
-        _foodProductLayoutList.clear();
-        if (!_isAsc) _foodProductList = List.from(_foodProductList.reversed);
-        for (int i = 0; i < _foodProductList.length; ++i) {
-          _foodProductLayoutList.add(itemTile(
-              _foodProductList[i].imgUrl1!,
-              _foodProductList[i].price,
-              _foodProductList[i].prodName!,
-              false,
-              _foodProductList[i],
-              size));
-        }
-        _snackProductList.sort((a, b) => a.prodName!.compareTo(b.prodName!));
-        _snackProductLayoutList.clear();
-        if (!_isAsc) _snackProductList = List.from(_snackProductList.reversed);
-        for (int i = 0; i < _snackProductList.length; ++i) {
-          _snackProductLayoutList.add(itemTile(
-              _snackProductList[i].imgUrl1!,
-              _snackProductList[i].price,
-              _snackProductList[i].prodName!,
-              false,
-              _snackProductList[i],
-              size));
-        }
-        _beverageProductList.sort((a, b) => a.prodName!.compareTo(b.prodName!));
-        _beverageProductLayoutList.clear();
-        if (!_isAsc)
-          _beverageProductList = List.from(_beverageProductList.reversed);
-        for (int i = 0; i < _beverageProductList.length; ++i) {
-          _beverageProductLayoutList.add(itemTile(
-              _beverageProductList[i].imgUrl1!,
-              _beverageProductList[i].price,
-              _beverageProductList[i].prodName!,
-              false,
-              _beverageProductList[i],
-              size));
-        }
-        _stationeryProductList
-            .sort((a, b) => a.prodName!.compareTo(b.prodName!));
-        _stationeryProductLayoutList.clear();
-        if (!_isAsc)
-          _stationeryProductList = List.from(_stationeryProductList.reversed);
-        for (int i = 0; i < _stationeryProductList.length; ++i) {
-          _stationeryProductLayoutList.add(itemTile(
-              _stationeryProductList[i].imgUrl1!,
-              _stationeryProductList[i].price,
-              _stationeryProductList[i].prodName!,
-              false,
-              _stationeryProductList[i],
-              size));
-        }
-        _handmadeProductList.sort((a, b) => a.prodName!.compareTo(b.prodName!));
-        _handmadeProductLayoutList.clear();
-        if (!_isAsc)
-          _handmadeProductList = List.from(_handmadeProductList.reversed);
-        for (int i = 0; i < _handmadeProductList.length; ++i) {
-          _handmadeProductLayoutList.add(itemTile(
-              _handmadeProductList[i].imgUrl1!,
-              _handmadeProductList[i].price,
-              _handmadeProductList[i].prodName!,
-              false,
-              _handmadeProductList[i],
-              size));
-        }
-        _bestProductList.sort((a, b) => a.prodName!.compareTo(b.prodName!));
-        _bestProductLayoutList.clear();
-        if (!_isAsc) _bestProductList = List.from(_bestProductList.reversed);
-        for (int i = 0; i < _bestProductList.length; ++i) {
-          _bestProductLayoutList.add(itemTile(
-              _bestProductList[i].imgUrl1!,
-              _bestProductList[i].price,
-              _bestProductList[i].prodName!,
-              false,
-              _bestProductList[i],
-              size));
-        }
-
-        _newProductList.sort((a, b) => a.prodName!.compareTo(b.prodName!));
-        _newProductLayoutList.clear();
-        if (!_isAsc) _newProductList = List.from(_newProductList.reversed);
-        for (int i = 0; i < _newProductList.length; ++i) {
-          _newProductLayoutList.add(itemTile(
-              _newProductList[i].imgUrl1!,
-              _newProductList[i].price,
-              _newProductList[i].prodName!,
-              false,
-              _newProductList[i],
-              size));
-        }
-        break;
-      case 2:
-        _productList.sort((a, b) => a.price.compareTo(b.price));
-        _productLayoutList.clear();
-        if (!_isAsc) _productList = List.from(_productList.reversed);
-        for (int i = 0; i < _productList.length; ++i) {
-          _productLayoutList.add(itemTile(
-              _productList[i].imgUrl1!,
-              _productList[i].price,
-              _productList[i].prodName!,
-              false,
-              _productList[i],
-              size));
-        }
-        _foodProductList.sort((a, b) => a.price.compareTo(b.price));
-        _foodProductLayoutList.clear();
-        if (!_isAsc) _foodProductList = List.from(_foodProductList.reversed);
-        for (int i = 0; i < _foodProductList.length; ++i) {
-          _foodProductLayoutList.add(itemTile(
-              _foodProductList[i].imgUrl1!,
-              _foodProductList[i].price,
-              _foodProductList[i].prodName!,
-              false,
-              _foodProductList[i],
-              size));
-        }
-        _snackProductList.sort((a, b) => a.price.compareTo(b.price));
-        _snackProductLayoutList.clear();
-        if (!_isAsc) _snackProductList = List.from(_snackProductList.reversed);
-        for (int i = 0; i < _snackProductList.length; ++i) {
-          _snackProductLayoutList.add(itemTile(
-              _snackProductList[i].imgUrl1!,
-              _snackProductList[i].price,
-              _snackProductList[i].prodName!,
-              false,
-              _snackProductList[i],
-              size));
-        }
-        _beverageProductList.sort((a, b) => a.price.compareTo(b.price));
-        _beverageProductLayoutList.clear();
-        if (!_isAsc)
-          _beverageProductList = List.from(_beverageProductList.reversed);
-        for (int i = 0; i < _beverageProductList.length; ++i) {
-          _beverageProductLayoutList.add(itemTile(
-              _beverageProductList[i].imgUrl1!,
-              _beverageProductList[i].price,
-              _beverageProductList[i].prodName!,
-              false,
-              _beverageProductList[i],
-              size));
-        }
-        _stationeryProductList.sort((a, b) => a.price.compareTo(b.price));
-        _stationeryProductLayoutList.clear();
-        if (!_isAsc)
-          _stationeryProductList = List.from(_stationeryProductList.reversed);
-        for (int i = 0; i < _stationeryProductList.length; ++i) {
-          _stationeryProductLayoutList.add(itemTile(
-              _stationeryProductList[i].imgUrl1!,
-              _stationeryProductList[i].price,
-              _stationeryProductList[i].prodName!,
-              false,
-              _stationeryProductList[i],
-              size));
-        }
-        _handmadeProductList.sort((a, b) => a.price.compareTo(b.price));
-        _handmadeProductLayoutList.clear();
-        if (!_isAsc)
-          _handmadeProductList = List.from(_handmadeProductList.reversed);
-        for (int i = 0; i < _handmadeProductList.length; ++i) {
-          _handmadeProductLayoutList.add(itemTile(
-              _handmadeProductList[i].imgUrl1!,
-              _handmadeProductList[i].price,
-              _handmadeProductList[i].prodName!,
-              false,
-              _handmadeProductList[i],
-              size));
-        }
-        _bestProductList.sort((a, b) => a.price.compareTo(b.price));
-        _bestProductLayoutList.clear();
-        if (!_isAsc) _bestProductList = List.from(_bestProductList.reversed);
-        for (int i = 0; i < _bestProductList.length; ++i) {
-          _bestProductLayoutList.add(itemTile(
-              _bestProductList[i].imgUrl1!,
-              _bestProductList[i].price,
-              _bestProductList[i].prodName!,
-              false,
-              _bestProductList[i],
-              size));
-        }
-
-        _newProductList.sort((a, b) => a.price.compareTo(b.price));
-        _newProductLayoutList.clear();
-        if (!_isAsc) _newProductList = List.from(_newProductList.reversed);
-        for (int i = 0; i < _newProductList.length; ++i) {
-          _newProductLayoutList.add(itemTile(
-              _newProductList[i].imgUrl1!,
-              _newProductList[i].price,
-              _newProductList[i].prodName!,
-              false,
-              _newProductList[i],
-              size));
-        }
-        break;
-    }
-    setState(() {});
-  }
-
-  /// parameter로 들어온 검색하고 싶은 키워드로 상품들을 검색하여 검색 List 에 추가하는 작업
-  /// @param : 검색하고자 하는 문자열
-  void _searchProducts(String toSearch, Size size) {
-    _tabController!.index = 0;
-    _isSearch = true;
-    _searchProductList.clear();
-    _searchProductLayoutList.clear();
-    for (int i = 0; i < _productList.length; ++i) {
-      if (_productList[i].prodName!.contains('$toSearch')) {
-        _searchProductList.add(_productList[i]);
-        _searchProductLayoutList.add(itemTile(
-            _productList[i].imgUrl1!,
-            _productList[i].price,
-            _productList[i].prodName!,
-            false,
-            _productList[i],
-            size));
-      }
-    }
-    setState(() {});
-  }
-
-  /// 신규 상품 List 를 토대로 신규 상품 Widget List 에 추가
-  void getNewProdLayout(Size size) {
-    for (int i = 0; i < _newProductList.length; ++i) {
-      var tmp = _newProductList[i];
-      _newProductLayoutList.add(
-          itemTile(tmp.imgUrl1!, tmp.price, tmp.prodName!, false, tmp, size));
-    }
-  }
-
-  /// 베스트 상품 List 를 토대로 신규 상품 Widget List 에 추가
-  void getBestProdLayout(Size size) {
-    for (int i = 0; i < _bestProductList.length; ++i) {
-      var tmp = _bestProductList[i];
-      _bestProductLayoutList.add(
-          itemTile(tmp.imgUrl1!, tmp.price, tmp.prodName!, false, tmp, size));
-    }
-  }
-
-  /// 음식류 상품 List 를 토대로 신규 상품 Widget List 에 추가
-  void getFoodProdLayout(Size size) {
-    for (int i = 0; i < _foodProductList.length; ++i) {
-      var tmp = _foodProductList[i];
-      _foodProductLayoutList.add(
-          itemTile(tmp.imgUrl1!, tmp.price, tmp.prodName!, false, tmp, size));
-    }
-  }
-
-  /// 간식류 상품 List 를 토대로 신규 상품 Widget List 에 추가
-  void getSnackProdLayout(Size size) {
-    for (int i = 0; i < _snackProductList.length; ++i) {
-      var tmp = _snackProductList[i];
-      _snackProductLayoutList.add(
-          itemTile(tmp.imgUrl1!, tmp.price, tmp.prodName!, false, tmp, size));
-    }
-  }
-
-  /// 음료류 상품 List 를 토대로 신규 상품 Widget List 에 추가
-  void getBeverageProdLayout(Size size) {
-    for (int i = 0; i < _beverageProductList.length; ++i) {
-      var tmp = _beverageProductList[i];
-      _beverageProductLayoutList.add(
-          itemTile(tmp.imgUrl1!, tmp.price, tmp.prodName!, false, tmp, size));
-    }
-  }
-
-  /// 문구류 상품 List 를 토대로 신규 상품 Widget List 에 추가
-  void getStationeryProdLayout(Size size) {
-    for (int i = 0; i < _stationeryProductList.length; ++i) {
-      var tmp = _stationeryProductList[i];
-      _stationeryProductLayoutList.add(
-          itemTile(tmp.imgUrl1!, tmp.price, tmp.prodName!, false, tmp, size));
-    }
-  }
-
-  /// 핸드메이드 상품 List 를 토대로 신규 상품 Widget List 에 추가
-  void getHandmadeProdLayout(Size size) {
-    for (int i = 0; i < _handmadeProductList.length; ++i) {
-      var tmp = _handmadeProductList[i];
-      _handmadeProductLayoutList.add(
-          itemTile(tmp.imgUrl1!, tmp.price, tmp.prodName!, false, tmp, size));
-    }
-  }
-
-  /// MENU 탭에서 현재 보여지는 카테고리의 상품 개수를 반환
-  /// @param : 현재 카테고리 위치 index
-  int _getLengthOfCurrentCategory(int position) {
-    switch (position) {
-      case 0:
-        return _productLayoutList.length;
-      case 1:
-        return _foodProductLayoutList.length;
-      case 2:
-        return _snackProductLayoutList.length;
-      case 3:
-        return _beverageProductLayoutList.length;
-      case 4:
-        return _stationeryProductLayoutList.length;
-      case 5:
-        return _handmadeProductLayoutList.length;
-      default:
-        return -1;
-    }
-  }
-
-  /// product table에 있는 모든 상품 데이터를 요청
-  /// @param : X
-  /// @result : X [중간 과정에 상품을 분류하는 작업을 함]
-  Future<void> _getProducts() async {
-    String url = '${ApiUtil.API_HOST}arlimi_getProduct.php';
+  Future<void> _getProductsWithFilters(
+      String? sort, bool isAsc, int? isBest, int? isNew, int? category,
+      {String? keyword = null}) async {
+    String url = '${ApiUtil.API_HOST}arlimi_getProductsFilter.php?';
+    url += 'sort=${_convertSortStrategy(sort)}&';
+    url += (category == null || category == 0) ? '' : 'category=$category&';
+    url += (isBest == null || isBest == 0) ? '' : 'best=$isBest&';
+    url += (isNew == null || isNew == 0) ? '' : 'new=$isNew&';
+    url += (keyword == null || keyword == '') ? '' : 'keyword=$keyword&';
+    url += 'asc=${!isAsc}';
+    setState(() {
+      _isLoading = true;
+    });
+    await Future.delayed(Duration(milliseconds: 100));
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
-      if (response.body.contains('일일 트래픽을 모두 사용하였습니다.')) {
-        return;
-      }
-      String result = ApiUtil.getPureBody(response.bodyBytes);
-      List productList = json.decode(result);
+      List productList = json.decode(ApiUtil.getPureBody(response.bodyBytes));
       List<Product> prodObjects = [];
       for (int i = 0; i < productList.length; ++i) {
         prodObjects.add(Product.fromJson(json.decode(productList[i])));
       }
       _productList = prodObjects;
       _productLayoutList.clear();
-      _newProductLayoutList.clear();
-      _bestProductLayoutList.clear();
-      _newProductList.clear();
-      _bestProductList.clear();
-      _handmadeProductLayoutList.clear();
-      _handmadeProductList.clear();
-      _beverageProductList.clear();
-      _beverageProductLayoutList.clear();
-      _foodProductList.clear();
-      _foodProductLayoutList.clear();
-      _snackProductList.clear();
-      _snackProductLayoutList.clear();
-      _stationeryProductLayoutList.clear();
-      _stationeryProductList.clear();
-
       var size = MediaQuery.of(context).size;
       for (int i = 0; i < _productList.length; ++i) {
         var tmp = _productList[i];
@@ -571,11 +78,21 @@ class _StoreHomePageState extends State<StoreHomePage>
             itemTile(tmp.imgUrl1!, tmp.price, tmp.prodName!, false, tmp, size));
       }
       setState(() {
-        _groupingProduct(size);
-        _isAsc = true;
-        _selectRadio = 0;
         _isLoading = false;
       });
+    }
+  }
+
+  String _convertSortStrategy(String? sort) {
+    switch (sort) {
+      case '등록순':
+        return 'ID';
+      case '이름순':
+        return 'NAME';
+      case '가격순':
+        return 'PRICE';
+      default:
+        return 'ID';
     }
   }
 
@@ -596,8 +113,33 @@ class _StoreHomePageState extends State<StoreHomePage>
   @override
   void initState() {
     _tabController = TabController(length: 4, vsync: this);
+    _tabController.addListener(() async {
+      if (_tabController.index == 0) {
+        setState(() {
+          _isBest = 0;
+          _isNew = 0;
+        });
+        await _getProductsWithFilters(_sortTitleList[_selectRadio], _isAsc,
+            null, null, _selectedCategory);
+      } else if (_tabController.index == 1) {
+        setState(() {
+          _isBest = 1;
+          _isNew = 0;
+        });
+        await _getProductsWithFilters(_sortTitleList[_selectRadio], _isAsc,
+            _isBest, null, _selectedCategory);
+      } else if (_tabController.index == 2) {
+        setState(() {
+          _isBest = 0;
+          _isNew = 1;
+        });
+        await _getProductsWithFilters(_sortTitleList[_selectRadio], _isAsc,
+            null, _isNew, _selectedCategory);
+      }
+    });
     _scrollViewController = ScrollController();
-    _getProducts();
+    _getProductsWithFilters(
+        _sortTitleList[_selectRadio], _isAsc, null, null, null);
     super.initState();
   }
 
@@ -605,7 +147,10 @@ class _StoreHomePageState extends State<StoreHomePage>
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
     return RefreshIndicator(
-        onRefresh: _getProducts,
+        onRefresh: () async {
+          await _getProductsWithFilters(_sortTitleList[_selectRadio], _isAsc,
+              null, null, _selectedCategory);
+        },
         child: NestedScrollView(
             controller: _scrollViewController,
             headerSliverBuilder: (context, innerBoxIsScrolled) {
@@ -621,7 +166,7 @@ class _StoreHomePageState extends State<StoreHomePage>
                         alignment: Alignment.center,
                         child: DefaultButtonComp(
                             onPressed: () {
-                              _tabController!.index = 0;
+                              _tabController.index = 0;
                             },
                             child: Image.asset(
                                 'assets/images/duruduru_logo.png'))),
@@ -643,7 +188,7 @@ class _StoreHomePageState extends State<StoreHomePage>
             },
             body: TabBarView(controller: _tabController, children: [
               _isSearch
-                  ? _searchProductLayoutList.length == 0
+                  ? _productLayoutList.length == 0
                       ? Column(
                           children: [
                             SizedBox(height: size.height * 0.01),
@@ -672,8 +217,7 @@ class _StoreHomePageState extends State<StoreHomePage>
                           Expanded(
                               child: Container(
                                   child: GridView.builder(
-                                      itemCount:
-                                          _searchProductLayoutList.length,
+                                      itemCount: _productLayoutList.length,
                                       gridDelegate:
                                           SliverGridDelegateWithFixedCrossAxisCount(
                                               crossAxisCount: 2,
@@ -682,7 +226,7 @@ class _StoreHomePageState extends State<StoreHomePage>
                                               crossAxisSpacing:
                                                   size.width * 0.01),
                                       itemBuilder: (context, index) {
-                                        return _searchProductLayoutList[index];
+                                        return _productLayoutList[index];
                                       })))
                         ])
                   : _productLayoutList.length == 0
@@ -695,274 +239,51 @@ class _StoreHomePageState extends State<StoreHomePage>
                                   CircularProgressIndicator()
                                 ]))
                           : RefreshIndicator(
-                              onRefresh: _getProducts,
+                              onRefresh: () async {
+                                await _getProductsWithFilters(
+                                    _sortTitleList[_selectRadio],
+                                    _isAsc,
+                                    _isBest,
+                                    _isNew,
+                                    _selectedCategory);
+                              },
                               child: Column(children: [
                                 addProductForAdmin(size),
+                                _categorySelectionWidget(size),
                                 Expanded(
                                   child: Center(
                                       child: Text('상품이 없습니다.',
                                           style: TextStyle(
                                               fontWeight: FontWeight.bold,
                                               fontSize: 22))),
-                                )
+                                ),
+                                CorporationInfo(isOpenable: true)
                               ]))
                       : RefreshIndicator(
-                          onRefresh: _getProducts,
+                          onRefresh: () async {
+                            await _getProductsWithFilters(
+                                _sortTitleList[_selectRadio],
+                                _isAsc,
+                                _isBest,
+                                _isNew,
+                                _selectedCategory);
+                          },
                           child: Column(
                             children: [
                               addProductForAdmin(size),
-                              Card(
-                                  elevation: 2,
-                                  child: Container(
-                                      margin: EdgeInsets.all(5),
-                                      height: size.height * 0.085,
-                                      child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            GestureDetector(
-                                                onTap: () {
-                                                  setState(() {
-                                                    if (_selectedCategory != 1)
-                                                      _selectedCategory = 1;
-                                                    else
-                                                      _selectedCategory = 0;
-                                                  });
-                                                },
-                                                child: Container(
-                                                    width: size.width * 0.19,
-                                                    child: Column(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
-                                                        children: [
-                                                          Container(
-                                                              child: Image.asset(
-                                                                  _selectedCategory ==
-                                                                          1
-                                                                      ? "assets/images/new_drink_on_icon.jpg"
-                                                                      : "assets/images/new_drink_icon.jpg"),
-                                                              height:
-                                                                  size.height *
-                                                                      0.06),
-                                                          Text('${Category.c1}',
-                                                              style: TextStyle(
-                                                                  fontSize: 12,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                  color: _selectedCategory ==
-                                                                          1
-                                                                      ? Color(
-                                                                          0xFF9EE1E5)
-                                                                      : Colors
-                                                                          .black))
-                                                        ]))),
-                                            GestureDetector(
-                                                onTap: () {
-                                                  setState(() {
-                                                    if (_selectedCategory != 2)
-                                                      _selectedCategory = 2;
-                                                    else
-                                                      _selectedCategory = 0;
-                                                  });
-                                                },
-                                                child: Container(
-                                                    width: size.width * 0.19,
-                                                    child: Column(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
-                                                        children: [
-                                                          Container(
-                                                              child: Image.asset(
-                                                                  _selectedCategory ==
-                                                                          2
-                                                                      ? "assets/images/snack_on_icon.jpg"
-                                                                      : "assets/images/snack_icon.jpg"),
-                                                              height:
-                                                                  size.height *
-                                                                      0.06),
-                                                          Text('${Category.c2}',
-                                                              style: TextStyle(
-                                                                  fontSize: 12,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                  color: _selectedCategory ==
-                                                                          2
-                                                                      ? Color(
-                                                                          0xFF9EE1E5)
-                                                                      : Colors
-                                                                          .black))
-                                                        ]))),
-                                            GestureDetector(
-                                                onTap: () {
-                                                  setState(() {
-                                                    if (_selectedCategory != 3)
-                                                      _selectedCategory = 3;
-                                                    else
-                                                      _selectedCategory = 0;
-                                                  });
-                                                },
-                                                child: Container(
-                                                    width: size.width * 0.19,
-                                                    child: Column(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
-                                                        children: [
-                                                          Container(
-                                                              child: Image.asset(
-                                                                  _selectedCategory ==
-                                                                          3
-                                                                      ? "assets/images/icecream_on_icon.jpg"
-                                                                      : "assets/images/icecream_icon.jpg"),
-                                                              height:
-                                                                  size.height *
-                                                                      0.06),
-                                                          Text('${Category.c3}',
-                                                              style: TextStyle(
-                                                                  fontSize: 12,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                  color: _selectedCategory ==
-                                                                          3
-                                                                      ? Color(
-                                                                          0xFF9EE1E5)
-                                                                      : Colors
-                                                                          .black))
-                                                        ]))),
-                                            GestureDetector(
-                                                onTap: () {
-                                                  setState(() {
-                                                    if (_selectedCategory != 4)
-                                                      _selectedCategory = 4;
-                                                    else
-                                                      _selectedCategory = 0;
-                                                  });
-                                                },
-                                                child: Container(
-                                                    width: size.width * 0.19,
-                                                    child: Column(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
-                                                        children: [
-                                                          Container(
-                                                              child: Image.asset(
-                                                                  _selectedCategory ==
-                                                                          4
-                                                                      ? "assets/images/drink_on_icon.jpg"
-                                                                      : "assets/images/drink_icon.jpg"),
-                                                              height:
-                                                                  size.height *
-                                                                      0.06),
-                                                          Text('${Category.c4}',
-                                                              style: TextStyle(
-                                                                  fontSize: 12,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                  color: _selectedCategory ==
-                                                                          4
-                                                                      ? Color(
-                                                                          0xFF9EE1E5)
-                                                                      : Colors
-                                                                          .black))
-                                                        ]))),
-                                            GestureDetector(
-                                                onTap: () {
-                                                  setState(() {
-                                                    if (_selectedCategory != 5)
-                                                      _selectedCategory = 5;
-                                                    else
-                                                      _selectedCategory = 0;
-                                                  });
-                                                },
-                                                child: Container(
-                                                    width: size.width * 0.19,
-                                                    child: Column(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
-                                                        children: [
-                                                          Container(
-                                                              child: Image.asset(
-                                                                  _selectedCategory ==
-                                                                          5
-                                                                      ? "assets/images/handmade_on_icon.jpg"
-                                                                      : "assets/images/handmadeicon.jpg"),
-                                                              height:
-                                                                  size.height *
-                                                                      0.06),
-                                                          Text('${Category.c5}',
-                                                              style: TextStyle(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                  fontSize: 12,
-                                                                  color: _selectedCategory ==
-                                                                          5
-                                                                      ? Color(
-                                                                          0xFF9EE1E5)
-                                                                      : Colors
-                                                                          .black))
-                                                        ])))
-                                          ]))),
+                              _categorySelectionWidget(size),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
                                   IconButton(
-                                      onPressed: () {
-                                        setState(() {
-                                          _isAsc = !_isAsc;
-                                          _productList =
-                                              List.from(_productList.reversed);
-                                          _productLayoutList = List.from(
-                                              _productLayoutList.reversed);
-                                          _foodProductList = List.from(
-                                              _foodProductList.reversed);
-                                          _foodProductLayoutList = List.from(
-                                              _foodProductLayoutList.reversed);
-
-                                          _snackProductList = List.from(
-                                              _snackProductList.reversed);
-                                          _snackProductLayoutList = List.from(
-                                              _snackProductLayoutList.reversed);
-
-                                          _beverageProductList = List.from(
-                                              _beverageProductList.reversed);
-                                          _beverageProductLayoutList =
-                                              List.from(
-                                                  _beverageProductLayoutList
-                                                      .reversed);
-
-                                          _stationeryProductList = List.from(
-                                              _stationeryProductList.reversed);
-                                          _stationeryProductLayoutList =
-                                              List.from(
-                                                  _stationeryProductLayoutList
-                                                      .reversed);
-
-                                          _handmadeProductList = List.from(
-                                              _handmadeProductList.reversed);
-                                          _handmadeProductLayoutList =
-                                              List.from(
-                                                  _handmadeProductLayoutList
-                                                      .reversed);
-
-                                          _bestProductList = List.from(
-                                              _bestProductList.reversed);
-                                          _bestProductLayoutList = List.from(
-                                              _bestProductLayoutList.reversed);
-
-                                          _newProductList = List.from(
-                                              _newProductList.reversed);
-                                          _newProductLayoutList = List.from(
-                                              _newProductLayoutList.reversed);
-                                        });
+                                      onPressed: () async {
+                                        _isAsc = !_isAsc;
+                                        await _getProductsWithFilters(
+                                            _sortTitleList[_selectRadio],
+                                            _isAsc,
+                                            _isBest,
+                                            _isNew,
+                                            _selectedCategory);
                                       },
                                       icon: Icon(_isAsc
                                           ? Icons.arrow_circle_up
@@ -1004,14 +325,19 @@ class _StoreHomePageState extends State<StoreHomePage>
                                                             value: index,
                                                             groupValue:
                                                                 _selectRadio,
-                                                            onChanged: (value) {
+                                                            onChanged:
+                                                                (value) async {
                                                               setState(() {
                                                                 _selectRadio =
-                                                                    value;
+                                                                    value!;
                                                               });
-                                                              _sortProductByIndex(
-                                                                  _selectRadio,
-                                                                  size);
+                                                              await _getProductsWithFilters(
+                                                                  _sortTitleList[
+                                                                      _selectRadio],
+                                                                  _isAsc,
+                                                                  _isBest,
+                                                                  _isNew,
+                                                                  _selectedCategory);
                                                             },
                                                           );
                                                         }),
@@ -1026,8 +352,7 @@ class _StoreHomePageState extends State<StoreHomePage>
                                   SizedBox(width: size.width * 0.02)
                                 ],
                               ),
-                              _getLengthOfCurrentCategory(_selectedCategory) ==
-                                      0
+                              _productList.length == 0
                                   ? Expanded(
                                       child: Center(
                                           child: Text('상품이 없습니다!',
@@ -1040,8 +365,7 @@ class _StoreHomePageState extends State<StoreHomePage>
                                         height: size.height,
                                         child: GridView.builder(
                                             itemCount:
-                                                _getLengthOfCurrentCategory(
-                                                    _selectedCategory),
+                                                _productLayoutList.length,
                                             gridDelegate:
                                                 SliverGridDelegateWithFixedCrossAxisCount(
                                                     crossAxisCount: 2,
@@ -1050,8 +374,7 @@ class _StoreHomePageState extends State<StoreHomePage>
                                                     crossAxisSpacing:
                                                         size.width * 0.01),
                                             itemBuilder: (context, index) {
-                                              return _getItemTileOfCurrentCategory(
-                                                  index, _selectedCategory);
+                                              return _productLayoutList[index];
                                             }),
                                       ),
                                     ),
@@ -1060,69 +383,61 @@ class _StoreHomePageState extends State<StoreHomePage>
                           ),
                         ),
               /*------------------------ MENU TAB -------------------------*/
-              _bestProductLayoutList.length == 0
-                  ? RefreshIndicator(
-                      onRefresh: _getProducts,
-                      child: Column(children: [
-                        addProductForAdmin(size),
-                        Expanded(
-                            child: Center(
-                                child: Text('베스트 상품이 없습니다!',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 21)))),
-                        CorporationInfo(isOpenable: true)
-                      ]))
+              _productList.length == 0
+                  ? _isLoading
+                      ? Center(
+                          child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                              Text('불러오는 중...'),
+                              CircularProgressIndicator()
+                            ]))
+                      : RefreshIndicator(
+                          onRefresh: () async {
+                            await _getProductsWithFilters(
+                                _sortTitleList[_selectRadio],
+                                _isAsc,
+                                _isBest,
+                                _isNew,
+                                _selectedCategory);
+                          },
+                          child: Column(children: [
+                            addProductForAdmin(size),
+                            _categorySelectionWidget(size),
+                            Expanded(
+                                child: Center(
+                                    child: Text('베스트 상품이 없습니다!',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 21)))),
+                            CorporationInfo(isOpenable: true)
+                          ]))
                   : RefreshIndicator(
-                      onRefresh: _getProducts,
+                      onRefresh: () async {
+                        await _getProductsWithFilters(
+                            _sortTitleList[_selectRadio],
+                            _isAsc,
+                            _isBest,
+                            _isNew,
+                            _selectedCategory);
+                      },
                       child: Column(children: [
                         addProductForAdmin(size),
+                        _categorySelectionWidget(size),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             IconButton(
-                                onPressed: () {
+                                onPressed: () async {
                                   setState(() {
                                     _isAsc = !_isAsc;
-                                    _productList =
-                                        List.from(_productList.reversed);
-                                    _productLayoutList =
-                                        List.from(_productLayoutList.reversed);
-                                    _foodProductList =
-                                        List.from(_foodProductList.reversed);
-                                    _foodProductLayoutList = List.from(
-                                        _foodProductLayoutList.reversed);
-
-                                    _snackProductList =
-                                        List.from(_snackProductList.reversed);
-                                    _snackProductLayoutList = List.from(
-                                        _snackProductLayoutList.reversed);
-
-                                    _beverageProductList = List.from(
-                                        _beverageProductList.reversed);
-                                    _beverageProductLayoutList = List.from(
-                                        _beverageProductLayoutList.reversed);
-
-                                    _stationeryProductList = List.from(
-                                        _stationeryProductList.reversed);
-                                    _stationeryProductLayoutList = List.from(
-                                        _stationeryProductLayoutList.reversed);
-
-                                    _handmadeProductList = List.from(
-                                        _handmadeProductList.reversed);
-                                    _handmadeProductLayoutList = List.from(
-                                        _handmadeProductLayoutList.reversed);
-
-                                    _bestProductList =
-                                        List.from(_bestProductList.reversed);
-                                    _bestProductLayoutList = List.from(
-                                        _bestProductLayoutList.reversed);
-
-                                    _newProductList =
-                                        List.from(_newProductList.reversed);
-                                    _newProductLayoutList = List.from(
-                                        _newProductLayoutList.reversed);
                                   });
+                                  await _getProductsWithFilters(
+                                      _sortTitleList[_selectRadio],
+                                      _isAsc,
+                                      _isBest,
+                                      _isNew,
+                                      _selectedCategory);
                                 },
                                 icon: Icon(_isAsc
                                     ? Icons.arrow_circle_up
@@ -1159,12 +474,17 @@ class _StoreHomePageState extends State<StoreHomePage>
                                                                   index])),
                                                       value: index,
                                                       groupValue: _selectRadio,
-                                                      onChanged: (value) {
+                                                      onChanged: (value) async {
                                                         setState(() {
-                                                          _selectRadio = value;
+                                                          _selectRadio = value!;
                                                         });
-                                                        _sortProductByIndex(
-                                                            _selectRadio, size);
+                                                        await _getProductsWithFilters(
+                                                            _sortTitleList[
+                                                                _selectRadio],
+                                                            _isAsc,
+                                                            _isBest,
+                                                            _isNew,
+                                                            _selectedCategory);
                                                       },
                                                     );
                                                   }),
@@ -1182,87 +502,78 @@ class _StoreHomePageState extends State<StoreHomePage>
                         Expanded(
                             child: Container(
                           child: GridView.builder(
-                              itemCount: _bestProductLayoutList.length,
+                              itemCount: _productLayoutList.length,
                               gridDelegate:
                                   SliverGridDelegateWithFixedCrossAxisCount(
                                       crossAxisCount: 2,
                                       mainAxisSpacing: size.height * 0.025,
                                       crossAxisSpacing: size.width * 0.01),
                               itemBuilder: (context, index) {
-                                return _bestProductLayoutList[index];
+                                return _productLayoutList[index];
                               }),
                         )),
                         CorporationInfo(isOpenable: true)
                       ]),
                     ),
               /*------------ BEST TAB ---------------*/
-              _newProductLayoutList.length == 0
-                  ? RefreshIndicator(
-                      onRefresh: _getProducts,
-                      child: Column(children: [
-                        addProductForAdmin(size),
-                        Expanded(
-                          child: Center(
-                              child: Text('신규 상품이 없습니다!',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 21))),
-                        ),
-                        CorporationInfo(isOpenable: true)
-                      ]),
-                    )
+              _productList.length == 0
+                  ? _isLoading
+                      ? Center(
+                          child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                              Text('불러오는 중...'),
+                              CircularProgressIndicator()
+                            ]))
+                      : RefreshIndicator(
+                          onRefresh: () async {
+                            await _getProductsWithFilters(
+                                _sortTitleList[_selectRadio],
+                                _isAsc,
+                                _isBest,
+                                _isNew,
+                                _selectedCategory);
+                          },
+                          child: Column(children: [
+                            addProductForAdmin(size),
+                            _categorySelectionWidget(size),
+                            Expanded(
+                              child: Center(
+                                  child: Text('신규 상품이 없습니다!',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 21))),
+                            ),
+                            CorporationInfo(isOpenable: true)
+                          ]),
+                        )
                   : RefreshIndicator(
-                      onRefresh: _getProducts,
+                      onRefresh: () async {
+                        await _getProductsWithFilters(
+                            _sortTitleList[_selectRadio],
+                            _isAsc,
+                            _isBest,
+                            _isNew,
+                            _selectedCategory);
+                      },
                       child: Column(
                         children: [
                           addProductForAdmin(size),
+                          _categorySelectionWidget(size),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               IconButton(
-                                  onPressed: () {
+                                  onPressed: () async {
                                     setState(() {
                                       _isAsc = !_isAsc;
-                                      _productList =
-                                          List.from(_productList.reversed);
-                                      _productLayoutList = List.from(
-                                          _productLayoutList.reversed);
-                                      _foodProductList =
-                                          List.from(_foodProductList.reversed);
-                                      _foodProductLayoutList = List.from(
-                                          _foodProductLayoutList.reversed);
-
-                                      _snackProductList =
-                                          List.from(_snackProductList.reversed);
-                                      _snackProductLayoutList = List.from(
-                                          _snackProductLayoutList.reversed);
-
-                                      _beverageProductList = List.from(
-                                          _beverageProductList.reversed);
-                                      _beverageProductLayoutList = List.from(
-                                          _beverageProductLayoutList.reversed);
-
-                                      _stationeryProductList = List.from(
-                                          _stationeryProductList.reversed);
-                                      _stationeryProductLayoutList = List.from(
-                                          _stationeryProductLayoutList
-                                              .reversed);
-
-                                      _handmadeProductList = List.from(
-                                          _handmadeProductList.reversed);
-                                      _handmadeProductLayoutList = List.from(
-                                          _handmadeProductLayoutList.reversed);
-
-                                      _bestProductList =
-                                          List.from(_bestProductList.reversed);
-                                      _bestProductLayoutList = List.from(
-                                          _bestProductLayoutList.reversed);
-
-                                      _newProductList =
-                                          List.from(_newProductList.reversed);
-                                      _newProductLayoutList = List.from(
-                                          _newProductLayoutList.reversed);
                                     });
+                                    await _getProductsWithFilters(
+                                        _sortTitleList[_selectRadio],
+                                        _isAsc,
+                                        _isBest,
+                                        _isNew,
+                                        _selectedCategory);
                                   },
                                   icon: Icon(_isAsc
                                       ? Icons.arrow_circle_up
@@ -1301,14 +612,19 @@ class _StoreHomePageState extends State<StoreHomePage>
                                                         value: index,
                                                         groupValue:
                                                             _selectRadio,
-                                                        onChanged: (value) {
+                                                        onChanged:
+                                                            (value) async {
                                                           setState(() {
                                                             _selectRadio =
-                                                                value;
+                                                                value!;
                                                           });
-                                                          _sortProductByIndex(
-                                                              _selectRadio,
-                                                              size);
+                                                          await _getProductsWithFilters(
+                                                              _sortTitleList[
+                                                                  _selectRadio],
+                                                              _isAsc,
+                                                              _isBest,
+                                                              _isNew,
+                                                              _selectedCategory);
                                                         },
                                                       );
                                                     }),
@@ -1326,14 +642,14 @@ class _StoreHomePageState extends State<StoreHomePage>
                           Expanded(
                             child: Container(
                               child: GridView.builder(
-                                  itemCount: _newProductLayoutList.length,
+                                  itemCount: _productLayoutList.length,
                                   gridDelegate:
                                       SliverGridDelegateWithFixedCrossAxisCount(
                                           crossAxisCount: 2,
                                           mainAxisSpacing: size.height * 0.025,
                                           crossAxisSpacing: size.width * 0.01),
                                   itemBuilder: (context, index) {
-                                    return _newProductLayoutList[index];
+                                    return _productLayoutList[index];
                                   }),
                             ),
                           ),
@@ -1359,7 +675,8 @@ class _StoreHomePageState extends State<StoreHomePage>
                         product: product,
                       )));
           if (res) {
-            await _getProducts();
+            await _getProductsWithFilters(_sortTitleList[_selectRadio], _isAsc,
+                _isBest, _isNew, _selectedCategory);
           }
         },
         onLongPress: () async {
@@ -1460,8 +777,13 @@ class _StoreHomePageState extends State<StoreHomePage>
                                                         Navigator.pop(ctx);
                                                         ToastMessage.show(
                                                             '삭제가 완료되었습니다. 목록을 새로고침 바랍니다.');
-                                                        await _getProducts();
-                                                      } else {
+                                                        await _getProductsWithFilters(
+                                                            _sortTitleList[
+                                                                _selectRadio],
+                                                            _isAsc,
+                                                            _isBest,
+                                                            _isNew,
+                                                            _selectedCategory);
                                                         Navigator.pop(ctx);
                                                         ToastMessage.show(
                                                             '삭제에 실패했습니다.');
@@ -1487,7 +809,8 @@ class _StoreHomePageState extends State<StoreHomePage>
                               product: product,
                             )));
                 if (res) {
-                  await _getProducts();
+                  await _getProductsWithFilters(_sortTitleList[_selectRadio],
+                      _isAsc, _isBest, _isNew, _selectedCategory);
                 }
                 break;
             }
@@ -1559,7 +882,8 @@ class _StoreHomePageState extends State<StoreHomePage>
           var res = await Navigator.push(context,
               MaterialPageRoute(builder: (context) => AddingProductPage()));
           if (res) {
-            await _getProducts();
+            await _getProductsWithFilters(_sortTitleList[_selectRadio], _isAsc,
+                _isBest, _isNew, _selectedCategory);
           }
         },
         child: Container(
@@ -1579,27 +903,6 @@ class _StoreHomePageState extends State<StoreHomePage>
     return widget.user!.isAdmin ? managerAddingProductLayout(size) : SizedBox();
   }
 
-  Widget _getItemTileOfCurrentCategory(int index, int position) {
-    switch (position) {
-      case 0:
-        return _productLayoutList[index];
-      case 1:
-        return _foodProductLayoutList[index];
-      case 2:
-        return _snackProductLayoutList[index];
-      case 3:
-        return _beverageProductLayoutList[index];
-      case 4:
-        return _stationeryProductLayoutList[index];
-      case 5:
-        return _handmadeProductLayoutList[index];
-      default:
-        return Container(
-          child: Text('Error'),
-        );
-    }
-  }
-
   Widget aboveTap(Size size) {
     return Container(
         margin: EdgeInsets.all(size.width * 0.01),
@@ -1608,9 +911,13 @@ class _StoreHomePageState extends State<StoreHomePage>
             borderRadius: BorderRadius.circular(10), color: Color(0xFF9EE1E5)),
         child: TextField(
             style: TextStyle(fontSize: 13),
-            onSubmitted: (text) {
+            onSubmitted: (text) async {
               if (text.isNotEmpty) {
-                _searchProducts(text, size);
+                setState(() {
+                  _isSearch = true;
+                });
+                await _getProductsWithFilters(null, _isAsc, null, null, null,
+                    keyword: text);
               }
             },
             decoration: InputDecoration(
@@ -1632,11 +939,13 @@ class _StoreHomePageState extends State<StoreHomePage>
             borderRadius: BorderRadius.circular(15),
             border: Border.all(color: Color(0xFF9EE1E5), width: 2)),
         child: DefaultButtonComp(
-            onPressed: () {
+            onPressed: () async {
               setState(() {
                 _isSearch = false;
                 _searchController.text = '';
               });
+              await _getProductsWithFilters(_sortTitleList[_selectRadio],
+                  _isAsc, _isBest, _isNew, _selectedCategory);
             },
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1644,5 +953,52 @@ class _StoreHomePageState extends State<StoreHomePage>
                   Icon(Icons.remove_circle, color: Colors.red),
                   Text('검색 결과창 지우기')
                 ])));
+  }
+
+  List<Widget> _categoriesWidget(Size size) {
+    List<Widget> list = [];
+    for (int i = 0; i < widget.categories.length; ++i) {
+      list.add(GestureDetector(
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+                horizontal: size.width * 0.05, vertical: size.width * 0.01),
+            child: Text(widget.categories[i].name,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color:
+                      _selectedCategory == i + 1 ? Colors.amber : Colors.black,
+                )),
+          ),
+          onTap: () async {
+            if (_selectedCategory == i + 1) {
+              setState(() {
+                _selectedCategory = 0;
+              });
+            } else {
+              setState(() {
+                _selectedCategory = i + 1;
+              });
+            }
+            print(_isBest);
+            print(_isNew);
+            await _getProductsWithFilters(_sortTitleList[_selectRadio], _isAsc,
+                _isBest, _isNew, _selectedCategory);
+          }));
+    }
+    return list;
+  }
+
+  Widget _categorySelectionWidget(Size size) {
+    return Card(
+        elevation: 2,
+        child: Container(
+            alignment: Alignment.center,
+            margin: EdgeInsets.all(5),
+            height: size.height * 0.085,
+            child: Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              children: _categoriesWidget(size),
+            )));
   }
 }
