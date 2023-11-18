@@ -15,7 +15,7 @@ class OrderProduct {
       : productID = int.parse(json['productID']),
         name = json['productName'],
         category =
-            Category.categoryIndexToStringMap[int.parse(json['category'])]!,
+            Categories.categories[int.parse(json['category'])].name,
         price = int.parse(json['price']),
         discount =
             json['discount'] == '0' ? null : double.parse(json['discount']),

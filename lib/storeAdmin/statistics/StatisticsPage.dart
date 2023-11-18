@@ -256,8 +256,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
           'order': 0,
           'resv': 0,
           'pName': _orderList[i]['pName'],
-          'category': Category
-              .categoryIndexToStringMap[int.parse(_orderList[i]['category'])]
+          'category':
+              Categories.categories[int.parse(_orderList[i]['category'])].name
         };
       }
       if (_productCountMap[pid]!.containsKey('order')) {
@@ -271,8 +271,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
           'order': 0,
           'resv': 0,
           'pName': _reservationList[i]['pName'],
-          'category': Category.categoryIndexToStringMap[
-              int.parse(_reservationList[i]['category'])]
+          'category': Categories
+              .categories[int.parse(_reservationList[i]['category'])].name
         };
       }
       if (_productCountMap[pid]!.containsKey('resv')) {

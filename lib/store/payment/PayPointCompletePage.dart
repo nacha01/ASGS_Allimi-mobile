@@ -400,7 +400,7 @@ class _PayPointCompletePageState extends State<PayPointCompletePage> {
           spacing: size.width * 0.01,
           children: [
             Text(
-              '[${Category.categoryIndexToStringMap[category]}]',
+              '[${Categories.categories[category].name}]',
               style: TextStyle(color: Colors.grey),
             ),
             Text(

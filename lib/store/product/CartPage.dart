@@ -326,7 +326,7 @@ class _CartPageState extends State<CartPage> {
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                     ),
                     Text(
-                      '  [${Category.categoryIndexToStringMap[int.parse(cartItem['category'])]}]',
+                      '  [${Categories.categories[int.parse(cartItem['category'])].name}]',
                       style: TextStyle(color: Colors.grey, fontSize: 13),
                     )
                   ]),

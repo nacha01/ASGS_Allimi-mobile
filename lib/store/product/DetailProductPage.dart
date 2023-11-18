@@ -258,7 +258,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                       ),
                     ),
                     Text(
-                      '[${Category.categoryIndexToStringMap[widget.product!.category]}]',
+                      '[${Categories.categories[widget.product!.category].name}]',
                       textScaleFactor: 1.7,
                       style: TextStyle(color: Colors.grey),
                     ),

@@ -273,7 +273,7 @@ class _DetailReservationStatePageState
                                       fontSize: 14),
                                 ),
                                 Text(
-                                    ' [${Category.categoryIndexToStringMap[int.parse(widget.data!['detail'][0]['pInfo']['category'])]}]',
+                                    ' [${Categories.categories[int.parse(widget.data!['detail'][0]['pInfo']['category'])].name}]',
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 14)),

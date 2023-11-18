@@ -314,7 +314,7 @@ class _FinalReservationPageState extends State<FinalReservationPage> {
       child: Row(
         children: [
           Text(
-            ' [${Category.categoryIndexToStringMap[int.parse(widget.data!['detail'][0]['pInfo']['category'])]}]',
+            ' [${Categories.categories[int.parse(widget.data!['detail'][0]['pInfo']['category'])].name}]',
             style: TextStyle(color: Colors.grey, fontSize: 16),
           ),
           Text(

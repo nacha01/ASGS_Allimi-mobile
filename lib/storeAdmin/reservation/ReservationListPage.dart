@@ -690,7 +690,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
                   Wrap(
                     children: [
                       Text(
-                        ' [${Category.categoryIndexToStringMap[int.parse(data['detail'][0]['pInfo']['category'])]}]',
+                        ' [${Categories.categories[int.parse(data['detail'][0]['pInfo']['category'])].name}]',
                         style: TextStyle(color: Colors.grey[500], fontSize: 11),
                       ),
                       Text(' ${data['detail'][0]['pInfo']['pName']} ',
@@ -746,7 +746,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
               child: Wrap(
                 children: [
                   Text(
-                    '[${Category.categoryIndexToStringMap[data.category]}] ',
+                    '[${Categories.categories[data.category].name}] ',
                     style: TextStyle(color: Colors.grey, fontSize: 11),
                   ),
                   Text(

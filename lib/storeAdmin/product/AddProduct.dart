@@ -65,7 +65,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
 
   String pid = '';
   String _errorText = '';
-  String? _selectedCategory = Category.c1; // 드롭다운 아이템 default
+  Category? _selectedCategory = Categories.categories[0]; // 드롭다운 아이템 default
   String serverImageUri = '${ApiUtil.API_HOST}arlimi_productImage/64_';
 
   late AsyncMemoizer<bool> _memoizer;
@@ -114,8 +114,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
     final response = await http.post(Uri.parse(url), body: <String, String>{
       'prodName': _productNameController.text,
       'prodExp': _productExplainController.text,
-      'category':
-          Category.categoryStringToIndexMap[_selectedCategory].toString(),
+      'category': _selectedCategory!.id.toString(),
       'price': _productPriceController.text,
       'stockCount': _productCountController.text,
       'isBest': _isBest! ? '1' : '0',
@@ -140,8 +139,7 @@ class _AddingProductPageState extends State<AddingProductPage> {
     final response = await http.post(Uri.parse(url), body: <String, String>{
       'pName': _productNameController.text,
       'pInfo': _productExplainController.text,
-      'category':
-          Category.categoryStringToIndexMap[_selectedCategory].toString(),
+      'category': _selectedCategory!.id.toString(),
       'price': _productPriceController.text,
       'optionCategory': optionCategory
     });
@@ -191,10 +189,10 @@ class _AddingProductPageState extends State<AddingProductPage> {
           NumberFormatter.formatZero(now.minute) +
           NumberFormatter.formatZero(now.second);
       if (_useSub1) {
-        _imageNames[1] =
-            Category.categoryImageNamePrefixMap[_selectedCategory]! +
-                identified +
-                'A';
+        _imageNames[1] = _selectedCategory!
+            .signature +
+            identified +
+            'A';
         var sub1Result = await _sendImageToServer(_images[1]!, _imageNames[1]);
         if (!sub1Result) {
           _errorText = '추가 이미지1 저장 실패';
@@ -202,13 +200,13 @@ class _AddingProductPageState extends State<AddingProductPage> {
         }
       }
       if (_useSub2) {
-        _imageNames[2] =
-            Category.categoryImageNamePrefixMap[_selectedCategory]! +
-                identified +
-                'B';
+        _imageNames[2] = _selectedCategory!
+                .signature +
+            identified +
+            'B';
         var sub2Result = await _sendImageToServer(
             _images[2]!,
-            Category.categoryImageNamePrefixMap[_selectedCategory]! +
+            _selectedCategory!.signature +
                 identified +
                 'B');
         if (!sub2Result) {
@@ -216,8 +214,9 @@ class _AddingProductPageState extends State<AddingProductPage> {
           return false;
         }
       }
-      _imageNames[0] =
-          Category.categoryImageNamePrefixMap[_selectedCategory]! + identified;
+      _imageNames[0] = _selectedCategory!.signature +
+          identified;
+
       var mainResult = await _sendImageToServer(_images[0]!, _imageNames[0]);
       if (!mainResult) {
         _errorText = '대표 이미지 저장 실패';
@@ -419,9 +418,9 @@ class _AddingProductPageState extends State<AddingProductPage> {
                             child: DropdownButton(
                               isExpanded: true,
                               value: _selectedCategory,
-                              items: Category.categoryList.map((value) {
+                              items: Categories.categories.map((value) {
                                 return DropdownMenuItem(
-                                  child: Center(child: Text(value)),
+                                  child: Center(child: Text(value.name)),
                                   value: value,
                                 );
                               }).toList(),

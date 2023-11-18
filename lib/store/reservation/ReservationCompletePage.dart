@@ -70,7 +70,7 @@ class _ReservationCompletePageState extends State<ReservationCompletePage> {
                   spacing: size.width * 0.01,
                   children: [
                     Text(
-                      '[${Category.categoryIndexToStringMap[widget.product!.category]}]',
+                      '[${Categories.categories[widget.product!.category].name}]',
                       style: TextStyle(color: Colors.grey),
                     ),
                     Text(

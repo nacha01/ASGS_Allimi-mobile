@@ -218,7 +218,7 @@ class _ReservationStatePageState extends State<ReservationStatePage> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        '[${Category.categoryIndexToStringMap[int.parse(data['detail'][0]['pInfo']['category'])]}]',
+                        '[${Categories.categories[int.parse(data['detail'][0]['pInfo']['category'])].name}]',
                         style: TextStyle(color: Colors.grey[500], fontSize: 15),
                       ),
                       Text(

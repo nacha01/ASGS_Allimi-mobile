@@ -59,7 +59,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
   int _index = 0;
   int _clickCount = 0;
 
-  String? _selectedCategory = Category.c1; // 드롭다운 아이템 default
+  Category? _selectedCategory = Categories.categories[0]; // 드롭다운 아이템 default
   String serverImageUri =
       '${ApiUtil.API_HOST}arlimi_productImage/'; // 이미지 저장 서버 URI
 
@@ -122,8 +122,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
       'prodID': widget.product!.prodID.toString(),
       'prodName': _productNameController.text,
       'prodInfo': _productExplainController.text,
-      'category':
-          Category.categoryStringToIndexMap[_selectedCategory].toString(),
+      'category': _selectedCategory!.id.toString(),
       'price': _productPriceController.text,
       'stockCount': _productCountController.text,
       'discount': _productDiscountController.text,
@@ -301,8 +300,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
     final response = await http.post(Uri.parse(url), body: <String, String>{
       'pName': _productNameController.text,
       'pInfo': _productExplainController.text,
-      'category':
-          Category.categoryStringToIndexMap[_selectedCategory].toString(),
+      'category': _selectedCategory!.id.toString(),
       'price': _productPriceController.text,
       'optionCategory': optionCategory
     });
@@ -360,8 +358,7 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
     _productExplainController.text = widget.product!.prodInfo!;
     _productPriceController.text = widget.product!.price.toString();
     _productCountController.text = widget.product!.stockCount.toString();
-    _selectedCategory =
-        Category.categoryIndexToStringMap[widget.product!.category];
+    _selectedCategory = Categories.categories[widget.product!.category];
     _isBest = widget.product!.isBest == 1 ? true : false;
     _isNew = widget.product!.isNew == 1 ? true : false;
     _cumulativeSellCount.text = widget.product!.cumulBuyCount.toString();
@@ -492,9 +489,9 @@ class _UpdatingProductPageState extends State<UpdatingProductPage> {
                     child: DropdownButton(
                       isExpanded: true,
                       value: _selectedCategory,
-                      items: Category.categoryList.map((value) {
+                      items: Categories.categories.map((value) {
                         return DropdownMenuItem(
-                          child: Center(child: Text(value)),
+                          child: Center(child: Text(value.name)),
                           value: value,
                         );
                       }).toList(),
