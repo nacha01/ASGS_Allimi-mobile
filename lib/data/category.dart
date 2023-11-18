@@ -1,30 +1,27 @@
+class Categories {
+
+  static List<Category> categories = [];
+
+  static int getIdByName(String name){
+    for(int i = 0; i< categories.length; ++i){
+      if(categories[i].name == name){
+        return categories[i].id;
+      }
+    }
+    return 0;
+  }
+}
+
 class Category {
-  // UI에 보여줄 상품의 "category" 속성 값에 대해 mapping 을 위한 클래스
-  static final c1 = '음료';
-  static final c2 = '과자';
-  static final c3 = '아이스크림';
-  static final c4 = '커피';
-  static final c5 = '기타';
-  static final categoryIndexToStringMap = {
-    0: '$c1',
-    1: '$c2',
-    2: '$c3',
-    3: '$c4',
-    4: '$c5'
-  };
-  static final categoryStringToIndexMap = {
-    '$c1': 0,
-    '$c2': 1,
-    '$c3': 2,
-    '$c4': 3,
-    '$c5': 4
-  };
-  static final categoryList = ['$c1', '$c2', '$c3', '$c4', '$c5'];
-  static final categoryImageNamePrefixMap = {
-    '$c1': 'F',
-    '$c2': 'S',
-    '$c3': 'D',
-    '$c4': 'SS',
-    '$c5': 'H'
-  };
+  int id;
+  String name;
+  String signature;
+
+  Category({required this.id, required this.name, required this.signature});
+
+  Category.fromJson(Map<dynamic, dynamic> json)
+      : id = int.parse(json['category_id']),
+        name = json['category_name'],
+        signature = json['category_sign'];
+
 }

@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:asgshighschool/api/ApiUtil.dart';
+import 'package:asgshighschool/data/category.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'StoreMainPage.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +26,7 @@ class _StoreSplashPageState extends State<StoreSplashPage> {
   /// Splash 페이지의 로딩 process
   loading() async {
     var res = await _checkExistCart();
+    var categories = await _getCategories();
     await Future.delayed(Duration(milliseconds: 500));
     Navigator.pushReplacement(
         context,
@@ -30,6 +34,7 @@ class _StoreSplashPageState extends State<StoreSplashPage> {
             builder: (context) => StoreMainPage(
                   user: widget.user,
                   existCart: res,
+                  categories: categories,
                 )));
   }
 
@@ -46,6 +51,25 @@ class _StoreSplashPageState extends State<StoreSplashPage> {
       }
     }
     return false;
+  }
+
+  Future<List<Category>> _getCategories() async {
+    String url = '${ApiUtil.API_HOST}arlimi_getCategories.php';
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      var result = ApiUtil.getPureBody(response.bodyBytes);
+      List json = jsonDecode(result);
+      List<Category> categories = [];
+      for (int i = 0; i < json.length; ++i) {
+        var jsonDecoded = jsonDecode(json[i]);
+        categories.add(Category.fromJson(jsonDecoded));
+      }
+      Categories.categories = categories;
+      return categories;
+    } else {
+      return [];
+    }
   }
 
   @override

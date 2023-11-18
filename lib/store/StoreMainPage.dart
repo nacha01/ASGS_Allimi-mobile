@@ -1,4 +1,5 @@
 import 'package:badges/badges.dart';
+import '../data/category.dart';
 import '../data/provider/exist_cart.dart';
 import 'package:asgshighschool/data/user.dart';
 import 'package:asgshighschool/games/GameListPage.dart';
@@ -11,10 +12,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class StoreMainPage extends StatefulWidget {
-  StoreMainPage({this.user, this.existCart});
+  StoreMainPage({this.user, this.existCart, required this.categories});
 
   final User? user;
   final bool? existCart;
+  final List<Category> categories;
 
   @override
   StoreMainPageState createState() => StoreMainPageState();
@@ -134,11 +136,13 @@ class StoreMainPageState extends State<StoreMainPage> {
         return StoreHomePage(
           user: widget.user,
           existCart: widget.existCart,
+          categories: widget.categories,
         );
       case 1: // 메인 홈
         return StoreHomePage(
           user: widget.user,
           existCart: widget.existCart,
+          categories: widget.categories,
         );
       case 2: // 장바구니
         return CartPage(user: widget.user);
