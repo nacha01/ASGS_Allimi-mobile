@@ -544,10 +544,10 @@ class _StoreHomePageState extends State<StoreHomePage>
       list.add(GestureDetector(
           child: Padding(
             padding: EdgeInsets.symmetric(
-                horizontal: size.width * 0.05, vertical: size.width * 0.01),
+                horizontal: size.width * 0.05, vertical: size.width * 0.025),
             child: Text(widget.categories[i].name,
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 15,
                   fontWeight: FontWeight.bold,
                   color:
                       _selectedCategory == i + 1 ? Colors.amber : Colors.black,
