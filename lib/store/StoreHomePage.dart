@@ -60,7 +60,7 @@ class _StoreHomePageState extends State<StoreHomePage>
     setState(() {
       _isLoading = true;
     });
-    await Future.delayed(Duration(milliseconds: 100));
+    await Future.delayed(Duration(milliseconds: 50));
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
@@ -229,434 +229,17 @@ class _StoreHomePageState extends State<StoreHomePage>
                                         return _productLayoutList[index];
                                       })))
                         ])
-                  : _productLayoutList.length == 0
-                      ? _isLoading
-                          ? Center(
-                              child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                  Text('불러오는 중...'),
-                                  CircularProgressIndicator()
-                                ]))
-                          : RefreshIndicator(
-                              onRefresh: () async {
-                                await _getProductsWithFilters(
-                                    _sortTitleList[_selectRadio],
-                                    _isAsc,
-                                    _isBest,
-                                    _isNew,
-                                    _selectedCategory);
-                              },
-                              child: Column(children: [
-                                addProductForAdmin(size),
-                                _categorySelectionWidget(size),
-                                Expanded(
-                                  child: Center(
-                                      child: Text('상품이 없습니다.',
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 22))),
-                                ),
-                                CorporationInfo(isOpenable: true)
-                              ]))
-                      : RefreshIndicator(
-                          onRefresh: () async {
-                            await _getProductsWithFilters(
-                                _sortTitleList[_selectRadio],
-                                _isAsc,
-                                _isBest,
-                                _isNew,
-                                _selectedCategory);
-                          },
-                          child: Column(
-                            children: [
-                              addProductForAdmin(size),
-                              _categorySelectionWidget(size),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  IconButton(
-                                      onPressed: () async {
-                                        _isAsc = !_isAsc;
-                                        await _getProductsWithFilters(
-                                            _sortTitleList[_selectRadio],
-                                            _isAsc,
-                                            _isBest,
-                                            _isNew,
-                                            _selectedCategory);
-                                      },
-                                      icon: Icon(_isAsc
-                                          ? Icons.arrow_circle_up
-                                          : Icons.arrow_circle_down),
-                                      iconSize: 27),
-                                  IconButton(
-                                      onPressed: () {
-                                        showDialog(
-                                            context: context,
-                                            builder: (context) => AlertDialog(
-                                                  shape: OutlineInputBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              15),
-                                                      borderSide: BorderSide(
-                                                          color: Colors.black,
-                                                          width: 2)),
-                                                  title: Center(
-                                                      child: Text('상품정렬 기준 선택',
-                                                          style: TextStyle(
-                                                              fontSize: 15,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold))),
-                                                  content: StatefulBuilder(
-                                                    builder:
-                                                        (context, setState) {
-                                                      return Column(
-                                                        mainAxisSize:
-                                                            MainAxisSize.min,
-                                                        children: List.generate(
-                                                            3, (index) {
-                                                          return RadioListTile<
-                                                              int>(
-                                                            title: Center(
-                                                                child: Text(
-                                                                    _sortTitleList[
-                                                                        index])),
-                                                            value: index,
-                                                            groupValue:
-                                                                _selectRadio,
-                                                            onChanged:
-                                                                (value) async {
-                                                              setState(() {
-                                                                _selectRadio =
-                                                                    value!;
-                                                              });
-                                                              await _getProductsWithFilters(
-                                                                  _sortTitleList[
-                                                                      _selectRadio],
-                                                                  _isAsc,
-                                                                  _isBest,
-                                                                  _isNew,
-                                                                  _selectedCategory);
-                                                            },
-                                                          );
-                                                        }),
-                                                      );
-                                                    },
-                                                  ),
-                                                ));
-                                      },
-                                      icon: Icon(Icons.sort),
-                                      padding: EdgeInsets.all(0),
-                                      iconSize: 27),
-                                  SizedBox(width: size.width * 0.02)
-                                ],
-                              ),
-                              _productList.length == 0
-                                  ? Expanded(
-                                      child: Center(
-                                          child: Text('상품이 없습니다!',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 21))),
-                                    )
-                                  : Expanded(
-                                      child: Container(
-                                        height: size.height,
-                                        child: GridView.builder(
-                                            itemCount:
-                                                _productLayoutList.length,
-                                            gridDelegate:
-                                                SliverGridDelegateWithFixedCrossAxisCount(
-                                                    crossAxisCount: 2,
-                                                    mainAxisSpacing:
-                                                        size.height * 0.025,
-                                                    crossAxisSpacing:
-                                                        size.width * 0.01),
-                                            itemBuilder: (context, index) {
-                                              return _productLayoutList[index];
-                                            }),
-                                      ),
-                                    ),
-                              CorporationInfo(isOpenable: true)
-                            ],
-                          ),
-                        ),
+                  : _isLoading
+                      ? _loadingWidget(size)
+                      : _aboveTapWidget(size, '상품이 없습니다.'),
               /*------------------------ MENU TAB -------------------------*/
-              _productList.length == 0
-                  ? _isLoading
-                      ? Center(
-                          child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                              Text('불러오는 중...'),
-                              CircularProgressIndicator()
-                            ]))
-                      : RefreshIndicator(
-                          onRefresh: () async {
-                            await _getProductsWithFilters(
-                                _sortTitleList[_selectRadio],
-                                _isAsc,
-                                _isBest,
-                                _isNew,
-                                _selectedCategory);
-                          },
-                          child: Column(children: [
-                            addProductForAdmin(size),
-                            _categorySelectionWidget(size),
-                            Expanded(
-                                child: Center(
-                                    child: Text('베스트 상품이 없습니다!',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 21)))),
-                            CorporationInfo(isOpenable: true)
-                          ]))
-                  : RefreshIndicator(
-                      onRefresh: () async {
-                        await _getProductsWithFilters(
-                            _sortTitleList[_selectRadio],
-                            _isAsc,
-                            _isBest,
-                            _isNew,
-                            _selectedCategory);
-                      },
-                      child: Column(children: [
-                        addProductForAdmin(size),
-                        _categorySelectionWidget(size),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            IconButton(
-                                onPressed: () async {
-                                  setState(() {
-                                    _isAsc = !_isAsc;
-                                  });
-                                  await _getProductsWithFilters(
-                                      _sortTitleList[_selectRadio],
-                                      _isAsc,
-                                      _isBest,
-                                      _isNew,
-                                      _selectedCategory);
-                                },
-                                icon: Icon(_isAsc
-                                    ? Icons.arrow_circle_up
-                                    : Icons.arrow_circle_down),
-                                iconSize: 27),
-                            IconButton(
-                                onPressed: () {
-                                  showDialog(
-                                      context: context,
-                                      builder: (context) => AlertDialog(
-                                            shape: OutlineInputBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(15),
-                                                borderSide: BorderSide(
-                                                    color: Colors.black,
-                                                    width: 2)),
-                                            title: Center(
-                                                child: Text('상품정렬 기준 선택',
-                                                    style: TextStyle(
-                                                        fontSize: 15,
-                                                        fontWeight:
-                                                            FontWeight.bold))),
-                                            content: StatefulBuilder(
-                                              builder: (context, setState) {
-                                                return Column(
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
-                                                  children:
-                                                      List.generate(3, (index) {
-                                                    return RadioListTile<int>(
-                                                      title: Center(
-                                                          child: Text(
-                                                              _sortTitleList[
-                                                                  index])),
-                                                      value: index,
-                                                      groupValue: _selectRadio,
-                                                      onChanged: (value) async {
-                                                        setState(() {
-                                                          _selectRadio = value!;
-                                                        });
-                                                        await _getProductsWithFilters(
-                                                            _sortTitleList[
-                                                                _selectRadio],
-                                                            _isAsc,
-                                                            _isBest,
-                                                            _isNew,
-                                                            _selectedCategory);
-                                                      },
-                                                    );
-                                                  }),
-                                                );
-                                              },
-                                            ),
-                                          ));
-                                },
-                                icon: Icon(Icons.sort),
-                                padding: EdgeInsets.all(0),
-                                iconSize: 27),
-                            SizedBox(width: size.width * 0.02)
-                          ],
-                        ),
-                        Expanded(
-                            child: Container(
-                          child: GridView.builder(
-                              itemCount: _productLayoutList.length,
-                              gridDelegate:
-                                  SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 2,
-                                      mainAxisSpacing: size.height * 0.025,
-                                      crossAxisSpacing: size.width * 0.01),
-                              itemBuilder: (context, index) {
-                                return _productLayoutList[index];
-                              }),
-                        )),
-                        CorporationInfo(isOpenable: true)
-                      ]),
-                    ),
+              _isLoading
+                  ? _loadingWidget(size)
+                  : _aboveTapWidget(size, '베스트 상품이 없습니다.'),
               /*------------ BEST TAB ---------------*/
-              _productList.length == 0
-                  ? _isLoading
-                      ? Center(
-                          child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                              Text('불러오는 중...'),
-                              CircularProgressIndicator()
-                            ]))
-                      : RefreshIndicator(
-                          onRefresh: () async {
-                            await _getProductsWithFilters(
-                                _sortTitleList[_selectRadio],
-                                _isAsc,
-                                _isBest,
-                                _isNew,
-                                _selectedCategory);
-                          },
-                          child: Column(children: [
-                            addProductForAdmin(size),
-                            _categorySelectionWidget(size),
-                            Expanded(
-                              child: Center(
-                                  child: Text('신규 상품이 없습니다!',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 21))),
-                            ),
-                            CorporationInfo(isOpenable: true)
-                          ]),
-                        )
-                  : RefreshIndicator(
-                      onRefresh: () async {
-                        await _getProductsWithFilters(
-                            _sortTitleList[_selectRadio],
-                            _isAsc,
-                            _isBest,
-                            _isNew,
-                            _selectedCategory);
-                      },
-                      child: Column(
-                        children: [
-                          addProductForAdmin(size),
-                          _categorySelectionWidget(size),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              IconButton(
-                                  onPressed: () async {
-                                    setState(() {
-                                      _isAsc = !_isAsc;
-                                    });
-                                    await _getProductsWithFilters(
-                                        _sortTitleList[_selectRadio],
-                                        _isAsc,
-                                        _isBest,
-                                        _isNew,
-                                        _selectedCategory);
-                                  },
-                                  icon: Icon(_isAsc
-                                      ? Icons.arrow_circle_up
-                                      : Icons.arrow_circle_down),
-                                  iconSize: 27,
-                                  padding: EdgeInsets.all(0.0)),
-                              IconButton(
-                                  onPressed: () {
-                                    showDialog(
-                                        context: context,
-                                        builder: (context) => AlertDialog(
-                                              shape: OutlineInputBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(15),
-                                                  borderSide: BorderSide(
-                                                      color: Colors.black,
-                                                      width: 2)),
-                                              title: Center(
-                                                  child: Text('상품정렬 기준 선택',
-                                                      style: TextStyle(
-                                                          fontSize: 15,
-                                                          fontWeight: FontWeight
-                                                              .bold))),
-                                              content: StatefulBuilder(
-                                                builder: (context, setState) {
-                                                  return Column(
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    children: List.generate(3,
-                                                        (index) {
-                                                      return RadioListTile<int>(
-                                                        title: Center(
-                                                            child: Text(
-                                                                _sortTitleList[
-                                                                    index])),
-                                                        value: index,
-                                                        groupValue:
-                                                            _selectRadio,
-                                                        onChanged:
-                                                            (value) async {
-                                                          setState(() {
-                                                            _selectRadio =
-                                                                value!;
-                                                          });
-                                                          await _getProductsWithFilters(
-                                                              _sortTitleList[
-                                                                  _selectRadio],
-                                                              _isAsc,
-                                                              _isBest,
-                                                              _isNew,
-                                                              _selectedCategory);
-                                                        },
-                                                      );
-                                                    }),
-                                                  );
-                                                },
-                                              ),
-                                            ));
-                                  },
-                                  icon: Icon(Icons.sort),
-                                  padding: EdgeInsets.all(0),
-                                  iconSize: 27),
-                              SizedBox(width: size.width * 0.02)
-                            ],
-                          ),
-                          Expanded(
-                            child: Container(
-                              child: GridView.builder(
-                                  itemCount: _productLayoutList.length,
-                                  gridDelegate:
-                                      SliverGridDelegateWithFixedCrossAxisCount(
-                                          crossAxisCount: 2,
-                                          mainAxisSpacing: size.height * 0.025,
-                                          crossAxisSpacing: size.width * 0.01),
-                                  itemBuilder: (context, index) {
-                                    return _productLayoutList[index];
-                                  }),
-                            ),
-                          ),
-                          CorporationInfo(isOpenable: true)
-                        ],
-                      ),
-                    ),
+              _isLoading
+                  ? _loadingWidget(size)
+                  : _aboveTapWidget(size, '신규 상품이 없습니다.'),
               /*------------ NEW TAB ---------------*/
               EventPage()
               /*------------ EVENT TAB ---------------*/
@@ -980,8 +563,6 @@ class _StoreHomePageState extends State<StoreHomePage>
                 _selectedCategory = i + 1;
               });
             }
-            print(_isBest);
-            print(_isNew);
             await _getProductsWithFilters(_sortTitleList[_selectRadio], _isAsc,
                 _isBest, _isNew, _selectedCategory);
           }));
@@ -1000,5 +581,137 @@ class _StoreHomePageState extends State<StoreHomePage>
               alignment: WrapAlignment.spaceBetween,
               children: _categoriesWidget(size),
             )));
+  }
+
+  Widget _loadingWidget(Size size) {
+    return Column(
+      children: [
+        addProductForAdmin(size),
+        _categorySelectionWidget(size),
+        Expanded(
+          child: Center(
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [Text('불러오는 중...'), CircularProgressIndicator()])),
+        ),
+      ],
+    );
+  }
+
+  Widget _notExistProductsWidget(Size size, String text) {
+    return Column(children: [
+      addProductForAdmin(size),
+      _categorySelectionWidget(size),
+      Expanded(
+        child: Center(
+            child: Text(text,
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20))),
+      ),
+      CorporationInfo(isOpenable: true)
+    ]);
+  }
+
+  Widget _aboveTapWidget(Size size, String emptyProductText) {
+    return _productList.length == 0
+        ? RefreshIndicator(
+            onRefresh: () async {
+              await _getProductsWithFilters(_sortTitleList[_selectRadio],
+                  _isAsc, _isBest, _isNew, _selectedCategory);
+            },
+            child: _notExistProductsWidget(size, emptyProductText))
+        : RefreshIndicator(
+            onRefresh: () async {
+              await _getProductsWithFilters(_sortTitleList[_selectRadio],
+                  _isAsc, _isBest, _isNew, _selectedCategory);
+            },
+            child: Column(
+              children: [
+                addProductForAdmin(size),
+                _categorySelectionWidget(size),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    IconButton(
+                        onPressed: () async {
+                          _isAsc = !_isAsc;
+                          await _getProductsWithFilters(
+                              _sortTitleList[_selectRadio],
+                              _isAsc,
+                              _isBest,
+                              _isNew,
+                              _selectedCategory);
+                        },
+                        icon: Icon(_isAsc
+                            ? Icons.arrow_circle_up
+                            : Icons.arrow_circle_down),
+                        iconSize: 27),
+                    IconButton(
+                        onPressed: () {
+                          showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                    shape: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(15),
+                                        borderSide: BorderSide(
+                                            color: Colors.black, width: 2)),
+                                    title: Center(
+                                        child: Text('상품정렬 기준 선택',
+                                            style: TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.bold))),
+                                    content: StatefulBuilder(
+                                      builder: (context, setState) {
+                                        return Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: List.generate(3, (index) {
+                                            return RadioListTile<int>(
+                                              title: Center(
+                                                  child: Text(
+                                                      _sortTitleList[index])),
+                                              value: index,
+                                              groupValue: _selectRadio,
+                                              onChanged: (value) async {
+                                                setState(() {
+                                                  _selectRadio = value!;
+                                                });
+                                                await _getProductsWithFilters(
+                                                    _sortTitleList[
+                                                        _selectRadio],
+                                                    _isAsc,
+                                                    _isBest,
+                                                    _isNew,
+                                                    _selectedCategory);
+                                              },
+                                            );
+                                          }),
+                                        );
+                                      },
+                                    ),
+                                  ));
+                        },
+                        icon: Icon(Icons.sort),
+                        padding: EdgeInsets.all(0),
+                        iconSize: 27),
+                    SizedBox(width: size.width * 0.02)
+                  ],
+                ),
+                Expanded(
+                  child: Container(
+                    height: size.height,
+                    child: GridView.builder(
+                        itemCount: _productLayoutList.length,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            mainAxisSpacing: size.height * 0.025,
+                            crossAxisSpacing: size.width * 0.01),
+                        itemBuilder: (context, index) {
+                          return _productLayoutList[index];
+                        }),
+                  ),
+                ),
+                CorporationInfo(isOpenable: true)
+              ],
+            ),
+          );
   }
 }
