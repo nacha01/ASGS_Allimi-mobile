@@ -51,7 +51,7 @@ class _GameListPageState extends State<GameListPage> {
               _boardLayout(
                   title: '틱택토',
                   info:
-                      '1대1로 3x3 보드에서 X와 O로 차례대로 표시하여, 먼저 가로, 세로, 대각선으로 같은 기호를 놓으세요!',
+                      '1대1로 3x3 보드에서 X와 O로 차례대로 표시하여, 먼저 가로, 세로, 대각선으로 같은 기호를 놓으세요!\n\nBy 테라바이트 조민호',
                   press: () {
                     Navigator.push(
                         context,
