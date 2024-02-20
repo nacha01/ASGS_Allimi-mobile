@@ -219,13 +219,13 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     ink(context, '공지사항', Icons.search,
-                        'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030100&searchMasterSid=3'),
+                        'https://asgs-h.goeas.kr/asgs-h/na/ntt/selectNttList.do?mi=3406&bbsId=1215'),
                     ink(context, '학교 행사', Icons.text_fields,
-                        'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030200&searchMasterSid=4'),
+                        'https://asgs-h.goeas.kr/asgs-h/na/ntt/selectNttList.do?mi=3407&bbsId=1216'),
                     ink(context, '학습 자료실', Icons.question_answer,
-                        'http://www.asgs.hs.kr/home/formError.do?code=NONE_LEVEL&menugrp=040300&gm=http%3A%2F%2Fgm7.goeia.go.kr&siteKey=QzlWVUd0ZVZHdFR1R3I3QXlpeHgzNDI1YVRkQk5sT09LbWhZSWlnbjA5bz0%3D'),
+                        'https://asgs-h.goeas.kr/asgs-h/na/ntt/selectNttList.do?mi=3423&bbsId=1227'),
                     ink(context, '학교 앨범', Icons.book,
-                        'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030600&searchMasterSid=6'),
+                        'https://asgs-h.goeas.kr/asgs-h/na/ntt/selectNttList.do?mi=3410&bbsId=1218'),
                   ])),
           Container(
               padding: EdgeInsets.only(top: 12),
@@ -262,7 +262,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   DefaultButtonComp(
                     onPressed: () {
                       var siteUrl =
-                          "http://www.asgs.hs.kr/meal/formList.do?menugrp=040801";
+                          "https://asgs-h.goeas.kr/asgs-h/ad/fm/foodmenu/selectFoodMenuView.do?mi=3432";
                       Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -317,7 +317,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           organizer: '가정 통신문',
                           imageUrl: 'assets/images/gajungtongsinmun.jpg',
                           siteUrl:
-                              'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030400&searchMasterSid=49',
+                              'https://asgs-h.goeas.kr/asgs-h/na/ntt/selectNttList.do?mi=3408&bbsId=1217',
                           upTitle: '가정 통신문'),
                       belowBox(
                           context: context,
@@ -325,7 +325,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           organizer: '강서 도서 검색',
                           imageUrl: 'assets/images/doseosil.jpg',
                           siteUrl:
-                              'https://reading.gglec.go.kr/r/newReading/search/schoolCodeSetting.jsp?schoolCode=895&returnUrl=',
+                              'https://reading.gglec.go.kr/r/newReading/search/schoolSearchOnlyForm.jsp?schoolCode=895&kind=1',
                           upTitle: '도서 검색')
                     ],
                   ),
@@ -338,7 +338,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           organizer: '이 달의 일정',
                           imageUrl: 'assets/images/haengsa.jpg',
                           siteUrl:
-                              'http://www.asgs.hs.kr/diary/formList.do?menugrp=030500&searchMasterSid=1',
+                              'https://asgs-h.goeas.kr/asgs-h/ps/schdul/selectSchdulMainList.do?mi=3409',
                           upTitle: '이달의 일정'),
                     ],
                   ),
@@ -591,11 +591,9 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => WebViewPage(
-                                        title: '학교 행사',
-                                        baseUrl: _isAndroid
-                                            ? 'http://www.asgs.hs.kr/bbs/formList.do?menugrp=030200&searchMasterSid=4'
-                                            : 'http://nacha01.dothome.co.kr/school/redirect_22.php?menugrp=030200&searchMasterSid=4',
-                                      )));
+                                      title: '학교 행사',
+                                      baseUrl:
+                                          'https://asgs-h.goeas.kr/asgs-h/na/ntt/selectNttList.do?mi=3407&bbsId=1216')));
                         },
                       ),
                       ListTile(
@@ -606,11 +604,9 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => WebViewPage(
-                                        title: '학습 자료',
-                                        baseUrl: _isAndroid
-                                            ? 'http://www.asgs.hs.kr/home/formError.do?code=NONE_LEVEL&menugrp=040300&gm=http%3A%2F%2Fgm7.goeia.go.kr&siteKey=QzlWVUd0ZVZHdFR1R3I3QXlpeHgzNDI1YVRkQk5sT09LbWhZSWlnbjA5bz0%3D'
-                                            : 'http://nacha01.dothome.co.kr/school/redirect_22.php?code=NONE_LEVEL&menugrp=040300&gm=http%3A%2F%2Fgm7.goeia.go.kr&siteKey=QzlWVUd0ZVZHdFR1R3I3QXlpeHgzNDI1YVRkQk5sT09LbWhZSWlnbjA5bz0%3D',
-                                      )));
+                                      title: '학습 자료',
+                                      baseUrl:
+                                          'https://asgs-h.goeas.kr/asgs-h/na/ntt/selectNttList.do?mi=3423&bbsId=1227')));
                         },
                       ),
                       ListTile(
@@ -621,11 +617,9 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => WebViewPage(
-                                        title: '안산강서고 급식 메뉴',
-                                        baseUrl: _isAndroid
-                                            ? 'http://www.asgs.hs.kr/meal/formList.do?menugrp=040801'
-                                            : 'http://nacha01.dothome.co.kr/school/redirect_22.php?menugrp=040801',
-                                      )));
+                                      title: '안산강서고 급식 메뉴',
+                                      baseUrl:
+                                          'https://asgs-h.goeas.kr/asgs-h/ad/fm/foodmenu/selectFoodMenuView.do?mi=3432')));
                         },
                       ),
                       widget.user!.isAdmin
@@ -879,21 +873,6 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold)))
                   ])),
-              // Padding(
-              //   padding: EdgeInsets.all(7),
-              //   child: Column(
-              //     crossAxisAlignment: CrossAxisAlignment.start,
-              //     children: <Widget>[
-              //       RichText(
-              //           overflow: TextOverflow.ellipsis,
-              //           strutStyle: StrutStyle(fontSize: 12.0),
-              //           text: TextSpan(
-              //               style: TextStyle(color: Colors.black),
-              //               text: title)),
-              //       Text(organizer, style: TextStyle(color: Color(0xFF8D8D8D))),
-              //     ],
-              //   ),
-              // ),
               Row(children: <Widget>[
                 Container(height: 10, width: percentBar, color: Colors.blue)
               ])
