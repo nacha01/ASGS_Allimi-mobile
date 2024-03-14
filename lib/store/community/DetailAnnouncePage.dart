@@ -9,8 +9,6 @@ import '../../storeAdmin/post/AddAnnouncePage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-import '../../util/UpperCaseTextFormatter.dart';
-
 class DetailAnnouncePage extends StatefulWidget {
   DetailAnnouncePage({this.announce, this.user, this.isNew, this.newView});
 
@@ -133,80 +131,32 @@ class _DetailAnnouncePageState extends State<DetailAnnouncePage> {
                                   DefaultButtonComp(
                                       onPressed: () {
                                         Navigator.pop(context);
-                                        showDialog(
+                                        AdminUtil.showCertifyDialog(
                                             context: context,
-                                            builder: (ctx) => AlertDialog(
-                                                  title: Text('관리자 키 Key 입력'),
-                                                  content: Container(
-                                                    decoration: BoxDecoration(
-                                                        border: Border.all(
-                                                            width: 1,
-                                                            color: Colors
-                                                                .orange[200]!),
-                                                        color:
-                                                            Colors.blue[100]),
-                                                    child: TextField(
-                                                      inputFormatters: [
-                                                        UpperCaseTextFormatter()
-                                                      ],
-                                                      decoration:
-                                                          InputDecoration(
-                                                              border:
-                                                                  InputBorder
-                                                                      .none,
-                                                              hintText:
-                                                                  'Admin Key'),
-                                                      controller:
-                                                          _adminKeyController,
-                                                    ),
-                                                  ),
-                                                  actions: [
-                                                    DefaultButtonComp(
-                                                        onPressed: () =>
-                                                            Navigator.pop(ctx),
-                                                        child: Text('취소')),
-                                                    DefaultButtonComp(
-                                                        onPressed: () async {
-                                                          var result = await AdminUtil
-                                                              .certifyAdminAccess(
-                                                                  widget.user!
-                                                                      .uid!,
-                                                                  _adminKeyController
-                                                                      .text); // 어드민 키 인증
-                                                          if (result) {
-                                                            var res = await _deleteAnnounceRequest(_isUsable
-                                                                ? (_rcvResult
-                                                                        as Announce)
-                                                                    .announceID
-                                                                : _temp!
-                                                                    .announceID); // DB에서 상품 삭제
-                                                            if (res) {
-                                                              Navigator.pop(
-                                                                  ctx);
-                                                              ToastMessage.show(
-                                                                  '삭제가 완료되었습니다.');
+                                            keyController: _adminKeyController,
+                                            admin: widget.user!,
+                                            afterProcess: () async {
+                                              var res =
+                                                  await _deleteAnnounceRequest(
+                                                      _isUsable
+                                                          ? (_rcvResult
+                                                                  as Announce)
+                                                              .announceID
+                                                          : _temp!
+                                                              .announceID); // DB에서 상품 삭제
+                                              if (res) {
+                                                ToastMessage.show(
+                                                    '삭제가 완료되었습니다.');
 
-                                                              await Future.delayed(
-                                                                  Duration(
-                                                                      milliseconds:
-                                                                          500));
-                                                              _terminateScreen(
-                                                                  isDelete:
-                                                                      true);
-                                                            } else {
-                                                              Navigator.pop(
-                                                                  ctx);
-                                                              ToastMessage.show(
-                                                                  '삭제에 실패했습니다.');
-                                                            }
-                                                          } else {
-                                                            ToastMessage.show(
-                                                                '인증에 실패했습니다.');
-                                                          }
-                                                        },
-                                                        child: Text('인증'))
-                                                  ],
-                                                ));
+                                                await Future.delayed(Duration(
+                                                    milliseconds: 500));
+                                                _terminateScreen(
+                                                    isDelete: true);
+                                              } else {
+                                                ToastMessage.show(
+                                                    '삭제에 실패했습니다.');
+                                              }
+                                            });
                                       },
                                       child: Text('예'))
                                 ],

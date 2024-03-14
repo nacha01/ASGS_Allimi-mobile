@@ -10,8 +10,6 @@ import 'package:asgshighschool/storeAdmin/AdminUtil.dart';
 import 'package:asgshighschool/util/DateFormatter.dart';
 import 'package:asgshighschool/util/OrderUtil.dart';
 import 'package:asgshighschool/util/PaymentUtil.dart';
-import 'package:asgshighschool/util/ToastMessage.dart';
-import 'package:asgshighschool/util/UpperCaseTextFormatter.dart';
 import '../../component/DefaultButtonComp.dart';
 import '../../component/ThemeAppBar.dart';
 import 'AdminDetailOrder.dart';
@@ -337,140 +335,81 @@ class _OrderListPageState extends State<OrderListPage> {
                         DefaultButtonComp(
                             onPressed: () {
                               Navigator.pop(context);
-                              showDialog(
+                              AdminUtil.showCertifyDialog(
                                   context: context,
-                                  builder: (ctx) => AlertDialog(
-                                        title: Text('관리자 Key 인증'),
-                                        content: Container(
-                                          decoration: BoxDecoration(
-                                              border: Border.all(
-                                                  width: 1,
-                                                  color: Colors.orange[200]!),
-                                              color: Colors.blue[100]),
-                                          child: TextField(
-                                            inputFormatters: [
-                                              UpperCaseTextFormatter()
-                                            ],
-                                            decoration: InputDecoration(
-                                                border: InputBorder.none,
-                                                hintText: 'Admin Key'),
-                                            controller: _adminKeyController,
-                                          ),
-                                        ),
-                                        actions: [
-                                          DefaultButtonComp(
-                                              onPressed: () =>
-                                                  Navigator.pop(ctx),
-                                              child: Text('취소')),
-                                          DefaultButtonComp(
-                                              onPressed: () async {
-                                                var result = await AdminUtil
-                                                    .certifyAdminAccess(
-                                                        widget.user!.uid!,
-                                                        _adminKeyController
-                                                            .text);
+                                  keyController: _adminKeyController,
+                                  admin: widget.user!,
+                                  afterProcess: () async {
+                                    _cancelResponse =
+                                        await PaymentUtil.cancelPayment(
+                                            order.tid,
+                                            order.orderID,
+                                            order.totalPrice,
+                                            true);
 
-                                                Navigator.pop(ctx);
-                                                if (result) {
-                                                  _cancelResponse =
-                                                      await PaymentUtil
-                                                          .cancelPayment(
-                                                              order.tid,
-                                                              order.orderID,
-                                                              order.totalPrice,
-                                                              true);
+                                    var isSuccess =
+                                        await PaymentUtil.cancelOrderHandling(
+                                            order.user!.userID,
+                                            order,
+                                            _cancelResponse!);
 
-                                                  var isSuccess =
-                                                      await PaymentUtil
-                                                          .cancelOrderHandling(
-                                                              order
-                                                                  .user!.userID,
-                                                              order,
-                                                              _cancelResponse!);
-
-                                                  if (isSuccess) {
-                                                    showDialog(
-                                                        barrierDismissible:
-                                                            false,
-                                                        context: this.context,
-                                                        builder:
-                                                            (c) => AlertDialog(
-                                                                  title: Text(
-                                                                      '결제취소 성공',
-                                                                      style: TextStyle(
-                                                                          fontWeight: FontWeight
-                                                                              .bold,
-                                                                          color: Colors
-                                                                              .green,
-                                                                          fontSize:
-                                                                              16)),
-                                                                  content: Text(
-                                                                      '${_cancelResponse!.resultMsg}',
-                                                                      style: TextStyle(
-                                                                          fontWeight: FontWeight
-                                                                              .bold,
-                                                                          fontSize:
-                                                                              14)),
-                                                                  actions: [
-                                                                    DefaultButtonComp(
-                                                                        onPressed:
-                                                                            () {
-                                                                          Navigator.pop(
-                                                                              c);
-                                                                          setState(
-                                                                              () {
-                                                                            // _getAllOrderData();
-                                                                          });
-                                                                        },
-                                                                        child: Text(
-                                                                            '확인'))
-                                                                  ],
-                                                                ));
-                                                  } else {
-                                                    await showDialog(
-                                                        barrierDismissible:
-                                                            false,
-                                                        context: context,
-                                                        builder:
-                                                            (c) => AlertDialog(
-                                                                  title: Text(
-                                                                    '결제취소 실패',
-                                                                    style: TextStyle(
-                                                                        fontWeight:
-                                                                            FontWeight
-                                                                                .bold,
-                                                                        color: Colors
-                                                                            .red,
-                                                                        fontSize:
-                                                                            16),
-                                                                  ),
-                                                                  content: Text(
-                                                                      '${_cancelResponse!.resultMsg} (code-${_cancelResponse!.resultCode})',
-                                                                      style: TextStyle(
-                                                                          fontWeight: FontWeight
-                                                                              .bold,
-                                                                          fontSize:
-                                                                              14)),
-                                                                  actions: [
-                                                                    DefaultButtonComp(
-                                                                        onPressed:
-                                                                            () {
-                                                                          Navigator.pop(
-                                                                              c);
-                                                                        },
-                                                                        child: Text(
-                                                                            '확인'))
-                                                                  ],
-                                                                ));
-                                                  }
-                                                } else {
-                                                  ToastMessage.show(
-                                                      '인증에 실패했습니다.');
-                                                }
-                                              },
-                                              child: Text('인증'))
-                                        ],
-                                      ));
+                                    if (isSuccess) {
+                                      showDialog(
+                                          barrierDismissible: false,
+                                          context: this.context,
+                                          builder: (c) => AlertDialog(
+                                                title: Text('결제취소 성공',
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: Colors.green,
+                                                        fontSize: 16)),
+                                                content: Text(
+                                                    '${_cancelResponse!.resultMsg}',
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 14)),
+                                                actions: [
+                                                  DefaultButtonComp(
+                                                      onPressed: () {
+                                                        Navigator.pop(c);
+                                                        setState(() {
+                                                          // _getAllOrderData();
+                                                        });
+                                                      },
+                                                      child: Text('확인'))
+                                                ],
+                                              ));
+                                    } else {
+                                      await showDialog(
+                                          barrierDismissible: false,
+                                          context: context,
+                                          builder: (c) => AlertDialog(
+                                                title: Text(
+                                                  '결제취소 실패',
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: Colors.red,
+                                                      fontSize: 16),
+                                                ),
+                                                content: Text(
+                                                    '${_cancelResponse!.resultMsg} (code-${_cancelResponse!.resultCode})',
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 14)),
+                                                actions: [
+                                                  DefaultButtonComp(
+                                                      onPressed: () {
+                                                        Navigator.pop(c);
+                                                      },
+                                                      child: Text('확인'))
+                                                ],
+                                              ));
+                                    }
+                                  });
                             },
                             child: Text(
                               '예',
