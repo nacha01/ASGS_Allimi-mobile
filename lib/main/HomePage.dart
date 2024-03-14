@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:asgshighschool/data/foreground_noti.dart';
+import 'package:asgshighschool/main/LibraryQrPage.dart';
 import 'package:asgshighschool/main/MealsAPI.dart';
 import 'package:asgshighschool/notification/NotificationAction.dart';
 import 'package:asgshighschool/util/GlobalVariable.dart';
@@ -353,7 +354,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
       onWillPop: _onBackPressed,
       child: Scaffold(
           resizeToAvoidBottomInset: false, // keyboard not slide
-          drawer: slidePage(),
+          drawer: slidePage(size),
           key: _scaffoldKey,
           body: NestedScrollView(
             controller: _scrollViewController,
@@ -452,10 +453,10 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
             )) as bool;
   }
 
-  Widget slidePage() {
+  Widget slidePage(Size size) {
     return Container(
-        width: MediaQuery.of(context).size.width / 1.2,
-        height: MediaQuery.of(context).size.height,
+        width: size.width / 1.2,
+        height: size.height,
         color: Colors.white,
         child: Padding(
             padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
@@ -463,20 +464,18 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
               children: <Widget>[
                 Container(
                   child: Padding(
-                    padding: EdgeInsets.all(12),
+                    padding: EdgeInsets.all(size.width * 0.02),
                     child: Row(
                       children: <Widget>[
                         Text('안산강서 알리미',
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 15)),
-                        Spacer(),
-                        SizedBox(width: 15),
                       ],
                     ),
                   ),
                 ),
                 Container(
-                  height: 80,
+                  height: size.height * 0.1,
                   child: Center(
                       child: ListTile(
                     leading: Container(
@@ -574,12 +573,9 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           color: Color(0xFFF2F2F2),
                           width: MediaQuery.of(context).size.width,
                           height: 45,
-                          child: Padding(
-                              padding: EdgeInsets.only(left: 60),
-                              child: Text('안산강서고',
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold)))),
+                          child: Text('안산강서고',
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold))),
                       ListTile(
                         title: Text(
                           '학교행사',
@@ -640,12 +636,29 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                               },
                             )
                           : SizedBox(),
+                      widget.user!.isAdmin
+                          ? ListTile(
+                        title: Text('도서관 출입 QR 스캐너',
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.red)),
+                        trailing: Icon(Icons.arrow_forward_ios,
+                            color: Colors.red),
+                        onTap: () async {
+                          await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      LibraryAttendanceQrPage(admin: widget.user!,)));
+                        },
+                      )
+                          : SizedBox(),
                     ],
                   ),
                 ),
                 Padding(
-                    padding: EdgeInsets.all(
-                        MediaQuery.of(context).size.width * 0.01),
+                    padding: EdgeInsets.all(size.width * 0.008),
                     child: Row(children: [
                       DefaultButtonComp(
                           onPressed: () {
