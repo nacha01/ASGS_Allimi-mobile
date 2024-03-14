@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:asgshighschool/data/user.dart';
 
+import '../data/status.dart';
+
 enum StudentCardPurpose { ATTENDANCE, UMBRELLA }
 
 class MobileStudentCard extends StatefulWidget {
@@ -87,7 +89,7 @@ class _MobileStudentCardState extends State<MobileStudentCard> {
                           style: TextStyle(fontSize: 16.0),
                         ),
                         Text(
-                          '${widget.user!.name}',
+                          '${widget.user!.name} [${Status.statusList[widget.user!.identity - 1]}]',
                           style: TextStyle(fontSize: 16.0),
                         ),
                         Text(
