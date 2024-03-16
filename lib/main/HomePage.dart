@@ -353,9 +353,24 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
     return WillPopScope(
       onWillPop: _onBackPressed,
       child: Scaffold(
-          resizeToAvoidBottomInset: false, // keyboard not slide
+          resizeToAvoidBottomInset: false,
+          // keyboard not slide
           drawer: slidePage(size),
           key: _scaffoldKey,
+          floatingActionButton: FloatingActionButton(
+            child: Icon(
+              Icons.account_box_rounded,
+              color: Colors.black,
+              size: 30,
+            ),
+            onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => MobileStudentCard(
+                          user: widget.user,
+                        ))),
+            backgroundColor: GlobalVariable.appThemeColor,
+          ),
           body: NestedScrollView(
             controller: _scrollViewController,
             headerSliverBuilder:
@@ -638,21 +653,23 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           : SizedBox(),
                       widget.user!.isAdmin
                           ? ListTile(
-                        title: Text('도서관 출입 QR 스캐너',
-                            style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.red)),
-                        trailing: Icon(Icons.arrow_forward_ios,
-                            color: Colors.red),
-                        onTap: () async {
-                          await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      LibraryAttendanceQrPage(admin: widget.user!,)));
-                        },
-                      )
+                              title: Text('도서관 출입 QR 스캐너',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.red)),
+                              trailing: Icon(Icons.arrow_forward_ios,
+                                  color: Colors.red),
+                              onTap: () async {
+                                await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            LibraryAttendanceQrPage(
+                                              admin: widget.user!,
+                                            )));
+                              },
+                            )
                           : SizedBox(),
                     ],
                   ),
