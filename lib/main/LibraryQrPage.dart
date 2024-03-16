@@ -48,8 +48,9 @@ class _LibraryAttendanceQrPageState extends State<LibraryAttendanceQrPage> {
     }
   }
 
-  void _onQRViewCreated(QRViewController controller) {
+  void _onQRViewCreated(QRViewController controller) async {
     this._controller = controller;
+    await _controller!.flipCamera();
     controller.scannedDataStream.listen((scanData) async {
       await _controller!.pauseCamera();
       await _requestAttendance(scanData.code!);
