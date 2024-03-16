@@ -139,14 +139,14 @@ class _MobileStudentCardState extends State<MobileStudentCard> {
               ),
               Expanded(
                 child: Center(
-                  child: widget.user!.identity != 1
+                  child: widget.user!.identity != 4
                       ? Text(
                           '재학생이 아닙니다.',
                           style: TextStyle(fontSize: 16, color: Colors.grey),
                         )
                       : QrImage(
                           data:
-                              '${_prefixId}_${widget.user!.studentId}_${widget.user!.name}',
+                              '${_prefixId.name}_${widget.user!.uid}_${widget.user!.studentId}_${widget.user!.name}',
                           size: 250,
                         ),
                 ),
