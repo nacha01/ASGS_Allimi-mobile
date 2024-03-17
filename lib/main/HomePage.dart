@@ -369,7 +369,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     builder: (context) => MobileStudentCard(
                           user: widget.user,
                         ))),
-            backgroundColor: GlobalVariable.appThemeColor,
+            backgroundColor: Colors.lightBlueAccent,
           ),
           body: NestedScrollView(
             controller: _scrollViewController,
