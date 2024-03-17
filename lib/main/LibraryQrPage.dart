@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:asgshighschool/api/ApiUtil.dart';
 import 'package:asgshighschool/component/ThemeAppBar.dart';
 import 'package:asgshighschool/storeAdmin/AdminUtil.dart';
+import 'package:asgshighschool/util/ToastMessage.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:http/http.dart' as http;
@@ -53,7 +54,14 @@ class _LibraryAttendanceQrPageState extends State<LibraryAttendanceQrPage> {
     await _controller!.flipCamera();
     controller.scannedDataStream.listen((scanData) async {
       await _controller!.pauseCamera();
-      await _requestAttendance(scanData.code!);
+      List<String> parsed = scanData.code!.split("_");
+      if (parsed[0] == "ATTENDANCE")
+        await _requestAttendance(parsed);
+      else {
+        ToastMessage.show("출석용 QR이 아닙니다.");
+        await Future.delayed(Duration(seconds: 2));
+        await _controller!.resumeCamera();
+      }
     });
   }
 
@@ -72,13 +80,13 @@ class _LibraryAttendanceQrPageState extends State<LibraryAttendanceQrPage> {
     );
   }
 
-  Future<void> _requestAttendance(String qrData) async {
+  Future<void> _requestAttendance(List<String> parsedQrData) async {
     String url = "${ApiUtil.API_HOST}arlimi_requestAttendance.php";
 
-    List<String> parsed = qrData.split("_");
-
-    final response = await http.post(Uri.parse(url),
-        body: <String, String>{"uid": parsed[1], "purpose": parsed[0]});
+    final response = await http.post(Uri.parse(url), body: <String, String>{
+      "uid": parsedQrData[1],
+      "purpose": parsedQrData[0]
+    });
 
     if (response.statusCode == 200) {
       var json = jsonDecode(response.body);
@@ -99,10 +107,10 @@ class _LibraryAttendanceQrPageState extends State<LibraryAttendanceQrPage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    "학번: ${parsed[2]}",
+                    "학번: ${parsedQrData[2]}",
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 19),
                   ),
-                  Text("이름: ${parsed[3]}",
+                  Text("이름: ${parsedQrData[3]}",
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 19)),
                   Padding(
