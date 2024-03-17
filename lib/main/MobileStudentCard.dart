@@ -139,7 +139,7 @@ class _MobileStudentCardState extends State<MobileStudentCard> {
               ),
               Expanded(
                 child: Center(
-                  child: widget.user!.identity != 4
+                  child: widget.user!.identity != 1
                       ? Text(
                           '재학생이 아닙니다.',
                           style: TextStyle(fontSize: 16, color: Colors.grey),
