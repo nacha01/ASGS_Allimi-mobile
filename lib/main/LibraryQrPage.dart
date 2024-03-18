@@ -59,7 +59,7 @@ class _LibraryAttendanceQrPageState extends State<LibraryAttendanceQrPage> {
         await _requestAttendance(parsed);
       else {
         ToastMessage.show("출석용 QR이 아닙니다.");
-        await Future.delayed(Duration(seconds: 2));
+        await Future.delayed(Duration(milliseconds: 1500));
         await _controller!.resumeCamera();
       }
     });
@@ -89,11 +89,13 @@ class _LibraryAttendanceQrPageState extends State<LibraryAttendanceQrPage> {
     });
 
     if (response.statusCode == 200) {
-      var json = jsonDecode(response.body);
+      var json =
+          jsonDecode(response.body.substring(response.body.indexOf("{\"n")));
       showDialog(
           context: context,
           builder: (context) {
-            Future.delayed(Duration(seconds: 5), () async {
+            // 1.5초 후에 자동으로 종료
+            Future.delayed(Duration(milliseconds: 1500), () async {
               Navigator.pop(context);
               await _controller!.resumeCamera();
             });
@@ -129,6 +131,38 @@ class _LibraryAttendanceQrPageState extends State<LibraryAttendanceQrPage> {
                     DateTime.now().toString(),
                     style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                   )
+                ],
+              ),
+            );
+          });
+    } else if (response.statusCode == 403) {
+      showDialog(
+          context: context,
+          builder: (context) {
+            Future.delayed(Duration(seconds: 3), () async {
+              Navigator.pop(context);
+              await _controller!.resumeCamera();
+            });
+            return AlertDialog(
+              title: Icon(
+                Icons.warning,
+                color: Colors.red,
+                size: 65,
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    '현재는 도서관 출입 가능 시간이 아닙니다!',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(
+                    height: 30,
+                  ),
+                  Text('출입 가능 시간: \n오전 5시 ~ 9시\n오후 5시 ~ 9시',
+                      style: TextStyle(fontSize: 15))
                 ],
               ),
             );
