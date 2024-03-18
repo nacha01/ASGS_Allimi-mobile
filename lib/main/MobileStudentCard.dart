@@ -54,8 +54,10 @@ class _MobileStudentCardState extends State<MobileStudentCard> {
         _cumulString = "${cumul[0]}시간 ${cumul[1]}분";
       });
     } else if (response.statusCode == 404) {
-      _state = "없음";
-      _cumulString = "00시간 00분";
+      setState(() {
+        _state = "없음";
+        _cumulString = "00시간 00분";
+      });
     }
   }
 
