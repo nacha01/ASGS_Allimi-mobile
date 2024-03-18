@@ -84,6 +84,7 @@ class _RegisterTabState extends State<RegisterTab> {
                             style: TextStyle(fontSize: 13),
                             controller: _gradeController,
                             cursorColor: Colors.black,
+                            maxLength: 5,
                             decoration: InputDecoration(
                                 hintText: '학번',
                                 hintStyle: TextStyle(color: Colors.grey))))
@@ -131,6 +132,7 @@ class _RegisterTabState extends State<RegisterTab> {
                     child: TextField(
                         controller: _nickNameController,
                         cursorColor: Colors.black,
+                        maxLength: 30,
                         style: TextStyle(fontSize: 13),
                         decoration: InputDecoration(
                             hintText: '닉네임',
