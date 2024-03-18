@@ -53,6 +53,7 @@ class _CartPageState extends State<CartPage> {
       String result = ApiUtil.getPureBody(response.bodyBytes);
       List cartProduct = json.decode(result);
       _cartProductList.clear();
+      _countList.clear();
       for (int i = 0; i < cartProduct.length; ++i) {
         _cartProductList.add(json.decode(cartProduct[i]));
       }
