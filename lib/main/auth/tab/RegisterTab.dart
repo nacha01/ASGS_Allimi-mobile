@@ -238,9 +238,9 @@ class _RegisterTabState extends State<RegisterTab> {
                                           : 'NULL',
                                       _emailController.text);
                               if (result) {
-                                showDialog(
-                                    context: context,
-                                    builder: (context) => AlertDialog(
+                                await showDialog(
+                                    context: this.context,
+                                    builder: (ctx) => AlertDialog(
                                             title: Text('회원 가입 성공',
                                                 style: TextStyle(
                                                     fontSize: 16,
@@ -271,9 +271,9 @@ class _RegisterTabState extends State<RegisterTab> {
                                                         res.isAdmin = true;
                                                         res.adminKey = _key;
                                                       }
-                                                      Navigator.pop(context);
+                                                      Navigator.pop(ctx);
                                                       Navigator.pushReplacement(
-                                                          context,
+                                                          this.context,
                                                           MaterialPageRoute(
                                                               builder:
                                                                   (context) =>
