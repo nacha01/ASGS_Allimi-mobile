@@ -8,14 +8,14 @@ import '../../../util/GlobalVariable.dart';
 
 class AuthController {
   Future<User?> requestLogin(String uid, String password) async {
-    String url = '${ApiUtil.API_HOST}arlimi_login.php?uid=$uid&pw=$password';
-    final response = await http.get(Uri.parse(url));
+    String url = '${ApiUtil.API_HOST}v2/login.php';
+    final response = await http.post(Uri.parse(url),
+        body: <String, String>{"uid": uid, "pw": password});
 
     if (response.statusCode == 200) {
       if (utf8.decode(response.bodyBytes).contains('NOT EXIST ACCOUNT')) {
         return null;
       }
-
       String result = ApiUtil.getPureBody(response.bodyBytes);
       return User.fromJson(json.decode(result));
     } else {
@@ -23,18 +23,15 @@ class AuthController {
     }
   }
 
-  Future<bool> updateEmailRequest(String uid, String email) async {
+  Future<String> updateEmailRequest(String uid, String email) async {
     String url = '${ApiUtil.API_HOST}arlimi_updateEmail.php';
     final response = await http.post(Uri.parse(url),
         body: <String, String>{'uid': uid, 'email': email});
 
     if (response.statusCode == 200) {
-      String result = ApiUtil.getPureBody(response.bodyBytes);
-      if (result.contains('UPDATED')) {
-        return true;
-      }
+      return response.body;
     }
-    return false;
+    return jsonDecode(response.body)['errorMessage'];
   }
 
   Future<String> judgeIsAdminAccount(String uid) async {
@@ -91,9 +88,9 @@ class AuthController {
     return false;
   }
 
-  Future<bool> postRegisterRequest(String uid, String password, String name,
+  Future<String> postRegisterRequest(String uid, String password, String name,
       String nickname, String status, String grade, String email) async {
-    String url = '${ApiUtil.API_HOST}arlimi_register.php';
+    String url = '${ApiUtil.API_HOST}v2/register.php';
     final response = await http.post(Uri.parse(url), body: <String, String?>{
       'uid': uid,
       'pw': password,
@@ -108,12 +105,12 @@ class AuthController {
     if (response.statusCode == 200) {
       String result = ApiUtil.getPureBody(response.bodyBytes);
       if (result.contains('PRIMARY') && result.contains('Duplicate entry')) {
-        return false;
+        return "이미 사용 중인 아이디입니다.";
       } else {
-        return true;
+        return "CREATED";
       }
     } else {
-      return false;
+      return jsonDecode(response.body)["errorMessage"];
     }
   }
 }
