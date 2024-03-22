@@ -14,17 +14,6 @@ import 'package:provider/provider.dart';
 
 import '../../util/ToastMessage.dart';
 
-/// visible information
-/// 1. uid
-/// 2. name[modifiable]
-/// 3. identity[modifiable]
-/// 4. studentId[modifiable]
-/// 5. nickname[modifiable]
-/// 6. tel[removed]
-/// 7. email[modifiable]
-/// 8. reg_date
-/// 9. buy_count
-/// 10. point
 class UpdateUserPage extends StatefulWidget {
   UpdateUserPage({this.user});
 
@@ -56,8 +45,8 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
   }
 
   /// 사용자 정보의 변경에 대해 업데이트 요청을 하는 작업
-  Future<bool> _updateUserInfoRequest() async {
-    String url = '${ApiUtil.API_HOST}arlimi_updateUser.php';
+  Future<String> _updateUserInfoRequest() async {
+    String url = '${ApiUtil.API_HOST}v2/update_user.php';
     final response = await http.post(Uri.parse(url), body: <String, String?>{
       'uid': widget.user!.uid,
       'name': _nameController.text,
@@ -69,18 +58,19 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
 
     if (response.statusCode == 200) {
       String result = ApiUtil.getPureBody(response.bodyBytes);
-      if (result != '1') return false;
-      return true;
+      return result;
     } else {
-      return false;
+      return jsonDecode(response.body)['errorMessage'];
     }
   }
 
   /// 본인 인증을 하기 위한 요청
   Future<bool> _certifyMyselfRequest() async {
-    String url = '${ApiUtil.API_HOST}arlimi_certifyMyself.php';
-    final response = await http.get(
-        Uri.parse(url + '?uid=${widget.user!.uid}&pw=${_pwController.text}'));
+    String url = '${ApiUtil.API_HOST}v2/verify_user.php';
+    final response = await http.post(Uri.parse(url), body: <String, String>{
+      'uid': widget.user!.uid!,
+      'pw': _pwController.text
+    });
 
     if (response.statusCode == 200) {
       String result = ApiUtil.getPureBody(response.bodyBytes);
@@ -481,12 +471,11 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
                                             if (res) {
                                               var res =
                                                   await _updateUserInfoRequest();
-                                              if (res) {
+                                              if (res == 'UPDATED') {
                                                 ToastMessage.show(
                                                     '개인정보 수정이 완료되었습니다.');
                                               } else {
-                                                ToastMessage.show(
-                                                    '개인정보 수정에 실패했습니다.');
+                                                ToastMessage.show(res);
                                               }
                                               Navigator.pop(context);
                                             } else {
