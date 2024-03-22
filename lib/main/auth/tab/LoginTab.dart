@@ -190,16 +190,11 @@ class LoginTabState extends State<LoginTab> {
                           actions: [
                             DefaultButtonComp(
                                 onPressed: () async {
-                                  if (updateEmailController.text.isEmpty ||
-                                      !updateEmailController.text
-                                          .contains('@')) {
-                                    return;
-                                  }
                                   var res =
                                       await _authController.updateEmailRequest(
                                           idController.text,
                                           updateEmailController.text);
-                                  if (res) {
+                                  if (res == "UPDATED") {
                                     Navigator.pop(context);
                                     ToastMessage.show('이메일 등록 성공');
                                     result.email = updateEmailController.text;
@@ -213,7 +208,7 @@ class LoginTabState extends State<LoginTab> {
                                           });
                                           return AlertDialog(
                                             title: Text(
-                                              '등록 실패',
+                                              res,
                                               style: TextStyle(
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.bold),
