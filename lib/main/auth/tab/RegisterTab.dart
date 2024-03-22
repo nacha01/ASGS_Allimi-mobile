@@ -96,6 +96,7 @@ class _RegisterTabState extends State<RegisterTab> {
                         cursorColor: Colors.black,
                         style: TextStyle(fontSize: 13),
                         decoration: InputDecoration(
+                            helperText: '영문, 숫자 조합으로 5글자 이상',
                             hintText: '아이디(ID)',
                             hintStyle: TextStyle(color: Colors.grey)))),
                 Container(
@@ -132,7 +133,7 @@ class _RegisterTabState extends State<RegisterTab> {
                     child: TextField(
                         controller: _nickNameController,
                         cursorColor: Colors.black,
-                        maxLength: 30,
+                        maxLength: 20,
                         style: TextStyle(fontSize: 13),
                         decoration: InputDecoration(
                             hintText: '닉네임',
@@ -149,40 +150,6 @@ class _RegisterTabState extends State<RegisterTab> {
                   context: context,
                   builder: (context) => AlertDialog(
                           content: Text('입력하지 않은 정보가 있습니다!',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 14)),
-                          actions: [
-                            DefaultButtonComp(
-                              onPressed: () => Navigator.pop(context),
-                              child: Text('확인',
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold)),
-                            )
-                          ]));
-              return;
-            }
-            if (_passwordRegisterController.text.toString().length < 6) {
-              showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                          content: Text('비밀번호를 6자리 이상 입력하세요!',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 14)),
-                          actions: [
-                            DefaultButtonComp(
-                              onPressed: () => Navigator.pop(context),
-                              child: Text('확인',
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold)),
-                            )
-                          ]));
-              return;
-            }
-            if (_idRegisterController.text.toString().length < 4) {
-              showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                          content: Text('ID를 4자리 이상 입력하세요!',
                               style: TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 14)),
                           actions: [
@@ -225,7 +192,6 @@ class _RegisterTabState extends State<RegisterTab> {
                         DefaultButtonComp(
                             onPressed: () async {
                               Navigator.pop(context);
-
                               var result =
                                   await _authController.postRegisterRequest(
                                       _idRegisterController.text,
@@ -237,7 +203,7 @@ class _RegisterTabState extends State<RegisterTab> {
                                           ? _gradeController.text
                                           : 'NULL',
                                       _emailController.text);
-                              if (result) {
+                              if (result == "CREATED") {
                                 await showDialog(
                                     context: this.context,
                                     builder: (ctx) => AlertDialog(
@@ -290,20 +256,20 @@ class _RegisterTabState extends State<RegisterTab> {
                                             ]));
                               } else {
                                 showDialog(
-                                    context: context,
-                                    builder: (context) => AlertDialog(
+                                    context: this.context,
+                                    builder: (ctx) => AlertDialog(
                                           title: Text('회원 가입 실패',
                                               style: TextStyle(
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.bold)),
-                                          content: Text('이미 사용중인 아이디입니다!',
+                                          content: Text(result,
                                               style: TextStyle(
                                                   fontSize: 14,
                                                   fontWeight: FontWeight.bold)),
                                           actions: [
                                             DefaultButtonComp(
                                                 onPressed: () =>
-                                                    Navigator.pop(context),
+                                                    Navigator.pop(ctx),
                                                 child: Text('확인',
                                                     style: TextStyle(
                                                         fontWeight:
