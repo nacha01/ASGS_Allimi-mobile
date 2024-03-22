@@ -174,14 +174,10 @@ class _SignInPageState extends State<SignInPage> {
                     actions: [
                       DefaultButtonComp(
                           onPressed: () async {
-                            if (_updateEmailController.text.isEmpty ||
-                                !_updateEmailController.text.contains('@')) {
-                              return;
-                            }
                             var res = await _authController.updateEmailRequest(
                                 LoginTabState.idController.text,
                                 LoginTabState.updateEmailController.text);
-                            if (res) {
+                            if (res == "UPDATED") {
                               Navigator.pop(context);
                               Fluttertoast.showToast(msg: '이메일 등록 성공');
                               result.email = _updateEmailController.text;
@@ -195,11 +191,12 @@ class _SignInPageState extends State<SignInPage> {
                                     });
                                     return AlertDialog(
                                       title: Text(
-                                        '등록 실패',
+                                        res,
                                         style: TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.bold),
                                       ),
+                                      content: Text(res),
                                     );
                                   });
                             }
